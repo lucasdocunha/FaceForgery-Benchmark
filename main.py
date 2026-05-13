@@ -25,7 +25,7 @@ from src.pipelines.clip import run_clip
 logger = logging.getLogger(__name__)
 
 EPOCHS = 50
-RAW_MIN = True
+RAW_MIN = False
 RUN_VIT = True
 BATCH_SIZE = 32
 NUM_WORKERS = 4
@@ -36,7 +36,7 @@ def main() -> None:
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
-    for mode in ALL_FOURIER_MODES:
+    """for mode in ALL_FOURIER_MODES:
         logger.info("======== Xception | input=%s ========", mode)
         run_xception(
             mode,
@@ -86,9 +86,9 @@ def main() -> None:
             threshold_metric="accuracy",
             data_limit=None,
             multi_gpu=MULTI_GPU,
-        )
+        )"""
 
-    if RUN_VIT:
+    '''if RUN_VIT:
         for mode in ALL_FOURIER_MODES:
             logger.info("======== ViT | input=%s ========", mode)
             run_vit(
@@ -117,7 +117,7 @@ def main() -> None:
             batch_size=BATCH_SIZE,
             num_workers=NUM_WORKERS,
             multi_gpu=MULTI_GPU,
-        )
+        )'''
 
 
 if __name__ == "__main__":
