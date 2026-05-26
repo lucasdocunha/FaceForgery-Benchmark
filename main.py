@@ -21,12 +21,14 @@ from src.pipelines.resnet import run_resnet
 from src.pipelines.vit import run_vit
 from src.pipelines.xcpetion import run_xception
 from src.pipelines.clip import run_clip
+from src.pipelines.dino import run_dino
 
 logger = logging.getLogger(__name__)
 
 EPOCHS = 50
 RAW_MIN = False
 RUN_VIT = True
+RUN_DINO = True
 BATCH_SIZE = 32
 NUM_WORKERS = 4
 MULTI_GPU = True
@@ -118,6 +120,20 @@ def main() -> None:
             num_workers=NUM_WORKERS,
             multi_gpu=MULTI_GPU,
         )'''
+
+    if RUN_DINO:
+        logger.info(
+            "======== DINOv3 SOTA | somente RGB ========"
+        )
+        run_dino(
+            dino_version="v3",
+            model_size="base",
+            epochs=EPOCHS,
+            raw_min=RAW_MIN,
+            batch_size=BATCH_SIZE,
+            num_workers=NUM_WORKERS,
+            multi_gpu=MULTI_GPU,
+        )
 
 
 if __name__ == "__main__":
