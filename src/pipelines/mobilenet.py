@@ -186,7 +186,8 @@ def run_mobilenet(
     if last_n_blocks is None:
         last_n_blocks = 4 if variant == "small" else 3
 
-    effective_augment = augment and input_mode == "none"
+    # Alinhamento espaço-frequência dinâmico agora suporta Data Augmentation perfeitamente em todos os modos Fourier
+    effective_augment = augment
     train_transform, eval_transform = _transforms(image_size, augment=effective_augment)
     spatial_size = (image_size, image_size) if input_mode != "none" else None
 
@@ -214,6 +215,11 @@ def run_mobilenet(
         fourier=input_mode,
         spatial_size=spatial_size,
     )
+
+    # Prevenção de dupla penalização (Sampler balanceado + Pesos na Perda)
+    if use_weighted_sampler and use_class_weights:
+        logger.info("Sampler balanceado ativo: desativando pesos na CrossEntropyLoss para evitar dupla penalização redundante.")
+        use_class_weights = False
 
     loss_weights, sampler, class_counts = _class_balance(data_dir / "train.csv")
     if data_limit != np.inf or not use_weighted_sampler:

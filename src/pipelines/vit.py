@@ -23,16 +23,45 @@ from src.pipelines.evaluation import (
     sanitize_inputs,
     sanitize_logits,
 )
+import math
+from torch.optim.lr_scheduler import _LRScheduler
+
 from src.pipelines.training import (
     maybe_data_parallel,
     mixup_batch,
     mixup_loss,
+    apply_mixup_or_cutmix,
     model_state_dict,
     unwrap_model,
 )
 from src.plots import plot_confusion_matrix, plot_roc_auc, save_metrics_csv
 
 logger = logging.getLogger(__name__)
+
+
+class CosineAnnealingWithWarmup(_LRScheduler):
+    """Cosine Annealing with linear warmup (SOTA)."""
+    def __init__(self, optimizer, warmup_epochs: int, max_epochs: int, min_lr: float = 1e-6, last_epoch: int = -1):
+        self.warmup_epochs = max(0, warmup_epochs)
+        self.max_epochs = max(1, max_epochs)
+        self.min_lr = min_lr
+        super().__init__(optimizer, last_epoch)
+
+    def get_lr(self) -> list[float]:
+        epoch = self.last_epoch
+        if self.warmup_epochs > 0 and epoch < self.warmup_epochs:
+            return [
+                self.min_lr + (base_lr - self.min_lr) * (epoch + 1) / self.warmup_epochs
+                for base_lr in self.base_lrs
+            ]
+        else:
+            progress = (epoch - self.warmup_epochs) / max(1, self.max_epochs - self.warmup_epochs)
+            progress = min(max(progress, 0.0), 1.0)
+            cos_decay = 0.5 * (1.0 + math.cos(math.pi * progress))
+            return [
+                self.min_lr + (base_lr - self.min_lr) * cos_decay
+                for base_lr in self.base_lrs
+            ]
 
 
 def collate_fn(batch) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -145,6 +174,13 @@ def run_vit(
     max_grad_norm: float | None = 1.0,
     mixup_alpha: float = 0.2,
     multi_gpu: bool = True,
+    # SOTA additions
+    use_conv_stem: bool = False,
+    pooling: str = "cls",
+    drop_path_rate: float = 0.0,
+    cutmix_alpha: float = 0.0,
+    scheduler_type: str = "plateau",
+    warmup_epochs: int = 5,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -169,7 +205,8 @@ def run_vit(
     (model_dir / "results").mkdir(parents=True, exist_ok=True)
     best_path = model_dir / "weights" / "best_vit.pth"
 
-    effective_augment = augment and fourier == "none"
+    # Alinhamento espaço-frequência dinâmico agora suporta Data Augmentation perfeitamente em todos os modos Fourier
+    effective_augment = augment
     train_transform, eval_transform = _transforms(image_size, augment=effective_augment)
     spatial_size = (image_size, image_size) if fourier != "none" else None
     train_ds = ImageDataset(
@@ -198,6 +235,12 @@ def run_vit(
     )
     sample_x, _, _ = train_ds[0]
     in_channels = sample_x.shape[0]
+
+    # Prevenção de dupla penalização (Sampler balanceado + Pesos na Perda)
+    if use_weighted_sampler and use_class_weights:
+        logger.info("Sampler balanceado ativo: desativando pesos na CrossEntropyLoss para evitar dupla penalização redundante.")
+        use_class_weights = False
+
     loss_weights, sampler, class_counts = _class_balance(data_dir / "train.csv")
     if data_limit != np.inf or not use_weighted_sampler:
         sampler = None
@@ -238,6 +281,9 @@ def run_vit(
         num_attention_heads=num_attention_heads,
         dropout=dropout,
         in_channels=in_channels,
+        use_conv_stem=use_conv_stem,
+        pooling=pooling,
+        drop_path_rate=drop_path_rate,
     )
     if not train_backbone:
         model.freeze_backbone()
@@ -258,12 +304,20 @@ def run_vit(
     if backbone_params:
         param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
     optimizer = torch.optim.AdamW(param_groups, weight_decay=weight_decay)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer,
-        mode="max",
-        factor=0.5,
-        patience=2,
-    )
+    if scheduler_type == "cosine":
+        scheduler = CosineAnnealingWithWarmup(
+            optimizer,
+            warmup_epochs=warmup_epochs,
+            max_epochs=epochs,
+            min_lr=1e-6,
+        )
+    else:
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=0.5,
+            patience=2,
+        )
 
     best_score = -1.0
     best_val_auc = 0.0
@@ -279,7 +333,7 @@ def run_vit(
         for x, y, _ in tqdm(train_loader, desc=f"ViT train {epoch + 1}/{epochs}", leave=False):
             x = sanitize_inputs(x.to(device))
             y = y.to(device)
-            x, y_a, y_b, lam = mixup_batch(x, y, mixup_alpha)
+            x, y_a, y_b, lam = apply_mixup_or_cutmix(x, y, mixup_alpha, cutmix_alpha)
             optimizer.zero_grad(set_to_none=True)
             with amp_context(device):
                 logits = sanitize_logits(model(x))
@@ -301,7 +355,10 @@ def run_vit(
             val_metrics["probs"],
             metric=threshold_metric,
         )
-        scheduler.step(selection_score)
+        if scheduler_type == "cosine":
+            scheduler.step()
+        else:
+            scheduler.step(selection_score)
         epochs_run = epoch + 1
 
         logger.info(
@@ -379,6 +436,13 @@ def run_vit(
             "learning_rate_classifier": learning_rate_classifier,
             "learning_rate_backbone": learning_rate_backbone,
             "augment": effective_augment,
+            # SOTA additions
+            "use_conv_stem": use_conv_stem,
+            "pooling": pooling,
+            "drop_path_rate": drop_path_rate,
+            "cutmix_alpha": cutmix_alpha,
+            "scheduler_type": scheduler_type,
+            "warmup_epochs": warmup_epochs,
         },
     )
     logger.info(

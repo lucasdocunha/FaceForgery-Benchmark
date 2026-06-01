@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
+import math
 
 import numpy as np
 import pandas as pd
@@ -7,54 +10,60 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from torchvision import transforms
-import tqdm
+from tqdm import tqdm
 
-from src.data import ALL_FOURIER_MODES, FourierMode, ImageDataset
+from src.data import FourierMode, ImageDataset
 from src.data.paths import phase1_split_root
-from src.models import xception
+from src.models.dino import DINOVisionClassifier
 from src.pipelines.evaluation import (
     ThresholdMetric,
     amp_context,
     best_threshold,
-    binary_metrics,
     evaluate_classifier,
     sanitize_inputs,
     sanitize_logits,
 )
 from src.pipelines.training import (
     maybe_data_parallel,
-    mixup_batch,
     mixup_loss,
+    apply_mixup_or_cutmix,
     model_state_dict,
     unwrap_model,
 )
 from src.plots import plot_confusion_matrix, plot_roc_auc, save_metrics_csv
+from torch.optim.lr_scheduler import _LRScheduler
 
 logger = logging.getLogger(__name__)
+
+
+def collate_fn(batch) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    imgs, labels, idxs = zip(*batch)
+    return (
+        torch.stack([img if isinstance(img, torch.Tensor) else torch.as_tensor(img) for img in imgs]),
+        torch.tensor(labels, dtype=torch.long),
+        torch.tensor(idxs, dtype=torch.long),
+    )
 
 
 def _device() -> torch.device:
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def _split_root(_pwd: Path, _raw_min: bool, split: str) -> Path:
-    return phase1_split_root(split)
-
-
 def _transforms(image_size: int, augment: bool = True):
-    mean = [0.5, 0.5, 0.5]
-    std = [0.5, 0.5, 0.5]
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
     if augment:
         train_transform = transforms.Compose(
             [
-                transforms.RandomResizedCrop(
-                    image_size, scale=(0.82, 1.0), ratio=(0.9, 1.1)
-                ),
+                transforms.RandomResizedCrop(image_size, scale=(0.82, 1.0), ratio=(0.9, 1.1)),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomApply(
                     [
                         transforms.ColorJitter(
-                            brightness=0.12, contrast=0.12, saturation=0.08, hue=0.015
+                            brightness=0.12,
+                            contrast=0.12,
+                            saturation=0.08,
+                            hue=0.015,
                         )
                     ],
                     p=0.5,
@@ -71,6 +80,7 @@ def _transforms(image_size: int, augment: bool = True):
                 transforms.Normalize(mean=mean, std=std),
             ]
         )
+
     eval_transform = transforms.Compose(
         [
             transforms.Resize((image_size, image_size)),
@@ -89,7 +99,6 @@ def _class_balance(
     class_counts = df["target"].value_counts().sort_index()
     counts = {int(k): int(v) for k, v in class_counts.to_dict().items()}
     total = len(df)
-
     loss_weights = torch.tensor(
         [total / (2.0 * counts.get(0, 1)), total / (2.0 * counts.get(1, 1))],
         dtype=torch.float,
@@ -105,46 +114,58 @@ def _class_balance(
     return loss_weights, sampler, counts
 
 
-def _set_trainable_head(model: nn.Module) -> None:
-    for param in model.parameters():
-        param.requires_grad = False
+class CosineAnnealingWithWarmup(_LRScheduler):
+    """Cosine Annealing with linear warmup (SOTA)."""
+    def __init__(self, optimizer, warmup_epochs: int, max_epochs: int, min_lr: float = 1e-6, last_epoch: int = -1):
+        self.warmup_epochs = max(0, warmup_epochs)
+        self.max_epochs = max(1, max_epochs)
+        self.min_lr = min_lr
+        super().__init__(optimizer, last_epoch)
 
-    trainable_modules = [
-        model.block12,
-        model.conv3,
-        model.bn3,
-        model.conv4,
-        model.bn4,
-        model.fc,
-    ]
-    for module in trainable_modules:
-        for param in module.parameters():
-            param.requires_grad = True
+    def get_lr(self) -> list[float]:
+        epoch = self.last_epoch
+        if self.warmup_epochs > 0 and epoch < self.warmup_epochs:
+            return [
+                self.min_lr + (base_lr - self.min_lr) * (epoch + 1) / self.warmup_epochs
+                for base_lr in self.base_lrs
+            ]
+        else:
+            progress = (epoch - self.warmup_epochs) / max(1, self.max_epochs - self.warmup_epochs)
+            progress = min(max(progress, 0.0), 1.0)
+            cos_decay = 0.5 * (1.0 + math.cos(math.pi * progress))
+            return [
+                self.min_lr + (base_lr - self.min_lr) * cos_decay
+                for base_lr in self.base_lrs
+            ]
 
 
-def run_xception(
-    fourier: FourierMode = "none",
-    epochs: int = 20,
+def run_dino(
+    dino_version: str = "v3",
+    model_size: str = "base",
+    epochs: int = 50,
     raw_min: bool = True,
     data_limit: int | float | None = None,
     output_root: str | Path | None = None,
     batch_size: int = 32,
     num_workers: int = 4,
-    pretrained: bool = False,
-    image_size: int = 299,
-    learning_rate_head: float = 1e-3,
-    learning_rate_backbone: float = 1e-4,
+    image_size: int = 224,
+    dropout: float = 0.2,
+    freeze_backbone: bool = True,
+    learning_rate_classifier: float = 5e-4,
+    learning_rate_backbone: float = 5e-5,
     weight_decay: float = 1e-4,
     early_stop_patience: int = 8,
     use_weighted_sampler: bool = True,
-    use_class_weights: bool = False,
+    use_class_weights: bool = True,
     label_smoothing: float = 0.0,
-    dropout: float = 0.2,
-    mixup_alpha: float = 0.0,
-    threshold_metric: ThresholdMetric = "accuracy",
+    threshold_metric: ThresholdMetric = "f1",
     augment: bool = True,
     seed: int = 42,
     max_grad_norm: float | None = 1.0,
+    mixup_alpha: float = 0.2,
+    cutmix_alpha: float = 0.0,
+    scheduler_type: str = "cosine",
+    warmup_epochs: int = 5,
     multi_gpu: bool = True,
 ):
     if not logging.root.handlers:
@@ -156,6 +177,8 @@ def run_xception(
     torch.manual_seed(seed)
     np.random.seed(seed)
 
+    fourier: FourierMode = "none"
+
     pwd = Path.cwd()
     output_root = Path(output_root) if output_root is not None else pwd
     data_limit = np.inf if data_limit is None else data_limit
@@ -163,40 +186,40 @@ def run_xception(
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
-    model_name = "xception"
-    run_dir = fourier if data_limit == np.inf else f"{fourier}_limit{data_limit}"
-    model_dir = output_root / "models" / model_name / run_dir
+    
+    safe_model = f"dino{dino_version}_{model_size}"
+    run_dir = "rgb" if data_limit == np.inf else f"rgb_limit{data_limit}"
+    model_dir = output_root / "models" / "dino" / safe_model / run_dir
+    (model_dir / "weights").mkdir(parents=True, exist_ok=True)
+    (model_dir / "results").mkdir(parents=True, exist_ok=True)
+    best_path = model_dir / "weights" / "best_dino.pth"
 
-    # Alinhamento espaço-frequência dinâmico agora suporta Data Augmentation perfeitamente em todos os modos Fourier
-    effective_augment = augment
-    train_transform, eval_transform = _transforms(image_size, augment=effective_augment)
-    spatial_size = (image_size, image_size) if fourier != "none" else None
-
-    train = ImageDataset(
+    train_transform, eval_transform = _transforms(image_size, augment=augment)
+    train_ds = ImageDataset(
         file_csv=data_dir / "train.csv",
-        images_dir=_split_root(pwd, raw_min, "train"),
+        images_dir=phase1_split_root("train"),
         transform=train_transform,
         data_limit=data_limit,
         fourier=fourier,
-        spatial_size=spatial_size,
+        spatial_size=None,
     )
-    val = ImageDataset(
+    val_ds = ImageDataset(
         file_csv=data_dir / "val.csv",
-        images_dir=_split_root(pwd, raw_min, "val"),
+        images_dir=phase1_split_root("val"),
         transform=eval_transform,
         data_limit=data_limit,
         fourier=fourier,
-        spatial_size=spatial_size,
+        spatial_size=None,
     )
-    test = ImageDataset(
+    test_ds = ImageDataset(
         file_csv=data_dir / "test.csv",
-        images_dir=_split_root(pwd, raw_min, "test"),
+        images_dir=phase1_split_root("test"),
         transform=eval_transform,
         data_limit=data_limit,
         fourier=fourier,
-        spatial_size=spatial_size,
+        spatial_size=None,
     )
-
+    
     # Prevenção de dupla penalização (Sampler balanceado + Pesos na Perda)
     if use_weighted_sampler and use_class_weights:
         logger.info("Sampler balanceado ativo: desativando pesos na CrossEntropyLoss para evitar dupla penalização redundante.")
@@ -206,27 +229,41 @@ def run_xception(
     if data_limit != np.inf or not use_weighted_sampler:
         sampler = None
 
+    logger.info(
+        "Starting DINO pipeline: version=%s size=%s train=%d val=%d test=%d classes=%s device=%s",
+        dino_version,
+        model_size,
+        len(train_ds),
+        len(val_ds),
+        len(test_ds),
+        class_counts,
+        device,
+    )
+
     loader_kwargs = {
         "batch_size": batch_size,
         "num_workers": num_workers,
         "pin_memory": pin_memory,
         "persistent_workers": persistent_workers,
+        "collate_fn": collate_fn,
     }
     train_loader = DataLoader(
-        train, sampler=sampler, shuffle=sampler is None, **loader_kwargs
+        train_ds,
+        sampler=sampler,
+        shuffle=sampler is None,
+        **loader_kwargs,
     )
-    val_loader = DataLoader(val, shuffle=False, **loader_kwargs)
-    test_loader = DataLoader(test, shuffle=False, **loader_kwargs)
+    val_loader = DataLoader(val_ds, shuffle=False, **loader_kwargs)
+    test_loader = DataLoader(test_ds, shuffle=False, **loader_kwargs)
 
-    sample_x, _, _ = train[0]
-    model = xception(
-        pretrained=pretrained,
-        in_channels=sample_x.shape[0],
+    model = DINOVisionClassifier(
         num_classes=2,
+        dino_version=dino_version,
+        model_size=model_size,
         dropout=dropout,
+        pretrained=True,
+        freeze_backbone=freeze_backbone,
     )
-    if pretrained:
-        _set_trainable_head(model)
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)
@@ -235,96 +272,78 @@ def run_xception(
         weight=loss_weights.to(device) if use_class_weights else None,
         label_smoothing=label_smoothing,
     )
-    if pretrained:
-        param_groups = [
-            {"params": base_model.fc.parameters(), "lr": learning_rate_head},
-            {"params": base_model.block12.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.conv3.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.bn3.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.conv4.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.bn4.parameters(), "lr": learning_rate_backbone},
-        ]
-    else:
-        fc_params = {id(p) for p in base_model.fc.parameters()}
-        backbone_params = [p for p in base_model.parameters() if id(p) not in fc_params]
-        param_groups = [
-            {"params": base_model.fc.parameters(), "lr": learning_rate_head},
-            {"params": backbone_params, "lr": learning_rate_backbone},
-        ]
+    
+    classifier_params = list(base_model.classifier.parameters())
+    classifier_ids = {id(p) for p in classifier_params}
+    backbone_params = [
+        p for p in base_model.parameters() if p.requires_grad and id(p) not in classifier_ids
+    ]
+    param_groups = [{"params": classifier_params, "lr": learning_rate_classifier}]
+    if backbone_params:
+        param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
+        
     optimizer = torch.optim.AdamW(param_groups, weight_decay=weight_decay)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="max", factor=0.5, patience=3
-    )
-    scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
-
-    logger.info(
-        "Starting Xception: mode=%s channels=%d train=%d val=%d test=%d classes=%s device=%s",
-        fourier,
-        sample_x.shape[0],
-        len(train),
-        len(val),
-        len(test),
-        class_counts,
-        device,
-    )
+    
+    if scheduler_type == "cosine":
+        scheduler = CosineAnnealingWithWarmup(
+            optimizer,
+            warmup_epochs=warmup_epochs,
+            max_epochs=epochs,
+            min_lr=1e-6,
+        )
+    else:
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=0.5,
+            patience=2,
+        )
 
     best_score = -1.0
     best_val_auc = 0.0
     best_threshold_value = 0.5
     epochs_without_improvement = 0
     epochs_run = 0
-    best_path = model_dir / "weights" / f"best_{model_name}.pth"
-    best_path.parent.mkdir(parents=True, exist_ok=True)
 
-    for epoch in tqdm.tqdm(range(1, epochs + 1), desc="Epochs"):
+    for epoch in tqdm(range(epochs), desc="Epochs"):
         model.train()
-        train_loss, train_correct, train_total = 0.0, 0, 0
-
-        for x, y, _ in tqdm.tqdm(
-            train_loader, desc=f"Xception train {epoch}/{epochs}", leave=False
-        ):
+        train_loss = 0.0
+        train_correct = 0
+        train_total = 0
+        for x, y, _ in tqdm(train_loader, desc=f"DINO train {epoch + 1}/{epochs}", leave=False):
             x = sanitize_inputs(x.to(device))
             y = y.to(device)
+            x, y_a, y_b, lam = apply_mixup_or_cutmix(x, y, mixup_alpha, cutmix_alpha)
             optimizer.zero_grad(set_to_none=True)
-
             with amp_context(device):
-                train_x, y_a, y_b, lam = mixup_batch(x, y, mixup_alpha)
-                out = model(train_x)
-            out = sanitize_logits(out)
-            loss = mixup_loss(criterion, out, y_a, y_b, lam)
-
-            scaler.scale(loss).backward()
+                logits = sanitize_logits(model(x))
+                loss = mixup_loss(criterion, logits, y_a, y_b, lam)
+            loss.backward()
             if max_grad_norm is not None:
-                scaler.unscale_(optimizer)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
-            scaler.step(optimizer)
-            scaler.update()
+            optimizer.step()
 
-            train_loss += float(loss.item())
-            train_correct += int((out.argmax(1) == y).sum().item())
-            train_total += int(y.size(0))
-
-        epochs_run = epoch
-        val_base = evaluate_classifier(model, val_loader, criterion, device)
-        threshold, threshold_score = best_threshold(
-            val_base["y_true"], val_base["probs"], metric=threshold_metric
-        )
-        val_metrics = binary_metrics(
-            val_base["y_true"],
-            val_base["probs"],
-            threshold=threshold,
-            loss=val_base["loss"],
-            logits=val_base["logits"],
-            ids=val_base["ids"],
-        )
-        selection_score = threshold_score
-        scheduler.step(selection_score)
+            train_loss += float(torch.nan_to_num(loss.detach()).item())
+            train_correct += (logits.argmax(1) == y).sum().item()
+            train_total += y.size(0)
 
         train_loss /= max(len(train_loader), 1)
         train_acc = train_correct / max(train_total, 1)
+        val_metrics = evaluate_classifier(model, val_loader, criterion, device)
+        threshold, selection_score = best_threshold(
+            val_metrics["y_true"],
+            val_metrics["probs"],
+            metric=threshold_metric,
+        )
+        if scheduler_type == "cosine":
+            scheduler.step()
+        else:
+            scheduler.step(selection_score)
+        epochs_run = epoch + 1
+
         logger.info(
             "Epoch %d/%d | train_loss=%.4f train_acc=%.4f | val_loss=%.4f val_acc=%.4f val_auc=%.4f threshold=%.4f score=%.4f",
-            epoch,
+            epoch + 1,
             epochs,
             train_loss,
             train_acc,
@@ -332,12 +351,11 @@ def run_xception(
             val_metrics["acc"],
             val_metrics["auc"],
             threshold,
-            threshold_score,
+            selection_score,
         )
 
-        current_score = selection_score
-        if current_score > best_score:
-            best_score = current_score
+        if selection_score > best_score:
+            best_score = selection_score
             best_val_auc = val_metrics["auc"]
             best_threshold_value = threshold
             epochs_without_improvement = 0
@@ -345,18 +363,19 @@ def run_xception(
         else:
             epochs_without_improvement += 1
             if epochs_without_improvement >= early_stop_patience:
-                logger.info("Early stopping at epoch %d", epoch)
+                logger.info("Early stopping at epoch %d.", epoch + 1)
                 break
 
     unwrap_model(model).load_state_dict(
         torch.load(best_path, map_location=device, weights_only=True)
     )
     test_results = evaluate_classifier(
-        model, test_loader, criterion, device, threshold=best_threshold_value
+        model,
+        test_loader,
+        criterion,
+        device,
+        threshold=best_threshold_value,
     )
-
-    (model_dir / "weights").mkdir(parents=True, exist_ok=True)
-    (model_dir / "results").mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
         model_dir / "results" / "outputs.npz",
         logits=test_results["logits"],
@@ -366,38 +385,41 @@ def run_xception(
         y_pred=test_results["y_pred"],
         threshold=best_threshold_value,
     )
-    torch.save(model_state_dict(model), model_dir / "weights" / f"{model_name}.pth")
+    torch.save(model_state_dict(model), model_dir / "weights" / "dino.pth")
 
-    plot_confusion_matrix(test_results, str(model_dir), f"{model_name} Confusion Matrix")
-    plot_roc_auc(test_results, str(model_dir), f"{model_name} ROC-AUC Curve")
+    plot_confusion_matrix(test_results, str(model_dir), f"DINO {dino_version.upper()} Confusion Matrix")
+    plot_roc_auc(test_results, str(model_dir), f"DINO {dino_version.upper()} ROC-AUC Curve")
+    
     save_metrics_csv(
         test_results,
         str(model_dir),
         extra_info={
-            "model": model_name,
+            "model": safe_model,
+            "architecture": safe_model,
             "fourier": fourier,
-            "in_channels": sample_x.shape[0],
+            "in_channels": 3,
             "image_size": image_size,
             "epochs_requested": epochs,
             "epochs_run": epochs_run,
             "best_val_auc": best_val_auc,
             "threshold": best_threshold_value,
             "threshold_metric": threshold_metric,
-            "pretrained": pretrained,
+            "train_backbone": not freeze_backbone,
             "use_weighted_sampler": use_weighted_sampler,
             "use_class_weights": use_class_weights,
             "label_smoothing": label_smoothing,
             "dropout": dropout,
             "mixup_alpha": mixup_alpha,
-            "learning_rate_head": learning_rate_head,
+            "cutmix_alpha": cutmix_alpha,
+            "learning_rate_classifier": learning_rate_classifier,
             "learning_rate_backbone": learning_rate_backbone,
-            "augment": effective_augment,
-            "augment_requested": augment,
+            "augment": augment,
+            "scheduler_type": scheduler_type,
+            "warmup_epochs": warmup_epochs,
         },
     )
-
     logger.info(
-        "Xception test: acc=%.4f precision=%.4f recall=%.4f f1=%.4f auc=%.4f specificity=%.4f",
+        "DINO test: acc=%.4f precision=%.4f recall=%.4f f1=%.4f auc=%.4f specificity=%.4f",
         test_results["acc"],
         test_results["precision"],
         test_results["recall"],
@@ -406,7 +428,3 @@ def run_xception(
         test_results["specificity"],
     )
     return test_results
-
-
-def run_all_xception_modes(**kwargs):
-    return {mode: run_xception(fourier=mode, **kwargs) for mode in ALL_FOURIER_MODES}

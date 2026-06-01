@@ -187,6 +187,11 @@ def run_clip(
         spatial_size=None,
     )
 
+    # Prevenção de dupla penalização (Sampler balanceado + Pesos na Perda)
+    if use_weighted_sampler and use_class_weights:
+        logger.info("Sampler balanceado ativo: desativando pesos na CrossEntropyLoss para evitar dupla penalização redundante.")
+        use_class_weights = False
+
     loss_weights, sampler, class_counts = _class_balance(data_dir / "train.csv")
     if data_limit != np.inf or not use_weighted_sampler:
         sampler = None
