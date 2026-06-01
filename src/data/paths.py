@@ -18,9 +18,6 @@ _DEFAULT_ROOT = Path("/media/ssd2/lucas.ocunha/datasets/phase1")
 
 
 def phase1_split_root(split: str) -> Path:
-    if split == "test":
-        return Path("/home/lucas.sotomaior/Documents/dataset_TCC/phase1/test_d/")
-
     base = Path(os.environ.get("TCC_DATASET_ROOT", str(_DEFAULT_ROOT)))
     canonical = base / _SPLIT_TO_SUBDIR[split]
     if canonical.exists():
