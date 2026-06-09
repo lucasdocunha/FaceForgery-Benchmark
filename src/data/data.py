@@ -67,6 +67,26 @@ class ImageDataset(Dataset):
         self.transform = transform
         self.fourier: FourierMode = fourier
 
+        # Divisão dinâmica para garantir alinhamento espaço-frequência na presença de Data Augmentation
+        self.spatial_augment = None
+        self.tensor_transform = None
+        
+        if isinstance(transform, transforms.Compose):
+            spatial_list = []
+            tensor_list = []
+            for t in transform.transforms:
+                if isinstance(t, (transforms.ToTensor, transforms.Normalize)):
+                    tensor_list.append(t)
+                else:
+                    spatial_list.append(t)
+            
+            if spatial_list:
+                self.spatial_augment = transforms.Compose(spatial_list)
+            if tensor_list:
+                self.tensor_transform = transforms.Compose(tensor_list)
+        else:
+            self.tensor_transform = transform
+
     def __len__(self):
         return len(self.df)
 
@@ -89,9 +109,14 @@ class ImageDataset(Dataset):
 
         label = self.df.iloc[idx, 1]
 
+        # Aplica augmentações de corte/flip espaciais na imagem original antes do cálculo do tensor
+        if self.spatial_augment is not None:
+            img = self.spatial_augment(img)
+
+        # O tensor base agora respeita as coordenadas e transformações exatas do domínio espacial
         img_tensor = self.to_tensor(img)
-        if self.transform is not None:
-            image = self.transform(img)
+        if self.tensor_transform is not None:
+            image = self.tensor_transform(img)
         else:
             image = self.normalize(img_tensor)
 
@@ -169,15 +194,21 @@ class ImageDataset(Dataset):
         return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
 
     def _fft_complex(self, img: torch.Tensor):
-        # Re e Im normalizados separadamente (preserva sinal mas perde escala absoluta cruzada).
+        # Normalização com escala compartilhada para preservar perfeitamente a fase e magnitude relativas
         img_np = self._to_grayscale(img).detach().cpu().numpy()
         f = np.fft.fft2(img_np)
         fshift = np.fft.fftshift(f)
-        real = self._safe_normalize(np.real(fshift))
-        imag = self._safe_normalize(np.imag(fshift))
-        real = torch.tensor(real, dtype=torch.float32)
-        imag = torch.tensor(imag, dtype=torch.float32)
-        tensor = torch.stack([real, imag], dim=0)
+        
+        f_abs = np.abs(fshift)
+        max_val = f_abs.max()
+        den = max_val if max_val > 1e-8 else 1.0
+        
+        real = np.real(fshift) / den
+        imag = np.imag(fshift) / den
+        
+        real_tensor = torch.tensor(real, dtype=torch.float32)
+        imag_tensor = torch.tensor(imag, dtype=torch.float32)
+        tensor = torch.stack([real_tensor, imag_tensor], dim=0)
         return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
 
     def _fft_highpass(self, img: torch.Tensor):
