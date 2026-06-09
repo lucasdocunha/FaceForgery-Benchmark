@@ -21,7 +21,7 @@ from src.models.vit import VisionTransformerClassifier
 from src.models.xception import xception
 from src.pipelines.evaluation import evaluate_classifier
 
-SUPPORTED_FAMILIES = {"resnet", "mobilenet", "xception", "vit", "clip"}
+SUPPORTED_FAMILIES = {"clip"}
 FOURIER_MODES = set(ALL_FOURIER_MODES)
 FOURIER_CHANNELS = {
     "none": 3,
@@ -597,8 +597,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Evaluate trained vision checkpoints by split.")
     parser.add_argument("--models-root", type=Path, default=Path("models"))
     parser.add_argument("--data-dir", type=Path, default=Path("data/raw"))
-    parser.add_argument("--test-d-csv", type=Path, default=None)
-    parser.add_argument("--test-d-images-dir", type=Path, default=None)
+    parser.add_argument("--test-d-csv", type=Path, default='/home/lucas.ocunha/tcc/data/raw/test.csv')
+    parser.add_argument("--test-d-images-dir", type=Path, default='/media/ssd2/lucas.ocunha/datasets/phase1/test_d')
     parser.add_argument("--output-csv", type=Path, default=None)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--num-workers", type=int, default=4)
@@ -627,7 +627,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         num_workers=args.num_workers,
         device=args.device,
         only_model_family=args.only_model_family,
-        splits=parse_splits(args.splits),
+        splits=("test", "val", "test_d"),
         limit_per_split=_parse_limit(args.limit_per_split),
     )
     print(f"Saved {len(summary)} evaluation rows.")
