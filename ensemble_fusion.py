@@ -1,14 +1,19 @@
 """
-Selects top-N models by validation AUC and fuses their predictions via soft voting.
+Ensemble fusion utilities.
 
-Usage:
-    python ensemble_fusion.py [--top-n 10] [--splits test,test_d] [--models-dir models]
+Subcommands
+-----------
+top-n   Fuse top-N models by validation AUC (original behaviour).
+search  Combinatorial search: sample a fraction of all size-2..max-k subsets.
 """
 
 from __future__ import annotations
 
 import argparse
+import itertools
 import logging
+import math
+import random
 import sys
 from pathlib import Path
 
@@ -21,6 +26,10 @@ logger = logging.getLogger(__name__)
 
 THRESHOLD_METRIC = "accuracy"
 
+
+# ---------------------------------------------------------------------------
+# Shared utilities
+# ---------------------------------------------------------------------------
 
 def load_metrics_index(models_dir: Path) -> pd.DataFrame:
     rows = []
@@ -87,7 +96,6 @@ def print_summary_table(top_n_df: pd.DataFrame) -> None:
 def load_predictions(predictions_path: str, models_dir: Path) -> pd.DataFrame:
     p = Path(predictions_path)
     if not p.is_absolute():
-        # Paths in CSVs are project-root-relative (e.g. models/xception/.../predictions_val.csv)
         p = Path.cwd() / p
     if not p.exists():
         raise FileNotFoundError(f"Predictions not found: {p}")
@@ -174,46 +182,23 @@ def save_results(
     return row
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Ensemble fusion of top-N models by validation AUC."
-    )
-    parser.add_argument("--models-dir", type=Path, default=Path("models"))
-    parser.add_argument("--top-n", type=int, default=10)
-    parser.add_argument(
-        "--splits",
-        type=str,
-        default="test,test_d",
-        help="Comma-separated evaluation splits (default: test,test_d)",
-    )
-    parser.add_argument(
-        "--output-tag",
-        type=str,
-        default=None,
-        help="Override output directory tag (default: top{n}_val_auc)",
-    )
-    args = parser.parse_args()
+# ---------------------------------------------------------------------------
+# top-n subcommand
+# ---------------------------------------------------------------------------
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    )
-
+def main_top_n(args: argparse.Namespace) -> None:
     n = args.top_n
     tag = args.output_tag or f"top{n}_val_auc"
     out_dir = args.models_dir / "ensemble" / tag / "results"
     eval_splits = [s.strip() for s in args.splits.split(",") if s.strip()]
 
-    # Step 1: Build val metrics index
     logger.info("Loading val metrics from %s ...", args.models_dir)
     metrics_df = load_metrics_index(args.models_dir)
     logger.info("Found %d models with val metrics.", len(metrics_df))
 
-    # Step 2: Select top N
     top_n_df = select_top_n(metrics_df, n)
     print_summary_table(top_n_df)
 
-    # Step 3: Load val predictions for top-N and fuse
     val_dfs: list[pd.DataFrame] = []
     included_rows: list[dict] = []
     for _, row in top_n_df.iterrows():
@@ -236,7 +221,6 @@ def main() -> None:
     logger.info("Fusing val predictions from %d models ...", len(val_dfs))
     fused_val = fuse_predictions(val_dfs)
 
-    # Step 4: Optimal threshold on fused val probs
     threshold, val_score = best_threshold(
         fused_val["y_true"].values.astype(int),
         fused_val["prob_pos"].values,
@@ -246,7 +230,6 @@ def main() -> None:
         "Optimal threshold on val: %.4f  (%s=%.4f)", threshold, THRESHOLD_METRIC, val_score
     )
 
-    # Step 5 & 6: Evaluate and save for each test split
     summary_rows = []
     for split in eval_splits:
         split_dfs: list[pd.DataFrame] = []
@@ -273,7 +256,6 @@ def main() -> None:
         row = save_results(split, fused_split, metrics, threshold, tag, out_dir)
         summary_rows.append(row)
 
-    # Final summary
     print("\n=== Ensemble Evaluation Results ===")
     print(f"Models fused: {len(val_dfs)}  |  Threshold (val {THRESHOLD_METRIC}): {threshold:.4f}")
     for row in summary_rows:
@@ -283,6 +265,303 @@ def main() -> None:
             f"Specificity={row['specificity']:.4f}"
         )
     print(f"\nResults saved to: {out_dir}")
+
+
+# ---------------------------------------------------------------------------
+# search subcommand
+# ---------------------------------------------------------------------------
+
+def _model_label(row: dict) -> str:
+    family = row.get("model_family", "?")
+    arch = row.get("architecture", "?")
+    technique = row.get("technique", "?")
+    return f"{family}/{arch}/{technique}"
+
+
+def generate_and_sample_combinations(
+    n_models: int,
+    min_k: int,
+    max_k: int,
+    fraction: float,
+    seed: int,
+    max_combos: int,
+) -> list[tuple[int, ...]]:
+    rng = random.Random(seed)
+
+    max_k = min(max_k, n_models)
+    if min_k > max_k:
+        raise ValueError(f"min_k={min_k} > available models={n_models}")
+
+    size_counts = [(k, math.comb(n_models, k)) for k in range(min_k, max_k + 1)]
+    total = sum(c for _, c in size_counts)
+    target = min(max(1, int(total * fraction)), max_combos)
+
+    logger.info(
+        "Combinations (k=%d..%d, N=%d): total=%d  sampling %d (%.2f%%)",
+        min_k, max_k, n_models, total, target, 100.0 * target / max(total, 1),
+    )
+
+    # For small spaces: enumerate all then sample
+    if total <= max(target * 4, 200_000):
+        all_combos: list[tuple[int, ...]] = []
+        for k, _ in size_counts:
+            all_combos.extend(itertools.combinations(range(n_models), k))
+        return rng.sample(all_combos, min(target, len(all_combos)))
+
+    # For large spaces: generate random combos with dedup
+    sizes = [k for k, _ in size_counts]
+    weights = [float(c) for _, c in size_counts]
+    seen: set[tuple[int, ...]] = set()
+    result: list[tuple[int, ...]] = []
+    max_attempts = target * 50
+
+    for _ in range(max_attempts):
+        if len(result) >= target:
+            break
+        k = rng.choices(sizes, weights=weights)[0]
+        combo = tuple(sorted(rng.sample(range(n_models), k)))
+        if combo not in seen:
+            seen.add(combo)
+            result.append(combo)
+
+    if len(result) < target:
+        logger.warning(
+            "Generated only %d unique combinations (target: %d). "
+            "Consider reducing --sample-fraction or --max-combos.",
+            len(result), target,
+        )
+    return result
+
+
+def _eval_combo(
+    model_rows: list[dict],
+    eval_splits: list[str],
+    models_dir: Path,
+) -> dict | None:
+    """Load val preds, fuse, threshold, evaluate all splits. Returns metrics dict or None."""
+    val_dfs: list[pd.DataFrame] = []
+    for row in model_rows:
+        try:
+            df = load_predictions(str(row["predictions_path"]), models_dir)
+            val_dfs.append(df)
+        except (FileNotFoundError, ValueError):
+            return None
+
+    if len(val_dfs) < 2:
+        return None
+
+    fused_val = fuse_predictions(val_dfs)
+    threshold, _ = best_threshold(
+        fused_val["y_true"].values.astype(int),
+        fused_val["prob_pos"].values,
+        metric=THRESHOLD_METRIC,
+    )
+    val_m = binary_metrics(
+        fused_val["y_true"].values.astype(int),
+        fused_val["prob_pos"].values,
+        threshold=threshold,
+    )
+
+    result: dict = {
+        "threshold": float(threshold),
+        "val_auc": float(val_m["auc"]),
+        "val_acc": float(val_m["acc"]),
+        "val_f1": float(val_m["f1"]),
+        "val_recall": float(val_m["recall"]),
+        "val_specificity": float(val_m["specificity"]),
+        "val_precision": float(val_m["precision"]),
+    }
+
+    for split in eval_splits:
+        split_dfs: list[pd.DataFrame] = []
+        for row in model_rows:
+            val_path = str(row["predictions_path"])
+            split_path = val_path.replace("predictions_val.csv", f"predictions_{split}.csv")
+            try:
+                df = load_predictions(split_path, models_dir)
+                split_dfs.append(df)
+            except (FileNotFoundError, ValueError):
+                pass
+
+        if not split_dfs:
+            continue
+
+        fused_split = fuse_predictions(split_dfs)
+        split_m = binary_metrics(
+            fused_split["y_true"].values.astype(int),
+            fused_split["prob_pos"].values,
+            threshold=threshold,
+        )
+        result[f"{split}_auc"] = float(split_m["auc"])
+        result[f"{split}_acc"] = float(split_m["acc"])
+        result[f"{split}_f1"] = float(split_m["f1"])
+        result[f"{split}_recall"] = float(split_m["recall"])
+        result[f"{split}_specificity"] = float(split_m["specificity"])
+        result[f"{split}_precision"] = float(split_m["precision"])
+
+    return result
+
+
+def main_search(args: argparse.Namespace) -> None:
+    tag = args.output_tag or f"search_{args.strategy}_k{args.min_k}_{args.max_k}"
+    out_base = args.models_dir / "ensemble" / tag
+    out_base.mkdir(parents=True, exist_ok=True)
+    eval_splits = [s.strip() for s in args.splits.split(",") if s.strip()]
+
+    logger.info("Loading val metrics from %s ...", args.models_dir)
+    metrics_df = load_metrics_index(args.models_dir)
+    logger.info("Found %d models with val metrics.", len(metrics_df))
+
+    if args.strategy == "top_auc":
+        pool_df = metrics_df.sort_values("auc", ascending=False).head(args.top_m).reset_index(drop=True)
+        logger.info("top_auc strategy: using top-%d models (val AUC %.4f – %.4f)",
+                    len(pool_df), pool_df["auc"].min(), pool_df["auc"].max())
+    else:
+        pool_df = metrics_df.reset_index(drop=True)
+
+    pool = pool_df.to_dict("records")
+    n = len(pool)
+
+    if n < args.min_k:
+        logger.error("Not enough models (%d) for min_k=%d. Aborting.", n, args.min_k)
+        sys.exit(1)
+
+    combos = generate_and_sample_combinations(
+        n_models=n,
+        min_k=args.min_k,
+        max_k=args.max_k,
+        fraction=args.sample_fraction,
+        seed=args.seed,
+        max_combos=args.max_combos,
+    )
+    logger.info("Running %d combinations ...", len(combos))
+
+    summary_rows: list[dict] = []
+    log_every = max(1, len(combos) // 10)
+
+    for i, combo_indices in enumerate(combos):
+        if i % log_every == 0:
+            logger.info("Progress: %d/%d combos evaluated", i, len(combos))
+
+        model_rows = [pool[idx] for idx in combo_indices]
+        metrics = _eval_combo(model_rows, eval_splits, args.models_dir)
+        if metrics is None:
+            continue
+
+        model_ids = "|".join(_model_label(r) for r in model_rows)
+        row = {
+            "combo_id": i,
+            "n_models": len(combo_indices),
+            "model_ids": model_ids,
+            **metrics,
+        }
+        summary_rows.append(row)
+
+    if not summary_rows:
+        logger.error("No combinations produced valid results. Aborting.")
+        sys.exit(1)
+
+    summary_df = pd.DataFrame(summary_rows).sort_values("val_auc", ascending=False).reset_index(drop=True)
+    summary_path = out_base / "summary.csv"
+    summary_df.to_csv(summary_path, index=False)
+    logger.info("Saved summary to %s", summary_path)
+
+    _print_search_results(summary_df, eval_splits, len(combos))
+
+
+def _print_search_results(df: pd.DataFrame, eval_splits: list[str], total_tried: int) -> None:
+    print(f"\n=== Combination Search Results ({total_tried} combos tried, {len(df)} valid) ===")
+    top10 = df.head(10)
+
+    print("\n--- Top 10 by Val AUC ---")
+    _print_combo_table(top10, eval_splits)
+
+    first_test = next((s for s in eval_splits if f"{s}_auc" in df.columns), None)
+    if first_test:
+        top10_test = df.sort_values(f"{first_test}_auc", ascending=False).head(10)
+        print(f"\n--- Top 10 by {first_test} AUC ---")
+        _print_combo_table(top10_test, eval_splits)
+
+
+def _print_combo_table(df: pd.DataFrame, eval_splits: list[str]) -> None:
+    split_headers = "  ".join(f"{s.upper()+' AUC':>10}" for s in eval_splits if f"{s}_auc" in df.columns)
+    header = f"{'#':>4}  {'k':>3}  {'Val AUC':>8}  {split_headers}  Models"
+    print(header)
+    print("-" * min(len(header) + 40, 120))
+    for rank, (_, row) in enumerate(df.iterrows(), 1):
+        split_vals = "  ".join(
+            f"{row[f'{s}_auc']:>10.4f}" for s in eval_splits if f"{s}_auc" in df.columns
+        )
+        models_short = row["model_ids"][:60] + ("..." if len(row["model_ids"]) > 60 else "")
+        print(f"{rank:>4}  {int(row['n_models']):>3}  {row['val_auc']:>8.4f}  {split_vals}  {models_short}")
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Ensemble fusion of trained models.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="subcommand", metavar="subcommand")
+
+    # -- top-n ---------------------------------------------------------------
+    p_top = sub.add_parser(
+        "top-n",
+        help="Fuse top-N models by validation AUC.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    p_top.add_argument("--models-dir", type=Path, default=Path("models"))
+    p_top.add_argument("--top-n", type=int, default=10)
+    p_top.add_argument("--splits", type=str, default="test,test_d",
+                       help="Comma-separated evaluation splits")
+    p_top.add_argument("--output-tag", type=str, default=None)
+
+    # -- search --------------------------------------------------------------
+    p_search = sub.add_parser(
+        "search",
+        help="Combinatorial search over model subsets.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    p_search.add_argument("--models-dir", type=Path, default=Path("models"))
+    p_search.add_argument("--strategy", choices=["random", "top_auc"], default="random",
+                          help="random: sample from all models; top_auc: restrict to top-M first")
+    p_search.add_argument("--top-m", type=int, default=20,
+                          help="Pool size for top_auc strategy")
+    p_search.add_argument("--min-k", type=int, default=2,
+                          help="Minimum number of models per combination")
+    p_search.add_argument("--max-k", type=int, default=10,
+                          help="Maximum number of models per combination")
+    p_search.add_argument("--sample-fraction", type=float, default=0.05,
+                          help="Fraction of total combinations to try")
+    p_search.add_argument("--max-combos", type=int, default=5000,
+                          help="Hard cap on number of combinations to evaluate")
+    p_search.add_argument("--seed", type=int, default=42)
+    p_search.add_argument("--splits", type=str, default="test,test_d",
+                          help="Comma-separated evaluation splits")
+    p_search.add_argument("--output-tag", type=str, default=None)
+
+    return parser
+
+
+def main() -> None:
+    parser = _build_parser()
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+
+    if args.subcommand == "top-n":
+        main_top_n(args)
+    elif args.subcommand == "search":
+        main_search(args)
+    else:
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
