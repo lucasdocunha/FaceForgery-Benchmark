@@ -13,9 +13,13 @@ import argparse
 import itertools
 import logging
 import math
+import os
 import random
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+
+from tqdm import tqdm
 
 import numpy as np
 import pandas as pd
@@ -333,6 +337,14 @@ def generate_and_sample_combinations(
     return result
 
 
+def _eval_combo_worker(args: tuple) -> tuple[int, str, dict | None]:
+    """Top-level wrapper for ProcessPoolExecutor (must be picklable)."""
+    combo_idx, model_rows, eval_splits, models_dir_str = args
+    metrics = _eval_combo(model_rows, eval_splits, Path(models_dir_str))
+    model_ids = "|".join(_model_label(r) for r in model_rows)
+    return combo_idx, model_ids, metrics
+
+
 def _eval_combo(
     model_rows: list[dict],
     eval_splits: list[str],
@@ -434,28 +446,54 @@ def main_search(args: argparse.Namespace) -> None:
         seed=args.seed,
         max_combos=args.max_combos,
     )
-    logger.info("Running %d combinations ...", len(combos))
+    n_workers = os.cpu_count() if args.workers == -1 else args.workers
+    logger.info("Running %d combinations (workers=%d) ...", len(combos), n_workers)
 
     summary_rows: list[dict] = []
-    log_every = max(1, len(combos) // 10)
+    best_auc = 0.0
 
-    for i, combo_indices in enumerate(combos):
-        if i % log_every == 0:
-            logger.info("Progress: %d/%d combos evaluated", i, len(combos))
+    if n_workers == 1:
+        with tqdm(total=len(combos), desc="search", unit="combo") as pbar:
+            for i, combo_indices in enumerate(combos):
+                model_rows = [pool[idx] for idx in combo_indices]
+                labels = " | ".join(_model_label(r) for r in model_rows)
+                pbar.set_description(f"k={len(combo_indices)}")
+                pbar.set_postfix_str(f"{labels[:80]}  best={best_auc:.4f}")
 
-        model_rows = [pool[idx] for idx in combo_indices]
-        metrics = _eval_combo(model_rows, eval_splits, args.models_dir)
-        if metrics is None:
-            continue
-
-        model_ids = "|".join(_model_label(r) for r in model_rows)
-        row = {
-            "combo_id": i,
-            "n_models": len(combo_indices),
-            "model_ids": model_ids,
-            **metrics,
-        }
-        summary_rows.append(row)
+                metrics = _eval_combo(model_rows, eval_splits, args.models_dir)
+                if metrics is not None:
+                    best_auc = max(best_auc, metrics["val_auc"])
+                    model_ids = "|".join(_model_label(r) for r in model_rows)
+                    summary_rows.append({
+                        "combo_id": i,
+                        "n_models": len(combo_indices),
+                        "model_ids": model_ids,
+                        **metrics,
+                    })
+                pbar.update(1)
+    else:
+        worker_args = [
+            (i, [pool[idx] for idx in combo], eval_splits, str(args.models_dir))
+            for i, combo in enumerate(combos)
+        ]
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            futures = {executor.submit(_eval_combo_worker, arg): arg for arg in worker_args}
+            with tqdm(total=len(combos), desc=f"search ({n_workers}w)", unit="combo") as pbar:
+                for future in as_completed(futures):
+                    combo_idx, model_ids, metrics = future.result()
+                    if metrics is not None:
+                        best_auc = max(best_auc, metrics["val_auc"])
+                        pbar.set_postfix_str(
+                            f"best={best_auc:.4f}  last={model_ids[:50]}"
+                        )
+                        _, model_rows_arg, _, _ = futures[future]
+                        summary_rows.append({
+                            "combo_id": combo_idx,
+                            "n_models": len(model_rows_arg),
+                            "model_ids": model_ids,
+                            **metrics,
+                        })
+                    pbar.update(1)
 
     if not summary_rows:
         logger.error("No combinations produced valid results. Aborting.")
@@ -494,6 +532,82 @@ def _print_combo_table(df: pd.DataFrame, eval_splits: list[str]) -> None:
         )
         models_short = row["model_ids"][:60] + ("..." if len(row["model_ids"]) > 60 else "")
         print(f"{rank:>4}  {int(row['n_models']):>3}  {row['val_auc']:>8.4f}  {split_vals}  {models_short}")
+
+
+# ---------------------------------------------------------------------------
+# Reeval subcommand
+# ---------------------------------------------------------------------------
+
+def main_reeval(args: argparse.Namespace) -> None:
+    summary_csv = args.summary_csv
+    if summary_csv is None:
+        candidates = sorted(args.models_dir.glob("ensemble/**/summary.csv"))
+        if not candidates:
+            logger.error("No summary.csv found under %s/ensemble/", args.models_dir)
+            sys.exit(1)
+        summary_csv = candidates[-1]
+        logger.info("Auto-selected summary: %s", summary_csv)
+
+    summary_csv = Path(summary_csv)
+    if not summary_csv.exists():
+        logger.error("Summary CSV not found: %s", summary_csv)
+        sys.exit(1)
+
+    eval_splits = [s.strip() for s in args.splits.split(",") if s.strip()]
+
+    logger.info("Loading val metrics index from %s ...", args.models_dir)
+    metrics_df = load_metrics_index(args.models_dir)
+    label_to_row: dict[str, dict] = {_model_label(r): r for r in metrics_df.to_dict("records")}
+
+    summary_df = pd.read_csv(summary_csv)
+    summary_df = summary_df.sort_values("val_auc", ascending=False).head(args.top_n).reset_index(drop=True)
+
+    print(f"\n=== Re-evaluating Top-{args.top_n} Combos on {eval_splits} ===")
+    result_rows: list[dict] = []
+
+    for rank, (_, combo_row) in enumerate(summary_df.iterrows(), 1):
+        model_ids_str = str(combo_row["model_ids"])
+        labels = [lbl.strip() for lbl in model_ids_str.split("|")]
+
+        model_rows = []
+        missing = []
+        for lbl in labels:
+            if lbl in label_to_row:
+                model_rows.append(label_to_row[lbl])
+            else:
+                missing.append(lbl)
+
+        if missing:
+            logger.warning("Combo %d: could not find rows for %s — skipping", rank, missing)
+            continue
+
+        print(f"\n[{rank}] val_auc={float(combo_row['val_auc']):.4f}  models: {model_ids_str}")
+        metrics = _eval_combo(model_rows, eval_splits, args.models_dir)
+        if metrics is None:
+            print("  => FAILED (could not load predictions)")
+            continue
+
+        for split in eval_splits:
+            if f"{split}_auc" in metrics:
+                print(f"  [{split}]  AUC={metrics[f'{split}_auc']:.4f}  "
+                      f"ACC={metrics[f'{split}_acc']:.4f}  "
+                      f"F1={metrics[f'{split}_f1']:.4f}  "
+                      f"Recall={metrics[f'{split}_recall']:.4f}  "
+                      f"Specificity={metrics[f'{split}_specificity']:.4f}")
+
+        row = {"rank": rank, "model_ids": model_ids_str, "n_models": len(labels),
+               "val_auc": metrics["val_auc"], "threshold": metrics["threshold"]}
+        for split in eval_splits:
+            for metric in ("auc", "acc", "f1", "recall", "specificity", "precision"):
+                key = f"{split}_{metric}"
+                if key in metrics:
+                    row[key] = metrics[key]
+        result_rows.append(row)
+
+    if result_rows:
+        out_path = summary_csv.parent / f"reeval_top{args.top_n}.csv"
+        pd.DataFrame(result_rows).to_csv(out_path, index=False)
+        print(f"\nSaved results to {out_path}")
 
 
 # ---------------------------------------------------------------------------
@@ -542,6 +656,22 @@ def _build_parser() -> argparse.ArgumentParser:
     p_search.add_argument("--splits", type=str, default="test,test_d",
                           help="Comma-separated evaluation splits")
     p_search.add_argument("--output-tag", type=str, default=None)
+    p_search.add_argument("--workers", type=int, default=1,
+                          help="Processos paralelos (1=sequencial, -1=todos os CPUs)")
+
+    # -- reeval --------------------------------------------------------------
+    p_reeval = sub.add_parser(
+        "reeval",
+        help="Re-evaluate top-N combos from a search summary on test/test_d.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    p_reeval.add_argument("--summary-csv", type=Path, default=None,
+                          help="Path to summary.csv from a previous search run (auto-detected if omitted)")
+    p_reeval.add_argument("--top-n", type=int, default=3,
+                          help="Number of top combos (by val AUC) to evaluate")
+    p_reeval.add_argument("--splits", type=str, default="test,test_d",
+                          help="Comma-separated evaluation splits")
+    p_reeval.add_argument("--models-dir", type=Path, default=Path("models"))
 
     return parser
 
@@ -559,6 +689,8 @@ def main() -> None:
         main_top_n(args)
     elif args.subcommand == "search":
         main_search(args)
+    elif args.subcommand == "reeval":
+        main_reeval(args)
     else:
         parser.print_help()
         sys.exit(1)

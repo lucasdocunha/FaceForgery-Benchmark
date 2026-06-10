@@ -1,0 +1,3 @@
+id,img_name,y_true,y_pred,prob_pos,correct,heatmap_group,heatmap_path,label_from_dataset
+3,63a47345219a2f0b8c0215e9f405c745.jpg,1,1,0.9567555785179138,1,true_positive,heatmaps_same_image/mobilenet/id_000003_true1_pred1_prob0.96.png,1
+103884,ea55c6dd643129d12f01cf78bd888da6.jpg,0,0,0.2774240374565124,1,true_negative,heatmaps_same_image/mobilenet/id_103884_true0_pred0_prob0.28.png,0

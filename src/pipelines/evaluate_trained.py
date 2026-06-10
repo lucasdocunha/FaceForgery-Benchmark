@@ -15,13 +15,14 @@ from torchvision import transforms
 from src.data import ALL_FOURIER_MODES, ImageDataset
 from src.data.paths import phase1_split_root
 from src.models.clip import CLIPVisionClassifier
+from src.models.dino import DINOVisionClassifier
 from src.models.mobilenet import mobilenet
 from src.models.resnet import resnet
 from src.models.vit import VisionTransformerClassifier
 from src.models.xception import xception
 from src.pipelines.evaluation import evaluate_classifier
 
-SUPPORTED_FAMILIES = {"clip"}
+SUPPORTED_FAMILIES = {"dino"}
 FOURIER_MODES = set(ALL_FOURIER_MODES)
 FOURIER_CHANNELS = {
     "none": 3,
@@ -109,7 +110,7 @@ def _normalize_technique(value: str | None) -> str | None:
 def _architecture_from_path(family: str, parts: Sequence[str], weights_path: Path) -> str:
     if family == "mobilenet" and len(parts) >= 2:
         return parts[1]
-    if family in {"vit", "clip"} and len(parts) >= 2:
+    if family in {"vit", "clip", "dino"} and len(parts) >= 2:
         return parts[1]
     if family == "xception":
         return "xception"
@@ -119,11 +120,20 @@ def _architecture_from_path(family: str, parts: Sequence[str], weights_path: Pat
 
 
 def _technique_from_path(family: str, parts: Sequence[str]) -> str:
-    if family in {"mobilenet", "vit", "clip"} and len(parts) >= 3:
+    if family in {"mobilenet", "vit", "clip", "dino"} and len(parts) >= 3:
         return _normalize_technique(parts[2]) or "none"
     if family in {"resnet", "xception"} and len(parts) >= 2:
         return _normalize_technique(parts[1]) or "none"
     return "none"
+
+
+def _parse_dino_arch(architecture: str) -> tuple[str, str]:
+    arch = architecture.lower()
+    version = "v3" if "v3" in arch else "v2"
+    for size in ("tiny", "small", "large", "base"):
+        if size in arch:
+            return version, size
+    return version, "base"
 
 
 def _technique_from_metadata(metadata: dict) -> str | None:
@@ -273,6 +283,18 @@ def build_model_from_run(run: TrainedRun) -> nn.Module:
             num_attention_heads=_metadata_int(metadata, "num_attention_heads", 8),
         )
 
+    if run.model_family == "dino":
+        architecture = str(_metadata_value(metadata, "architecture", _metadata_value(metadata, "model", run.architecture)))
+        dino_version, model_size = _parse_dino_arch(architecture)
+        return DINOVisionClassifier(
+            num_classes=2,
+            dino_version=dino_version,
+            model_size=model_size,
+            dropout=dropout,
+            pretrained=False,
+            freeze_backbone=False,
+        )
+
     raise ValueError(f"Unsupported model family: {run.model_family}")
 
 
@@ -336,11 +358,8 @@ def build_split_specs(
 
 
 def _eval_transform(run: TrainedRun) -> transforms.Compose:
-    image_size = _metadata_int(
-        run.metadata,
-        "image_size",
-        299 if run.model_family == "xception" else 224,
-    )
+    default_size = 299 if run.model_family == "xception" else 224
+    image_size = _metadata_int(run.metadata, "image_size", default_size)
     if run.model_family in {"xception", "clip"}:
         mean = [0.5, 0.5, 0.5]
         std = [0.5, 0.5, 0.5]
@@ -362,9 +381,9 @@ def _dataset_for_split(
     limit_per_split: int | None,
 ) -> ImageDataset:
     limit = np.inf if limit_per_split is None else int(limit_per_split)
+    default_size = 299 if run.model_family == "xception" else 224
     spatial_size = (
-        (_metadata_int(run.metadata, "image_size", 299 if run.model_family == "xception" else 224),)
-        * 2
+        (_metadata_int(run.metadata, "image_size", default_size),) * 2
         if run.technique != "none"
         else None
     )
