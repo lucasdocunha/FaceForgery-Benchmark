@@ -29,11 +29,11 @@ logger = logging.getLogger(__name__)
 EPOCHS = 30
 RAW_MIN = False
 BATCH_SIZE = 64
-NUM_WORKERS = 1
+NUM_WORKERS = 8
 MULTI_GPU = False
 
 # Flags de ativação dos modelos
-RUN_XCEPTION = True
+RUN_XCEPTION = False
 RUN_RESNET = False
 RUN_MOBILENET = False
 RUN_VIT = True
