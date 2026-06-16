@@ -26,23 +26,23 @@ from src.pipelines.dino import run_dino
 logger = logging.getLogger(__name__)
 
 # Configurações globais de treinamento
-EPOCHS = 50
+EPOCHS = 30
 RAW_MIN = False
-BATCH_SIZE = 32
-NUM_WORKERS = 4
-MULTI_GPU = True
+BATCH_SIZE = 64
+NUM_WORKERS = 1
+MULTI_GPU = False
 
 # Flags de ativação dos modelos
-RUN_XCEPTION = False
+RUN_XCEPTION = True
 RUN_RESNET = False
 RUN_MOBILENET = False
 RUN_VIT = True
-RUN_CLIP = True
-RUN_DINO = True
+RUN_CLIP = False
+RUN_DINO = False
 
 # Configurações do Multiprocessamento por GPU
-MULTIPROCESS = True  # Se True, treina em paralelo usando processos separados para cada GPU
-GPUS = None  # Lista de GPUs físicas a usar (ex: [0, 1]). Se None, auto-detecta todas as disponíveis.
+MULTIPROCESS = False  # Se True, treina em paralelo usando processos separados para cada GPU
+GPUS = [0]  # Lista de GPUs físicas a usar (ex: [0, 1]). Se None, auto-detecta todas as disponíveis.
 
 
 def main() -> None:
@@ -63,6 +63,7 @@ def main() -> None:
                     "raw_min": RAW_MIN,
                     "data_limit": float("inf"),
                     "batch_size": BATCH_SIZE,
+                    "image_size": 224,
                     "num_workers": NUM_WORKERS,
                     "pretrained": False,
                     "multi_gpu": MULTI_GPU,
@@ -130,7 +131,7 @@ def main() -> None:
                     "raw_min": RAW_MIN,
                     "batch_size": BATCH_SIZE,
                     "num_workers": NUM_WORKERS,
-                    "image_size": 128,
+                    "image_size": 224,
                     "patch_size": 16,
                     "hidden_size": 128,
                     "num_hidden_layers": 3,
@@ -151,6 +152,7 @@ def main() -> None:
                 "epochs": EPOCHS,
                 "raw_min": RAW_MIN,
                 "batch_size": BATCH_SIZE,
+                "image_size": 224,
                 "num_workers": NUM_WORKERS,
                 "multi_gpu": MULTI_GPU,
             }
@@ -166,6 +168,7 @@ def main() -> None:
                 "model_size": "base",
                 "epochs": EPOCHS,
                 "raw_min": RAW_MIN,
+                "image_size": 224,
                 "batch_size": BATCH_SIZE,
                 "num_workers": NUM_WORKERS,
                 "multi_gpu": MULTI_GPU,

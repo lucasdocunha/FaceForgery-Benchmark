@@ -131,7 +131,7 @@ def run_xception(
     batch_size: int = 32,
     num_workers: int = 4,
     pretrained: bool = False,
-    image_size: int = 299,
+    image_size: int = 224,
     learning_rate_head: float = 1e-3,
     learning_rate_backbone: float = 1e-4,
     weight_decay: float = 1e-4,

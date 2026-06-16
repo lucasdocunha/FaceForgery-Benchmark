@@ -154,7 +154,7 @@ def run_vit(
     output_root: str | Path | None = None,
     batch_size: int = 32,
     num_workers: int = 4,
-    image_size: int = 128,
+    image_size: int = 224,
     patch_size: int = 16,
     hidden_size: int = 128,
     num_hidden_layers: int = 3,
