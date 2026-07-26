@@ -14,7 +14,7 @@ from torchvision import transforms
 
 from src.data import ALL_FOURIER_MODES, ImageDataset
 from src.data.paths import phase1_split_root
-from src.models.clip import CLIPVisionClassifier
+from src.models.clip import CLIPVisionClassifier, CLIPVisionClassifierWithBackbone
 from src.models.dino import DINOVisionClassifier
 from src.models.mobilenet import mobilenet
 from src.models.resnet import resnet
@@ -22,8 +22,8 @@ from src.models.vit import VisionTransformerClassifier
 from src.models.xception import xception
 from src.pipelines.evaluation import evaluate_classifier
 
-SUPPORTED_FAMILIES = {"dino"}
-FOURIER_MODES = set(ALL_FOURIER_MODES)
+SUPPORTED_FAMILIES = {"vit"}
+FOURIER_MODES = set(ALL_FOURIER_MODES[:-1])
 FOURIER_CHANNELS = {
     "none": 3,
     "magnitude": 1,
@@ -31,7 +31,7 @@ FOURIER_CHANNELS = {
     "complex": 2,
     "concat": 4,
     "frequency_3": 1,
-    "concat_frequency": 6,
+    #"concat_frequency": 6,
 }
 
 
@@ -272,6 +272,17 @@ def build_model_from_run(run: TrainedRun) -> nn.Module:
         )
 
     if run.model_family == "clip":
+        timm_model = _metadata_value(metadata, "timm_model")
+        if timm_model and not _is_missing(timm_model):
+            # Infer projection_dim from the checkpoint to ignore stale metadata values.
+            _sd = torch.load(run.weights_path, map_location="cpu", weights_only=True)
+            projection_dim = int(_sd["visual_proj.weight"].shape[0])
+            return CLIPVisionClassifierWithBackbone(
+                timm_model_name=str(timm_model),
+                projection_dim=projection_dim,
+                num_classes=2,
+                dropout=dropout,
+            )
         return CLIPVisionClassifier(
             num_classes=2,
             dropout=dropout,
@@ -619,8 +630,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--test-d-csv", type=Path, default='/home/lucas.ocunha/tcc/data/raw/test.csv')
     parser.add_argument("--test-d-images-dir", type=Path, default='/media/ssd2/lucas.ocunha/datasets/phase1/test_d')
     parser.add_argument("--output-csv", type=Path, default=None)
-    parser.add_argument("--batch-size", type=int, default=32)
-    parser.add_argument("--num-workers", type=int, default=4)
+    parser.add_argument("--batch-size", type=int, default=124)
+    parser.add_argument("--num-workers", type=int, default=16)
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--only-model-family", type=str, default=None)
     parser.add_argument("--splits", type=str, default="val,test,test_d")
@@ -646,7 +657,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         num_workers=args.num_workers,
         device=args.device,
         only_model_family=args.only_model_family,
-        splits=("test", "val", "test_d"),
+        splits=("test"),
         limit_per_split=_parse_limit(args.limit_per_split),
     )
     print(f"Saved {len(summary)} evaluation rows.")

@@ -126,6 +126,37 @@ class CLIPVisionClassifier(nn.Module):
         self.pos_embed.requires_grad = True
 
 
+class CLIPVisionClassifierWithBackbone(nn.Module):
+    """CLIP classifier that wraps a timm backbone — matches checkpoints saved with
+    the old architecture that had a ``backbone`` attribute."""
+
+    def __init__(
+        self,
+        timm_model_name: str,
+        projection_dim: int,
+        num_classes: int,
+        dropout: float = 0.2,
+    ):
+        super().__init__()
+        import timm as _timm
+
+        self.backbone = _timm.create_model(timm_model_name, pretrained=False, num_classes=0)
+        hidden_size: int = self.backbone.num_features
+        self.visual_proj = nn.Linear(hidden_size, projection_dim)
+        hidden_head = max(projection_dim // 2, num_classes)
+        self.head = nn.Sequential(
+            nn.LayerNorm(projection_dim),
+            nn.Linear(projection_dim, hidden_head),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_head, num_classes),
+        )
+
+    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
+        features = self.backbone(pixel_values)
+        return self.head(self.visual_proj(features))
+
+
 def clip_safe_name() -> str:
     return "clip_vit_scratch"
 

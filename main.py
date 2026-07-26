@@ -29,20 +29,21 @@ logger = logging.getLogger(__name__)
 EPOCHS = 30
 RAW_MIN = False
 BATCH_SIZE = 64
-NUM_WORKERS = 1
-MULTI_GPU = False
+NUM_WORKERS = 4
+MULTI_GPU = True
+SEED = 26
 
 # Flags de ativação dos modelos
 RUN_XCEPTION = True
-RUN_RESNET = False
-RUN_MOBILENET = False
+RUN_RESNET = True
+RUN_MOBILENET = True
 RUN_VIT = True
-RUN_CLIP = False
-RUN_DINO = False
+RUN_CLIP = True
+RUN_DINO = True
 
 # Configurações do Multiprocessamento por GPU
-MULTIPROCESS = False  # Se True, treina em paralelo usando processos separados para cada GPU
-GPUS = [0]  # Lista de GPUs físicas a usar (ex: [0, 1]). Se None, auto-detecta todas as disponíveis.
+MULTIPROCESS = True  # Se True, treina em paralelo usando processos separados para cada GPU
+GPUS = None  # Lista de GPUs físicas a usar (ex: [0, 1]). Se None, auto-detecta todas as disponíveis.
 
 
 def main() -> None:
@@ -67,6 +68,7 @@ def main() -> None:
                     "num_workers": NUM_WORKERS,
                     "pretrained": False,
                     "multi_gpu": MULTI_GPU,
+                    "seed": SEED,
                 }
             })
 
@@ -91,6 +93,7 @@ def main() -> None:
                     "fourier": mode,
                     "data_limit": float("inf"),
                     "multi_gpu": MULTI_GPU,
+                    "seed": SEED,
                 }
             })
 
@@ -116,12 +119,13 @@ def main() -> None:
                     "threshold_metric": "accuracy",
                     "data_limit": None,
                     "multi_gpu": MULTI_GPU,
+                    "seed": SEED,
                 }
             })
 
     # 4. ViT
     if RUN_VIT:
-        for mode in ALL_FOURIER_MODES:
+        for mode in ALL_FOURIER_MODES[-1:]:
             tasks.append({
                 "fn": run_vit,
                 "name": f"ViT_{mode}",
@@ -140,6 +144,7 @@ def main() -> None:
                     "threshold_metric": "f1",
                     "mixup_alpha": 0.2,
                     "multi_gpu": MULTI_GPU,
+                    "seed": SEED,
                 }
             })
 
@@ -155,6 +160,7 @@ def main() -> None:
                 "image_size": 224,
                 "num_workers": NUM_WORKERS,
                 "multi_gpu": MULTI_GPU,
+                "seed": SEED,
             }
         })
 
@@ -172,6 +178,7 @@ def main() -> None:
                 "batch_size": BATCH_SIZE,
                 "num_workers": NUM_WORKERS,
                 "multi_gpu": MULTI_GPU,
+                "seed": SEED,
             }
         })
 
