@@ -22,6 +22,13 @@ except ModuleNotFoundError:
         return False
 
 import logging
+import os
+
+# Raiz onde estão as imagens do dataset (trainset/valset/testset) neste servidor.
+# Troque aqui ao mudar de máquina — tem prioridade menor que a variável de ambiente
+# TCC_DATASET_ROOT, caso ela já esteja definida no ambiente.
+DATASET_ROOT = "/datasets/Images/MFFI/"
+os.environ.setdefault("TCC_DATASET_ROOT", DATASET_ROOT)
 
 from src.data import ALL_FOURIER_MODES
 from src.pipelines.mobilenet import run_mobilenet
