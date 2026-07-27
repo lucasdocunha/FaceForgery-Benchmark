@@ -12,7 +12,7 @@ from torchvision import transforms
 import tqdm
 
 from src.data import FourierMode, ImageDataset
-from src.data.paths import phase1_split_root
+from src.data.paths import data_root, phase1_split_root
 from src.models.resnet import freeze_backbone, resnet, unfreeze_last_blocks
 from src.pipelines.evaluation import (
     ThresholdMetric,
@@ -190,7 +190,7 @@ def run_resnet(
     effective_augment = augment
     train_transform, eval_transform = _transforms(image_size, augment=effective_augment)
     spatial_size = (image_size, image_size) if fourier != "none" else None
-    data_dir = pwd / "data" / ("raw_min" if raw_min else "raw")
+    data_dir = data_root() / ("raw_min" if raw_min else "raw")
 
     train = ImageDataset(
         file_csv=data_dir / "train.csv",

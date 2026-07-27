@@ -12,7 +12,7 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from src.data import ImageDataset
-from src.data.paths import phase1_split_root
+from src.data.paths import data_root, phase1_split_root
 from src.models.clip import (
     CLIPVisionClassifier,
     CLIPVisionClassifierPretrained,
@@ -159,7 +159,7 @@ def run_clip(
     pwd = Path.cwd()
     output_root = Path(output_root) if output_root is not None else pwd
     data_limit = np.inf if data_limit is None else data_limit
-    data_dir = pwd / "data" / ("raw_min" if raw_min else "raw")
+    data_dir = data_root() / ("raw_min" if raw_min else "raw")
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
