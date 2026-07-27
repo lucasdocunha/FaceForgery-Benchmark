@@ -157,6 +157,7 @@ def run_mobilenet(
     augment: bool = True,
     seed: int = 42,
     multi_gpu: bool = True,
+    allow_pretrained: bool = False,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -244,6 +245,7 @@ def run_mobilenet(
         pretrained=pretrained,
         variant=variant,
         dropout=dropout,
+        allow_pretrained=allow_pretrained,
     )
     if pretrained:
         freeze_classifier_only(model)

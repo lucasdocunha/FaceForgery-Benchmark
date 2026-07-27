@@ -167,6 +167,7 @@ def run_dino(
     scheduler_type: str = "cosine",
     warmup_epochs: int = 5,
     multi_gpu: bool = True,
+    unfreeze_last_n: int | None = None,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -264,6 +265,8 @@ def run_dino(
         pretrained=True,
         freeze_backbone=freeze_backbone,
     )
+    if freeze_backbone and unfreeze_last_n is not None:
+        model.unfreeze_last_n_layers(unfreeze_last_n)
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)

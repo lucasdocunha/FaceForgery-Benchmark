@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 from src.data import FourierMode, ImageDataset
 from src.data.paths import phase1_split_root
-from src.models.vit import VisionTransformerClassifier
+from src.models.vit import PretrainedViTClassifier, VisionTransformerClassifier
 from src.pipelines.evaluation import (
     ThresholdMetric,
     amp_context,
@@ -181,6 +181,8 @@ def run_vit(
     cutmix_alpha: float = 0.0,
     scheduler_type: str = "plateau",
     warmup_epochs: int = 5,
+    pretrained: bool = False,
+    unfreeze_last_n: int | None = None,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -198,7 +200,7 @@ def run_vit(
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
-    safe_model = _vit_safe_name()
+    safe_model = "vit_pretrained" if pretrained else _vit_safe_name()
     run_dir = fourier if data_limit == np.inf else f"{fourier}_limit{data_limit}"
     model_dir = output_root / "models" / "vit" / safe_model / run_dir
     (model_dir / "weights").mkdir(parents=True, exist_ok=True)
@@ -272,21 +274,29 @@ def run_vit(
     val_loader = DataLoader(val_ds, shuffle=False, **loader_kwargs)
     test_loader = DataLoader(test_ds, shuffle=False, **loader_kwargs)
 
-    model = VisionTransformerClassifier(
-        num_classes=2,
-        image_size=image_size,
-        patch_size=patch_size,
-        hidden_size=hidden_size,
-        num_hidden_layers=num_hidden_layers,
-        num_attention_heads=num_attention_heads,
-        dropout=dropout,
-        in_channels=in_channels,
-        use_conv_stem=use_conv_stem,
-        pooling=pooling,
-        drop_path_rate=drop_path_rate,
-    )
-    if not train_backbone:
+    if pretrained:
+        if in_channels != 3:
+            raise ValueError("Pretrained ViT requires RGB input (fourier='none').")
+        model = PretrainedViTClassifier(num_classes=2, dropout=dropout)
         model.freeze_backbone()
+        if unfreeze_last_n is not None:
+            model.unfreeze_last_n_layers(unfreeze_last_n)
+    else:
+        model = VisionTransformerClassifier(
+            num_classes=2,
+            image_size=image_size,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            num_hidden_layers=num_hidden_layers,
+            num_attention_heads=num_attention_heads,
+            dropout=dropout,
+            in_channels=in_channels,
+            use_conv_stem=use_conv_stem,
+            pooling=pooling,
+            drop_path_rate=drop_path_rate,
+        )
+        if not train_backbone:
+            model.freeze_backbone()
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)

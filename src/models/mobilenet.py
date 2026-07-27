@@ -56,15 +56,16 @@ def mobilenet(
     pretrained: bool = False,
     variant: str = "small",
     dropout: float | None = None,
+    allow_pretrained: bool = False,
 ) -> nn.Module:
     if variant not in _VARIANTS:
         valid = ", ".join(sorted(_VARIANTS))
         raise ValueError(f"variant must be one of: {valid}")
 
-    if pretrained:
+    if pretrained and not allow_pretrained:
         raise ValueError("External pretrained MobileNet weights are disabled for this project.")
     builder = _VARIANTS[variant]
-    model = builder(weights=None)
+    model = builder(weights="DEFAULT" if pretrained else None)
     _adapt_first_conv(model, in_channels, pretrained=pretrained)
 
     last_linear = model.classifier[-1]

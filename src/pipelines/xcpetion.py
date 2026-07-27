@@ -11,7 +11,7 @@ import tqdm
 
 from src.data import ALL_FOURIER_MODES, FourierMode, ImageDataset
 from src.data.paths import phase1_split_root
-from src.models import xception
+from src.models import xception, xception_pretrained
 from src.pipelines.evaluation import (
     ThresholdMetric,
     amp_context,
@@ -105,23 +105,6 @@ def _class_balance(
     return loss_weights, sampler, counts
 
 
-def _set_trainable_head(model: nn.Module) -> None:
-    for param in model.parameters():
-        param.requires_grad = False
-
-    trainable_modules = [
-        model.block12,
-        model.conv3,
-        model.bn3,
-        model.conv4,
-        model.bn4,
-        model.fc,
-    ]
-    for module in trainable_modules:
-        for param in module.parameters():
-            param.requires_grad = True
-
-
 def run_xception(
     fourier: FourierMode = "none",
     epochs: int = 20,
@@ -146,6 +129,8 @@ def run_xception(
     seed: int = 42,
     max_grad_norm: float | None = 1.0,
     multi_gpu: bool = True,
+    allow_pretrained: bool = False,
+    unfreeze_last_n: int | None = None,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -219,14 +204,24 @@ def run_xception(
     test_loader = DataLoader(test, shuffle=False, **loader_kwargs)
 
     sample_x, _, _ = train[0]
-    model = xception(
-        pretrained=pretrained,
-        in_channels=sample_x.shape[0],
-        num_classes=2,
-        dropout=dropout,
-    )
     if pretrained:
-        _set_trainable_head(model)
+        if sample_x.shape[0] != 3:
+            raise ValueError("Pretrained Xception requires RGB input (fourier='none').")
+        model = xception_pretrained(
+            num_classes=2,
+            dropout=dropout,
+            allow_pretrained=allow_pretrained,
+        )
+        model.freeze_backbone()
+        if unfreeze_last_n is not None:
+            model.unfreeze_last_n_layers(unfreeze_last_n)
+    else:
+        model = xception(
+            pretrained=False,
+            in_channels=sample_x.shape[0],
+            num_classes=2,
+            dropout=dropout,
+        )
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)
@@ -236,14 +231,12 @@ def run_xception(
         label_smoothing=label_smoothing,
     )
     if pretrained:
+        backbone_params = [p for p in base_model.backbone.parameters() if p.requires_grad]
         param_groups = [
             {"params": base_model.fc.parameters(), "lr": learning_rate_head},
-            {"params": base_model.block12.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.conv3.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.bn3.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.conv4.parameters(), "lr": learning_rate_backbone},
-            {"params": base_model.bn4.parameters(), "lr": learning_rate_backbone},
         ]
+        if backbone_params:
+            param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
     else:
         fc_params = {id(p) for p in base_model.fc.parameters()}
         backbone_params = [p for p in base_model.parameters() if id(p) not in fc_params]

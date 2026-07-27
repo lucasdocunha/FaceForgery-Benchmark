@@ -160,6 +160,7 @@ def run_resnet(
     max_grad_norm: float | None = 1.0,
     mixup_alpha: float = 0.0,
     multi_gpu: bool = True,
+    allow_pretrained: bool = False,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -266,6 +267,7 @@ def run_resnet(
         architecture=architecture,
         dropout=dropout,
         in_channels=sample_x.shape[0],
+        allow_pretrained=allow_pretrained,
     )
     if pretrained:
         freeze_backbone(model)

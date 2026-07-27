@@ -17,15 +17,16 @@ def resnet(
     architecture: str = "resnet18",
     dropout: float = 0.2,
     in_channels: int = 3,
+    allow_pretrained: bool = False,
 ) -> nn.Module:
     if architecture not in _ARCHITECTURES:
         valid = ", ".join(sorted(_ARCHITECTURES))
         raise ValueError(f"architecture must be one of: {valid}")
 
-    if pretrained:
+    if pretrained and not allow_pretrained:
         raise ValueError("External pretrained ResNet weights are disabled for this project.")
     builder = _ARCHITECTURES[architecture]
-    model = builder(weights=None)
+    model = builder(weights="DEFAULT" if pretrained else None)
 
     if in_channels != 3:
         old_conv = model.conv1
