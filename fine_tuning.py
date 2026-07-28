@@ -65,6 +65,7 @@ RUN_DINO = True
 # Configurações do Multiprocessamento por GPU
 MULTIPROCESS = True  # Se True, treina em paralelo usando processos separados para cada GPU
 GPUS = None  # Lista de GPUs físicas a usar (ex: [0, 1]). Se None, auto-detecta todas as disponíveis.
+WORKERS_PER_GPU = 1  # Quantas tarefas rodar simultaneamente em cada GPU física (aumente se sobrar VRAM).
 
 
 def main() -> None:
@@ -239,7 +240,7 @@ def main() -> None:
     if MULTIPROCESS:
         logger.info(f"Iniciando {len(tasks)} tarefas de fine-tuning via MULTIPROCESSAMENTO em paralelo...")
         from src.utils.multiprocess import run_tasks_on_gpus
-        run_tasks_on_gpus(tasks, gpus=GPUS)
+        run_tasks_on_gpus(tasks, gpus=GPUS, workers_per_gpu=WORKERS_PER_GPU)
     else:
         logger.info(f"Iniciando {len(tasks)} tarefas de fine-tuning SEQUENCIALMENTE...")
         for task in tasks:

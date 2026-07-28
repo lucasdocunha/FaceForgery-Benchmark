@@ -77,10 +77,11 @@ def _worker_fn(
 def run_tasks_on_gpus(
     tasks: list[dict],
     gpus: list[int] | None = None,
+    workers_per_gpu: int = 1,
 ) -> None:
     """
     Runs a list of training tasks concurrently using multiprocessing,
-    distributing them across the specified GPUs (one task per GPU at a time).
+    distributing them across the specified GPUs.
 
     Args:
         tasks: A list of dicts. Each dict must contain:
@@ -91,6 +92,9 @@ def run_tasks_on_gpus(
         gpus: A list of GPU physical IDs to use (e.g. [0, 1]).
               If None, all available GPUs are auto-detected.
               If no GPUs are found, falls back to CPU multiprocessing.
+        workers_per_gpu: Number of worker processes to spawn per physical GPU,
+              so multiple tasks can share the same GPU concurrently (useful when
+              a single GPU has enough VRAM to hold several models at once).
     """
     if not tasks:
         logger.warning("No tasks provided to run_tasks_on_gpus.")
@@ -120,10 +124,11 @@ def run_tasks_on_gpus(
 
     # Determine workers pool based on GPUs or CPU count
     if len(gpus) > 0:
-        worker_gpus = gpus
-        num_workers = len(gpus)
+        worker_gpus = [gpu_id for gpu_id in gpus for _ in range(workers_per_gpu)]
+        num_workers = len(worker_gpus)
         logger.info(
-            f"Spawning {num_workers} worker processes, mapping each to physical GPU: {worker_gpus}"
+            f"Spawning {num_workers} worker processes ({workers_per_gpu} per GPU), "
+            f"mapping to physical GPUs: {gpus}"
         )
     else:
         # Fallback to CPU with a pool of processes
