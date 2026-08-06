@@ -157,6 +157,58 @@ class CLIPVisionClassifierWithBackbone(nn.Module):
         return self.head(self.visual_proj(features))
 
 
+class CLIPVisionClassifierPretrained(nn.Module):
+    """CLIP classifier wrapping the real OpenAI CLIP vision tower (via Hugging Face).
+
+    Unlike ``CLIPVisionClassifier`` above (a from-scratch transformer that does not
+    load OpenAI/HF weights), this loads genuine pretrained CLIP vision weights.
+    RGB (3-channel) input only.
+    """
+
+    def __init__(
+        self,
+        num_classes: int,
+        dropout: float = 0.2,
+        hf_model_name: str = "openai/clip-vit-base-patch16",
+    ):
+        super().__init__()
+        from transformers import CLIPVisionModelWithProjection
+
+        self.backbone = CLIPVisionModelWithProjection.from_pretrained(
+            hf_model_name, use_safetensors=True
+        )
+        projection_dim = self.backbone.config.projection_dim
+        hidden_head = max(projection_dim // 2, num_classes)
+        self.head = nn.Sequential(
+            nn.LayerNorm(projection_dim),
+            nn.Linear(projection_dim, hidden_head),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_head, num_classes),
+        )
+
+    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
+        image_embeds = self.backbone(pixel_values=pixel_values).image_embeds
+        return self.head(image_embeds)
+
+    def freeze_backbone(self) -> None:
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+
+    def unfreeze_last_n_layers(self, n: int = 2) -> None:
+        layers = self.backbone.vision_model.encoder.layers
+        n = max(0, min(n, len(layers)))
+        for layer in layers[-n:]:
+            for param in layer.parameters():
+                param.requires_grad = True
+        for param in self.backbone.vision_model.post_layernorm.parameters():
+            param.requires_grad = True
+        for param in self.backbone.visual_projection.parameters():
+            param.requires_grad = True
+        for param in self.head.parameters():
+            param.requires_grad = True
+
+
 def clip_safe_name() -> str:
     return "clip_vit_scratch"
 

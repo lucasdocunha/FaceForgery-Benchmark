@@ -198,3 +198,49 @@ class VisionTransformerClassifier(nn.Module):
         if self.cls_token is not None:
             self.cls_token.requires_grad = False
         self.pos_embed.requires_grad = False
+
+
+class PretrainedViTClassifier(nn.Module):
+    """ViT classifier wrapping a real ImageNet-pretrained timm backbone.
+
+    Unlike ``VisionTransformerClassifier`` above (a from-scratch, small custom ViT
+    with no external weights), this loads genuine pretrained ViT-B/16 weights via
+    timm. RGB (3-channel), 224x224 input only.
+    """
+
+    def __init__(
+        self,
+        num_classes: int = 2,
+        dropout: float = 0.2,
+        timm_model_name: str = "vit_base_patch16_224",
+    ):
+        super().__init__()
+        import timm as _timm
+
+        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
+        hidden_size: int = self.backbone.num_features
+        self.classifier = nn.Sequential(
+            nn.LayerNorm(hidden_size),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_size, num_classes),
+        )
+
+    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
+        features = self.backbone(pixel_values)
+        return self.classifier(features)
+
+    def freeze_backbone(self) -> None:
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+
+    def unfreeze_last_n_layers(self, n: int = 2) -> None:
+        blocks = self.backbone.blocks
+        n = max(0, min(n, len(blocks)))
+        for block in blocks[-n:]:
+            for param in block.parameters():
+                param.requires_grad = True
+        if hasattr(self.backbone, "norm"):
+            for param in self.backbone.norm.parameters():
+                param.requires_grad = True
+        for param in self.classifier.parameters():
+            param.requires_grad = True

@@ -12,8 +12,14 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from src.data import ImageDataset
-from src.data.paths import phase1_split_root
-from src.models.clip import CLIPVisionClassifier, MEAN, STD, clip_safe_name
+from src.data.paths import data_root, phase1_split_root
+from src.models.clip import (
+    CLIPVisionClassifier,
+    CLIPVisionClassifierPretrained,
+    MEAN,
+    STD,
+    clip_safe_name,
+)
 from src.pipelines.evaluation import (
     ThresholdMetric,
     amp_context,
@@ -139,6 +145,7 @@ def run_clip(
     max_grad_norm: float | None = 1.0,
     mixup_alpha: float = 0.0,
     multi_gpu: bool = True,
+    pretrained: bool = False,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -152,12 +159,12 @@ def run_clip(
     pwd = Path.cwd()
     output_root = Path(output_root) if output_root is not None else pwd
     data_limit = np.inf if data_limit is None else data_limit
-    data_dir = pwd / "data" / ("raw_min" if raw_min else "raw")
+    data_dir = data_root() / ("raw_min" if raw_min else "raw")
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
     model_name = "clip"
-    safe_model = clip_safe_name()
+    safe_model = "clip_vit_pretrained" if pretrained else clip_safe_name()
     run_dir = "none" if data_limit == np.inf else f"none_limit{data_limit}"
     model_dir = output_root / "models" / model_name / safe_model / run_dir
 
@@ -208,18 +215,24 @@ def run_clip(
     val_loader = DataLoader(val, shuffle=False, **loader_kwargs)
     test_loader = DataLoader(test, shuffle=False, **loader_kwargs)
 
-    model = CLIPVisionClassifier(
-        num_classes=2,
-        dropout=dropout,
-        image_size=image_size,
-        patch_size=patch_size,
-        hidden_size=hidden_size,
-        projection_dim=projection_dim,
-        num_hidden_layers=num_hidden_layers,
-        num_attention_heads=num_attention_heads,
-    )
-    if not train_backbone:
+    if pretrained:
+        model = CLIPVisionClassifierPretrained(num_classes=2, dropout=dropout)
         model.freeze_backbone()
+        if train_backbone:
+            model.unfreeze_last_n_layers(last_n_layers)
+    else:
+        model = CLIPVisionClassifier(
+            num_classes=2,
+            dropout=dropout,
+            image_size=image_size,
+            patch_size=patch_size,
+            hidden_size=hidden_size,
+            projection_dim=projection_dim,
+            num_hidden_layers=num_hidden_layers,
+            num_attention_heads=num_attention_heads,
+        )
+        if not train_backbone:
+            model.freeze_backbone()
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)
@@ -228,19 +241,29 @@ def run_clip(
         weight=loss_weights.to(device) if use_class_weights else None,
         label_smoothing=label_smoothing,
     )
-    param_groups = [{"params": base_model.head.parameters(), "lr": learning_rate_head}]
-    visual_params = [p for p in base_model.visual_proj.parameters() if p.requires_grad]
-    if visual_params:
-        param_groups.append({"params": visual_params, "lr": learning_rate_backbone})
-    head_params = {id(p) for p in base_model.head.parameters()}
-    visual_param_ids = {id(p) for p in base_model.visual_proj.parameters()}
-    backbone_params = [
-        p
-        for p in base_model.parameters()
-        if p.requires_grad and id(p) not in head_params and id(p) not in visual_param_ids
-    ]
-    if backbone_params:
-        param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
+    if pretrained:
+        head_params = list(base_model.head.parameters())
+        head_ids = {id(p) for p in head_params}
+        param_groups = [{"params": head_params, "lr": learning_rate_head}]
+        backbone_params = [
+            p for p in base_model.parameters() if p.requires_grad and id(p) not in head_ids
+        ]
+        if backbone_params:
+            param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
+    else:
+        param_groups = [{"params": base_model.head.parameters(), "lr": learning_rate_head}]
+        visual_params = [p for p in base_model.visual_proj.parameters() if p.requires_grad]
+        if visual_params:
+            param_groups.append({"params": visual_params, "lr": learning_rate_backbone})
+        head_params = {id(p) for p in base_model.head.parameters()}
+        visual_param_ids = {id(p) for p in base_model.visual_proj.parameters()}
+        backbone_params = [
+            p
+            for p in base_model.parameters()
+            if p.requires_grad and id(p) not in head_params and id(p) not in visual_param_ids
+        ]
+        if backbone_params:
+            param_groups.append({"params": backbone_params, "lr": learning_rate_backbone})
     optimizer = torch.optim.AdamW(param_groups, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="max", factor=0.5, patience=3

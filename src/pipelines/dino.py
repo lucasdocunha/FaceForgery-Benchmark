@@ -13,7 +13,7 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from src.data import FourierMode, ImageDataset
-from src.data.paths import phase1_split_root
+from src.data.paths import data_root, phase1_split_root
 from src.models.dino import DINOVisionClassifier
 from src.pipelines.evaluation import (
     ThresholdMetric,
@@ -167,6 +167,7 @@ def run_dino(
     scheduler_type: str = "cosine",
     warmup_epochs: int = 5,
     multi_gpu: bool = True,
+    unfreeze_last_n: int | None = None,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -182,7 +183,7 @@ def run_dino(
     pwd = Path.cwd()
     output_root = Path(output_root) if output_root is not None else pwd
     data_limit = np.inf if data_limit is None else data_limit
-    data_dir = pwd / "data" / ("raw_min" if raw_min else "raw")
+    data_dir = data_root() / ("raw_min" if raw_min else "raw")
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
@@ -264,6 +265,8 @@ def run_dino(
         pretrained=True,
         freeze_backbone=freeze_backbone,
     )
+    if freeze_backbone and unfreeze_last_n is not None:
+        model.unfreeze_last_n_layers(unfreeze_last_n)
     model = model.to(device)
     model = maybe_data_parallel(model, device, enabled=multi_gpu)
     base_model = unwrap_model(model)

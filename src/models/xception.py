@@ -206,3 +206,55 @@ def xception(pretrained=False,**kwargs):
         raise ValueError("External pretrained Xception weights are disabled for this project.")
     model = Xception(**kwargs)
     return model
+
+
+class XceptionWithBackbone(nn.Module):
+    """Xception classifier wrapping a real ImageNet-pretrained timm backbone.
+
+    Unlike ``Xception``/``xception()`` above (a from-scratch port with no external
+    weights), this loads genuine pretrained Xception weights via timm. RGB (3-channel)
+    input only.
+    """
+
+    def __init__(
+        self,
+        num_classes: int = 2,
+        dropout: float = 0.2,
+        timm_model_name: str = "xception",
+    ):
+        super().__init__()
+        import timm as _timm
+
+        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
+        hidden_size: int = self.backbone.num_features
+        self.fc = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.Linear(hidden_size, num_classes),
+        )
+
+    def forward(self, x):
+        features = self.backbone(x)
+        return self.fc(features)
+
+    def freeze_backbone(self) -> None:
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+
+    def unfreeze_last_n_layers(self, n: int = 2) -> None:
+        children = [m for m in self.backbone.children() if any(True for _ in m.parameters())]
+        n = max(0, min(n, len(children)))
+        for child in children[-n:]:
+            for param in child.parameters():
+                param.requires_grad = True
+        for param in self.fc.parameters():
+            param.requires_grad = True
+
+
+def xception_pretrained(
+    num_classes: int = 2,
+    dropout: float = 0.2,
+    allow_pretrained: bool = False,
+) -> nn.Module:
+    if not allow_pretrained:
+        raise ValueError("External pretrained Xception weights are disabled for this project.")
+    return XceptionWithBackbone(num_classes=num_classes, dropout=dropout)

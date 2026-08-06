@@ -12,7 +12,7 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from src.data import ALL_FOURIER_MODES, FourierMode, ImageDataset
-from src.data.paths import phase1_split_root
+from src.data.paths import data_root, phase1_split_root
 from src.models.mobilenet import freeze_classifier_only, mobilenet, unfreeze_last_blocks
 from src.pipelines.evaluation import (
     ThresholdMetric,
@@ -157,6 +157,7 @@ def run_mobilenet(
     augment: bool = True,
     seed: int = 42,
     multi_gpu: bool = True,
+    allow_pretrained: bool = False,
 ):
     if not logging.root.handlers:
         logging.basicConfig(
@@ -173,7 +174,7 @@ def run_mobilenet(
     pwd = Path.cwd()
     output_root = Path(output_root) if output_root is not None else pwd
     data_limit = np.inf if data_limit is None else data_limit
-    data_dir = pwd / "data" / ("raw_min" if raw_min else "raw")
+    data_dir = data_root() / ("raw_min" if raw_min else "raw")
     device = _device()
     pin_memory = device.type == "cuda"
     persistent_workers = num_workers > 0
@@ -244,6 +245,7 @@ def run_mobilenet(
         pretrained=pretrained,
         variant=variant,
         dropout=dropout,
+        allow_pretrained=allow_pretrained,
     )
     if pretrained:
         freeze_classifier_only(model)
