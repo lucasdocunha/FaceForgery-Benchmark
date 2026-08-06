@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 MODELS_DIR = Path(__file__).resolve().parent / "models"
-OUTPUT_FILE = MODELS_DIR / "all_metrics_v3.csv"
+OUTPUT_FILE = MODELS_DIR / "seed99_test_d.csv"
 
 
 def _extract_path_info(csv_path: Path) -> dict[str, str]:
@@ -15,7 +15,7 @@ def _extract_path_info(csv_path: Path) -> dict[str, str]:
 
 
 def merge_all_metrics() -> pd.DataFrame:
-    csv_files = sorted(MODELS_DIR.rglob("results/metrics_summary.csv"))
+    csv_files = sorted(MODELS_DIR.rglob("results/metrics_test_d.csv"))
 
     if not csv_files:
         print(f"Nenhum metrics_summary.csv encontrado em {MODELS_DIR}")
@@ -25,6 +25,7 @@ def merge_all_metrics() -> pd.DataFrame:
 
     for csv_path in csv_files:
         df = pd.read_csv(csv_path)
+        df = df[['acc', 'auc']]
         path_info = _extract_path_info(csv_path)
         df.insert(0, "source_path", path_info["source_path"])
         frames.append(df)

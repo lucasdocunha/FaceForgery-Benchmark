@@ -657,7 +657,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         num_workers=args.num_workers,
         device=args.device,
         only_model_family=args.only_model_family,
-        splits=("test"),
+        splits=("test_d"),
         limit_per_split=_parse_limit(args.limit_per_split),
     )
     print(f"Saved {len(summary)} evaluation rows.")

@@ -31,15 +31,15 @@ RAW_MIN = False
 BATCH_SIZE = 64
 NUM_WORKERS = 4
 MULTI_GPU = True
-SEED = 26
+SEED = 42
 
 # Flags de ativação dos modelos
-RUN_XCEPTION = True
-RUN_RESNET = True
-RUN_MOBILENET = True
+RUN_XCEPTION = False
+RUN_RESNET = False
+RUN_MOBILENET = False
 RUN_VIT = True
-RUN_CLIP = True
-RUN_DINO = True
+RUN_CLIP = False
+RUN_DINO = False
 
 # Configurações do Multiprocessamento por GPU
 MULTIPROCESS = True  # Se True, treina em paralelo usando processos separados para cada GPU
@@ -125,7 +125,7 @@ def main() -> None:
 
     # 4. ViT
     if RUN_VIT:
-        for mode in ALL_FOURIER_MODES[-1:]:
+        for mode in ALL_FOURIER_MODES:
             tasks.append({
                 "fn": run_vit,
                 "name": f"ViT_{mode}",
