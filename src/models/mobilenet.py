@@ -89,7 +89,7 @@ def freeze_classifier_only(model: nn.Module) -> None:
 
 
 def unfreeze_last_blocks(model: nn.Module, last_n_blocks: int = 3) -> None:
-    for block in model.features[-last_n_blocks:]:
+    for block in model.features[-last_n_blocks:] if last_n_blocks > 0 else []:
         for param in block.parameters():
             param.requires_grad = True
     for param in model.classifier.parameters():

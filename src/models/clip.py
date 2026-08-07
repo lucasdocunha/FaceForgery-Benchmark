@@ -7,10 +7,11 @@ from src.models._channel_adapt import adapt_conv2d_channels
 class CLIPClassifier(nn.Module):
     def __init__(self, backbone: CLIPVisionModel, dropout: float = .2):
         super().__init__(); self.backbone = backbone
+        self.capture_attentions = False
         self.classifier = nn.Sequential(nn.Dropout(dropout), nn.Linear(backbone.config.hidden_size, 2))
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        output = self.backbone(pixel_values=x, output_attentions=True)
-        self.last_attentions = output.attentions
+        output = self.backbone(pixel_values=x, output_attentions=self.capture_attentions)
+        self.last_attentions = output.attentions if self.capture_attentions else None
         return self.classifier(output.pooler_output)
 
 def build(config) -> nn.Module:
@@ -26,6 +27,7 @@ def build(config) -> nn.Module:
         emb = backbone.vision_model.embeddings
         emb.patch_embedding = adapt_conv2d_channels(emb.patch_embedding, config.in_channels)
         backbone.config.num_channels = config.in_channels
+    backbone.set_attn_implementation("eager")
     return CLIPClassifier(backbone, config.dropout)
 
 def freeze_backbone(model: nn.Module) -> None:
@@ -35,5 +37,5 @@ def freeze_backbone(model: nn.Module) -> None:
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
     layers = model.backbone.vision_model.encoder.layers
-    for layer in layers[-max(0, n):]:
+    for layer in layers[-n:] if n > 0 else []:
         for p in layer.parameters(): p.requires_grad = True

@@ -1,3 +1,6 @@
 model_family: mobilenet
 architecture: mobilenetv3_large
 variant: large
+epochs: 20
+batch_size: 16
+threshold_strategy: balanced_accuracy

@@ -7,10 +7,11 @@ from src.models._channel_adapt import adapt_conv2d_channels
 class ViTClassifier(nn.Module):
     def __init__(self, backbone: ViTModel, dropout: float = .2):
         super().__init__(); self.backbone = backbone
+        self.capture_attentions = False
         self.classifier = nn.Sequential(nn.Dropout(dropout), nn.Linear(backbone.config.hidden_size, 2))
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        output = self.backbone(pixel_values=x, output_attentions=True)
-        self.last_attentions = output.attentions
+        output = self.backbone(pixel_values=x, output_attentions=self.capture_attentions)
+        self.last_attentions = output.attentions if self.capture_attentions else None
         return self.classifier(output.last_hidden_state[:, 0])
 
 def build(config) -> nn.Module:
@@ -26,6 +27,7 @@ def build(config) -> nn.Module:
         pe = backbone.embeddings.patch_embeddings
         pe.projection = adapt_conv2d_channels(pe.projection, config.in_channels)
         pe.num_channels = config.in_channels
+    backbone.set_attn_implementation("eager")
     return ViTClassifier(backbone, config.dropout)
 
 def freeze_backbone(model: nn.Module) -> None:
@@ -35,5 +37,5 @@ def freeze_backbone(model: nn.Module) -> None:
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
     layers = model.backbone.encoder.layer
-    for layer in layers[-max(0, n):]:
+    for layer in layers[-n:] if n > 0 else []:
         for p in layer.parameters(): p.requires_grad = True

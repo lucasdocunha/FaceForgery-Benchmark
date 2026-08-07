@@ -1,2 +1,5 @@
 model_family: resnet
 architecture: resnet18
+epochs: 25
+threshold_strategy: accuracy
+mixup_alpha: 0.0

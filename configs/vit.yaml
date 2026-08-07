@@ -1,2 +1,5 @@
 model_family: vit
 architecture: vit
+threshold_strategy: f1
+mixup_alpha: 0.2
+use_class_weights: true

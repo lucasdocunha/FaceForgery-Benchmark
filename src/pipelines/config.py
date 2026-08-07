@@ -6,8 +6,10 @@ from typing import Any
 
 import yaml
 
-FOURIER_CHANNELS = {"none": 3, "magnitude": 1, "phase": 1, "complex": 2,
-                    "concat": 4, "frequency_3": 1, "concat_frequency": 6}
+FOURIER_CHANNELS = {
+    "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
+    "concat": 4, "frequency_3": 1, "concat_frequency": 6,
+}
 
 
 @dataclass
@@ -23,12 +25,19 @@ class TrainingConfig:
     num_workers: int = 4
     image_size: int = 224
     data_limit: int | None = None
+    raw_min: bool = False
     lr_head: float = 1e-3
     lr_backbone: float = 1e-4
     weight_decay: float = 1e-4
     early_stop_patience: int = 8
+    scheduler_patience: int = 3
+    max_grad_norm: float | None = 1.0
     dropout: float = 0.2
     augment: bool = True
+    train_backbone: bool = True
+    use_weighted_sampler: bool = True
+    use_class_weights: bool = False
+    label_smoothing: float = 0.0
     threshold_strategy: str = "accuracy"
     mixup_alpha: float = 0.0
     cutmix_alpha: float = 0.0
@@ -48,6 +57,10 @@ class TrainingConfig:
     def in_channels(self) -> int:
         return FOURIER_CHANNELS[self.fourier_mode]
 
+    @property
+    def data_split_dir(self) -> str:
+        return "raw_min" if self.raw_min else "raw"
+
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result["seeds"] = list(self.seeds)
@@ -55,15 +68,28 @@ class TrainingConfig:
         return result
 
     def validate(self) -> None:
+        if self.model_family not in {"resnet", "xception", "mobilenet", "vit", "clip", "dino"}:
+            raise ValueError(f"Unknown model family: {self.model_family}")
         if self.fourier_mode not in FOURIER_CHANNELS:
             raise ValueError(f"Unknown Fourier mode: {self.fourier_mode}")
         if self.regime not in {"scratch", "finetune"}:
             raise ValueError("regime must be scratch or finetune")
+        if self.epochs < 1 or self.batch_size < 1 or self.num_workers < 0:
+            raise ValueError("epochs/batch_size must be positive and num_workers non-negative")
+        if self.early_stop_patience < 1:
+            raise ValueError("early_stop_patience must be positive")
+        if not 0 <= self.label_smoothing < 1:
+            raise ValueError("label_smoothing must be in [0, 1)")
+        if self.image_size % self.patch_size != 0 and self.model_family in {"vit", "clip"}:
+            raise ValueError("image_size must be divisible by patch_size")
 
 
 def _read_yaml(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as handle:
-        return yaml.safe_load(handle) or {}
+        value = yaml.safe_load(handle) or {}
+    if not isinstance(value, dict):
+        raise ValueError(f"YAML root must be a mapping: {path}")
+    return value
 
 
 def load_config(path: str | Path, overrides: dict[str, Any] | None = None) -> TrainingConfig:
@@ -71,7 +97,7 @@ def load_config(path: str | Path, overrides: dict[str, Any] | None = None) -> Tr
     base = path.parent / "base.yaml"
     values = _read_yaml(base) if base.exists() and base.resolve() != path.resolve() else {}
     values.update(_read_yaml(path))
-    values.update({k: v for k, v in (overrides or {}).items() if v is not None})
+    values.update({key: value for key, value in (overrides or {}).items() if value is not None})
     allowed = {field.name for field in fields(TrainingConfig)}
     unknown = set(values) - allowed
     if unknown:

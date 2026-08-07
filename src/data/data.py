@@ -32,6 +32,45 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
 )
 
 
+FOURIER_CHANNELS = {
+    "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
+    "concat": 4, "frequency_3": 1, "concat_frequency": 6,
+}
+
+
+def encode_pil_image(img: Image.Image, fourier: FourierMode, image_size: int) -> torch.Tensor:
+    """Encode one PIL image exactly as the dataset does, for visualization CLIs."""
+    img = transforms.Resize((image_size, image_size))(img.convert("RGB"))
+    rgb_raw = transforms.ToTensor()(img)
+    rgb = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(rgb_raw)
+    gray = 0.299 * rgb_raw[0] + 0.587 * rgb_raw[1] + 0.114 * rgb_raw[2]
+    spectrum = np.fft.fftshift(np.fft.fft2(gray.numpy()))
+
+    def normalize(array):
+        array = np.asarray(array, dtype=np.float32)
+        span = float(array.max() - array.min())
+        return np.zeros_like(array) if span < 1e-8 else (array - array.min()) / span
+
+    def channel(array):
+        value = torch.from_numpy(normalize(array)).unsqueeze(0)
+        return transforms.Normalize([0.5], [0.5])(value)
+
+    magnitude = channel(np.log1p(np.abs(spectrum)))
+    phase = channel((np.angle(spectrum) + np.pi) / (2 * np.pi))
+    height, width = spectrum.shape
+    y, x = np.ogrid[:height, :width]
+    mask = ((y-height//2)**2 + (x-width//2)**2) >= (min(height, width)*.12)**2
+    highpass = channel(np.log1p(np.abs(spectrum) * mask))
+    scale = max(float(np.abs(spectrum).max()), 1e-8)
+    complex_value = torch.from_numpy(np.stack((spectrum.real/scale, spectrum.imag/scale)).astype(np.float32))
+    values = {
+        "none": rgb, "magnitude": magnitude, "phase": phase, "complex": complex_value,
+        "concat": torch.cat((rgb, magnitude)), "frequency_3": highpass,
+        "concat_frequency": torch.cat((rgb, magnitude, phase, highpass)),
+    }
+    return torch.nan_to_num(values[fourier], nan=0.0, posinf=1.0, neginf=-1.0)
+
+
 class ImageDataset(Dataset):
     def __init__(
         self,

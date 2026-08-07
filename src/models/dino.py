@@ -32,5 +32,5 @@ def freeze_backbone(model: nn.Module) -> None:
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
     blocks = getattr(model.backbone, "stages", getattr(model.backbone, "blocks", []))
-    for block in list(blocks)[-max(0, n):]:
+    for block in list(blocks)[-n:] if n > 0 else []:
         for p in block.parameters(): p.requires_grad = True

@@ -26,6 +26,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
 import torch
+from src.models._channel_adapt import replace_conv2d
 
 __all__ = ['xception']
 
@@ -220,13 +221,15 @@ class XceptionWithBackbone(nn.Module):
         self,
         num_classes: int = 2,
         dropout: float = 0.2,
-        timm_model_name: str = "xception",
+        timm_model_name: str = "legacy_xception",
         in_channels: int = 3,
     ):
         super().__init__()
         import timm as _timm
 
-        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0, in_chans=in_channels)
+        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
+        if in_channels != 3:
+            replace_conv2d(self.backbone, "conv1", in_channels)
         hidden_size: int = self.backbone.num_features
         self.fc = nn.Sequential(
             nn.Dropout(dropout),
@@ -244,7 +247,7 @@ class XceptionWithBackbone(nn.Module):
     def unfreeze_last_n_layers(self, n: int = 2) -> None:
         children = [m for m in self.backbone.children() if any(True for _ in m.parameters())]
         n = max(0, min(n, len(children)))
-        for child in children[-n:]:
+        for child in children[-n:] if n > 0 else []:
             for param in child.parameters():
                 param.requires_grad = True
         for param in self.fc.parameters():

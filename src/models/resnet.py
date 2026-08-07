@@ -63,4 +63,5 @@ def build(config) -> nn.Module:
 
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
-    unfreeze_last_blocks(model, train_layer3=n > 1)
+    if n > 0:
+        unfreeze_last_blocks(model, train_layer3=n > 1)
