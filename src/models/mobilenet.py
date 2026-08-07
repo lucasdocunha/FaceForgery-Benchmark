@@ -3,6 +3,7 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 from torchvision import models
+from src.models._channel_adapt import adapt_conv2d_channels
 
 
 _VARIANTS = {
@@ -18,36 +19,7 @@ def _adapt_first_conv(model: nn.Module, in_channels: int, pretrained: bool) -> N
     if first_conv.in_channels == in_channels:
         return
 
-    new_conv = nn.Conv2d(
-        in_channels=in_channels,
-        out_channels=first_conv.out_channels,
-        kernel_size=first_conv.kernel_size,
-        stride=first_conv.stride,
-        padding=first_conv.padding,
-        dilation=first_conv.dilation,
-        groups=first_conv.groups,
-        bias=first_conv.bias is not None,
-        padding_mode=first_conv.padding_mode,
-    )
-
-    if pretrained:
-        with torch.no_grad():
-            old_weight = first_conv.weight
-            if in_channels == 1:
-                new_weight = old_weight.mean(dim=1, keepdim=True)
-            elif in_channels > 3:
-                repeat_factor = (in_channels + 2) // 3
-                new_weight = old_weight.repeat(1, repeat_factor, 1, 1)[:, :in_channels]
-                new_weight = new_weight * (3.0 / float(in_channels))
-            else:
-                new_weight = old_weight[:, :in_channels]
-                new_weight = new_weight * (3.0 / float(in_channels))
-
-            new_conv.weight.copy_(new_weight)
-            if first_conv.bias is not None:
-                new_conv.bias.copy_(first_conv.bias)
-
-    model.features[0][0] = new_conv
+    model.features[0][0] = adapt_conv2d_channels(first_conv, in_channels)
 
 
 def mobilenet(
@@ -122,3 +94,17 @@ def unfreeze_last_blocks(model: nn.Module, last_n_blocks: int = 3) -> None:
             param.requires_grad = True
     for param in model.classifier.parameters():
         param.requires_grad = True
+
+
+def build(config) -> nn.Module:
+    return mobilenet(2, config.in_channels, config.regime == "finetune",
+                     config.variant, config.dropout, config.allow_pretrained)
+
+
+def freeze_backbone(model: nn.Module) -> None:
+    freeze_classifier_only(model)
+
+
+def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
+    freeze_classifier_only(model)
+    unfreeze_last_blocks(model, n)

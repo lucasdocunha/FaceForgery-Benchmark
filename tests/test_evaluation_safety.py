@@ -17,8 +17,8 @@ class NonFiniteLogitModel(torch.nn.Module):
         )
 
 
-def test_mobilenet_evaluate_sanitizes_non_finite_logits():
-    from src.pipelines.mobilenet import _evaluate
+def test_generic_evaluate_sanitizes_non_finite_logits():
+    from src.pipelines.evaluation import evaluate_classifier
 
     x = torch.zeros(4, 3, 16, 16)
     y = torch.tensor([0, 1, 1, 0])
@@ -26,7 +26,7 @@ def test_mobilenet_evaluate_sanitizes_non_finite_logits():
     loader = DataLoader(TensorDataset(x, y, idx), batch_size=4)
     criterion = torch.nn.CrossEntropyLoss()
 
-    results = _evaluate(
+    results = evaluate_classifier(
         NonFiniteLogitModel(),
         loader,
         criterion,

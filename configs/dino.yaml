@@ -1,0 +1,2 @@
+model_family: dino
+architecture: dinov3_base

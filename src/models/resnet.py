@@ -1,5 +1,6 @@
 import torch.nn as nn
 from torchvision import models
+from src.models._channel_adapt import adapt_conv2d_channels
 
 
 _ARCHITECTURES = {
@@ -28,29 +29,7 @@ def resnet(
     builder = _ARCHITECTURES[architecture]
     model = builder(weights="DEFAULT" if pretrained else None)
 
-    if in_channels != 3:
-        old_conv = model.conv1
-        new_conv = nn.Conv2d(
-            in_channels,
-            old_conv.out_channels,
-            kernel_size=old_conv.kernel_size,
-            stride=old_conv.stride,
-            padding=old_conv.padding,
-            bias=old_conv.bias is not None,
-        )
-        if pretrained:
-            old_weight = old_conv.weight.data
-            if in_channels == 1:
-                new_weight = old_weight.mean(dim=1, keepdim=True)
-            elif in_channels > 3:
-                repeat_factor = (in_channels + 2) // 3
-                new_weight = old_weight.repeat(1, repeat_factor, 1, 1)[:, :in_channels, :, :]
-                new_weight = new_weight * (3.0 / float(in_channels))
-            else:
-                new_weight = old_weight[:, :in_channels, :, :]
-                new_weight = new_weight * (3.0 / float(in_channels))
-            new_conv.weight.data.copy_(new_weight)
-        model.conv1 = new_conv
+    model.conv1 = adapt_conv2d_channels(model.conv1, in_channels)
 
     in_features = model.fc.in_features
     model.fc = nn.Sequential(
@@ -75,3 +54,13 @@ def unfreeze_last_blocks(model: nn.Module, train_layer3: bool = False) -> None:
 
     for param in model.fc.parameters():
         param.requires_grad = True
+
+
+def build(config) -> nn.Module:
+    return resnet(2, config.regime == "finetune", config.architecture,
+                  config.dropout, config.in_channels, config.allow_pretrained)
+
+
+def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
+    freeze_backbone(model)
+    unfreeze_last_blocks(model, train_layer3=n > 1)

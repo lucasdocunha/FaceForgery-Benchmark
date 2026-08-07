@@ -18,6 +18,10 @@ min_dataset
 !/models/
 !/models/.gitkeep
 
+/models_legacy_backup/**
+!/models_legacy_backup/
+!/models_legacy_backup/.gitkeep
+
 /models_finetuned/**
 !/models_finetuned/
 !/models_finetuned/.gitkeep

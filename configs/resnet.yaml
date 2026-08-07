@@ -1,0 +1,2 @@
+model_family: resnet
+architecture: resnet18

@@ -1,236 +1,39 @@
 from __future__ import annotations
-
 import torch
 import torch.nn as nn
-from torchvision import transforms
+from transformers import CLIPVisionConfig, CLIPVisionModel
+from src.models._channel_adapt import adapt_conv2d_channels
 
-
-class PatchEmbedding(nn.Module):
-    def __init__(
-        self,
-        image_size: int,
-        patch_size: int,
-        hidden_size: int,
-        in_channels: int = 3,
-    ):
-        super().__init__()
-        if image_size % patch_size != 0:
-            raise ValueError("image_size must be divisible by patch_size")
-        self.num_patches = (image_size // patch_size) ** 2
-        self.proj = nn.Conv2d(
-            in_channels=in_channels,
-            out_channels=hidden_size,
-            kernel_size=patch_size,
-            stride=patch_size,
-            bias=False,
-        )
-
+class CLIPClassifier(nn.Module):
+    def __init__(self, backbone: CLIPVisionModel, dropout: float = .2):
+        super().__init__(); self.backbone = backbone
+        self.classifier = nn.Sequential(nn.Dropout(dropout), nn.Linear(backbone.config.hidden_size, 2))
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.proj(x)
-        return x.flatten(2).transpose(1, 2)
+        output = self.backbone(pixel_values=x, output_attentions=True)
+        self.last_attentions = output.attentions
+        return self.classifier(output.pooler_output)
 
+def build(config) -> nn.Module:
+    if config.regime == "scratch":
+        cfg = CLIPVisionConfig(image_size=config.image_size, patch_size=config.patch_size,
+            hidden_size=config.hidden_size, num_hidden_layers=config.num_hidden_layers,
+            num_attention_heads=config.num_attention_heads, intermediate_size=config.hidden_size * 4,
+            num_channels=config.in_channels, projection_dim=config.projection_dim)
+        backbone = CLIPVisionModel(cfg)
+    else:
+        if not config.allow_pretrained: raise ValueError("External pretrained CLIP weights are disabled")
+        backbone = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch16")
+        emb = backbone.vision_model.embeddings
+        emb.patch_embedding = adapt_conv2d_channels(emb.patch_embedding, config.in_channels)
+        backbone.config.num_channels = config.in_channels
+    return CLIPClassifier(backbone, config.dropout)
 
-class CLIPVisionClassifier(nn.Module):
-    """CLIP-style vision encoder trained locally from scratch.
+def freeze_backbone(model: nn.Module) -> None:
+    for p in model.backbone.parameters(): p.requires_grad = False
+    for p in model.classifier.parameters(): p.requires_grad = True
 
-    This intentionally does not load OpenAI/Hugging Face weights. It mirrors the
-    image-side CLIP structure used for classification: patch tokens, class token,
-    transformer blocks, projection, and a supervised classifier head.
-    """
-
-    def __init__(
-        self,
-        num_classes: int,
-        dropout: float = 0.2,
-        image_size: int = 224,
-        patch_size: int = 16,
-        hidden_size: int = 256,
-        projection_dim: int = 128,
-        num_hidden_layers: int = 6,
-        num_attention_heads: int = 8,
-    ):
-        super().__init__()
-        if hidden_size % num_attention_heads != 0:
-            raise ValueError("hidden_size must be divisible by num_attention_heads")
-
-        self.patch_embed = PatchEmbedding(image_size, patch_size, hidden_size)
-        num_tokens = self.patch_embed.num_patches + 1
-        self.cls_token = nn.Parameter(torch.zeros(1, 1, hidden_size))
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_tokens, hidden_size))
-        self.pos_drop = nn.Dropout(dropout)
-
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=hidden_size,
-            nhead=num_attention_heads,
-            dim_feedforward=hidden_size * 4,
-            dropout=dropout,
-            activation="gelu",
-            batch_first=True,
-            norm_first=True,
-        )
-        self.encoder = nn.TransformerEncoder(
-            encoder_layer,
-            num_layers=num_hidden_layers,
-            norm=nn.LayerNorm(hidden_size),
-        )
-        self.visual_proj = nn.Linear(hidden_size, projection_dim)
-        hidden_head = max(projection_dim // 2, num_classes)
-        self.head = nn.Sequential(
-            nn.LayerNorm(projection_dim),
-            nn.Linear(projection_dim, hidden_head),
-            nn.GELU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_head, num_classes),
-        )
-        self._init_weights()
-
-    def _init_weights(self) -> None:
-        nn.init.normal_(self.cls_token, std=0.02)
-        nn.init.normal_(self.pos_embed, std=0.02)
-        for module in self.modules():
-            if isinstance(module, (nn.Linear, nn.Conv2d)):
-                nn.init.trunc_normal_(module.weight, std=0.02)
-                if getattr(module, "bias", None) is not None:
-                    nn.init.zeros_(module.bias)
-            elif isinstance(module, nn.LayerNorm):
-                nn.init.ones_(module.weight)
-                nn.init.zeros_(module.bias)
-
-    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
-        x = self.patch_embed(pixel_values)
-        cls = self.cls_token.expand(x.shape[0], -1, -1)
-        x = torch.cat([cls, x], dim=1)
-        x = self.pos_drop(x + self.pos_embed)
-        x = self.encoder(x)
-        projected = self.visual_proj(x[:, 0])
-        return self.head(projected)
-
-    def freeze_backbone(self) -> None:
-        for module in (self.patch_embed, self.encoder, self.visual_proj):
-            for param in module.parameters():
-                param.requires_grad = False
-        self.cls_token.requires_grad = False
-        self.pos_embed.requires_grad = False
-
-    def unfreeze_last_n_layers(self, n: int = 2) -> None:
-        layers = self.encoder.layers
-        n = max(0, min(n, len(layers)))
-        for layer in layers[-n:]:
-            for param in layer.parameters():
-                param.requires_grad = True
-        for param in self.encoder.norm.parameters():
-            param.requires_grad = True
-        for param in self.visual_proj.parameters():
-            param.requires_grad = True
-        self.cls_token.requires_grad = True
-        self.pos_embed.requires_grad = True
-
-
-class CLIPVisionClassifierWithBackbone(nn.Module):
-    """CLIP classifier that wraps a timm backbone — matches checkpoints saved with
-    the old architecture that had a ``backbone`` attribute."""
-
-    def __init__(
-        self,
-        timm_model_name: str,
-        projection_dim: int,
-        num_classes: int,
-        dropout: float = 0.2,
-    ):
-        super().__init__()
-        import timm as _timm
-
-        self.backbone = _timm.create_model(timm_model_name, pretrained=False, num_classes=0)
-        hidden_size: int = self.backbone.num_features
-        self.visual_proj = nn.Linear(hidden_size, projection_dim)
-        hidden_head = max(projection_dim // 2, num_classes)
-        self.head = nn.Sequential(
-            nn.LayerNorm(projection_dim),
-            nn.Linear(projection_dim, hidden_head),
-            nn.GELU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_head, num_classes),
-        )
-
-    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
-        features = self.backbone(pixel_values)
-        return self.head(self.visual_proj(features))
-
-
-class CLIPVisionClassifierPretrained(nn.Module):
-    """CLIP classifier wrapping the real OpenAI CLIP vision tower (via Hugging Face).
-
-    Unlike ``CLIPVisionClassifier`` above (a from-scratch transformer that does not
-    load OpenAI/HF weights), this loads genuine pretrained CLIP vision weights.
-    RGB (3-channel) input only.
-    """
-
-    def __init__(
-        self,
-        num_classes: int,
-        dropout: float = 0.2,
-        hf_model_name: str = "openai/clip-vit-base-patch16",
-    ):
-        super().__init__()
-        from transformers import CLIPVisionModelWithProjection
-
-        self.backbone = CLIPVisionModelWithProjection.from_pretrained(
-            hf_model_name, use_safetensors=True
-        )
-        projection_dim = self.backbone.config.projection_dim
-        hidden_head = max(projection_dim // 2, num_classes)
-        self.head = nn.Sequential(
-            nn.LayerNorm(projection_dim),
-            nn.Linear(projection_dim, hidden_head),
-            nn.GELU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_head, num_classes),
-        )
-
-    def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
-        image_embeds = self.backbone(pixel_values=pixel_values).image_embeds
-        return self.head(image_embeds)
-
-    def freeze_backbone(self) -> None:
-        for param in self.backbone.parameters():
-            param.requires_grad = False
-
-    def unfreeze_last_n_layers(self, n: int = 2) -> None:
-        layers = self.backbone.vision_model.encoder.layers
-        n = max(0, min(n, len(layers)))
-        for layer in layers[-n:]:
-            for param in layer.parameters():
-                param.requires_grad = True
-        for param in self.backbone.vision_model.post_layernorm.parameters():
-            param.requires_grad = True
-        for param in self.backbone.visual_projection.parameters():
-            param.requires_grad = True
-        for param in self.head.parameters():
-            param.requires_grad = True
-
-
-def clip_safe_name() -> str:
-    return "clip_vit_scratch"
-
-
-MEAN = [0.5, 0.5, 0.5]
-STD = [0.5, 0.5, 0.5]
-
-train_transform = transforms.Compose(
-    [
-        transforms.RandomResizedCrop(224, scale=(0.7, 1.0)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-        transforms.ToTensor(),
-        transforms.Normalize(MEAN, STD),
-    ]
-)
-
-val_transform = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(MEAN, STD),
-    ]
-)
+def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
+    freeze_backbone(model)
+    layers = model.backbone.vision_model.encoder.layers
+    for layer in layers[-max(0, n):]:
+        for p in layer.parameters(): p.requires_grad = True

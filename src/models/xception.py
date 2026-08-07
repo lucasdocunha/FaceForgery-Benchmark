@@ -221,11 +221,12 @@ class XceptionWithBackbone(nn.Module):
         num_classes: int = 2,
         dropout: float = 0.2,
         timm_model_name: str = "xception",
+        in_channels: int = 3,
     ):
         super().__init__()
         import timm as _timm
 
-        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
+        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0, in_chans=in_channels)
         hidden_size: int = self.backbone.num_features
         self.fc = nn.Sequential(
             nn.Dropout(dropout),
@@ -254,7 +255,28 @@ def xception_pretrained(
     num_classes: int = 2,
     dropout: float = 0.2,
     allow_pretrained: bool = False,
+    in_channels: int = 3,
 ) -> nn.Module:
     if not allow_pretrained:
         raise ValueError("External pretrained Xception weights are disabled for this project.")
-    return XceptionWithBackbone(num_classes=num_classes, dropout=dropout)
+    return XceptionWithBackbone(num_classes=num_classes, dropout=dropout, in_channels=in_channels)
+
+
+def build(config) -> nn.Module:
+    if config.regime == "finetune":
+        return xception_pretrained(2, config.dropout, config.allow_pretrained, config.in_channels)
+    return xception(False, num_classes=2, in_channels=config.in_channels, dropout=config.dropout)
+
+
+def freeze_backbone(model: nn.Module) -> None:
+    if hasattr(model, "freeze_backbone"):
+        model.freeze_backbone()
+    else:
+        for name, param in model.named_parameters():
+            param.requires_grad = name.startswith("fc")
+
+
+def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
+    freeze_backbone(model)
+    if hasattr(model, "unfreeze_last_n_layers"):
+        model.unfreeze_last_n_layers(n)

@@ -22,6 +22,12 @@ FourierMode = Literal[
 
 # Ordem fixa para benchmarks (sem nomes duplicados para o mesmo tensor).
 ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
+    "none",
+    "magnitude",
+    "phase",
+    "complex",
+    "concat",
+    "frequency_3",
     "concat_frequency",
 )
 

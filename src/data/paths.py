@@ -38,3 +38,13 @@ def phase1_split_root(split: str) -> Path:
 
 def data_root() -> Path:
     return Path(os.environ.get("TCC_DATA_ROOT", str(_DEFAULT_DATA_ROOT)))
+
+
+def models_root() -> Path:
+    """Root for new-layout checkpoints, configurable per environment."""
+    return Path(os.environ.get("TCC_MODELS_ROOT", str(Path.cwd() / "models")))
+
+
+def output_root() -> Path:
+    """Root for generated tables and heatmaps."""
+    return Path(os.environ.get("TCC_OUTPUT_ROOT", str(Path.cwd())))

@@ -1,0 +1,17 @@
+epochs: 50
+batch_size: 32
+num_workers: 4
+image_size: 224
+lr_head: 0.001
+lr_backbone: 0.0001
+weight_decay: 0.0001
+early_stop_patience: 8
+dropout: 0.2
+seeds: [42, 123, 2024]
+augment: true
+threshold_strategy: accuracy
+mixup_alpha: 0.0
+cutmix_alpha: 0.0
+unfreeze_last_n: 2
+multi_gpu: true
+allow_pretrained: true

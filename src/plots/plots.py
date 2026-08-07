@@ -1,4 +1,6 @@
 import os
+import matplotlib
+matplotlib.use("Agg")
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +11,7 @@ from sklearn.metrics import (
 )
 
 from src.pipelines.evaluation import clean_probabilities, probabilities_from_logits
+from src.plots.style import MODEL_COLORS, apply_style
 
 
 def plot_confusion_matrix(
@@ -30,6 +33,7 @@ def plot_confusion_matrix(
         figsize      : tamanho da figura
         dpi          : resolução de saída
     """
+    apply_style()
     y_true = test_results["y_true"]
     y_pred = test_results["y_pred"]
 
@@ -109,6 +113,7 @@ def plot_roc_auc(
     color: str = "#4C72B0",
     figsize: tuple = (7, 6),
     dpi: int = 150,
+    family: str | None = None,
 ):
     """
     Plota a curva ROC com AUC destacado.
@@ -121,6 +126,8 @@ def plot_roc_auc(
         figsize      : tamanho da figura
         dpi          : resolução de saída
     """
+    apply_style()
+    if family is not None: color = MODEL_COLORS.get(family, color)
     y_true = test_results["y_true"]
 
     # aceita tanto 'probs' quanto 'logits' como fallback
