@@ -3,6 +3,9 @@ import torch
 import torch.nn as nn
 from transformers import CLIPVisionConfig, CLIPVisionModel
 from src.models._channel_adapt import adapt_conv2d_channels
+from src.models._hf_layers import embeddings, encoder_layers
+
+_CLIP_REPO = "openai/clip-vit-base-patch16"
 
 class CLIPClassifier(nn.Module):
     def __init__(self, backbone: CLIPVisionModel, dropout: float = .2):
@@ -23,8 +26,12 @@ def build(config) -> nn.Module:
         backbone = CLIPVisionModel(cfg)
     else:
         if not config.allow_pretrained: raise ValueError("External pretrained CLIP weights are disabled")
-        backbone = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch16")
-        emb = backbone.vision_model.embeddings
+        # use_safetensors=True é obrigatório, não cosmético: o repo oficial publica
+        # pytorch_model.bin, e o transformers recusa torch.load de .bin com torch < 2.6
+        # (CVE-2025-32434), o que tornava o finetune de CLIP impossível de carregar.
+        # Mesma abordagem da branch pre-refatoracao, que rodou nos servidores.
+        backbone = CLIPVisionModel.from_pretrained(_CLIP_REPO, use_safetensors=True)
+        emb = embeddings(backbone)
         emb.patch_embedding = adapt_conv2d_channels(emb.patch_embedding, config.in_channels)
         backbone.config.num_channels = config.in_channels
     backbone.set_attn_implementation("eager")
@@ -36,6 +43,6 @@ def freeze_backbone(model: nn.Module) -> None:
 
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
-    layers = model.backbone.vision_model.encoder.layers
+    layers = encoder_layers(model.backbone)
     for layer in layers[-n:] if n > 0 else []:
         for p in layer.parameters(): p.requires_grad = True

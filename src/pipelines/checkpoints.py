@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import json
 from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Iterable
@@ -15,7 +16,7 @@ from torchvision import transforms
 from src.data.data import ALL_FOURIER_MODES, ImageDataset
 from src.data.paths import phase1_split_root
 from src.models.registry import MODEL_REGISTRY
-from src.pipelines.config import TrainingConfig
+from src.pipelines.config import RUN_CONFIG_FILENAME, TrainingConfig
 from src.pipelines.evaluation import evaluate_classifier
 
 SUPPORTED_FAMILIES = frozenset(MODEL_REGISTRY)
@@ -41,6 +42,11 @@ class SplitSpec:
 
 
 def _read_metadata(run_dir: Path) -> dict:
+    """Métricas do run, usadas só para recuperar o threshold escolhido no val.
+
+    Não serve para reconstruir a config: ``evaluate.py`` reescreve estes arquivos.
+    Para isso existe ``_read_run_config``.
+    """
     for name in ("metrics_val.csv", "metrics_test.csv", "metrics_summary.csv"):
         path = run_dir / "results" / name
         if path.exists():
@@ -94,10 +100,27 @@ def _coerce(field_name: str, value):
     return value
 
 
+def _read_run_config(run: TrainedRun) -> dict:
+    """Lê a config gravada por ``Trainer.fit`` em ``results/run_config.json``.
+
+    Falha alto em vez de cair nos defaults de ``TrainingConfig``: reconstruir um
+    checkpoint com a arquitetura errada só aparece bem depois, como state_dict
+    incompatível ou heatmap renderizado na resolução errada.
+    """
+    path = run.run_dir / "results" / RUN_CONFIG_FILENAME
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Run sem {RUN_CONFIG_FILENAME}: {run.run_dir}. Ele é gravado por Trainer.fit(); "
+            "runs anteriores a esse artefato precisam ser retreinados."
+        )
+    with path.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def config_from_run(run: TrainedRun) -> TrainingConfig:
     allowed = {field.name for field in fields(TrainingConfig)}
     values = {
-        key: _coerce(key, value) for key, value in run.metadata.items()
+        key: _coerce(key, value) for key, value in _read_run_config(run).items()
         if key in allowed and not (isinstance(value, float) and np.isnan(value))
     }
     values.update(model_family=run.model_family, fourier_mode=run.fourier_mode,

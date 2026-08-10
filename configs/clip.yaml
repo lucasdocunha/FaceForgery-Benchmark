@@ -1,5 +1,4 @@
 model_family: clip
-architecture: clip
 epochs: 20
 batch_size: 16
 threshold_strategy: accuracy

@@ -1,1 +1,0 @@
-python main.py --seed 26

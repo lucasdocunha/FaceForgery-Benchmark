@@ -9,9 +9,28 @@ with controlled seeds so tables report mean ± standard deviation.
 Python 3.11–3.12 is required.
 
 ```bash
-uv venv
-uv pip install -e .
-uv run pytest -q
+uv sync            # reads uv.lock + the pytorch index configured in pyproject.toml
+uv run pytest -q   # expect 50 passed
+```
+
+Use `uv sync`, not `pip install -r requirements.txt`. `requirements.txt` is a convenience export
+that pins `torch==2.5.1+cu121`, but `uv export` does not emit the PyTorch index URL, so plain pip
+cannot resolve it. If you must use pip, pass the index explicitly:
+
+```bash
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
+```
+
+### Check the GPU before running the matrix
+
+The pinned `cu121` build supports up to compute capability 9.0. Blackwell cards (RTX 50xx,
+`compute_cap` 12.0) need CUDA 12.8+, so `cu121` fails there with
+`no kernel image is available for execution on the device`.
+
+```bash
+nvidia-smi --query-gpu=name,compute_cap --format=csv
+# compute_cap <= 9.0  -> current cu121 pin is fine
+# compute_cap >= 12.0 -> repoint [[tool.uv.index]] in pyproject.toml to cu128 (torch >= 2.9), then `uv lock`
 ```
 
 The pipeline uses environment variables instead of machine-specific profiles:
@@ -61,16 +80,24 @@ python evaluate.py --splits val,test,test_d --test-d-csv /path/test_d.csv \
   --test-d-images-dir /path/test_d/images
 python ensemble.py --strategy search --pool best-mode
 python ensemble.py --strategy search --pool all
+python ensemble.py --strategy weighted --subset search --pool best-mode
 python make_tables.py
 ```
 
 Evaluation reconstructs every family from its seeded checkpoint and writes per-split metrics and
-predictions. Ensemble candidates average their available seeds. `best-mode` keeps the best
-validation mode per family×regime (at most 12) and searches subsets exhaustively in parallel;
-`all` keeps family×mode×regime candidates (at most 84) and uses greedy incremental search. Direct
-strategies are mean, validation-AUC weighted, majority, max, geometric, and logistic stacking.
-Selection/fitting occurs only on validation; the unchanged combination is reported on Test and
-Test-Hard.
+predictions. Each run also carries a `results/run_config.json`, written by the trainer, which is
+the single source of truth for rebuilding its architecture: re-running evaluation is idempotent
+and never rewrites it.
+
+Ensemble candidates average their available seeds. `--pool` sizes the candidate pool: `best-mode`
+keeps the best validation mode per family×regime (at most 12), `all` keeps every
+family×mode×regime candidate (at most 84). `--subset search` picks the best subset on validation
+(exhaustive in parallel up to 12 candidates, greedy incremental beyond), `--subset all` keeps the
+whole pool. `--strategy` chooses how members are combined: mean, validation-AUC weighted,
+majority, max, geometric, or logistic stacking. `--strategy search` is kept as a historical alias
+for `--strategy mean --subset search`. Selection/fitting occurs only on validation; the unchanged
+combination is reported on whichever held-out splits were evaluated (`--splits`, default
+`val,test,test_d`; held-out splits without outputs are skipped rather than emptying the pool).
 
 `make_tables.py` writes `tables/results_full.csv`, `results_full.md`, and a booktabs
 `results_paper.tex` containing one mean±standard-deviation table per split.

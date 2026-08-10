@@ -12,7 +12,7 @@ _VARIANTS = {
 }
 
 
-def _adapt_first_conv(model: nn.Module, in_channels: int, pretrained: bool) -> None:
+def _adapt_first_conv(model: nn.Module, in_channels: int) -> None:
     first_conv = model.features[0][0]
     if not isinstance(first_conv, nn.Conv2d):
         raise TypeError("Expected MobileNet first layer to be Conv2d.")
@@ -38,7 +38,7 @@ def mobilenet(
         raise ValueError("External pretrained MobileNet weights are disabled for this project.")
     builder = _VARIANTS[variant]
     model = builder(weights="DEFAULT" if pretrained else None)
-    _adapt_first_conv(model, in_channels, pretrained=pretrained)
+    _adapt_first_conv(model, in_channels)
 
     last_linear = model.classifier[-1]
     if not isinstance(last_linear, nn.Linear):
@@ -49,36 +49,6 @@ def mobilenet(
                 module.p = dropout
     model.classifier[-1] = nn.Linear(last_linear.in_features, num_classes)
     return model
-
-
-def mobilenetv3_small(
-    num_classes: int = 2,
-    in_channels: int = 3,
-    pretrained: bool = False,
-    dropout: float | None = None,
-) -> nn.Module:
-    return mobilenet(
-        num_classes=num_classes,
-        in_channels=in_channels,
-        pretrained=pretrained,
-        variant="small",
-        dropout=dropout,
-    )
-
-
-def mobilenetv3_large(
-    num_classes: int = 2,
-    in_channels: int = 3,
-    pretrained: bool = False,
-    dropout: float | None = None,
-) -> nn.Module:
-    return mobilenet(
-        num_classes=num_classes,
-        in_channels=in_channels,
-        pretrained=pretrained,
-        variant="large",
-        dropout=dropout,
-    )
 
 
 def freeze_classifier_only(model: nn.Module) -> None:

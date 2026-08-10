@@ -64,7 +64,10 @@ def build_loaders(config: TrainingConfig):
 
 
 def train_from_config(config_path, fourier=None, regime=None, seed=None, epochs=None,
-                      data_limit=None, raw_min=None, multi_gpu=True):
+                      data_limit=None, raw_min=None, multi_gpu=None):
+    # multi_gpu=None (e não True) para que `multi_gpu: false` no YAML seja respeitado:
+    # load_config trata todo override não-None como explícito. run_tasks_on_gpus
+    # continua forçando multi_gpu=False por worker.
     config = load_config(config_path, {
         "fourier_mode": fourier, "regime": regime, "seed": seed, "epochs": epochs,
         "data_limit": data_limit, "raw_min": raw_min, "multi_gpu": multi_gpu,

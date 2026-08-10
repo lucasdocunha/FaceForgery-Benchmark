@@ -1,5 +1,4 @@
 from pathlib import Path
-import shutil
 
 from ensemble import run as run_ensemble
 from generate_heatmaps import generate_from_paths
@@ -38,10 +37,10 @@ def test_end_to_end_smoke_workflow(tiny_phase1_dataset, tmp_path, monkeypatch):
         batch_size=2, num_workers=0, limit_per_split=4,
     )
     assert len(summary) == 2 and (models / "all_metrics_by_split.csv").exists()
-    shutil.copy2(run_dir / "results" / "outputs_test.npz",
-                 run_dir / "results" / "outputs_test_d.npz")
+    # Sem forjar outputs_test_d.npz: o ensemble tem que rodar sobre o que este
+    # fluxo realmente produz (val + test).
     report = run_ensemble(models, "best-mode", "search", outputs / "ensemble", max_workers=1)
-    assert len(report) == 3
+    assert set(report["split"]) == {"val", "test"}
     tables = make_tables(models, outputs / "tables")
     assert not tables.empty
 

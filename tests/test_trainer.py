@@ -32,7 +32,8 @@ def test_trainer_saves_all_artifacts_and_stops_early(tmp_path):
     assert result["y_true"].shape == (8,)
     assert trainer.stopped_early and trainer.epochs_completed == 2
     for path in (
-        "weights/best.pth", "weights/final.pth", "results/metrics_val.csv",
+        "weights/best.pth", "weights/final.pth", "results/run_config.json",
+        "results/metrics_val.csv",
         "results/metrics_test.csv", "results/outputs_val.npz", "results/outputs_test.npz",
         "results/predictions_val.csv", "results/predictions_test.csv",
         "plots/confusion_matrix.png", "plots/roc_auc.png",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import itertools
+import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,7 +15,18 @@ from src.pipelines.checkpoints import TrainedRun, discover_trained_runs
 from src.pipelines.ensemble_strategies import STRATEGIES, mean
 from src.pipelines.evaluation import safe_auc
 
-SPLITS = ("val", "test", "test_d")
+# Splits pedidos por padrão. Os held-out que não tiverem sido avaliados são
+# descartados em resolve_splits() em vez de zerarem o pool de candidatos:
+# Trainer grava val/test e `evaluate.py` só produz test_d quando recebe
+# --test-d-csv/--test-d-images-dir.
+DEFAULT_SPLITS = ("val", "test", "test_d")
+
+# A seleção de subconjunto/pesos acontece aqui; os demais splits são só relatório.
+SELECTION_SPLIT = "val"
+
+# Acima disso a busca exaustiva (2^N-1 subconjuntos) deixa de ser viável e caímos
+# no greedy incremental. 12 é o tamanho do pool --pool best-mode (6 famílias x 2 regimes).
+EXHAUSTIVE_MAX_CANDIDATES = 12
 
 
 @dataclass(frozen=True)
@@ -34,9 +46,43 @@ def _read_output(run: TrainedRun, split: str) -> dict[str, np.ndarray]:
         return {key: data[key] for key in ("ids", "y_true", "probs")}
 
 
-def _aggregate_runs(runs: list[TrainedRun]) -> Candidate:
+def _has_output(run: TrainedRun, split: str) -> bool:
+    return (run.run_dir / "results" / f"outputs_{split}.npz").exists()
+
+
+def resolve_splits(runs: list[TrainedRun], requested: tuple[str, ...]) -> tuple[str, ...]:
+    """Reduz os splits pedidos aos que existem para todos os runs com val.
+
+    Descartar um held-out não avaliado é melhor que exigi-lo: exigir fazia
+    `python ensemble.py` falhar com "No candidates" logo após o fluxo
+    documentado (train + evaluate --splits val,test).
+    """
+    if SELECTION_SPLIT not in requested:
+        raise ValueError(f"splits precisa incluir '{SELECTION_SPLIT}': a seleção acontece nele")
+    with_val = [run for run in runs if _has_output(run, SELECTION_SPLIT)]
+    if not with_val:
+        raise ValueError(
+            f"Nenhum run tem outputs_{SELECTION_SPLIT}.npz em results/. "
+            "Rode train.py e evaluate.py antes do ensemble."
+        )
+    available = tuple(
+        split for split in requested
+        if split == SELECTION_SPLIT or all(_has_output(run, split) for run in with_val)
+    )
+    dropped = [split for split in requested if split not in available]
+    if dropped:
+        print(f"[ensemble] splits sem outputs para todos os runs, ignorados: {', '.join(dropped)}")
+    if len(available) < 2:
+        raise ValueError(
+            "É preciso pelo menos um split held-out além do val. "
+            "Rode evaluate.py para test e/ou test_d."
+        )
+    return available
+
+
+def _aggregate_runs(runs: list[TrainedRun], splits: tuple[str, ...]) -> Candidate:
     arrays = {}
-    for split in SPLITS:
+    for split in splits:
         values = [_read_output(run, split) for run in runs]
         reference = values[0]
         for value in values[1:]:
@@ -55,12 +101,15 @@ def _aggregate_runs(runs: list[TrainedRun]) -> Candidate:
     )
 
 
-def load_candidates(root: str | Path, pool: str) -> list[Candidate]:
+def load_candidates(root: str | Path, pool: str,
+                    splits: tuple[str, ...] = DEFAULT_SPLITS) -> list[Candidate]:
+    runs = discover_trained_runs(root)
+    effective = resolve_splits(runs, splits)
     grouped: dict[tuple[str, str, str], list[TrainedRun]] = {}
-    for run in discover_trained_runs(root):
-        if all((run.run_dir / "results" / f"outputs_{split}.npz").exists() for split in SPLITS):
+    for run in runs:
+        if all(_has_output(run, split) for split in effective):
             grouped.setdefault((run.model_family, run.fourier_mode, run.regime), []).append(run)
-    candidates = [_aggregate_runs(runs) for runs in grouped.values()]
+    candidates = [_aggregate_runs(group, effective) for group in grouped.values()]
     if pool == "best-mode":
         best: dict[tuple[str, str], Candidate] = {}
         for candidate in candidates:
@@ -93,7 +142,11 @@ def exhaustive_subset_search(predictions, labels, max_workers=None) -> tuple[int
     if count == 0:
         raise ValueError("No predictions to search")
     combinations = [combo for size in range(1, count + 1) for combo in itertools.combinations(range(count), size)]
-    with ProcessPoolExecutor(max_workers=max_workers, initializer=_init_search_worker,
+    # "spawn" explícito: no Linux o default é fork, e forkar um processo que já
+    # tem threads do torch/BLAS pode travar o filho (CPython avisa desde 3.12).
+    # run_tasks_on_gpus já usa spawn pelo mesmo motivo.
+    with ProcessPoolExecutor(max_workers=max_workers, mp_context=mp.get_context("spawn"),
+                             initializer=_init_search_worker,
                              initargs=(predictions, labels)) as executor:
         scored = list(executor.map(_score_subset, combinations,
                                    chunksize=max(1, len(combinations) // 100)))
@@ -121,21 +174,36 @@ def search_subset(predictions, labels, exhaustive=True, max_workers=None):
             if exhaustive else greedy_subset_search(predictions, labels))
 
 
-def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=None):
-    candidates = load_candidates(root, pool)
+def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=None,
+        splits=DEFAULT_SPLITS, subset="search"):
+    # `--strategy search` é apelido histórico do combinador `mean` (e --subset já
+    # é "search" por padrão), para não quebrar os comandos do README.
+    if strategy == "search":
+        strategy = "mean"
+    candidates = load_candidates(root, pool, splits)
     if not candidates:
-        raise ValueError("No candidates with aligned val/test/test_d outputs")
-    val_predictions = [candidate.arrays["val"]["probs"] for candidate in candidates]
-    val_labels = candidates[0].arrays["val"]["y_true"]
-    selected = (search_subset(val_predictions, val_labels, pool == "best-mode", max_workers)
-                if strategy == "search" else tuple(range(len(candidates))))
+        raise ValueError(
+            f"Nenhum candidato com outputs alinhados em {', '.join(splits)} sob {root}"
+        )
+    report_splits = tuple(candidates[0].arrays)
+    val_predictions = [candidate.arrays[SELECTION_SPLIT]["probs"] for candidate in candidates]
+    val_labels = candidates[0].arrays[SELECTION_SPLIT]["y_true"]
+    if subset == "search":
+        # Exaustivo enumera 2^N-1 subconjuntos: viável só para pools pequenos,
+        # independente de --pool (que agora só define o tamanho do pool).
+        exhaustive = len(candidates) <= EXHAUSTIVE_MAX_CANDIDATES
+        print(f"[ensemble] busca {'exaustiva' if exhaustive else 'greedy'} "
+              f"sobre {len(candidates)} candidatos")
+        selected = search_subset(val_predictions, val_labels, exhaustive, max_workers)
+    else:
+        selected = tuple(range(len(candidates)))
     selected_candidates = [candidates[index] for index in selected]
-    combine = "mean" if strategy == "search" else strategy
+    combine = strategy
     val_auc_weights = [candidate.val_auc for candidate in selected_candidates]
     output = Path(output_dir or output_root())
     output.mkdir(parents=True, exist_ok=True)
     report = []
-    for split in SPLITS:
+    for split in report_splits:
         arrays = [candidate.arrays[split] for candidate in selected_candidates]
         reference = arrays[0]
         if any(not np.array_equal(reference["ids"], value["ids"]) for value in arrays[1:]):
@@ -143,7 +211,7 @@ def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=
         split_predictions = [value["probs"] for value in arrays]
         if combine == "stacking":
             probabilities = STRATEGIES[combine](
-                [candidate.arrays["val"]["probs"] for candidate in selected_candidates],
+                [candidate.arrays[SELECTION_SPLIT]["probs"] for candidate in selected_candidates],
                 val_labels, split_predictions,
             )
         elif combine == "weighted":
@@ -156,7 +224,7 @@ def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=
             "prob_pos": probabilities, "y_pred": predictions,
         }).to_csv(output / f"ensemble_predictions_{split}.csv", index=False)
         report.append({
-            "split": split, "strategy": combine, "pool": pool,
+            "split": split, "strategy": combine, "subset": subset, "pool": pool,
             "members": len(selected_candidates),
             "member_names": ";".join(candidate.name for candidate in selected_candidates),
             "auc": safe_auc(reference["y_true"], probabilities),
@@ -168,14 +236,20 @@ def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Select ensembles on val and report held-out splits")
-    parser.add_argument("--strategy", default="search", choices=tuple(STRATEGIES) + ("search",))
+    parser.add_argument("--strategy", default="search", choices=tuple(STRATEGIES) + ("search",),
+                        help="combinador das probabilidades ('search' = apelido de mean + --subset search)")
+    parser.add_argument("--subset", default="search", choices=("search", "all"),
+                        help="buscar o melhor subconjunto no val ou usar o pool inteiro")
+    parser.add_argument("--splits", default=",".join(DEFAULT_SPLITS),
+                        help="splits desejados; os held-out sem outputs são ignorados")
     parser.add_argument("--pool", default="best-mode", choices=("best-mode", "all"))
     parser.add_argument("--models-root", default=None)
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--max-workers", type=int, default=None)
     args = parser.parse_args(argv)
+    splits = tuple(part.strip() for part in args.splits.split(",") if part.strip())
     print(run(args.models_root or models_root(), args.pool, args.strategy,
-              args.output_dir, args.max_workers).to_string(index=False))
+              args.output_dir, args.max_workers, splits, args.subset).to_string(index=False))
 
 
 if __name__ == "__main__":

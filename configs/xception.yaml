@@ -1,5 +1,4 @@
 model_family: xception
-architecture: xception
 image_size: 299
 epochs: 20
 threshold_strategy: accuracy

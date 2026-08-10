@@ -1,5 +1,7 @@
 model_family: dino
-architecture: dinov3_base
+# dino.py seleciona o backbone por model_size (convnext_<size>.dinov3_lvd1689m).
+# Antes isto era `architecture: dinov3_base`, que nenhum código lia.
+model_size: base
 threshold_strategy: f1
 mixup_alpha: 0.2
 use_class_weights: true

@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from transformers import ViTConfig, ViTModel
 from src.models._channel_adapt import adapt_conv2d_channels
+from src.models._hf_layers import encoder_layers
 
 class ViTClassifier(nn.Module):
     def __init__(self, backbone: ViTModel, dropout: float = .2):
@@ -23,7 +24,10 @@ def build(config) -> nn.Module:
         backbone = ViTModel(cfg)
     else:
         if not config.allow_pretrained: raise ValueError("External pretrained ViT weights are disabled")
-        backbone = ViTModel.from_pretrained("google/vit-base-patch16-224")
+        # safetensors explícito para nunca cair no caminho .bin, que o transformers
+        # recusa com torch < 2.6 (ver comentário em clip.py). Este repo já publica
+        # model.safetensors, então aqui é só garantia.
+        backbone = ViTModel.from_pretrained("google/vit-base-patch16-224", use_safetensors=True)
         pe = backbone.embeddings.patch_embeddings
         pe.projection = adapt_conv2d_channels(pe.projection, config.in_channels)
         pe.num_channels = config.in_channels
@@ -36,6 +40,6 @@ def freeze_backbone(model: nn.Module) -> None:
 
 def unfreeze_for_finetune(model: nn.Module, n: int) -> None:
     freeze_backbone(model)
-    layers = model.backbone.encoder.layer
+    layers = encoder_layers(model.backbone)
     for layer in layers[-n:] if n > 0 else []:
         for p in layer.parameters(): p.requires_grad = True

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import random
 from pathlib import Path
 
@@ -10,6 +11,7 @@ import torch.nn as nn
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+from src.pipelines.config import RUN_CONFIG_FILENAME
 from src.pipelines.evaluation import (
     best_threshold, checkpoint_score, evaluate_classifier, sanitize_inputs, sanitize_logits,
 )
@@ -116,6 +118,18 @@ class Trainer:
             weights = torch.where(counts > 0, counts.sum() / (2 * counts), torch.zeros_like(counts)).to(self.device)
         return nn.CrossEntropyLoss(weight=weights, label_smoothing=self.config.label_smoothing)
 
+    def _save_run_config(self) -> None:
+        """Grava a config do run como artefato próprio.
+
+        Fonte única de verdade para reconstruir a arquitetura depois (ver
+        ``checkpoints.config_from_run``). Fica fora de ``metrics_{split}.csv``
+        de propósito: aquele arquivo é reescrito por ``evaluate.py``, que não
+        conhece a config, e antes disso a reavaliação apagava os campos de que
+        dependia para reconstruir o modelo.
+        """
+        path = self.output_dir / "results" / RUN_CONFIG_FILENAME
+        path.write_text(json.dumps(self.config.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+
     def _save_split(self, split: str, metrics: dict, threshold: float) -> None:
         result_dir = self.output_dir / "results"
         row = {
@@ -123,8 +137,8 @@ class Trainer:
             "fourier_mode": self.config.fourier_mode,
             "regime": self.config.regime,
             "seed": self.config.seed,
+            "split": split,
             "threshold": threshold,
-            **self.config.to_dict(),
             **_scalar_metrics(metrics),
         }
         pd.DataFrame([row]).to_csv(result_dir / f"metrics_{split}.csv", index=False)
@@ -141,6 +155,7 @@ class Trainer:
         seed_everything(self.config.seed)
         for folder in ("weights", "results", "plots"):
             (self.output_dir / folder).mkdir(parents=True, exist_ok=True)
+        self._save_run_config()
         criterion = self._criterion()
         optimizer = self._optimizer()
         scheduler = ReduceLROnPlateau(optimizer, mode="max", patience=self.config.scheduler_patience)

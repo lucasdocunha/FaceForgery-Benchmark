@@ -11,6 +11,10 @@ FOURIER_CHANNELS = {
     "concat": 4, "frequency_3": 1, "concat_frequency": 6,
 }
 
+# Artefato gravado por Trainer.fit() em <run_dir>/results/ e lido por
+# checkpoints.config_from_run(): fonte única da config usada para reconstruir o modelo.
+RUN_CONFIG_FILENAME = "run_config.json"
+
 
 @dataclass
 class TrainingConfig:
@@ -50,7 +54,6 @@ class TrainingConfig:
     num_attention_heads: int = 8
     projection_dim: int = 128
     variant: str = "large"
-    dino_version: str = "v3"
     model_size: str = "base"
 
     @property
