@@ -214,6 +214,13 @@ def evaluate_trained_runs(models_root, data_dir, splits=("val", "test", "test_d"
                                           threshold=run.threshold, use_amp=device.type == "cuda",
                                           desc=f"{run.model_family}/{run.fourier_mode}/{split.name}")
             rows.append(_save_results(run, split.name, metrics))
+        # Libera a GPU entre runs: o laço percorre toda a matriz construindo um
+        # modelo novo por run, de resnet18 (11M) a DINOv3 base (88M), e tamanhos
+        # muito diferentes em sequência é justamente o caso que fragmenta o
+        # allocator. A branch pre-refatoracao fazia isso em evaluate_all_models.py.
+        del model
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
     frame = pd.DataFrame(rows)
     output = Path(output_csv or Path(models_root) / "all_metrics_by_split.csv")
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -1,4 +1,8 @@
 model_family: xception
-image_size: 299
+# Sem override de image_size: herda os 224 de base.yaml, como as outras 5 famílias.
+# A FFT é calculada em spatial_size=(image_size, image_size), então rodar só o
+# Xception a 299 (sua resolução canônica) colocaria magnitude/fase/passa-alta numa
+# grade diferente e confundiria resolução com arquitetura em toda comparação entre
+# modos. A branch pre-refatoracao rodou as 6 famílias a 224.
 epochs: 20
 threshold_strategy: accuracy

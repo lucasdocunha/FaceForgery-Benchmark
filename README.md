@@ -33,6 +33,21 @@ nvidia-smi --query-gpu=name,compute_cap --format=csv
 # compute_cap >= 12.0 -> repoint [[tool.uv.index]] in pyproject.toml to cu128 (torch >= 2.9), then `uv lock`
 ```
 
+### On machines with more than one GPU, prefer `run_matrix.py`
+
+`run_tasks_on_gpus` pins each worker to a single GPU via `CUDA_VISIBLE_DEVICES` and forces
+`multi_gpu=False`, so the matrix runs one GPU per process and never builds a `DataParallel`. That
+is the path that has actually been exercised.
+
+Running `train.py` directly on a multi-GPU box takes a different route: it inherits
+`multi_gpu: true` from `configs/base.yaml` and wraps the model in `DataParallel`, which has not
+been run in this project. For a single ad-hoc run there, either set `multi_gpu: false` in the
+config or pin the device:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python train.py --config configs/resnet.yaml --fourier none --regime scratch --seed 42
+```
+
 The pipeline uses environment variables instead of machine-specific profiles:
 
 - `TCC_DATASET_ROOT`: image root containing `trainset`, `valset`, and `testset`.
