@@ -298,6 +298,17 @@ uv run pytest -v
 
 ---
 
+## 👥 Authors & Contributors
+
+- **Lucas Cunha** ([lucas.ocunha@ppgia.pucpr.br](mailto:lucas.ocunha@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+- **Lucas Sotomaior** ([lucas.apereira@ppgia.pucpr.br](mailto:lucas.apereira@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+- **Lucas Gasperin** ([lucas.gasperin@pucpr.edu.br](mailto:lucas.gasperin@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+- **Beatriz Caldas** ([beatriz.caldas@pucpr.edu.br](mailto:beatriz.caldas@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+- **Eduardo Pianovski** ([eduardo.pianovski@pucpr.edu.br](mailto:eduardo.pianovski@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+- **Rayson Laroca** ([rayson@ppgia.pucpr.br](mailto:rayson@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+
+---
+
 ## 📖 Citation
 
 If you use this codebase or benchmark in your research, please cite our paper:
@@ -305,9 +316,10 @@ If you use this codebase or benchmark in your research, please cite our paper:
 ```bibtex
 @inproceedings{cunha2026benchmarking,
   title={Benchmarking Spatial, Spectral, and Self-Supervised Cues for Face Forgery Detection under Realistic Degradation},
-  author={da Cunha, Lucas and Collaborators},
+  author={Cunha, Lucas and Sotomaior, Lucas and Gasperin, Lucas and Caldas, Beatriz and Pianovski, Eduardo and Laroca, Rayson},
   booktitle={Proceedings of the Conference on Graphics, Patterns and Images (SIBGRAPI)},
-  year={2026}
+  year={2026},
+  organization={IEEE}
 }
 ```
 
@@ -316,4 +328,5 @@ If you use this codebase or benchmark in your research, please cite our paper:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 
