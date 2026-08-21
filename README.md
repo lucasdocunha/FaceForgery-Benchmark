@@ -300,12 +300,17 @@ uv run pytest -v
 
 ## 👥 Authors & Contributors
 
-- **Lucas Cunha** ([lucas.ocunha@ppgia.pucpr.br](mailto:lucas.ocunha@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
-- **Lucas Sotomaior** ([lucas.apereira@ppgia.pucpr.br](mailto:lucas.apereira@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
-- **Lucas Gasperin** ([lucas.gasperin@pucpr.edu.br](mailto:lucas.gasperin@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
-- **Beatriz Caldas** ([beatriz.caldas@pucpr.edu.br](mailto:beatriz.caldas@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
-- **Eduardo Pianovski** ([eduardo.pianovski@pucpr.edu.br](mailto:eduardo.pianovski@pucpr.edu.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
-- **Rayson Laroca** ([rayson@ppgia.pucpr.br](mailto:rayson@ppgia.pucpr.br)) — *Pontifical Catholic University of Paraná (PUCPR)*
+*Pontifical Catholic University of Paraná (PUCPR), Curitiba, PR, Brazil*
+
+| Author | Email | GitHub | LinkedIn |
+| :--- | :--- | :---: | :---: |
+| **Lucas Cunha** | [`lucas.ocunha@ppgia.pucpr.br`](mailto:lucas.ocunha@ppgia.pucpr.br) | [![GitHub](https://img.shields.io/badge/GitHub-lucasdocunha-181717?logo=github)](https://github.com/lucasdocunha) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/lucasdocunha/) |
+| **Lucas Sotomaior** | [`lucas.apereira@ppgia.pucpr.br`](mailto:lucas.apereira@ppgia.pucpr.br) | [![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?logo=github)](https://github.com/lucas-sotomaior) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/lucas-sotomaior/) |
+| **Lucas Gasperin** | [`lucas.gasperin@pucpr.edu.br`](mailto:lucas.gasperin@pucpr.edu.br) | [![GitHub](https://img.shields.io/badge/GitHub-Lucas--PG-181717?logo=github)](https://github.com/Lucas-PG) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/lucas-gasperin/) |
+| **Beatriz Caldas** | [`beatriz.caldas@pucpr.edu.br`](mailto:beatriz.caldas@pucpr.edu.br) | [![GitHub](https://img.shields.io/badge/GitHub-beatriz--caldas-181717?logo=github)](https://github.com/beatriz-caldas) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/beatriz-caldas/) |
+| **Eduardo Pianovski** | [`eduardo.pianovski@pucpr.edu.br`](mailto:eduardo.pianovski@pucpr.edu.br) | [![GitHub](https://img.shields.io/badge/GitHub-dudupnetto-181717?logo=github)](https://github.com/dudupnetto) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/eduardo-pianovski/) |
+| **Rayson Laroca** | [`rayson@ppgia.pucpr.br`](mailto:rayson@ppgia.pucpr.br) | [![GitHub](https://img.shields.io/badge/GitHub-raysonlaroca-181717?logo=github)](https://github.com/raysonlaroca) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0A66C2?logo=linkedin)](https://www.linkedin.com/in/raysonlaroca/) |
+
 
 ---
 
