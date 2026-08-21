@@ -26,3 +26,10 @@ min_dataset
 /models_finetuned/**
 !/models_finetuned/
 !/models_finetuned/.gitkeep
+
+/data/**
+!/data/
+!/data/.gitkeep
+
+.cache/
+
