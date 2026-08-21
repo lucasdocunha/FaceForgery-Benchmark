@@ -29,7 +29,7 @@ def generate_from_paths(checkpoint, image_paths, method="auto", grid_mode=False,
     heatmaps = generate(model, run.model_family, inputs, method)
     result = grid(display_batch, heatmaps) if grid_mode else overlay(display_batch[:1], heatmaps[:1])[0]
     default_name = f"{run.model_family}_{run.fourier_mode}_{run.regime}_seed_{run.seed}.png"
-    destination = Path(output or output_root() / "heatmaps" / default_name)
+    destination = Path(output or output_root() / "figures" / "heatmaps" / default_name)
     destination.parent.mkdir(parents=True, exist_ok=True)
     save_image(result, destination)
     return destination

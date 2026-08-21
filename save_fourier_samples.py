@@ -27,8 +27,8 @@ from plot_frequencia import (
     to_tensor,
 )
 
-OUT_DIR = Path(__file__).parent / "fourier_samples"
-OUT_DIR.mkdir(exist_ok=True)
+OUT_DIR = Path(__file__).parent / "figures" / "fourier" / "samples"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SAMPLES = [IMAGE_1, IMAGE_2]  # (path, label)
 

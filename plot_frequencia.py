@@ -280,9 +280,11 @@ def plot_all_modes(
         col_offset += n
  
     plt.tight_layout(pad=0.3)
-    plt.savefig("fourier_modes_comparison.png", dpi=150, bbox_inches="tight",
-                facecolor="#0d0d0d")
-    print("Salvo em: fourier_modes_comparison.png")
+    out_dir = Path(__file__).parent / "figures" / "fourier"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "fourier_modes_comparison.png"
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", facecolor="#0d0d0d")
+    print(f"Salvo em: {out_path}")
     plt.show()
  
  

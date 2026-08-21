@@ -200,7 +200,7 @@ def run(root, pool="best-mode", strategy="search", output_dir=None, max_workers=
     selected_candidates = [candidates[index] for index in selected]
     combine = strategy
     val_auc_weights = [candidate.val_auc for candidate in selected_candidates]
-    output = Path(output_dir or output_root())
+    output = Path(output_dir or output_root() / "results" / "ensemble")
     output.mkdir(parents=True, exist_ok=True)
     report = []
     for split in report_splits:

@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from pathlib import Path
 from PIL import Image
 from torchvision import transforms
 
@@ -203,6 +204,8 @@ fig.add_artist(plt.Line2D(
 ))
 
 plt.tight_layout()
-OUT = "fourier_transformacoes.pdf"
+OUT_DIR = Path(__file__).parent / "figures" / "fourier"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT = OUT_DIR / "fourier_transformacoes.pdf"
 plt.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white", pad_inches=0.08)
 print(f"Salvo em: {OUT}")

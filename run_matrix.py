@@ -1,33 +1,99 @@
+"""CLI entry point for running the complete benchmark training matrix across GPUs."""
+
 from __future__ import annotations
+
 import argparse
 from pathlib import Path
+from typing import Sequence
+
 from src.data.data import ALL_FOURIER_MODES
 from src.pipelines.config import load_config
 from src.utils.multiprocess import run_tasks_on_gpus
 from train import train_from_config
 
-FAMILIES=("resnet","xception","mobilenet","vit","clip","dino")
+FAMILIES = ("resnet", "xception", "mobilenet", "vit", "clip", "dino")
 
-# Relativo ao repositório, não ao cwd: jobs de Slurm rodam com o working directory
-# apontando para a sandbox do job (mesmo motivo dos paths fixos em src/data/paths.py).
-CONFIG_DIR=Path(__file__).resolve().parent/"configs"
+CONFIG_DIR = Path(__file__).resolve().parent / "configs"
 
-def build_tasks(regime, only=None):
-    families=tuple(only) if only else FAMILIES
-    unknown=[family for family in families if family not in FAMILIES]
+
+def build_tasks(regime: str, only: Sequence[str] | None = None) -> list[dict]:
+    """Build task list for all combinations of family x Fourier mode x seed."""
+    families = tuple(only) if only else FAMILIES
+    unknown = [family for family in families if family not in FAMILIES]
     if unknown:
-        raise ValueError(f"Famílias desconhecidas: {', '.join(unknown)}. Válidas: {', '.join(FAMILIES)}")
-    tasks=[]
+        raise ValueError(
+            f"Unknown model families: {', '.join(unknown)}. Valid families: {', '.join(FAMILIES)}"
+        )
+
+    tasks = []
     for family in families:
-        path=CONFIG_DIR/f"{family}.yaml"; config=load_config(path)
+        path = CONFIG_DIR / f"{family}.yaml"
+        config = load_config(path)
         for mode in ALL_FOURIER_MODES:
             for seed in config.seeds:
-                tasks.append({"fn":train_from_config,"name":f"{family}/{mode}/{regime}/seed_{seed}","kwargs":{"config_path":str(path),"fourier":mode,"regime":regime,"seed":seed}})
+                tasks.append(
+                    {
+                        "fn": train_from_config,
+                        "name": f"{family}/{mode}/{regime}/seed_{seed}",
+                        "kwargs": {
+                            "config_path": str(path),
+                            "fourier": mode,
+                            "regime": regime,
+                            "seed": seed,
+                        },
+                    }
+                )
     return tasks
-def main(argv=None):
-    p=argparse.ArgumentParser(); p.add_argument("--regime",required=True,choices=("scratch","finetune")); p.add_argument("--only"); p.add_argument("--gpus"); p.add_argument("--workers-per-gpu",type=int,default=1); p.add_argument("--dry-run",action="store_true"); a=p.parse_args(argv)
-    tasks=build_tasks(a.regime,a.only.split(",") if a.only else None)
-    if a.dry_run:
-        print("\n".join(t["name"] for t in tasks)); return
-    run_tasks_on_gpus(tasks,gpus=[int(x) for x in a.gpus.split(",")] if a.gpus else None,workers_per_gpu=a.workers_per_gpu)
-if __name__ == "__main__": main()
+
+
+def main(argv: Sequence[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description="Execute full benchmark matrix (6 families x 7 Fourier modes x 3 seeds) across available GPUs."
+    )
+    parser.add_argument(
+        "--regime",
+        required=True,
+        choices=("scratch", "finetune"),
+        help="Training regime: 'scratch' (from random init) or 'finetune' (pretrained weights).",
+    )
+    parser.add_argument(
+        "--only",
+        type=str,
+        default=None,
+        help="Comma-separated subset of model families to run (e.g. 'resnet,vit').",
+    )
+    parser.add_argument(
+        "--gpus",
+        type=str,
+        default=None,
+        help="Comma-separated list of GPU indices to distribute tasks on (e.g. '0,1,2,3').",
+    )
+    parser.add_argument(
+        "--workers-per-gpu",
+        type=int,
+        default=1,
+        help="Number of concurrent worker processes per GPU (default: 1).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print list of tasks to execute without launching training.",
+    )
+
+    args = parser.parse_args(argv)
+    only_families = [x.strip() for x in args.only.split(",")] if args.only else None
+    tasks = build_tasks(args.regime, only_families)
+
+    if args.dry_run:
+        print(f"Dry run: {len(tasks)} tasks scheduled:")
+        for t in tasks:
+            print(f"  - {t['name']}")
+        return
+
+    gpu_ids = [int(x.strip()) for x in args.gpus.split(",") if x.strip()] if args.gpus else None
+    run_tasks_on_gpus(tasks, gpus=gpu_ids, workers_per_gpu=args.workers_per_gpu)
+
+
+if __name__ == "__main__":
+    main()
+
