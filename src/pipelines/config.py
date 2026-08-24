@@ -71,7 +71,7 @@ class TrainingConfig:
         return result
 
     def validate(self) -> None:
-        if self.model_family not in {"resnet", "xception", "mobilenet", "vit", "clip", "dino"}:
+        if self.model_family not in {"resnet", "xception", "mobilenet", "vit", "clip", "dino", "hybrid"}:
             raise ValueError(f"Unknown model family: {self.model_family}")
         if self.fourier_mode not in FOURIER_CHANNELS:
             raise ValueError(f"Unknown Fourier mode: {self.fourier_mode}")

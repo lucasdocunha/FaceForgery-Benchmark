@@ -5,17 +5,11 @@ from typing import Callable
 
 import torch.nn as nn
 
-from src.models import clip, dino, mobilenet, resnet, vit, xception
+from src.models import clip, dino, hybrid, mobilenet, resnet, vit, xception
 
 ParameterGroups = list[dict[str, object]]
 
-
-# Prefixos ancorados na raiz do modelo. Todas as famílias expõem a cabeça como
-# `self.fc` (resnet/xception) ou `self.classifier` (mobilenet/vit/clip/dino).
-# Ancorar é obrigatório: um teste de substring também casaria `mlp.fc1`/`mlp.fc2`
-# (CLIP, ConvNeXt do DINOv3) e o squeeze-excitation `fc1`/`fc2` do MobileNetV3,
-# jogando a maior parte do backbone para o lr_head.
-_HEAD_PREFIXES = ("classifier.", "fc.", "head.")
+_HEAD_PREFIXES = ("classifier.", "fc.", "head.", "fusion.", "freq_branch.")
 
 
 def _default_parameter_groups(model: nn.Module, config: object) -> ParameterGroups:
@@ -46,7 +40,7 @@ MODEL_REGISTRY = {
     name: ModelSpec(module.build, module.freeze_backbone, module.unfreeze_for_finetune)
     for name, module in {
         "resnet": resnet, "xception": xception, "mobilenet": mobilenet,
-        "vit": vit, "clip": clip, "dino": dino,
+        "vit": vit, "clip": clip, "dino": dino, "hybrid": hybrid,
     }.items()
 }
 

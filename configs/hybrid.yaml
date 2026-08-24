@@ -1,0 +1,8 @@
+model_family: hybrid
+# hybrid.py usa DINOv3 + Ramo Espectral FFT com Cross-Attention
+model_size: base
+threshold_strategy: f1
+mixup_alpha: 0.2
+use_class_weights: true
+lr_head: 0.0005
+lr_backbone: 0.00005
