@@ -30,6 +30,12 @@ def _worker_fn(
         # If no GPU is assigned, force CPU mode
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
+    # Ensure file_system sharing strategy to avoid open file descriptor exhaustion
+    try:
+        torch.multiprocessing.set_sharing_strategy("file_system")
+    except Exception:
+        pass
+
     # 2. Configure logging inside the child process
     logging.basicConfig(
         level=log_level,
@@ -111,6 +117,10 @@ def run_tasks_on_gpus(
             logger.warning("No CUDA GPUs detected. Running on CPU.")
 
     # 2. Setup multiprocessing context (always use 'spawn' for CUDA safety)
+    try:
+        torch.multiprocessing.set_sharing_strategy("file_system")
+    except Exception:
+        pass
     ctx = mp.get_context("spawn")
 
     # 3. Create a task queue and load all tasks

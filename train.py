@@ -52,14 +52,35 @@ def build_loaders(config: TrainingConfig):
         )
         for split in ("train", "val", "test")
     }
-    common = {"batch_size": config.batch_size, "num_workers": config.num_workers,
-              "pin_memory": torch.cuda.is_available(), "persistent_workers": config.num_workers > 0}
-    train_options = ({"sampler": _balanced_sampler(datasets["train"], config.seed)}
-                     if config.use_weighted_sampler else {"shuffle": True})
+    common = {
+        "batch_size": config.batch_size,
+        "num_workers": config.num_workers,
+        "pin_memory": torch.cuda.is_available(),
+    }
+    train_options = (
+        {"sampler": _balanced_sampler(datasets["train"], config.seed)}
+        if config.use_weighted_sampler
+        else {"shuffle": True}
+    )
     return {
-        "train": DataLoader(datasets["train"], **train_options, **common),
-        "val": DataLoader(datasets["val"], shuffle=False, **common),
-        "test": DataLoader(datasets["test"], shuffle=False, **common),
+        "train": DataLoader(
+            datasets["train"],
+            persistent_workers=(config.num_workers > 0),
+            **train_options,
+            **common,
+        ),
+        "val": DataLoader(
+            datasets["val"],
+            shuffle=False,
+            persistent_workers=False,
+            **common,
+        ),
+        "test": DataLoader(
+            datasets["test"],
+            shuffle=False,
+            persistent_workers=False,
+            **common,
+        ),
     }
 
 
