@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import nullcontext
 import logging
+import sys
 from typing import Callable, Literal
 
 import numpy as np
@@ -186,7 +187,7 @@ def evaluate_classifier(
     losses, y_true, all_logits, all_ids = [], [], [], []
 
     with torch.no_grad():
-        for x, y, idx in tqdm(loader, desc=desc, leave=False):
+        for x, y, idx in tqdm(loader, desc=desc, leave=False, disable=not sys.stdout.isatty()):
             x = sanitize_inputs(x.to(device))
             y = y.to(device)
 

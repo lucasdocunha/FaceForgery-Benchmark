@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import random
+import time
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +12,8 @@ import torch
 import torch.nn as nn
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+logger = logging.getLogger(__name__)
 
 from src.pipelines.config import RUN_CONFIG_FILENAME
 from src.pipelines.evaluation import (
@@ -162,7 +166,11 @@ class Trainer:
         scaler = torch.amp.GradScaler("cuda", enabled=self.device.type == "cuda")
         best_score, best_threshold_value, stale, history = -float("inf"), .5, 0, []
 
+        task_tag = f"{self.config.model_family}/{self.config.fourier_mode}/{self.config.regime}/seed_{self.config.seed}"
+        logger.info(f"[{task_tag}] Starting training ({self.config.epochs} epochs) on {self.device}")
+
         for epoch in range(self.config.epochs):
+            epoch_start = time.time()
             self.model.train()
             losses = []
             for x, y, _ in self.train_loader:
@@ -182,7 +190,7 @@ class Trainer:
 
             validation = evaluate_classifier(
                 self.model, self.val_loader, criterion, self.device,
-                use_amp=self.device.type == "cuda", desc="Val",
+                use_amp=self.device.type == "cuda", desc=f"Val {task_tag}",
             )
             threshold, threshold_score = best_threshold(
                 validation["y_true"], validation["probs"], self.config.threshold_strategy,
@@ -190,19 +198,32 @@ class Trainer:
             score = checkpoint_score(validation)
             scheduler.step(score)
             self.epochs_completed = epoch + 1
+            train_loss_avg = float(np.mean(losses)) if losses else 0.0
             history.append({
-                "epoch": epoch + 1, "train_loss": float(np.mean(losses)) if losses else 0.0,
+                "epoch": epoch + 1, "train_loss": train_loss_avg,
                 "val_loss": validation["loss"], "val_auc": validation["auc"], "val_acc": validation["acc"],
                 "threshold": threshold, "threshold_score": threshold_score,
             })
-            if score > best_score:
+            epoch_time = time.time() - epoch_start
+            is_best = score > best_score
+            if is_best:
                 best_score, best_threshold_value, stale = score, threshold, 0
                 torch.save(model_state_dict(self.model), self.output_dir / "weights" / "best.pth")
             else:
                 stale += 1
-                if stale >= self.config.early_stop_patience:
-                    self.stopped_early = True
-                    break
+
+            best_mark = " [*BEST*]" if is_best else ""
+            logger.info(
+                f"[{task_tag}] Epoch {epoch + 1:02d}/{self.config.epochs:02d} ({epoch_time:.1f}s) | "
+                f"Train Loss: {train_loss_avg:.4f} | Val Loss: {validation['loss']:.4f} | "
+                f"Val AUC: {validation['auc']:.4f} | Val Acc: {validation['acc']:.4f} | "
+                f"Score: {score:.4f}{best_mark} (stale={stale}/{self.config.early_stop_patience})"
+            )
+
+            if stale >= self.config.early_stop_patience:
+                self.stopped_early = True
+                logger.info(f"[{task_tag}] Early stopping triggered at epoch {epoch + 1}.")
+                break
 
         torch.save(model_state_dict(self.model), self.output_dir / "weights" / "final.pth")
         unwrap_model(self.model).load_state_dict(torch.load(
@@ -210,11 +231,17 @@ class Trainer:
         ))
         validation = evaluate_classifier(
             self.model, self.val_loader, criterion, self.device, threshold=best_threshold_value,
-            use_amp=self.device.type == "cuda", desc="Val best",
+            use_amp=self.device.type == "cuda", desc=f"Val best {task_tag}",
         )
         test = evaluate_classifier(
             self.model, self.test_loader, criterion, self.device, threshold=best_threshold_value,
-            use_amp=self.device.type == "cuda", desc="Test",
+            use_amp=self.device.type == "cuda", desc=f"Test {task_tag}",
+        )
+        logger.info(
+            f"[{task_tag}] Final Test Results | "
+            f"AUC: {test['auc']:.4f} | Acc: {test['acc']:.4f} | F1: {test['f1']:.4f} | "
+            f"Prec: {test['precision']:.4f} | Rec: {test['recall']:.4f} | "
+            f"Threshold: {best_threshold_value:.4f}"
         )
         self._save_split("val", validation, best_threshold_value)
         self._save_split("test", test, best_threshold_value)
