@@ -33,7 +33,7 @@ def _transform(config: TrainingConfig, train: bool):
 
 
 def _balanced_sampler(dataset: ImageDataset, seed: int) -> WeightedRandomSampler:
-    labels = dataset.df.iloc[:, 1].astype(int).to_numpy()
+    labels = dataset.df.iloc[:, 1].astype(int).to_numpy(copy=True)
     counts = np.bincount(labels, minlength=2)
     class_weights = np.divide(1.0, counts, out=np.zeros(2, dtype=float), where=counts > 0)
     sample_weights = torch.as_tensor(class_weights[labels], dtype=torch.double)

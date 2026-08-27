@@ -109,7 +109,7 @@ class Trainer:
         if self.config.use_class_weights:
             dataset = self.train_loader.dataset
             if hasattr(dataset, "df"):
-                labels = torch.as_tensor(dataset.df.iloc[:, 1].astype(int).to_numpy())
+                labels = torch.as_tensor(dataset.df.iloc[:, 1].astype(int).to_numpy(copy=True))
             elif hasattr(dataset, "tensors") and len(dataset.tensors) > 1:
                 labels = dataset.tensors[1].long().cpu()
             else:
