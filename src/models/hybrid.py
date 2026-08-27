@@ -25,10 +25,17 @@ class FrequencyBranch(nn.Module):
         self.proj = nn.Linear(embed_dim, embed_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        fft = torch.fft.rfft2(x, norm="ortho")
-        mag = torch.abs(fft)
-        mag = nn.functional.interpolate(mag, size=(x.shape[2], x.shape[3]), mode="bilinear", align_corners=False)
-        feat_map = self.conv_net(mag)
+        # Forçar FP32 durante a FFT para evitar overflow em FP16 (AMP)
+        with torch.amp.autocast("cuda", enabled=False):
+            x_fp32 = x.float()
+            fft = torch.fft.rfft2(x_fp32, norm="ortho")
+            # Magnitude com epsilon para estabilidade de gradiente (evitar sqrt(0) -> NaN)
+            mag = torch.sqrt(fft.real.pow(2) + fft.imag.pow(2) + 1e-8)
+            mag = torch.log1p(mag)
+            mag = nn.functional.interpolate(
+                mag, size=(x.shape[2], x.shape[3]), mode="bilinear", align_corners=False
+            )
+        feat_map = self.conv_net(mag.to(dtype=x.dtype))
         tokens = feat_map.flatten(2).transpose(1, 2)
         return self.proj(tokens)
 
@@ -49,8 +56,8 @@ class CrossAttentionFusion(nn.Module):
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(embed_dim * 2, embed_dim),
-            nn.LayerNorm(embed_dim),
         )
+        self.norm_out = nn.LayerNorm(embed_dim)
 
     def forward(self, sem_tokens: torch.Tensor, freq_tokens: torch.Tensor) -> torch.Tensor:
         if sem_tokens.dim() == 2:
@@ -60,7 +67,7 @@ class CrossAttentionFusion(nn.Module):
         attn_out, _ = self.mha(query=q, key=kv, value=kv)
         gate_weight = self.gate(torch.cat([sem_tokens, attn_out], dim=-1))
         fused = sem_tokens + gate_weight * attn_out
-        out = fused + self.mlp(fused)
+        out = self.norm_out(fused + self.mlp(fused))
         return out.squeeze(1) if out.shape[1] == 1 else out.mean(dim=1)
 
 
