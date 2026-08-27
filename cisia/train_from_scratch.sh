@@ -22,6 +22,7 @@ export TCC_OUTPUT_ROOT=/home/lucas.ocunha/research/TCC
 
 # Ir para a pasta do repositório
 cd /home/lucas.ocunha/research/TCC
+git pull origin main
 
 echo "=========================================="
 echo "Job ID:        $SLURM_JOB_ID"
@@ -41,11 +42,12 @@ ulimit -n 65535
 # ==========================================
 # --gpus 0            : Usa a H100 alocada pelo Slurm
 # --workers-per-gpu 6 : Roda 6 modelos em paralelo na H100
-# 32 CPUs alocadas garantem que os 24 subprocessos de DataLoader rodem com alta vazão
+# --num-workers 2     : 2 workers por modelo (evita exaustão de semáforos/memória compartilhada)
 PYTHONUNBUFFERED=1 python -u run_matrix.py \
     --regime scratch \
     --gpus 0 \
-    --workers-per-gpu 6
+    --workers-per-gpu 6 \
+    --num-workers 2
 
 echo "=========================================="
 echo "Fim: $(date)"

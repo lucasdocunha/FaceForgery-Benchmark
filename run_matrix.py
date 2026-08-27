@@ -16,7 +16,11 @@ FAMILIES = ("resnet", "xception", "mobilenet", "vit", "clip", "dino")
 CONFIG_DIR = Path(__file__).resolve().parent / "configs"
 
 
-def build_tasks(regime: str, only: Sequence[str] | None = None) -> list[dict]:
+def build_tasks(
+    regime: str,
+    only: Sequence[str] | None = None,
+    num_workers: int | None = None,
+) -> list[dict]:
     """Build task list for all combinations of family x Fourier mode x seed."""
     families = tuple(only) if only else FAMILIES
     unknown = [family for family in families if family not in FAMILIES]
@@ -31,16 +35,19 @@ def build_tasks(regime: str, only: Sequence[str] | None = None) -> list[dict]:
         config = load_config(path)
         for mode in ALL_FOURIER_MODES:
             for seed in config.seeds:
+                kwargs = {
+                    "config_path": str(path),
+                    "fourier": mode,
+                    "regime": regime,
+                    "seed": seed,
+                }
+                if num_workers is not None:
+                    kwargs["num_workers"] = num_workers
                 tasks.append(
                     {
                         "fn": train_from_config,
                         "name": f"{family}/{mode}/{regime}/seed_{seed}",
-                        "kwargs": {
-                            "config_path": str(path),
-                            "fourier": mode,
-                            "regime": regime,
-                            "seed": seed,
-                        },
+                        "kwargs": kwargs,
                     }
                 )
     return tasks
@@ -75,6 +82,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         help="Number of concurrent worker processes per GPU (default: 1).",
     )
     parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=None,
+        help="DataLoader num_workers per training task (e.g. 2, 1, or 0).",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print list of tasks to execute without launching training.",
@@ -82,7 +95,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     args = parser.parse_args(argv)
     only_families = [x.strip() for x in args.only.split(",")] if args.only else None
-    tasks = build_tasks(args.regime, only_families)
+    tasks = build_tasks(args.regime, only_families, num_workers=args.num_workers)
 
     if args.dry_run:
         print(f"Dry run: {len(tasks)} tasks scheduled:")

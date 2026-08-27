@@ -22,6 +22,7 @@ export TCC_OUTPUT_ROOT=/home/lucas.ocunha/research/TCC
 
 # Ir para a pasta do repositório
 cd /home/lucas.ocunha/research/TCC
+git pull origin main
 
 echo "=========================================="
 echo "Job ID:        $SLURM_JOB_ID"

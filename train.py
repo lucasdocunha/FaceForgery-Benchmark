@@ -85,13 +85,14 @@ def build_loaders(config: TrainingConfig):
 
 
 def train_from_config(config_path, fourier=None, regime=None, seed=None, epochs=None,
-                      data_limit=None, raw_min=None, multi_gpu=None):
+                      data_limit=None, raw_min=None, multi_gpu=None, num_workers=None):
     # multi_gpu=None (e não True) para que `multi_gpu: false` no YAML seja respeitado:
     # load_config trata todo override não-None como explícito. run_tasks_on_gpus
     # continua forçando multi_gpu=False por worker.
     config = load_config(config_path, {
         "fourier_mode": fourier, "regime": regime, "seed": seed, "epochs": epochs,
         "data_limit": data_limit, "raw_min": raw_min, "multi_gpu": multi_gpu,
+        "num_workers": num_workers,
     })
     seed_everything(config.seed)
     spec = get_model_spec(config.model_family)
@@ -114,8 +115,18 @@ def main(argv=None):
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--data-limit", type=int)
     parser.add_argument("--raw-min", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--num-workers", type=int, default=None)
     args = parser.parse_args(argv)
-    train_from_config(args.config, args.fourier, args.regime, args.seed, args.epochs, args.data_limit, args.raw_min)
+    train_from_config(
+        args.config,
+        args.fourier,
+        args.regime,
+        args.seed,
+        args.epochs,
+        args.data_limit,
+        args.raw_min,
+        num_workers=args.num_workers,
+    )
 
 
 if __name__ == "__main__":
