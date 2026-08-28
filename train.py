@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -107,6 +108,11 @@ def train_from_config(config_path, fourier=None, regime=None, seed=None, epochs=
 
 
 def main(argv=None):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     parser = argparse.ArgumentParser(description="Train one configured run")
     parser.add_argument("--config", required=True, type=Path)
     parser.add_argument("--fourier")

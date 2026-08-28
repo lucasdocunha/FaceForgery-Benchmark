@@ -167,13 +167,19 @@ class Trainer:
         best_score, best_threshold_value, stale, history = -float("inf"), .5, 0, []
 
         task_tag = f"{self.config.model_family}/{self.config.fourier_mode}/{self.config.regime}/seed_{self.config.seed}"
-        logger.info(f"[{task_tag}] Starting training ({self.config.epochs} epochs) on {self.device}")
+        num_batches = len(self.train_loader) if hasattr(self.train_loader, "__len__") else None
+        logger.info(
+            f"[{task_tag}] Starting training | Epochs: {self.config.epochs} | "
+            f"LR head: {self.config.lr_head} | LR backbone: {self.config.lr_backbone} | "
+            f"Batch size: {self.config.batch_size} | Batches/epoch: {num_batches} | Device: {self.device}"
+        )
 
         for epoch in range(self.config.epochs):
             epoch_start = time.time()
             self.model.train()
             losses = []
-            for x, y, _ in self.train_loader:
+            log_interval = max(1, num_batches // 4) if num_batches else 100
+            for step, (x, y, _) in enumerate(self.train_loader, 1):
                 x, y = sanitize_inputs(x.to(self.device)), y.to(self.device)
                 optimizer.zero_grad(set_to_none=True)
                 x, y_a, y_b, lam = apply_mixup_or_cutmix(x, y, self.config.mixup_alpha, self.config.cutmix_alpha)
@@ -187,6 +193,14 @@ class Trainer:
                 scaler.step(optimizer)
                 scaler.update()
                 losses.append(float(loss.detach().item()))
+
+                if num_batches and (step % log_interval == 0 or step == num_batches):
+                    pct = 100.0 * step / num_batches
+                    logger.info(
+                        f"[{task_tag}] Epoch {epoch + 1:02d}/{self.config.epochs:02d} | "
+                        f"Step {step:04d}/{num_batches:04d} ({pct:5.1f}%) | "
+                        f"Loss: {loss.detach().item():.4f} (avg: {np.mean(losses):.4f})"
+                    )
 
             validation = evaluate_classifier(
                 self.model, self.val_loader, criterion, self.device,

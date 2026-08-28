@@ -38,11 +38,20 @@ def sanitize_inputs(x: torch.Tensor) -> torch.Tensor:
     return torch.nan_to_num(x, nan=0.0, posinf=1.0, neginf=-1.0)
 
 
+_sanitize_warn_count = 0
+
+
 def sanitize_logits(logits: torch.Tensor, limit: float = LOGIT_LIMIT) -> torch.Tensor:
+    global _sanitize_warn_count
     logits = logits.float()
     if torch.isfinite(logits).all():
         return logits
-    logger.warning("Replacing non-finite logits before loss/metric computation.")
+    _sanitize_warn_count += 1
+    if _sanitize_warn_count <= 5 or _sanitize_warn_count % 100 == 0:
+        non_finite_count = (~torch.isfinite(logits)).sum().item()
+        logger.warning(
+            f"Non-finite logits detected ({non_finite_count}/{logits.numel()} values NaN/Inf, event #{_sanitize_warn_count}). Clamping to [-{limit}, {limit}]."
+        )
     return torch.nan_to_num(
         logits,
         nan=0.0,

@@ -37,9 +37,11 @@ def _worker_fn(
         pass
 
     # 2. Configure logging inside the child process
+    effective_level = log_level if log_level <= logging.INFO else logging.INFO
     logging.basicConfig(
-        level=log_level,
+        level=effective_level,
         format=f"%(asctime)s [Worker GPU {gpu_id if gpu_id is not None else 'CPU'}] [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
         force=True,  # Resets the root logger configuration
     )
     

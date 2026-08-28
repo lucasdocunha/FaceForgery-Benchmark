@@ -73,11 +73,11 @@ class CrossAttentionFusion(nn.Module):
 
 class HybridVisionClassifier(nn.Module):
     """Classificador Híbrido Padronizado: Backbone DINOv3 + Ramo Espectral + Cross Attention."""
-    def __init__(self, backbone: nn.Module, dropout: float = 0.2):
+    def __init__(self, backbone: nn.Module, in_channels: int = 3, dropout: float = 0.2):
         super().__init__()
         self.backbone = backbone
         self.embed_dim = backbone.num_features
-        self.freq_branch = FrequencyBranch(embed_dim=self.embed_dim)
+        self.freq_branch = FrequencyBranch(embed_dim=self.embed_dim, in_channels=in_channels)
         self.fusion = CrossAttentionFusion(embed_dim=self.embed_dim, num_heads=8, dropout=dropout)
         self.classifier = nn.Sequential(
             nn.LayerNorm(self.embed_dim),
@@ -117,7 +117,7 @@ def build(config) -> nn.Module:
     if config.in_channels != 3:
         path = "stem.0" if hasattr(backbone, "stem") else "patch_embed.proj"
         replace_conv2d(backbone, path, config.in_channels)
-    return HybridVisionClassifier(backbone, config.dropout)
+    return HybridVisionClassifier(backbone, in_channels=config.in_channels, dropout=config.dropout)
 
 
 def freeze_backbone(model: nn.Module) -> None:

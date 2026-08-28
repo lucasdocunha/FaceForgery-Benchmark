@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from pathlib import Path
 from typing import Sequence
 
@@ -54,6 +55,11 @@ def build_tasks(
 
 
 def main(argv: Sequence[str] | None = None) -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     parser = argparse.ArgumentParser(
         description="Execute full benchmark matrix (6 families x 7 Fourier modes x 3 seeds) across available GPUs."
     )
