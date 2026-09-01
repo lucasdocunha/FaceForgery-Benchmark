@@ -12,7 +12,7 @@ Official implementation and reproducibility benchmark for the paper:
 
 ---
 
-## 📌 Abstract & Scientific Overview
+## Abstract & Scientific Overview
 
 Face forgery detection models often demonstrate near-perfect accuracy on clean, uncompressed benchmarks but suffer catastrophic performance drops when deployed in real-world scenarios plagued by social media compression, noise, resizing, and blur.
 
@@ -40,7 +40,7 @@ This repository provides a unified, rigorous, and fully reproducible benchmark e
 
 ---
 
-## 🏗️ Repository Architecture
+## Repository Architecture
 
 ```text
 ├── configs/                  # Model and training YAML configurations
@@ -86,7 +86,7 @@ This repository provides a unified, rigorous, and fully reproducible benchmark e
 
 ---
 
-## ⚡ Environment Setup
+## Environment Setup
 
 ### 1. Requirements
 
@@ -123,7 +123,7 @@ pip install -r requirements.txt --extra-index-url https://download.pytorch.org/w
 
 ---
 
-## 📂 Data Preparation & Environment Variables
+## Data Preparation & Environment Variables
 
 The pipeline supports both local directories and cluster environments via environment variables:
 
@@ -144,7 +144,7 @@ export TCC_OUTPUT_ROOT="/path/to/tcc"
 
 ---
 
-## 🚀 Step-by-Step Reproduction Guide
+## Step-by-Step Reproduction Guide
 
 ### Step 1: Smoke Testing (Local Verification)
 
@@ -275,7 +275,7 @@ uv run python save_fourier_samples.py
 
 ---
 
-## 📊 Summary of Main Findings
+## Summary of Main Findings
 
 1. **Clean vs. Degraded Generalization Gap**:
    - Classical detectors like Xception achieve high ROC-AUC on clean data ($\approx 0.884$) but suffer severe performance collapse under realistic degradation ($\approx 0.582$).
@@ -288,7 +288,7 @@ uv run python save_fourier_samples.py
 
 ---
 
-## 🧪 Test Suite
+## Test Suite
 
 The project includes an extensive suite of **50 automated tests** covering data loaders, 2D FFT transformations, first-layer channel adaptation, architecture smoke tests, checkpoint safety, ensemble strategies, table generation, and end-to-end workflows:
 
@@ -298,7 +298,7 @@ uv run pytest -v
 
 ---
 
-## 👥 Authors & Contributors
+## Authors & Contributors
 
 *Pontifical Catholic University of Paraná (PUCPR), Curitiba, PR, Brazil*
 
@@ -315,7 +315,7 @@ uv run pytest -v
 
 ---
 
-## 📖 Citation
+## Citation
 
 If you use this codebase or benchmark in your research, please cite our paper:
 
@@ -331,7 +331,7 @@ If you use this codebase or benchmark in your research, please cite our paper:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
