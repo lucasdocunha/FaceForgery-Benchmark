@@ -9,6 +9,7 @@ from torchvision.utils import make_grid
 
 CNN_FAMILIES = {"resnet", "xception", "mobilenet"}
 TRANSFORMER_FAMILIES = {"vit", "clip", "dino"}
+MOE_FAMILIES = {"moe_standard", "moe_frequency"}
 
 
 def _normalize(heatmap: torch.Tensor) -> torch.Tensor:
@@ -86,22 +87,259 @@ def attention_rollout(model: nn.Module, image: torch.Tensor) -> torch.Tensor:
     return _normalize(F.interpolate(heatmap, image.shape[-2:], mode="bilinear", align_corners=False))
 
 
-def generate(model: nn.Module, family: str, image: torch.Tensor, method: str = "auto") -> torch.Tensor:
-    if family not in CNN_FAMILIES | TRANSFORMER_FAMILIES:
+def gradient_shap(
+    model: nn.Module,
+    image: torch.Tensor,
+    target_class: int | None = None,
+    baselines: torch.Tensor | None = None,
+    n_steps: int = 32,
+    stdevs: float = 0.0,
+    **_kwargs,
+) -> torch.Tensor:
+    """Path-integrated Shapley values (Gradient SHAP / Integrated Gradients).
+
+    Approximates Shapley values over a straight path between baseline and input,
+    satisfying efficiency, symmetry, linearity, and dummy axioms.
+    """
+    model = _unwrap(model)
+    was_training = model.training
+    model.eval()
+    device = image.device
+    batch_size = image.shape[0]
+
+    if baselines is None:
+        baselines = torch.zeros_like(image)
+    elif baselines.shape != image.shape:
+        baselines = baselines.expand_as(image)
+
+    alphas = torch.linspace(0.0, 1.0, max(2, n_steps), device=device)
+    accumulated_grads = torch.zeros_like(image)
+
+    for alpha in alphas:
+        interpolated = baselines + alpha * (image - baselines)
+        if stdevs > 0.0:
+            interpolated = interpolated + torch.randn_like(interpolated) * stdevs
+        interpolated = interpolated.detach().requires_grad_(True)
+
+        logits = model(interpolated)
+        if target_class is None:
+            targets = logits.argmax(dim=-1)
+        else:
+            targets = torch.full((batch_size,), target_class, device=device, dtype=torch.long)
+
+        score = logits.gather(1, targets.unsqueeze(1)).sum()
+        grads = torch.autograd.grad(score, interpolated, retain_graph=False)[0]
+        accumulated_grads += grads
+
+    if was_training:
+        model.train()
+
+    avg_grads = accumulated_grads / len(alphas)
+    attribution = (image - baselines) * avg_grads
+    heatmap = attribution.abs().sum(dim=1, keepdim=True)
+    return _normalize(heatmap)
+
+
+def kernel_shap(
+    model: nn.Module,
+    image: torch.Tensor,
+    target_class: int | None = None,
+    patch_size: int = 16,
+    n_samples: int = 128,
+    baseline_value: float = 0.0,
+    **_kwargs,
+) -> torch.Tensor:
+    """Superpixel / patch-based Kernel SHAP.
+
+    Perturbs image patches to estimate Shapley values via weighted least squares.
+    """
+    model = _unwrap(model)
+    was_training = model.training
+    model.eval()
+    device = image.device
+    batch_size, channels, height, width = image.shape
+
+    grid_h = max(1, height // patch_size)
+    grid_w = max(1, width // patch_size)
+    n_features = grid_h * grid_w
+
+    heatmaps = []
+
+    with torch.no_grad():
+        for b in range(batch_size):
+            img_b = image[b:b + 1]
+            base_b = torch.full_like(img_b, baseline_value)
+
+            orig_logits = model(img_b)
+            cls_idx = orig_logits.argmax(dim=-1).item() if target_class is None else target_class
+            f_base = model(base_b)[0, cls_idx].item()
+
+            if n_features == 1:
+                heatmaps.append(torch.ones(1, 1, height, width, device=device))
+                continue
+
+            p_probs = torch.rand(n_samples, device=device)
+            masks = (torch.rand(n_samples, n_features, device=device) < p_probs[:, None]).float()
+            subset_sizes = masks.sum(dim=1).clamp(1, n_features - 1)
+
+            log_comb = (
+                torch.lgamma(torch.tensor(n_features + 1, dtype=torch.float, device=device))
+                - torch.lgamma(subset_sizes + 1)
+                - torch.lgamma(torch.tensor(n_features, dtype=torch.float, device=device) - subset_sizes + 1)
+            )
+            weights = (n_features - 1) / (torch.exp(log_comb) * subset_sizes * (n_features - subset_sizes)).clamp_min(1e-12)
+            weights = weights / weights.sum()
+
+            perturbed_imgs = []
+            for s in range(n_samples):
+                mask_2d = masks[s].view(1, 1, grid_h, grid_w)
+                mask_full = F.interpolate(mask_2d, size=(height, width), mode="nearest")
+                perturbed = img_b * mask_full + base_b * (1.0 - mask_full)
+                perturbed_imgs.append(perturbed[0])
+
+            perturbed_batch = torch.stack(perturbed_imgs)
+            eval_batch_size = 32
+            out_scores = []
+            for start_idx in range(0, n_samples, eval_batch_size):
+                sub_batch = perturbed_batch[start_idx:start_idx + eval_batch_size]
+                sub_out = model(sub_batch)[:, cls_idx]
+                out_scores.append(sub_out)
+            y_diff = torch.cat(out_scores) - f_base
+
+            W_sqrt = torch.sqrt(weights).unsqueeze(1)
+            Zw = masks * W_sqrt
+            yw = y_diff * W_sqrt.squeeze(1)
+            reg = 1e-4 * torch.eye(n_features, device=device)
+            beta = torch.linalg.solve(Zw.T @ Zw + reg, Zw.T @ yw)
+
+            beta_grid = beta.view(1, 1, grid_h, grid_w)
+            heat_b = F.interpolate(beta_grid, size=(height, width), mode="bilinear", align_corners=False)
+            heatmaps.append(torch.relu(heat_b))
+
+    if was_training:
+        model.train()
+
+    res = torch.cat(heatmaps, dim=0)
+    return _normalize(res)
+
+
+def channel_shapley(
+    model: nn.Module,
+    image: torch.Tensor,
+    target_class: int | None = None,
+    domains: dict[str, tuple[int, int]] | None = None,
+    baseline_value: float = 0.0,
+) -> dict[str, float] | list[dict[str, float]]:
+    """Exact Shapley values across input channels/domains (e.g. RGB, Mag, Phase, HighPass).
+
+    Computes exact marginal contributions across all 2^|N| coalitions.
+    """
+    import math
+    from itertools import combinations
+
+    model = _unwrap(model)
+    was_training = model.training
+    model.eval()
+    batch_size, total_channels, _, _ = image.shape
+
+    if domains is None:
+        if total_channels == 6:
+            domains = {
+                "spatial_rgb": (0, 3),
+                "fft_magnitude": (3, 4),
+                "fft_phase": (4, 5),
+                "fft_highpass": (5, 6),
+            }
+        else:
+            domains = {f"channel_{c}": (c, c + 1) for c in range(total_channels)}
+
+    domain_names = list(domains.keys())
+    n_domains = len(domain_names)
+    results = []
+
+    with torch.no_grad():
+        for b in range(batch_size):
+            img_b = image[b:b + 1]
+            base_b = torch.full_like(img_b, baseline_value)
+
+            cls_idx = (
+                model(img_b).argmax(dim=-1).item()
+                if target_class is None
+                else target_class
+            )
+
+            coalition_values = {}
+            for mask_int in range(1 << n_domains):
+                x_coalition = base_b.clone()
+                active_set = []
+                for idx, name in enumerate(domain_names):
+                    if (mask_int >> idx) & 1:
+                        c_start, c_end = domains[name]
+                        x_coalition[:, c_start:c_end] = img_b[:, c_start:c_end]
+                        active_set.append(idx)
+                score = model(x_coalition)[0, cls_idx].item()
+                coalition_values[frozenset(active_set)] = score
+
+            shapley_values = {}
+            all_indices = set(range(n_domains))
+            for i, name in enumerate(domain_names):
+                phi_i = 0.0
+                others = all_indices - {i}
+                for s_len in range(n_domains):
+                    weight = math.factorial(s_len) * math.factorial(n_domains - s_len - 1) / math.factorial(n_domains)
+                    for subset in combinations(others, s_len):
+                        s_frozen = frozenset(subset)
+                        s_with_i = s_frozen | {i}
+                        marginal = coalition_values[s_with_i] - coalition_values[s_frozen]
+                        phi_i += weight * marginal
+                shapley_values[name] = float(phi_i)
+
+            results.append(shapley_values)
+
+    if was_training:
+        model.train()
+
+    return results[0] if batch_size == 1 else results
+
+
+def generate(
+    model: nn.Module,
+    family: str,
+    image: torch.Tensor,
+    method: str = "auto",
+    target_class: int | None = None,
+    **kwargs,
+) -> torch.Tensor:
+    all_families = CNN_FAMILIES | TRANSFORMER_FAMILIES | MOE_FAMILIES
+    if family not in all_families:
         raise ValueError(f"Unknown model family: {family}")
+
     if method == "auto":
-        method = "gradcam" if family in CNN_FAMILIES else "attention"
+        if family in MOE_FAMILIES:
+            method = "shapley"
+        elif family in CNN_FAMILIES:
+            method = "gradcam"
+        else:
+            method = "attention"
+
+    if method in ("shapley", "gradient_shap"):
+        return gradient_shap(model, image, target_class=target_class, **kwargs)
+    if method == "kernel_shap":
+        return kernel_shap(model, image, target_class=target_class, **kwargs)
     if method == "gradcam":
-        return grad_cam(model, image)
+        return grad_cam(model, image, target_class=target_class, **kwargs)
     if method != "attention":
-        raise ValueError("method must be auto, gradcam, or attention")
+        raise ValueError(
+            f"method must be auto, gradcam, attention, shapley, gradient_shap, or kernel_shap (got {method})"
+        )
+
     try:
         return attention_rollout(model, image)
     except ValueError:
-        if family != "dino":
+        if family not in ("dino", *MOE_FAMILIES):
             raise
-        warnings.warn("DINOv3 ConvNeXt has no attention matrices; using Grad-CAM.", stacklevel=2)
-        return grad_cam(model, image)
+        warnings.warn(f"{family} has no attention matrices; falling back to Gradient SHAP.", stacklevel=2)
+        return gradient_shap(model, image, target_class=target_class, **kwargs)
 
 
 def overlay(display_image: torch.Tensor, heatmap: torch.Tensor) -> torch.Tensor:

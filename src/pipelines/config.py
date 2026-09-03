@@ -55,6 +55,10 @@ class TrainingConfig:
     projection_dim: int = 128
     variant: str = "large"
     model_size: str = "base"
+    expert_family: str = "mobilenet"
+    num_experts: int = 4
+    routing_strategy: str = "dense"
+    top_k: int = 2
 
     @property
     def in_channels(self) -> int:
@@ -71,7 +75,8 @@ class TrainingConfig:
         return result
 
     def validate(self) -> None:
-        if self.model_family not in {"resnet", "xception", "mobilenet", "vit", "clip", "dino"}:
+        valid_families = {"resnet", "xception", "mobilenet", "vit", "clip", "dino", "moe_frequency", "moe_standard"}
+        if self.model_family not in valid_families:
             raise ValueError(f"Unknown model family: {self.model_family}")
         if self.fourier_mode not in FOURIER_CHANNELS:
             raise ValueError(f"Unknown Fourier mode: {self.fourier_mode}")

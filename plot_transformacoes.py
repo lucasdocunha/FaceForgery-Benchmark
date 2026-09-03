@@ -18,9 +18,12 @@ plt.rcParams.update({
     "font.sans-serif": ["DejaVu Sans", "Arial", "Helvetica"],
 })
 
+from src.data.paths import phase1_split_root
+
+_test_dir = phase1_split_root("test")
 SOURCE_IMAGES = {
-    0: "/media/ssd2/lucas.ocunha/datasets/phase1/testset/fc04255bec1f4591236af2617ee93f50.jpg",
-    1: "/media/ssd2/lucas.ocunha/datasets/phase1/testset/70fac01d89420724e00dfc3e53370fa7.jpg",
+    0: str(_test_dir / "fc04255bec1f4591236af2617ee93f50.jpg"),
+    1: str(_test_dir / "70fac01d89420724e00dfc3e53370fa7.jpg"),
 }
 SPATIAL_SIZE = (128, 128)
 

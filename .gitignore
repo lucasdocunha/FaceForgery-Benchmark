@@ -32,4 +32,6 @@ min_dataset
 !/data/.gitkeep
 
 .cache/
+logs/
+*.log
 

@@ -1,0 +1,9 @@
+model_family: moe_standard
+fourier_mode: none
+num_experts: 4
+variant: small
+expert_family: mobilenet
+routing_strategy: dense
+epochs: 20
+batch_size: 16
+threshold_strategy: balanced_accuracy

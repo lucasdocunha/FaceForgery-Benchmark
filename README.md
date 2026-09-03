@@ -129,7 +129,7 @@ The pipeline supports both local directories and cluster environments via enviro
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `TCC_DATASET_ROOT` | Root directory containing image folders (`trainset/`, `valset/`, `testset/`) | `/media/ssd2/lucas.ocunha/datasets/phase1` |
+| `TCC_DATASET_ROOT` | Root directory containing image folders (`trainset/`, `valset/`, `testset/`) | `<repo>/data/datasets/phase1` |
 | `TCC_DATA_ROOT` | Root directory containing CSV split manifests (`raw/` and `raw_min/`) | `<repo>/data` |
 | `TCC_MODELS_ROOT` | Directory where trained checkpoints and metrics are saved | `<repo>/models` |
 | `TCC_OUTPUT_ROOT` | Root directory for outputs (`figures/` and `results/`) | `<repo>` |
