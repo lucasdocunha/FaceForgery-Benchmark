@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 REGIME="${1:-scratch}"
-WORKERS="${2:-2}"
+WORKERS="${2:-1}"
 
 echo "=========================================================="
 echo "Submetendo 6 jobs ao Slurm CISIA (Regime: $REGIME, Workers: $WORKERS)"

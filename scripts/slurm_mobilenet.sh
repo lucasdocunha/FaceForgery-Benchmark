@@ -29,7 +29,7 @@ cd /users/home/lucas.ocunha/research/TCC
 export PYTHONUNBUFFERED=1
 
 REGIME="${1:-scratch}"
-WORKERS="${2:-2}"
+WORKERS="${2:-1}"
 
 echo "=========================================================="
 echo "Job ID: $SLURM_JOB_ID | Nó: $(hostname)"

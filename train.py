@@ -14,6 +14,13 @@ from src.models.registry import get_model_spec
 from src.pipelines.config import TrainingConfig, load_config
 from src.pipelines.training import Trainer, seed_everything
 
+# In cluster/container environments where /dev/shm may be restricted or missing,
+# use file system sharing strategy for DataLoaders instead of POSIX semaphores.
+try:
+    torch.multiprocessing.set_sharing_strategy("file_system")
+except Exception:
+    pass
+
 
 def _transform(config: TrainingConfig, train: bool):
     operations = []

@@ -110,6 +110,48 @@ def run_tasks_on_gpus(
             gpus = []
             logger.warning("No CUDA GPUs detected. Running on CPU.")
 
+    # Determine workers pool based on GPUs or CPU count
+    if len(gpus) > 0:
+        worker_gpus = [gpu_id for gpu_id in gpus for _ in range(workers_per_gpu)]
+        num_workers = len(worker_gpus)
+        logger.info(
+            f"Configured {num_workers} workers ({workers_per_gpu} per GPU), "
+            f"mapping to physical GPUs: {gpus}"
+        )
+    else:
+        # Fallback to CPU with a pool of processes
+        num_workers = max(1, os.cpu_count() // 2)
+        worker_gpus = [None] * num_workers
+        logger.info(f"Configured {num_workers} CPU workers.")
+
+    # If only 1 worker is needed, run sequentially in the main process to completely
+    # bypass multiprocessing, IPC queues, and /dev/shm SemLock constraints.
+    if num_workers == 1:
+        gpu_id = worker_gpus[0]
+        if gpu_id is not None:
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+            if torch.cuda.is_available():
+                torch.cuda.set_device(0)
+        logger.info(f"Single worker mode (GPU {gpu_id}): executing tasks sequentially in main process.")
+        for task_info in tasks:
+            fn = task_info["fn"]
+            name = task_info.get("name", fn.__name__)
+            args = task_info.get("args", ())
+            kwargs = dict(task_info.get("kwargs", {}))
+            kwargs["multi_gpu"] = False
+            logger.info(f"===> Starting task: {name}")
+            start_time = time.time()
+            try:
+                fn(*args, **kwargs)
+                elapsed = time.time() - start_time
+                logger.info(f"===> Completed task: {name} in {elapsed:.2f}s")
+            except Exception as e:
+                elapsed = time.time() - start_time
+                logger.error(f"===> Failed task: {name} after {elapsed:.2f}s with error: {e}")
+                traceback.print_exc()
+        logger.info("All tasks finished execution.")
+        return
+
     # 2. Setup multiprocessing context (always use 'spawn' for CUDA safety)
     ctx = mp.get_context("spawn")
 
@@ -121,20 +163,6 @@ def run_tasks_on_gpus(
         args = task_info.get("args", ())
         kwargs = task_info.get("kwargs", {})
         task_queue.put((fn, name, args, kwargs))
-
-    # Determine workers pool based on GPUs or CPU count
-    if len(gpus) > 0:
-        worker_gpus = [gpu_id for gpu_id in gpus for _ in range(workers_per_gpu)]
-        num_workers = len(worker_gpus)
-        logger.info(
-            f"Spawning {num_workers} worker processes ({workers_per_gpu} per GPU), "
-            f"mapping to physical GPUs: {gpus}"
-        )
-    else:
-        # Fallback to CPU with a pool of processes
-        num_workers = max(1, os.cpu_count() // 2)
-        worker_gpus = [None] * num_workers
-        logger.info(f"Spawning {num_workers} CPU worker processes.")
 
     # Add poison pills/sentinels to stop the workers when queue is empty
     for _ in range(num_workers):
