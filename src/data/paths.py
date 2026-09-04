@@ -40,9 +40,14 @@ def data_root() -> Path:
     return Path(os.environ.get("TCC_DATA_ROOT", str(_DEFAULT_DATA_ROOT)))
 
 
+# Disco local (/) enche rápido com checkpoints; ssd2 tem espaço de sobra.
+# Override opcional: variável de ambiente ``TCC_MODELS_ROOT``.
+_DEFAULT_MODELS_ROOT = Path("/media/ssd2/lucas.ocunha/models-tcc")
+
+
 def models_root() -> Path:
     """Root for new-layout checkpoints, configurable per environment."""
-    return Path(os.environ.get("TCC_MODELS_ROOT", str(Path.cwd() / "models")))
+    return Path(os.environ.get("TCC_MODELS_ROOT", str(_DEFAULT_MODELS_ROOT)))
 
 
 def output_root() -> Path:

@@ -26,3 +26,4 @@ min_dataset
 /models_finetuned/**
 !/models_finetuned/
 !/models_finetuned/.gitkeep
+*.log

@@ -105,20 +105,25 @@ N = len(data[0])
 
 # ── Layout: 2 linhas × N colunas ──────────────────────────────────────────
 CELL     = 1.6
-TOP_PAD  = 0.70
+TOP_PAD  = 0.45
 LEFT_PAD = 0.80
 BOTTOM   = 0.50
+WSPACE   = 0.06
+HSPACE   = 0.05
 
 fig_w = LEFT_PAD + N * CELL + 0.15
-fig_h = TOP_PAD + 2 * CELL + BOTTOM
+width_span = N * CELL + 0.07
+_cell_w = width_span / (N + (N - 1) * WSPACE)
+# fig_h calculado para que a caixa de cada painel fique quadrada (sem letterbox)
+fig_h = _cell_w * (2 + HSPACE) + TOP_PAD * 0.5 + BOTTOM
 
 fig = plt.figure(figsize=(fig_w, fig_h), facecolor="white")
 
 gs = gridspec.GridSpec(
     2, N,
     figure=fig,
-    hspace=0.10,
-    wspace=0.06,
+    hspace=HSPACE,
+    wspace=WSPACE,
     left=LEFT_PAD / fig_w,
     right=(fig_w - 0.08) / fig_w,
     top=(fig_h - TOP_PAD * 0.50) / fig_h,
@@ -127,7 +132,7 @@ gs = gridspec.GridSpec(
 
 FS     = 11.5
 FS_DESC = 10.5
-BORDER = "#cccccc"
+BORDER = "#888888"
 TITLE_COLOR = "#1a1a1a"
 LABEL_COLOR = "#333333"
 DESC_COLOR  = "#555555"
@@ -148,7 +153,7 @@ for row_idx, lbl in enumerate((0, 1)):
         for spine in ax.spines.values():
             spine.set_visible(True)
             spine.set_edgecolor(BORDER)
-            spine.set_linewidth(0.6)
+            spine.set_linewidth(3)
 
 # ── Títulos de coluna (acima da linha 0) ──────────────────────────────────
 gs_left  = LEFT_PAD / fig_w
@@ -182,7 +187,7 @@ for col_idx, panel in enumerate(data[0]):
 # ── Rótulos de linha ───────────────────────────────────────────────────────
 ROW_LABELS = {0: "Class 0\n(Real)", 1: "Class 1\n(Fake)"}
 row_span    = gs_top - BOTTOM / fig_h
-hspace_frac = 0.10 * row_span / 2
+hspace_frac = HSPACE * row_span / 2
 row_h       = (row_span - hspace_frac) / 2
 
 for row_idx, lbl in enumerate((0, 1)):
@@ -202,7 +207,6 @@ fig.add_artist(plt.Line2D(
     transform=fig.transFigure, color="#bbbbbb", linewidth=0.8,
 ))
 
-plt.tight_layout()
 OUT = "fourier_transformacoes.pdf"
 plt.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white", pad_inches=0.08)
 print(f"Salvo em: {OUT}")

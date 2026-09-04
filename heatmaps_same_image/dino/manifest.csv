@@ -1,3 +1,0 @@
-id,img_name,y_true,y_pred,prob_pos,correct,heatmap_group,heatmap_path,label_from_dataset
-159795,fb62fda66faa77f225c683caeb14b19f.jpg,0,1,0.337783545255661,0,false_positive,heatmaps_same_image/dino/id_159795_true0_pred1_prob0.34.png,0
-181946,dd7a223b76d9f848bbd2a9fabb0069d9.jpg,1,1,0.543590247631073,1,true_positive,heatmaps_same_image/dino/id_181946_true1_pred1_prob0.54.png,1
