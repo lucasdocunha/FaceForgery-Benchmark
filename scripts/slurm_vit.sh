@@ -16,12 +16,12 @@ conda activate tcc
 # 1. Configurações de Ambiente (Paths CISIA)
 # ==========================================
 export TCC_DATASET_ROOT=/datasets/Images/MFFI
-export TCC_DATA_ROOT=/home/lucas.ocunha/research/TCC/data
+export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
 export TCC_MODELS_ROOT=/projects/lucas.ocunha/models
-export TCC_OUTPUT_ROOT=/home/lucas.ocunha/research/TCC
+export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
 
 # Ir para a pasta do repositório
-cd /home/lucas.ocunha/research/TCC
+cd /users/home/lucas.ocunha/research/TCC
 
 # ==========================================
 # 2. Execução do Modelo ViT

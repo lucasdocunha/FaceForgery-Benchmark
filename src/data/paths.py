@@ -20,7 +20,7 @@ _DEFAULT_ROOT = Path("/media/ssd2/lucas.ocunha/datasets/phase1")
 # já que jobs (ex.: via myjobs) podem rodar com o working directory apontando para
 # uma pasta de sandbox do job, não para a raiz do repositório.
 # Override opcional: variável de ambiente ``TCC_DATA_ROOT``.
-_DEFAULT_DATA_ROOT = Path("/home/lucas.ocunha/research/TCC/data")
+_DEFAULT_DATA_ROOT = Path("/users/home/lucas.ocunha/research/TCC/data")
 
 
 def phase1_split_root(split: str) -> Path:
