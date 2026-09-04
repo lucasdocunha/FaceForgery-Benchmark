@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=tcc-dino
+#SBATCH --partition=gpu
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 #SBATCH --gres=gpu:1
