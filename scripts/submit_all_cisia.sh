@@ -2,8 +2,11 @@
 # Submete todos os 6 modelos ao Slurm no CISIA
 # Uso:
 #   ./scripts/submit_all_cisia.sh [scratch|finetune] [workers_per_gpu]
-# Exemplo padrão:
-#   ./scripts/submit_all_cisia.sh scratch 2
+#   ou diretamente de dentro de scripts/:
+#   ./submit_all_cisia.sh [scratch|finetune] [workers_per_gpu]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 REGIME="${1:-scratch}"
 WORKERS="${2:-2}"
@@ -13,12 +16,13 @@ echo "Submetendo 6 jobs ao Slurm CISIA (Regime: $REGIME, Workers: $WORKERS)"
 echo "Data: $(date)"
 echo "=========================================================="
 
-mkdir -p logs
+mkdir -p "$REPO_DIR/logs"
+cd "$REPO_DIR"
 
 FAMILIES=("resnet" "xception" "mobilenet" "vit" "clip" "dino")
 
 for fam in "${FAMILIES[@]}"; do
-    SCRIPT="scripts/slurm_${fam}.sh"
+    SCRIPT="$SCRIPT_DIR/slurm_${fam}.sh"
     if [ -f "$SCRIPT" ]; then
         echo "Submetendo $fam ($SCRIPT)..."
         sbatch "$SCRIPT" "$REGIME" "$WORKERS"
