@@ -18,10 +18,11 @@ conda activate tcc
 # ==========================================
 export TCC_DATASET_ROOT=/datasets/Images/MFFI
 export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
-# Salva os resultados do teste em pasta separada para não misturar com o treino real
-export TCC_MODELS_ROOT=/projects/lucas.ocunha/models_test_min
+# Salva os resultados do teste no /tmp local do nó para evitar estouro de cota em /projects
+export TCC_MODELS_ROOT=/tmp/models_test_min
 export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
 
+mkdir -p "$TCC_MODELS_ROOT"
 cd /users/home/lucas.ocunha/research/TCC
 
 # ==========================================
