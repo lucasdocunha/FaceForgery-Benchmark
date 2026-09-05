@@ -16,24 +16,52 @@ CONFIG_DIR=Path(__file__).resolve().parent/"configs"
 def _is_done(family, mode, regime, seed):
     return (models_root()/family/mode/regime/f"seed_{seed}"/"results"/"metrics_summary.csv").exists()
 
-def build_tasks(regime, only=None, force=False):
+def build_tasks(regime, only=None, force=False, raw_min=False, epochs=None, seeds=None, fourier=None):
     families=tuple(only) if only else FAMILIES
     unknown=[family for family in families if family not in FAMILIES]
     if unknown:
         raise ValueError(f"Famílias desconhecidas: {', '.join(unknown)}. Válidas: {', '.join(FAMILIES)}")
     tasks=[]
+    modes = tuple(fourier) if fourier else ALL_FOURIER_MODES
     for family in families:
-        path=CONFIG_DIR/f"{family}.yaml"; config=load_config(path)
-        for mode in ALL_FOURIER_MODES:
+        path=CONFIG_DIR/f"{family}.yaml"
+        overrides = {}
+        if raw_min: overrides["raw_min"] = True
+        if epochs is not None: overrides["epochs"] = epochs
+        if seeds is not None: overrides["seeds"] = tuple(int(s) for s in seeds)
+        config=load_config(path, overrides)
+        for mode in modes:
             for seed in config.seeds:
                 if not force and _is_done(family, mode, regime, seed):
                     continue
-                tasks.append({"fn":train_from_config,"name":f"{family}/{mode}/{regime}/seed_{seed}","kwargs":{"config_path":str(path),"fourier":mode,"regime":regime,"seed":seed}})
+                kwargs = {"config_path": str(path), "fourier": mode, "regime": regime, "seed": seed}
+                if raw_min: kwargs["raw_min"] = True
+                if epochs is not None: kwargs["epochs"] = epochs
+                tasks.append({"fn": train_from_config, "name": f"{family}/{mode}/{regime}/seed_{seed}", "kwargs": kwargs})
     return tasks
 
 def main(argv=None):
-    p=argparse.ArgumentParser(); p.add_argument("--regime",required=True,choices=("scratch","finetune")); p.add_argument("--only"); p.add_argument("--gpus"); p.add_argument("--workers-per-gpu",type=int,default=1); p.add_argument("--dry-run",action="store_true"); p.add_argument("--force",action="store_true",help="re-run tasks even if results/metrics_summary.csv already exists"); a=p.parse_args(argv)
-    tasks=build_tasks(a.regime,a.only.split(",") if a.only else None,a.force)
+    p=argparse.ArgumentParser()
+    p.add_argument("--regime",required=True,choices=("scratch","finetune"))
+    p.add_argument("--only")
+    p.add_argument("--gpus")
+    p.add_argument("--workers-per-gpu",type=int,default=1)
+    p.add_argument("--dry-run",action="store_true")
+    p.add_argument("--force",action="store_true",help="re-run tasks even if results/metrics_summary.csv already exists")
+    p.add_argument("--raw-min",action="store_true",help="use min dataset data/raw_min")
+    p.add_argument("--epochs",type=int,default=None,help="override number of epochs")
+    p.add_argument("--seeds",type=str,default=None,help="comma-separated seeds (e.g. 42)")
+    p.add_argument("--fourier",type=str,default=None,help="comma-separated Fourier modes (e.g. none)")
+    a=p.parse_args(argv)
+    tasks=build_tasks(
+        a.regime,
+        a.only.split(",") if a.only else None,
+        a.force,
+        raw_min=a.raw_min,
+        epochs=a.epochs,
+        seeds=a.seeds.split(",") if a.seeds else None,
+        fourier=a.fourier.split(",") if a.fourier else None,
+    )
     if a.dry_run:
         print("\n".join(t["name"] for t in tasks)); return
     run_tasks_on_gpus(tasks,gpus=[int(x) for x in a.gpus.split(",")] if a.gpus else None,workers_per_gpu=a.workers_per_gpu)
