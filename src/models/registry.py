@@ -5,7 +5,7 @@ from typing import Callable
 
 import torch.nn as nn
 
-from src.models import clip, dino, mobilenet, resnet, vit, xception
+from src.models import clip, dino, mobilenet, moe, resnet, vit, xception
 
 ParameterGroups = list[dict[str, object]]
 
@@ -49,6 +49,18 @@ MODEL_REGISTRY = {
         "vit": vit, "clip": clip, "dino": dino,
     }.items()
 }
+MODEL_REGISTRY["moe_frequency"] = ModelSpec(
+    moe.build_frequency_moe,
+    moe.freeze_backbone,
+    moe.unfreeze_for_finetune,
+    moe.moe_parameter_groups,
+)
+MODEL_REGISTRY["moe_standard"] = ModelSpec(
+    moe.build_standard_moe,
+    moe.freeze_backbone,
+    moe.unfreeze_for_finetune,
+    moe.moe_parameter_groups,
+)
 
 
 def get_model_spec(family: str) -> ModelSpec:

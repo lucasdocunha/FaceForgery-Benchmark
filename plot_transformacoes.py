@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from pathlib import Path
 from PIL import Image
 from torchvision import transforms
 
@@ -17,9 +18,12 @@ plt.rcParams.update({
     "font.sans-serif": ["DejaVu Sans", "Arial", "Helvetica"],
 })
 
+from src.data.paths import phase1_split_root
+
+_test_dir = phase1_split_root("test")
 SOURCE_IMAGES = {
-    0: "/media/ssd2/lucas.ocunha/datasets/phase1/testset/fc04255bec1f4591236af2617ee93f50.jpg",
-    1: "/media/ssd2/lucas.ocunha/datasets/phase1/testset/70fac01d89420724e00dfc3e53370fa7.jpg",
+    0: str(_test_dir / "fc04255bec1f4591236af2617ee93f50.jpg"),
+    1: str(_test_dir / "70fac01d89420724e00dfc3e53370fa7.jpg"),
 }
 SPATIAL_SIZE = (128, 128)
 
@@ -207,6 +211,9 @@ fig.add_artist(plt.Line2D(
     transform=fig.transFigure, color="#bbbbbb", linewidth=0.8,
 ))
 
-OUT = "fourier_transformacoes.pdf"
+plt.tight_layout()
+OUT_DIR = Path(__file__).parent / "figures" / "fourier"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT = OUT_DIR / "fourier_transformacoes.pdf"
 plt.savefig(OUT, dpi=300, bbox_inches="tight", facecolor="white", pad_inches=0.08)
 print(f"Salvo em: {OUT}")

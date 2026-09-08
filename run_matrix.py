@@ -1,17 +1,20 @@
+"""CLI entry point for running the complete benchmark training matrix across GPUs."""
+
 from __future__ import annotations
+
 import argparse
 from pathlib import Path
+from typing import Sequence
+
 from src.data.data import ALL_FOURIER_MODES
 from src.data.paths import models_root
 from src.pipelines.config import load_config
 from src.utils.multiprocess import run_tasks_on_gpus
 from train import train_from_config
 
-FAMILIES=("resnet","xception","mobilenet","vit","clip","dino")
+FAMILIES = ("resnet", "xception", "mobilenet", "vit", "clip", "dino")
 
-# Relativo ao repositório, não ao cwd: jobs de Slurm rodam com o working directory
-# apontando para a sandbox do job (mesmo motivo dos paths fixos em src/data/paths.py).
-CONFIG_DIR=Path(__file__).resolve().parent/"configs"
+CONFIG_DIR = Path(__file__).resolve().parent / "configs"
 
 def _is_done(family, mode, regime, seed):
     return (models_root()/family/mode/regime/f"seed_{seed}"/"results"/"metrics_summary.csv").exists()
@@ -66,3 +69,4 @@ def main(argv=None):
         print("\n".join(t["name"] for t in tasks)); return
     run_tasks_on_gpus(tasks,gpus=[int(x) for x in a.gpus.split(",")] if a.gpus else None,workers_per_gpu=a.workers_per_gpu)
 if __name__ == "__main__": main()
+

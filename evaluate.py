@@ -1,4 +1,11 @@
+"""CLI entry point for evaluating trained models across dataset splits."""
+
+from __future__ import annotations
+
 import argparse
+from pathlib import Path
+from typing import Sequence
+
 from src.data.paths import data_root, models_root
 from src.pipelines.checkpoints import evaluate_trained_runs
 
@@ -33,3 +40,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+

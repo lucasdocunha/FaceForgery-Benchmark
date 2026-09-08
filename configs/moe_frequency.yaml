@@ -1,0 +1,10 @@
+model_family: moe_frequency
+fourier_mode: concat_frequency
+num_experts: 7
+variant: small
+expert_family: mobilenet
+routing_strategy: dense
+top_k: 3
+epochs: 20
+batch_size: 16
+threshold_strategy: balanced_accuracy

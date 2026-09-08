@@ -34,7 +34,7 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
 
 FOURIER_CHANNELS = {
     "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
-    "concat": 4, "frequency_3": 1, "concat_frequency": 6,
+    "concat": 4, "frequency_3": 1, "concat_frequency": 7,
 }
 
 
@@ -59,14 +59,16 @@ def encode_pil_image(img: Image.Image, fourier: FourierMode, image_size: int) ->
     phase = channel((np.angle(spectrum) + np.pi) / (2 * np.pi))
     height, width = spectrum.shape
     y, x = np.ogrid[:height, :width]
-    mask = ((y-height//2)**2 + (x-width//2)**2) >= (min(height, width)*.12)**2
-    highpass = channel(np.log1p(np.abs(spectrum) * mask))
+    r2 = (min(height, width) * 0.12) ** 2
+    dist2 = (y - height // 2) ** 2 + (x - width // 2) ** 2
+    highpass = channel(np.log1p(np.abs(spectrum) * (dist2 >= r2)))
+    lowpass = channel(np.log1p(np.abs(spectrum) * (dist2 < r2)))
     scale = max(float(np.abs(spectrum).max()), 1e-8)
     complex_value = torch.from_numpy(np.stack((spectrum.real/scale, spectrum.imag/scale)).astype(np.float32))
     values = {
         "none": rgb, "magnitude": magnitude, "phase": phase, "complex": complex_value,
         "concat": torch.cat((rgb, magnitude)), "frequency_3": highpass,
-        "concat_frequency": torch.cat((rgb, magnitude, phase, highpass)),
+        "concat_frequency": torch.cat((rgb, magnitude, phase, highpass, lowpass)),
     }
     return torch.nan_to_num(values[fourier], nan=0.0, posinf=1.0, neginf=-1.0)
 
@@ -185,12 +187,39 @@ class ImageDataset(Dataset):
             output = torch.cat([image, fft], dim=0)
 
         elif self.fourier == "concat_frequency":
-            # Espaço (3) + três descritores FFT (magnitude, fase, passa-alta), cada um 1 canal.
+            # Espaço (3) + quatro descritores FFT (magnitude, fase, passa-alta, passa-baixa), cada um 1 canal -> Total 7 canais.
+            # Otimização: calcula fft2 e fftshift uma única vez para todos os 4 descritores espectrais.
+            img_np = self._to_grayscale(img_tensor).detach().cpu().numpy()
+            fshift = np.fft.fftshift(np.fft.fft2(img_np))
+            abs_f = np.abs(fshift)
+
+            # 1. Magnitude log-compressa
+            mag = self._safe_normalize(np.log1p(abs_f))
+            t_mag = torch.nan_to_num(torch.tensor(mag, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            # 2. Fase normalizada [0, 1]
+            phase = (np.angle(fshift) + np.pi) / (2 * np.pi)
+            t_phase = torch.nan_to_num(torch.tensor(phase, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            # 3 e 4. Passa-alta e passa-baixa espectral
+            height, width = fshift.shape
+            y, x = np.ogrid[:height, :width]
+            center_y, center_x = height // 2, width // 2
+            r2 = (min(height, width) * 0.12) ** 2
+            dist2 = (y - center_y) ** 2 + (x - center_x) ** 2
+
+            highpass = self._safe_normalize(np.log1p(abs_f * (dist2 >= r2)))
+            t_highpass = torch.nan_to_num(torch.tensor(highpass, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            lowpass = self._safe_normalize(np.log1p(abs_f * (dist2 < r2)))
+            t_lowpass = torch.nan_to_num(torch.tensor(lowpass, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
             fft = torch.cat(
                 [
-                    self.frequency_normalize(self._fft_magnitude(img_tensor)),
-                    self.frequency_normalize(self._fft_phase(img_tensor)),
-                    self.frequency_normalize(self._fft_highpass(img_tensor)),
+                    self.frequency_normalize(t_mag),
+                    self.frequency_normalize(t_phase),
+                    self.frequency_normalize(t_highpass),
+                    self.frequency_normalize(t_lowpass),
                 ],
                 dim=0,
             )
@@ -263,3 +292,18 @@ class ImageDataset(Dataset):
         highpass = self._safe_normalize(highpass)
         tensor = torch.tensor(highpass, dtype=torch.float32).unsqueeze(0)
         return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
+
+    def _fft_lowpass(self, img: torch.Tensor):
+        # Máscara circular: mantém o disco central de baixa frequência; zera bordas do espectro.
+        img_np = self._to_grayscale(img).detach().cpu().numpy()
+        fshift = np.fft.fftshift(np.fft.fft2(img_np))
+        height, width = fshift.shape
+        y, x = np.ogrid[:height, :width]
+        center_y, center_x = height // 2, width // 2
+        radius = min(height, width) * 0.12
+        mask = ((y - center_y) ** 2 + (x - center_x) ** 2) < radius**2
+        lowpass = np.log1p(np.abs(fshift) * mask)
+        lowpass = self._safe_normalize(lowpass)
+        tensor = torch.tensor(lowpass, dtype=torch.float32).unsqueeze(0)
+        return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
+

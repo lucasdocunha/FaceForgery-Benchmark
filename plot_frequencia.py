@@ -18,10 +18,12 @@ from PIL import Image
 from torchvision import transforms
 from pathlib import Path
 from typing import Literal
+from src.data.paths import phase1_split_root
 
 # ── Cole aqui caminhos padrão para testes rápidos sem argparse ─────────────
-IMAGE_1 = ("/media/ssd2/lucas.ocunha/datasets/phase1/testset/fc04255bec1f4591236af2617ee93f50.jpg", "0")
-IMAGE_2 = ("/media/ssd2/lucas.ocunha/datasets/phase1/testset/70fac01d89420724e00dfc3e53370fa7.jpg", "1")
+_test_dir = phase1_split_root("test")
+IMAGE_1 = (str(_test_dir / "fc04255bec1f4591236af2617ee93f50.jpg"), "0")
+IMAGE_2 = (str(_test_dir / "70fac01d89420724e00dfc3e53370fa7.jpg"), "1")
 # ───────────────────────────────────────────────────────────────────────────
 
 FourierMode = Literal[
@@ -280,9 +282,11 @@ def plot_all_modes(
         col_offset += n
  
     plt.tight_layout(pad=0.3)
-    plt.savefig("fourier_modes_comparison.png", dpi=150, bbox_inches="tight",
-                facecolor="#0d0d0d")
-    print("Salvo em: fourier_modes_comparison.png")
+    out_dir = Path(__file__).parent / "figures" / "fourier"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "fourier_modes_comparison.png"
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", facecolor="#0d0d0d")
+    print(f"Salvo em: {out_path}")
     plt.show()
  
  

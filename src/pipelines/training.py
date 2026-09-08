@@ -189,9 +189,10 @@ class Trainer:
             )
             score = checkpoint_score(validation)
             scheduler.step(score)
+            train_loss = float(np.mean(losses)) if losses else 0.0
             self.epochs_completed = epoch + 1
             history.append({
-                "epoch": epoch + 1, "train_loss": float(np.mean(losses)) if losses else 0.0,
+                "epoch": epoch + 1, "train_loss": train_loss,
                 "val_loss": validation["loss"], "val_auc": validation["auc"], "val_acc": validation["acc"],
                 "threshold": threshold, "threshold_score": threshold_score,
             })
@@ -203,6 +204,14 @@ class Trainer:
                 if stale >= self.config.early_stop_patience:
                     self.stopped_early = True
                     break
+
+            print(
+                f"[{self.config.model_family}/{self.config.fourier_mode}] Epoch {epoch + 1}/{self.config.epochs} "
+                f"- Train Loss: {train_loss:.4f} | Val Loss: {validation['loss']:.4f} "
+                f"| Val Acc: {validation['acc']:.4f} | Val AUC: {validation['auc']:.4f} "
+                f"| Best Score: {best_score:.4f} (stale={stale})",
+                flush=True,
+            )
 
         torch.save(model_state_dict(self.model), self.output_dir / "weights" / "final.pth")
         unwrap_model(self.model).load_state_dict(torch.load(

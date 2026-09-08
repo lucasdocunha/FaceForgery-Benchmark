@@ -59,7 +59,7 @@ def _paper_latex(aggregate: pd.DataFrame) -> str:
 
 def make_tables(root=None, out=None):
     aggregate = aggregate_metrics(collect_metrics(root or models_root()))
-    destination = Path(out or output_root() / "tables")
+    destination = Path(out or output_root() / "results" / "tables")
     destination.mkdir(parents=True, exist_ok=True)
     aggregate.to_csv(destination / "results_full.csv", index=False)
     (destination / "results_full.md").write_text(aggregate.to_markdown(index=False), encoding="utf-8")
