@@ -104,17 +104,30 @@ def generate(model: nn.Module, family: str, image: torch.Tensor, method: str = "
         return grad_cam(model, image)
 
 
-def overlay(display_image: torch.Tensor, heatmap: torch.Tensor) -> torch.Tensor:
+def overlay(display_image: torch.Tensor, heatmap: torch.Tensor, alpha: float = 0.5) -> torch.Tensor:
+    """Standard Grad-CAM Jet colormap overlay: blends JET-colored heatmap with image."""
     image = display_image.detach().cpu()
     if image.ndim == 3:
         image = image.unsqueeze(0)
     image = image[:, :3]
-    image = (image-image.amin(dim=(-2, -1), keepdim=True)) / (
-        image.amax(dim=(-2, -1), keepdim=True)-image.amin(dim=(-2, -1), keepdim=True)
+    image = (image - image.amin(dim=(-2, -1), keepdim=True)) / (
+        image.amax(dim=(-2, -1), keepdim=True) - image.amin(dim=(-2, -1), keepdim=True)
     ).clamp_min(1e-8)
     heat = heatmap.detach().cpu()
-    color = torch.cat((heat, torch.zeros_like(heat), 1-heat), dim=1)
-    return (.6*image + .4*color).clamp(0, 1)
+    if heat.ndim == 3:
+        heat = heat.unsqueeze(1)
+    elif heat.ndim == 2:
+        heat = heat.unsqueeze(0).unsqueeze(0)
+    heat = (heat - heat.amin(dim=(-2, -1), keepdim=True)) / (
+        heat.amax(dim=(-2, -1), keepdim=True) - heat.amin(dim=(-2, -1), keepdim=True)
+    ).clamp_min(1e-8)
+
+    import matplotlib.pyplot as plt
+    cmap = plt.get_cmap("jet")
+    heat_np = heat.squeeze(1).numpy()
+    colored_np = cmap(heat_np)[..., :3]
+    color = torch.from_numpy(colored_np).permute(0, 3, 1, 2).to(dtype=image.dtype)
+    return ((1.0 - alpha) * image + alpha * color).clamp(0, 1)
 
 
 def grid(display_images: torch.Tensor, heatmaps: torch.Tensor, columns: int | None = None) -> torch.Tensor:
