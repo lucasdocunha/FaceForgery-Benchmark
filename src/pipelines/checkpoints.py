@@ -196,13 +196,38 @@ def _save_results(run: TrainedRun, split: str, metrics: dict) -> dict:
 def evaluate_trained_runs(models_root, data_dir, splits=("val", "test", "test_d"),
                           test_d_csv=None, test_d_images_dir=None, output_csv=None,
                           batch_size=32, num_workers=0, device=None,
-                          only_model_family=None, limit_per_split=None) -> pd.DataFrame:
+                          only_model_family=None, limit_per_split=None,
+                          skip_existing=False) -> pd.DataFrame:
+    import resource
+    try:
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        resource.setrlimit(resource.RLIMIT_NOFILE, (hard, hard))
+    except Exception:
+        pass
+    import torch.multiprocessing as mp
+    try:
+        mp.set_sharing_strategy("file_system")
+    except Exception:
+        pass
+
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     specs = build_split_specs(data_dir, splits, test_d_csv, test_d_images_dir)
     rows = []
     for run in discover_trained_runs(models_root, only_model_family):
-        model, config = load_model_from_run(run, device), config_from_run(run)
+        splits_to_eval = []
         for split in specs:
+            metrics_path = run.run_dir / "results" / f"metrics_{split.name}.csv"
+            outputs_path = run.run_dir / "results" / f"outputs_{split.name}.npz"
+            if skip_existing and metrics_path.exists() and outputs_path.exists():
+                row_dict = pd.read_csv(metrics_path).iloc[0].to_dict()
+                rows.append(row_dict)
+                print(f"[eval] [cached] {run.model_family}/{run.fourier_mode}/{run.regime}/seed_{run.seed}/{split.name}: AUC={row_dict['auc']*100:.2f}%, F1={row_dict['f1']*100:.2f}%, ACC={row_dict['acc']*100:.2f}%", flush=True)
+            else:
+                splits_to_eval.append(split)
+        if not splits_to_eval:
+            continue
+        model, config = load_model_from_run(run, device), config_from_run(run)
+        for split in splits_to_eval:
             dataset = ImageDataset(
                 split.csv_path, split.images_dir, transform=_transform(config),
                 data_limit=np.inf if limit_per_split is None else limit_per_split,
@@ -213,7 +238,10 @@ def evaluate_trained_runs(models_root, data_dir, splits=("val", "test", "test_d"
             metrics = evaluate_classifier(model, loader, nn.CrossEntropyLoss(), device,
                                           threshold=run.threshold, use_amp=device.type == "cuda",
                                           desc=f"{run.model_family}/{run.fourier_mode}/{split.name}")
-            rows.append(_save_results(run, split.name, metrics))
+            saved_row = _save_results(run, split.name, metrics)
+            rows.append(saved_row)
+            print(f"[eval] [{split.name}] {run.model_family}/{run.fourier_mode}/{run.regime}/seed_{run.seed}: AUC={saved_row['auc']*100:.2f}%, F1={saved_row['f1']*100:.2f}%, ACC={saved_row['acc']*100:.2f}%", flush=True)
+            del loader, dataset
         # Libera a GPU entre runs: o laço percorre toda a matriz construindo um
         # modelo novo por run, de resnet18 (11M) a DINOv3 base (88M), e tamanhos
         # muito diferentes em sequência é justamente o caso que fragmenta o
