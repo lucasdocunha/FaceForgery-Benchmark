@@ -1,4 +1,7 @@
 model_family,fourier_mode,regime,num_seeds,test_auc_mean,test_auc_std,test_acc_mean,test_acc_std,test_f1_mean,test_f1_std,test_d_auc_mean,test_d_auc_std,test_d_acc_mean,test_d_acc_std,test_d_f1_mean,test_d_f1_std,delta_auc_mean,delta_auc_std,delta_acc_mean,delta_acc_std,final_score,grade_concept
+ENSEMBLE (4M),top4_hybrid [weighted],ensemble,5,0.9582,0.0,0.8945,0.0,0.9023,0.0,0.7799,0.0,0.7046,0.0,0.747,0.0,-0.1783,0.0,-0.1899,0.0,7.73,A
+ENSEMBLE (4M),top4_hybrid [mean],ensemble,5,0.9578,0.0,0.8945,0.0,0.9024,0.0,0.78,0.0,0.7038,0.0,0.7472,0.0,-0.1778,0.0,-0.1907,0.0,7.73,A
+ENSEMBLE (5M),top5_full [weighted],ensemble,5,0.9552,0.0,0.8823,0.0,0.8897,0.0,0.7796,0.0,0.7045,0.0,0.7407,0.0,-0.1756,0.0,-0.1778,0.0,7.72,A
 clip,none,finetune,5,0.9195,0.0041,0.8364,0.0072,0.8448,0.0093,0.7489,0.0103,0.6814,0.0041,0.7204,0.0136,-0.1706,0.0085,-0.155,0.0053,7.41,A
 dino,none,finetune,5,0.9358,0.0062,0.8763,0.0085,0.8849,0.0097,0.7147,0.0115,0.668,0.0098,0.6979,0.0227,-0.2211,0.0099,-0.2083,0.0043,7.3,A
 clip,concat,finetune,5,0.8941,0.0042,0.8151,0.0071,0.8246,0.0088,0.726,0.0119,0.6778,0.0071,0.7202,0.008,-0.1681,0.0147,-0.1373,0.0111,7.19,A
