@@ -243,7 +243,15 @@ def channel_shapley(
     batch_size, total_channels, _, _ = image.shape
 
     if domains is None:
-        if total_channels == 6:
+        if total_channels == 7:
+            domains = {
+                "spatial_rgb": (0, 3),
+                "fft_magnitude": (3, 4),
+                "fft_phase": (4, 5),
+                "fft_highpass": (5, 6),
+                "fft_lowpass": (6, 7),
+            }
+        elif total_channels == 6:
             domains = {
                 "spatial_rgb": (0, 3),
                 "fft_magnitude": (3, 4),

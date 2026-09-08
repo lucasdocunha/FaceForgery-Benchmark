@@ -83,14 +83,19 @@ def _build_expert(
 
 
 class FrequencyMoE(nn.Module):
-    """Frequency-Specialized Mixture of Experts (Version 1).
+    """Frequency-Specialized Mixture of Experts (Version 2).
 
-    Each expert receives a dedicated spatial or spectral representation of the input:
-    - Expert 0: Spatial RGB (channels 0:3)
-    - Expert 1: FFT Log-Magnitude (channel 3:4)
-    - Expert 2: FFT Phase (channel 4:5)
-    - Expert 3: FFT High-Pass Magnitude (channel 5:6)
+    Each expert receives a dedicated spatial, spectral, or hybrid representation of the input:
+    - Expert 0: Spatial RGB (channels 0:3) [3 channels]
+    - Expert 1: FFT Log-Magnitude (channel 3:4) [1 channel]
+    - Expert 2: FFT Phase (channel 4:5) [1 channel]
+    - Expert 3: FFT High-Pass Magnitude (channel 5:6) [1 channel]
+    - Expert 4: FFT Low-Pass Magnitude (channel 6:7) [1 channel]
+    - Expert 5: RGB + High-Pass (channels [0, 1, 2, 5]) [4 channels]
+    - Expert 6: FFT Mag + Phase (channels 3:5) [2 channels]
     """
+
+    EXPERT_CHANNELS = [3, 1, 1, 1, 1, 4, 2]
 
     def __init__(
         self,
@@ -101,12 +106,11 @@ class FrequencyMoE(nn.Module):
         allow_pretrained: bool = False,
         dropout: float = 0.2,
         routing_strategy: str = "dense",
-        top_k: int = 2,
+        top_k: int = 3,
     ):
         super().__init__()
         self.expert_family = expert_family
-        self.slice_channels = (3, 1, 1, 1)
-        self.num_experts = len(self.slice_channels)
+        self.num_experts = len(self.EXPERT_CHANNELS)
         self.experts = nn.ModuleList([
             _build_expert(
                 family=expert_family,
@@ -117,9 +121,9 @@ class FrequencyMoE(nn.Module):
                 dropout=dropout,
                 allow_pretrained=allow_pretrained,
             )
-            for ch in self.slice_channels
+            for ch in self.EXPERT_CHANNELS
         ])
-        total_in_channels = sum(self.slice_channels)
+        total_in_channels = 7
         self.router = MoERouter(
             in_channels=total_in_channels,
             num_experts=self.num_experts,
@@ -129,23 +133,26 @@ class FrequencyMoE(nn.Module):
         self.last_routing_weights: torch.Tensor | None = None
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if x.shape[1] < 6:
+        if x.shape[1] < 7:
             raise ValueError(
-                f"FrequencyMoE expects 6-channel input (concat_frequency: RGB + Mag + Phase + HighPass), "
+                f"FrequencyMoE expects 7-channel input (concat_frequency: RGB + Mag + Phase + HighPass + LowPass), "
                 f"but received tensor with {x.shape[1]} channels."
             )
         weights, _ = self.router(x)
         self.last_routing_weights = weights.detach()
 
         inputs = (
-            x[:, 0:3, :, :],  # Spatial RGB
-            x[:, 3:4, :, :],  # FFT Log-Magnitude
-            x[:, 4:5, :, :],  # FFT Phase
-            x[:, 5:6, :, :],  # FFT High-Pass Magnitude
+            x[:, 0:3, :, :],              # Expert 0: Spatial RGB (3 ch)
+            x[:, 3:4, :, :],              # Expert 1: FFT Log-Magnitude (1 ch)
+            x[:, 4:5, :, :],              # Expert 2: FFT Phase (1 ch)
+            x[:, 5:6, :, :],              # Expert 3: FFT High-Pass Magnitude (1 ch)
+            x[:, 6:7, :, :],              # Expert 4: FFT Low-Pass Magnitude (1 ch)
+            x[:, [0, 1, 2, 5], :, :],     # Expert 5: RGB + High-Pass (4 ch)
+            x[:, 3:5, :, :],              # Expert 6: FFT Mag + Phase (2 ch)
         )
 
         expert_logits = [expert(inp) for expert, inp in zip(self.experts, inputs)]
-        stacked = torch.stack(expert_logits, dim=1)  # (B, 4, num_classes)
+        stacked = torch.stack(expert_logits, dim=1)  # (B, 7, num_classes)
         fused = torch.sum(stacked * weights.unsqueeze(-1), dim=1)  # (B, num_classes)
         return fused
 
@@ -161,14 +168,14 @@ class StandardMoE(nn.Module):
         self,
         num_classes: int = 2,
         in_channels: int = 3,
-        num_experts: int = 4,
+        num_experts: int = 7,
         expert_family: str = "mobilenet",
         variant: str = "small",
         pretrained: bool = False,
         allow_pretrained: bool = False,
         dropout: float = 0.2,
         routing_strategy: str = "dense",
-        top_k: int = 2,
+        top_k: int = 3,
     ):
         super().__init__()
         self.expert_family = expert_family
@@ -267,7 +274,7 @@ def build_frequency_moe(config) -> nn.Module:
         allow_pretrained=config.allow_pretrained,
         dropout=config.dropout,
         routing_strategy=getattr(config, "routing_strategy", "dense"),
-        top_k=getattr(config, "top_k", 2),
+        top_k=getattr(config, "top_k", 3),
     )
 
 
@@ -275,12 +282,12 @@ def build_standard_moe(config) -> nn.Module:
     return StandardMoE(
         num_classes=2,
         in_channels=config.in_channels,
-        num_experts=getattr(config, "num_experts", 4),
+        num_experts=getattr(config, "num_experts", 7),
         expert_family=getattr(config, "expert_family", "mobilenet"),
         variant=getattr(config, "variant", "small"),
         pretrained=config.regime == "finetune",
         allow_pretrained=config.allow_pretrained,
         dropout=config.dropout,
         routing_strategy=getattr(config, "routing_strategy", "dense"),
-        top_k=getattr(config, "top_k", 2),
+        top_k=getattr(config, "top_k", 3),
     )

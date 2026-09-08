@@ -15,7 +15,7 @@ def test_moe_frequency_forward(expert_family, routing_strategy):
         expert_family=expert_family,
         variant="small" if expert_family == "mobilenet" else "resnet18",
         routing_strategy=routing_strategy,
-        top_k=2,
+        top_k=3,
         multi_gpu=False,
     )
     spec = get_model_spec("moe_frequency")
@@ -23,13 +23,14 @@ def test_moe_frequency_forward(expert_family, routing_strategy):
     model.eval()
 
     batch_size = 4
-    x = torch.randn(batch_size, 6, 64, 64)
+    x = torch.randn(batch_size, 7, 64, 64)
     with torch.no_grad():
         out = model(x)
 
     assert out.shape == (batch_size, 2)
+    assert len(model.experts) == 7
     assert model.last_routing_weights is not None
-    assert model.last_routing_weights.shape == (batch_size, 4)
+    assert model.last_routing_weights.shape == (batch_size, 7)
     # Check that weights sum to 1 per sample
     torch.testing.assert_close(
         model.last_routing_weights.sum(dim=-1),
@@ -40,7 +41,7 @@ def test_moe_frequency_forward(expert_family, routing_strategy):
 
 
 @pytest.mark.parametrize("expert_family", ["mobilenet", "resnet"])
-@pytest.mark.parametrize("num_experts", [2, 4])
+@pytest.mark.parametrize("num_experts", [2, 4, 7])
 @pytest.mark.parametrize("routing_strategy", ["dense", "top_k"])
 def test_moe_standard_forward(expert_family, num_experts, routing_strategy):
     config = TrainingConfig(
@@ -50,7 +51,7 @@ def test_moe_standard_forward(expert_family, num_experts, routing_strategy):
         expert_family=expert_family,
         variant="small" if expert_family == "mobilenet" else "resnet18",
         routing_strategy=routing_strategy,
-        top_k=2,
+        top_k=min(num_experts, 3),
         multi_gpu=False,
     )
     spec = get_model_spec("moe_standard")
@@ -63,6 +64,7 @@ def test_moe_standard_forward(expert_family, num_experts, routing_strategy):
         out = model(x)
 
     assert out.shape == (batch_size, 2)
+    assert len(model.experts) == num_experts
     assert model.last_routing_weights is not None
     assert model.last_routing_weights.shape == (batch_size, num_experts)
     torch.testing.assert_close(
@@ -85,7 +87,7 @@ def test_moe_backward_pass():
         model = get_model_spec(family).build(config)
         model.train()
 
-        in_ch = 6 if mode == "concat_frequency" else 3
+        in_ch = 7 if mode == "concat_frequency" else 3
         x = torch.randn(2, in_ch, 32, 32, requires_grad=True)
         target = torch.tensor([0, 1], dtype=torch.long)
         out = model(x)

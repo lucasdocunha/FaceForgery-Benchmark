@@ -8,7 +8,7 @@ import yaml
 
 FOURIER_CHANNELS = {
     "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
-    "concat": 4, "frequency_3": 1, "concat_frequency": 6,
+    "concat": 4, "frequency_3": 1, "concat_frequency": 7,
 }
 
 # Artefato gravado por Trainer.fit() em <run_dir>/results/ e lido por
@@ -56,9 +56,9 @@ class TrainingConfig:
     variant: str = "large"
     model_size: str = "base"
     expert_family: str = "mobilenet"
-    num_experts: int = 4
+    num_experts: int = 7
     routing_strategy: str = "dense"
-    top_k: int = 2
+    top_k: int = 3
 
     @property
     def in_channels(self) -> int:
