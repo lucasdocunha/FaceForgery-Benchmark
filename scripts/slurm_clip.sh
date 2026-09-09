@@ -18,7 +18,7 @@ conda activate tcc
 # ==========================================
 export TCC_DATASET_ROOT=/datasets/Images/MFFI
 export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
-export TCC_MODELS_ROOT=/projects/lucas.ocunha/models
+export TCC_MODELS_ROOT=/projects/models/lucas.ocunha
 export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
 
 # Ir para a pasta do repositório

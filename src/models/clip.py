@@ -30,7 +30,11 @@ def build(config) -> nn.Module:
         # pytorch_model.bin, e o transformers recusa torch.load de .bin com torch < 2.6
         # (CVE-2025-32434), o que tornava o finetune de CLIP impossível de carregar.
         # Mesma abordagem da branch pre-refatoracao, que rodou nos servidores.
-        backbone = CLIPVisionModel.from_pretrained(_CLIP_REPO, use_safetensors=True)
+        try:
+            backbone = CLIPVisionModel.from_pretrained(_CLIP_REPO, use_safetensors=True)
+        except Exception:
+            # Fallback para nós de computação sem acesso à internet externa (carrega do cache local)
+            backbone = CLIPVisionModel.from_pretrained(_CLIP_REPO, use_safetensors=True, local_files_only=True)
         emb = embeddings(backbone)
         emb.patch_embedding = adapt_conv2d_channels(emb.patch_embedding, config.in_channels)
         backbone.config.num_channels = config.in_channels

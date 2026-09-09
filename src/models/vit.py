@@ -27,7 +27,11 @@ def build(config) -> nn.Module:
         # safetensors explícito para nunca cair no caminho .bin, que o transformers
         # recusa com torch < 2.6 (ver comentário em clip.py). Este repo já publica
         # model.safetensors, então aqui é só garantia.
-        backbone = ViTModel.from_pretrained("google/vit-base-patch16-224", use_safetensors=True)
+        try:
+            backbone = ViTModel.from_pretrained("google/vit-base-patch16-224", use_safetensors=True)
+        except Exception:
+            # Fallback para nós de computação sem acesso à internet externa (carrega do cache local)
+            backbone = ViTModel.from_pretrained("google/vit-base-patch16-224", use_safetensors=True, local_files_only=True)
         pe = backbone.embeddings.patch_embeddings
         pe.projection = adapt_conv2d_channels(pe.projection, config.in_channels)
         pe.num_channels = config.in_channels

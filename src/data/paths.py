@@ -74,6 +74,9 @@ def models_root() -> Path:
     """Root for new-layout checkpoints, configurable per environment."""
     if "TCC_MODELS_ROOT" in os.environ:
         return Path(os.environ["TCC_MODELS_ROOT"])
+    cisia_root = Path("/projects/models/lucas.ocunha")
+    if _safe_exists(cisia_root):
+        return cisia_root
     if _safe_exists(_DEFAULT_MODELS_ROOT):
         return _DEFAULT_MODELS_ROOT
     return _REPO_DATA_ROOT.parent / "models"

@@ -19,13 +19,13 @@ conda activate tcc
 # ==========================================
 export TCC_DATASET_ROOT=/datasets/Images/MFFI
 export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
-export TCC_MODELS_ROOT=/projects/lucas.ocunha/models
+export TCC_MODELS_ROOT=/projects/models/lucas.ocunha
 export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
 
-# Redirecionar cache do HuggingFace e Torch para /projects (evita estouro de cota e I/O error na /users/home)
-export HF_HOME=/projects/lucas.ocunha/.cache/huggingface
-export TORCH_HOME=/projects/lucas.ocunha/.cache/torch
-mkdir -p "$HF_HOME" "$TORCH_HOME"
+# Cache compartilhado em /projects/models/lucas.ocunha/.cache
+export HF_HOME=/projects/models/lucas.ocunha/.cache/huggingface
+export TORCH_HOME=/projects/models/lucas.ocunha/.cache/torch
+mkdir -p "$HF_HOME" "$TORCH_HOME" "$TCC_MODELS_ROOT"
 
 export PYTHONUNBUFFERED=1
 
@@ -43,6 +43,7 @@ echo "=========================================================="
 echo "Job ID: $SLURM_JOB_ID | Nó: $(hostname)"
 echo "Iniciando benchmark robusto: mobilenet"
 echo "Seeds: $SEEDS | Regime: $REGIME | Workers: $WORKERS"
+echo "Models Root: $TCC_MODELS_ROOT"
 echo "Cache HF: $HF_HOME | Cache Torch: $TORCH_HOME"
 echo "Data de início: $(date)"
 echo "=========================================================="
