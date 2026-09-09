@@ -21,6 +21,12 @@ export TCC_DATASET_ROOT=/datasets/Images/MFFI
 export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
 export TCC_MODELS_ROOT=/projects/lucas.ocunha/models
 export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
+
+# Redirecionar cache do HuggingFace e Torch para /projects (evita estouro de cota e I/O error na /users/home)
+export HF_HOME=/projects/lucas.ocunha/.cache/huggingface
+export TORCH_HOME=/projects/lucas.ocunha/.cache/torch
+mkdir -p "$HF_HOME" "$TORCH_HOME"
+
 export PYTHONUNBUFFERED=1
 
 # Ir para a pasta do repositório no CISIA
@@ -37,6 +43,7 @@ echo "=========================================================="
 echo "Job ID: $SLURM_JOB_ID | Nó: $(hostname)"
 echo "Iniciando benchmark robusto: resnet"
 echo "Seeds: $SEEDS | Regime: $REGIME | Workers: $WORKERS"
+echo "Cache HF: $HF_HOME | Cache Torch: $TORCH_HOME"
 echo "Data de início: $(date)"
 echo "=========================================================="
 
