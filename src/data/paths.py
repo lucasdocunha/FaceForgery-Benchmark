@@ -86,3 +86,23 @@ def output_root() -> Path:
     """Root for generated tables and heatmaps."""
     return Path(os.environ.get("TCC_OUTPUT_ROOT", str(_REPO_DATA_ROOT.parent)))
 
+
+def pretrained_root() -> Path:
+    """Diretório dedicado com uma subpasta para cada arquitetura pré-treinada.
+
+    Estrutura:
+        <pretrained_root>/clip/
+        <pretrained_root>/vit/
+        <pretrained_root>/dino/
+        <pretrained_root>/resnet/
+        <pretrained_root>/mobilenet/
+        <pretrained_root>/xception/
+    """
+    if "TCC_PRETRAINED_ROOT" in os.environ:
+        return Path(os.environ["TCC_PRETRAINED_ROOT"])
+    cisia_candidate = Path("/projects/models/lucas.ocunha/pretrained")
+    if _safe_exists(cisia_candidate) or _safe_exists(cisia_candidate.parent):
+        return cisia_candidate
+    return models_root() / "pretrained"
+
+

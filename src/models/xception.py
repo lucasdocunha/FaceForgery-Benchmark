@@ -227,7 +227,17 @@ class XceptionWithBackbone(nn.Module):
         super().__init__()
         import timm as _timm
 
-        self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
+        from src.data.paths import pretrained_root
+        local_xc = pretrained_root() / "xception" / f"{timm_model_name}.pth"
+        local_xc_alt = pretrained_root() / "xception" / "xception.pth"
+        if local_xc.exists() or local_xc_alt.exists():
+            xc_path = local_xc if local_xc.exists() else local_xc_alt
+            print(f"[xception] Carregando pesos pré-treinados locais de: {xc_path}", flush=True)
+            self.backbone = _timm.create_model(timm_model_name, pretrained=False, num_classes=0)
+            state = torch.load(xc_path, map_location="cpu", weights_only=True)
+            self.backbone.load_state_dict(state)
+        else:
+            self.backbone = _timm.create_model(timm_model_name, pretrained=True, num_classes=0)
         if in_channels != 3:
             replace_conv2d(self.backbone, "conv1", in_channels)
         hidden_size: int = self.backbone.num_features
