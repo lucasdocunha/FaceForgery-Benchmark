@@ -151,7 +151,25 @@ class Trainer:
             "prob_pos": metrics["probs"],
         }).to_csv(result_dir / f"predictions_{split}.csv", index=False)
 
+def _safe_torch_save(obj, path: Path) -> None:
+    """Salva estado PyTorch de forma resiliente contra falhas em sistemas de arquivos NFS/Lustre."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    import tempfile, shutil
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".pth", delete=False, dir="/tmp") as tmp:
+            tmp_path = Path(tmp.name)
+        torch.save(obj, tmp_path)
+        shutil.copyfile(str(tmp_path), str(path))
+    except Exception:
+        with open(path, "wb") as f:
+            torch.save(obj, f, _use_new_zipfile_serialization=False)
+    finally:
+        if tmp_path and tmp_path.exists():
+            tmp_path.unlink()
+
     def fit(self):
+
         seed_everything(self.config.seed)
         for folder in ("weights", "results", "plots"):
             (self.output_dir / folder).mkdir(parents=True, exist_ok=True)
@@ -198,7 +216,7 @@ class Trainer:
             })
             if score > best_score:
                 best_score, best_threshold_value, stale = score, threshold, 0
-                torch.save(model_state_dict(self.model), self.output_dir / "weights" / "best.pth")
+                _safe_torch_save(model_state_dict(self.model), self.output_dir / "weights" / "best.pth")
             else:
                 stale += 1
                 if stale >= self.config.early_stop_patience:
@@ -213,7 +231,7 @@ class Trainer:
                 flush=True,
             )
 
-        torch.save(model_state_dict(self.model), self.output_dir / "weights" / "final.pth")
+        _safe_torch_save(model_state_dict(self.model), self.output_dir / "weights" / "final.pth")
         unwrap_model(self.model).load_state_dict(torch.load(
             self.output_dir / "weights" / "best.pth", map_location=self.device, weights_only=True,
         ))

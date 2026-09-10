@@ -43,6 +43,30 @@ def get_dir_size_mb(path: Path) -> float:
     return total / (1024 * 1024)
 
 
+def safe_save_state_dict(state_dict, target_file: Path) -> None:
+    """Salva com segurança em sistemas de arquivos de rede (NFS/Lustre).
+
+    Grava primeiro no disco local temporário (/tmp), que usa ext4/tmpfs sem
+    problemas de streams C++ do zipfile_writer, e depois copia atomicamente para o destino.
+    """
+    import tempfile
+    import shutil
+    import torch
+    target_file.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".pth", delete=False, dir="/tmp") as tmp:
+            tmp_path = Path(tmp.name)
+        torch.save(state_dict, tmp_path)
+        shutil.copyfile(str(tmp_path), str(target_file))
+    except Exception:
+        with open(target_file, "wb") as f:
+            torch.save(state_dict, f, _use_new_zipfile_serialization=False)
+    finally:
+        if tmp_path and tmp_path.exists():
+            tmp_path.unlink()
+
+
 def setup_clip(target_dir: Path) -> None:
     clip_dir = target_dir / "clip"
     clip_dir.mkdir(parents=True, exist_ok=True)
@@ -105,7 +129,7 @@ def setup_dino(target_dir: Path) -> None:
     import timm
     import torch
     model = timm.create_model("convnext_base.dinov3_lvd1689m", pretrained=True, num_classes=0)
-    torch.save(model.state_dict(), target_file)
+    safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] DINO salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
@@ -126,7 +150,7 @@ def setup_resnet(target_dir: Path) -> None:
     import torch
     import torchvision.models as tvm
     model = tvm.resnet18(weights=tvm.ResNet18_Weights.DEFAULT)
-    torch.save(model.state_dict(), target_file)
+    safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] ResNet-18 salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
@@ -147,7 +171,7 @@ def setup_mobilenet(target_dir: Path) -> None:
     import torch
     import torchvision.models as tvm
     model = tvm.mobilenet_v3_large(weights=tvm.MobileNet_V3_Large_Weights.DEFAULT)
-    torch.save(model.state_dict(), target_file)
+    safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] MobileNetV3 salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
@@ -170,7 +194,7 @@ def setup_xception(target_dir: Path) -> None:
     import timm
     import torch
     model = timm.create_model("legacy_xception", pretrained=True, num_classes=0)
-    torch.save(model.state_dict(), target_file)
+    safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] Xception salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
