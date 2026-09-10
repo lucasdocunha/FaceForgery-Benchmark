@@ -43,6 +43,7 @@ export TCC_MODELS_ROOT=/projects/models/lucas.ocunha
 export TCC_PRETRAINED_ROOT=/projects/models/lucas.ocunha/pretrained
 export HF_HOME=/projects/models/lucas.ocunha/.cache/huggingface
 export TORCH_HOME=/projects/models/lucas.ocunha/.cache/torch
+export PYTHONHTTPSVERIFY=0
 export PYTHONUNBUFFERED=1
 
 mkdir -p "$TCC_PRETRAINED_ROOT" "$HF_HOME" "$TORCH_HOME"

@@ -27,6 +27,7 @@ export HF_HOME=/projects/models/lucas.ocunha/.cache/huggingface
 export TORCH_HOME=/projects/models/lucas.ocunha/.cache/torch
 mkdir -p "$HF_HOME" "$TORCH_HOME" "$TCC_MODELS_ROOT"
 
+export PYTHONHTTPSVERIFY=0
 export PYTHONUNBUFFERED=1
 
 # Ir para a pasta do repositório no CISIA

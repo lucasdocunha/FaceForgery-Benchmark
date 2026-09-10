@@ -23,8 +23,16 @@ from __future__ import annotations
 
 import argparse
 import os
+import ssl
 import sys
 from pathlib import Path
+
+# Resolve problemas de verificação de certificado SSL em ambientes Conda/HPC para downloads do PyTorch
+try:
+    import certifi
+    ssl._create_default_https_context = ssl._create_unverified_context
+except Exception:
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
