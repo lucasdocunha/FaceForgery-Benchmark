@@ -75,6 +75,24 @@ def safe_save_state_dict(state_dict, target_file: Path) -> None:
             tmp_path.unlink()
 
 
+def download_file_safely(url: str, target_file: Path) -> None:
+    """Baixa um arquivo via HTTP diretamente para o /tmp local (ext4) e copia para o destino (NFS).
+
+    Evita [Errno 5] Input/output error que o torch.hub causa ao tentar salvar direto no NFS.
+    """
+    import urllib.request
+    import shutil
+    target_file.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = Path("/tmp") / target_file.name
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (PyTorch Checkpoint Downloader)"})
+    with urllib.request.urlopen(req) as response, open(temp_path, "wb") as out_file:
+        shutil.copyfileobj(response, out_file)
+
+    shutil.copyfile(str(temp_path), str(target_file))
+    temp_path.unlink(missing_ok=True)
+
+
 def setup_clip(target_dir: Path) -> None:
     clip_dir = target_dir / "clip"
     clip_dir.mkdir(parents=True, exist_ok=True)
@@ -154,11 +172,13 @@ def setup_resnet(target_dir: Path) -> None:
         print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
         return
 
-    print(f"   ⬇️  Baixando pesos do ResNet-18 e salvando em: {target_file}...")
-    import torch
+    print(f"   ⬇️  Baixando pesos do ResNet-18...")
     import torchvision.models as tvm
-    model = tvm.resnet18(weights=tvm.ResNet18_Weights.DEFAULT)
-    safe_save_state_dict(model.state_dict(), target_file)
+    try:
+        url = tvm.ResNet18_Weights.DEFAULT.url
+    except Exception:
+        url = "https://download.pytorch.org/models/resnet18-f37072fd.pth"
+    download_file_safely(url, target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] ResNet-18 salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
@@ -175,11 +195,13 @@ def setup_mobilenet(target_dir: Path) -> None:
         print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
         return
 
-    print(f"   ⬇️  Baixando pesos do MobileNetV3-Large e salvando em: {target_file}...")
-    import torch
+    print(f"   ⬇️  Baixando pesos do MobileNetV3-Large...")
     import torchvision.models as tvm
-    model = tvm.mobilenet_v3_large(weights=tvm.MobileNet_V3_Large_Weights.DEFAULT)
-    safe_save_state_dict(model.state_dict(), target_file)
+    try:
+        url = tvm.MobileNet_V3_Large_Weights.DEFAULT.url
+    except Exception:
+        url = "https://download.pytorch.org/models/mobilenet_v3_large-8738ca79.pth"
+    download_file_safely(url, target_file)
     sz = get_dir_size_mb(target_file)
     print(f"   ✅ [CONCLUÍDO] MobileNetV3 salvo com sucesso em {target_file} ({sz:.1f} MB)")
 
@@ -201,6 +223,8 @@ def setup_xception(target_dir: Path) -> None:
     print(f"   ⬇️  Baixando pesos do Xception e salvando em: {target_file}...")
     import timm
     import torch
+    import torch.hub
+    torch.hub.set_dir("/tmp/torch_hub")
     model = timm.create_model("legacy_xception", pretrained=True, num_classes=0)
     safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
@@ -224,6 +248,10 @@ def main() -> None:
     print("  VERIFICAÇÃO E CONFIGURAÇÃO DE MODELOS PRÉ-TREINADOS (CISIA)")
     print(f"  Diretório Base: {target_dir}")
     print("█" * 70)
+
+    # Configura o cache do torch.hub em /tmp local para que downloads intermediários nunca passem pelo NFS
+    import torch.hub
+    torch.hub.set_dir("/tmp/torch_hub")
 
     # Executa a verificação/download para cada modelo
     setup_clip(target_dir)
