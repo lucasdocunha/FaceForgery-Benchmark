@@ -1,0 +1,112 @@
+\begin{table}
+\caption{Celeb-DF Cross-Dataset Benchmark (Frame-level)}
+\label{tab:celebdf_frame}
+\begin{tabular}{llllll}
+\toprule
+Model & Mode & Regime & AUC & ACC & F1 \\
+\midrule
+clip & complex & finetune & 0.529 $\pm$ 0.054 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+clip & concat & finetune & 0.395 $\pm$ 0.019 & 0.399 $\pm$ 0.031 & 0.385 $\pm$ 0.030 \\
+clip & concat_frequency & finetune & 0.469 $\pm$ 0.019 & 0.355 $\pm$ 0.009 & 0.471 $\pm$ 0.002 \\
+clip & frequency_3 & finetune & 0.454 $\pm$ 0.009 & 0.381 $\pm$ 0.011 & 0.457 $\pm$ 0.011 \\
+clip & magnitude & finetune & 0.485 $\pm$ 0.012 & 0.393 $\pm$ 0.015 & 0.469 $\pm$ 0.004 \\
+clip & none & finetune & 0.332 $\pm$ 0.031 & 0.392 $\pm$ 0.042 & 0.285 $\pm$ 0.059 \\
+clip & phase & finetune & 0.459 $\pm$ 0.011 & 0.402 $\pm$ 0.017 & 0.431 $\pm$ 0.013 \\
+dino & complex & finetune & 0.502 $\pm$ 0.005 & 0.344 $\pm$ 0.001 & 0.511 $\pm$ 0.000 \\
+dino & concat & finetune & 0.355 $\pm$ 0.018 & 0.348 $\pm$ 0.021 & 0.390 $\pm$ 0.018 \\
+dino & concat_frequency & finetune & 0.412 $\pm$ 0.028 & 0.338 $\pm$ 0.002 & 0.496 $\pm$ 0.002 \\
+dino & frequency_3 & finetune & 0.466 $\pm$ 0.023 & 0.371 $\pm$ 0.009 & 0.496 $\pm$ 0.004 \\
+dino & magnitude & finetune & 0.489 $\pm$ 0.010 & 0.375 $\pm$ 0.020 & 0.491 $\pm$ 0.008 \\
+dino & none & finetune & 0.324 $\pm$ 0.054 & 0.372 $\pm$ 0.070 & 0.290 $\pm$ 0.066 \\
+dino & phase & finetune & 0.423 $\pm$ 0.013 & 0.367 $\pm$ 0.015 & 0.456 $\pm$ 0.007 \\
+mobilenet & complex & finetune & 0.465 $\pm$ 0.007 & 0.524 $\pm$ 0.005 & 0.319 $\pm$ 0.007 \\
+mobilenet & concat & finetune & 0.451 $\pm$ 0.014 & 0.450 $\pm$ 0.020 & 0.387 $\pm$ 0.017 \\
+mobilenet & concat_frequency & finetune & 0.453 $\pm$ 0.006 & 0.433 $\pm$ 0.018 & 0.405 $\pm$ 0.018 \\
+mobilenet & frequency_3 & finetune & 0.447 $\pm$ 0.017 & 0.442 $\pm$ 0.026 & 0.396 $\pm$ 0.011 \\
+mobilenet & magnitude & finetune & 0.460 $\pm$ 0.006 & 0.431 $\pm$ 0.015 & 0.422 $\pm$ 0.014 \\
+mobilenet & none & finetune & 0.382 $\pm$ 0.012 & 0.414 $\pm$ 0.021 & 0.324 $\pm$ 0.008 \\
+mobilenet & phase & finetune & 0.468 $\pm$ 0.005 & 0.569 $\pm$ 0.017 & 0.268 $\pm$ 0.028 \\
+resnet & complex & finetune & 0.433 $\pm$ 0.043 & 0.438 $\pm$ 0.077 & 0.373 $\pm$ 0.047 \\
+resnet & concat & finetune & 0.385 $\pm$ 0.031 & 0.343 $\pm$ 0.010 & 0.456 $\pm$ 0.024 \\
+resnet & concat_frequency & finetune & 0.434 $\pm$ 0.023 & 0.337 $\pm$ 0.002 & 0.492 $\pm$ 0.003 \\
+resnet & frequency_3 & finetune & 0.478 $\pm$ 0.013 & 0.400 $\pm$ 0.019 & 0.472 $\pm$ 0.006 \\
+resnet & magnitude & finetune & 0.474 $\pm$ 0.017 & 0.397 $\pm$ 0.024 & 0.472 $\pm$ 0.004 \\
+resnet & magnitude & scratch & 0.458 $\pm$ 0.024 & 0.380 $\pm$ 0.039 & 0.476 $\pm$ 0.020 \\
+resnet & none & finetune & 0.329 $\pm$ 0.026 & 0.411 $\pm$ 0.053 & 0.247 $\pm$ 0.031 \\
+resnet & none & scratch & 0.465 $\pm$ 0.008 & 0.562 $\pm$ 0.016 & 0.223 $\pm$ 0.027 \\
+resnet & phase & finetune & 0.428 $\pm$ 0.004 & 0.404 $\pm$ 0.014 & 0.401 $\pm$ 0.018 \\
+resnet & phase & scratch & 0.437 $\pm$ 0.008 & 0.381 $\pm$ 0.008 & 0.443 $\pm$ 0.002 \\
+vit & complex & finetune & 0.500 $\pm$ 0.013 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+vit & concat & finetune & 0.452 $\pm$ 0.015 & 0.344 $\pm$ 0.010 & 0.477 $\pm$ 0.005 \\
+vit & concat_frequency & finetune & 0.489 $\pm$ 0.003 & 0.339 $\pm$ 0.001 & 0.500 $\pm$ 0.002 \\
+vit & frequency_3 & finetune & 0.459 $\pm$ 0.015 & 0.374 $\pm$ 0.013 & 0.501 $\pm$ 0.003 \\
+vit & magnitude & finetune & 0.469 $\pm$ 0.018 & 0.370 $\pm$ 0.015 & 0.492 $\pm$ 0.004 \\
+vit & none & finetune & 0.350 $\pm$ 0.035 & 0.351 $\pm$ 0.027 & 0.382 $\pm$ 0.047 \\
+vit & phase & finetune & 0.473 $\pm$ 0.013 & 0.345 $\pm$ 0.004 & 0.511 $\pm$ 0.000 \\
+xception & complex & finetune & 0.463 $\pm$ 0.011 & 0.344 $\pm$ 0.000 & 0.512 $\pm$ 0.000 \\
+xception & concat & finetune & 0.446 $\pm$ 0.011 & 0.348 $\pm$ 0.005 & 0.472 $\pm$ 0.007 \\
+xception & concat_frequency & finetune & 0.477 $\pm$ 0.012 & 0.356 $\pm$ 0.006 & 0.488 $\pm$ 0.003 \\
+xception & frequency_3 & finetune & 0.464 $\pm$ 0.007 & 0.404 $\pm$ 0.011 & 0.460 $\pm$ 0.008 \\
+xception & magnitude & finetune & 0.486 $\pm$ 0.013 & 0.415 $\pm$ 0.018 & 0.466 $\pm$ 0.007 \\
+xception & none & finetune & 0.394 $\pm$ 0.012 & 0.344 $\pm$ 0.007 & 0.459 $\pm$ 0.008 \\
+xception & phase & finetune & 0.462 $\pm$ 0.009 & 0.352 $\pm$ 0.005 & 0.494 $\pm$ 0.008 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\caption{Celeb-DF Cross-Dataset Benchmark (Video-level)}
+\label{tab:celebdf_video}
+\begin{tabular}{llllll}
+\toprule
+Model & Mode & Regime & AUC & ACC & F1 \\
+\midrule
+clip & complex & finetune & 0.530 $\pm$ 0.060 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+clip & concat & finetune & 0.365 $\pm$ 0.025 & 0.481 $\pm$ 0.093 & 0.223 $\pm$ 0.139 \\
+clip & concat_frequency & finetune & 0.430 $\pm$ 0.028 & 0.333 $\pm$ 0.007 & 0.494 $\pm$ 0.012 \\
+clip & frequency_3 & finetune & 0.426 $\pm$ 0.016 & 0.347 $\pm$ 0.007 & 0.497 $\pm$ 0.010 \\
+clip & magnitude & finetune & 0.482 $\pm$ 0.016 & 0.347 $\pm$ 0.005 & 0.503 $\pm$ 0.007 \\
+clip & none & finetune & 0.283 $\pm$ 0.035 & 0.454 $\pm$ 0.132 & 0.167 $\pm$ 0.135 \\
+clip & phase & finetune & 0.442 $\pm$ 0.020 & 0.329 $\pm$ 0.010 & 0.473 $\pm$ 0.027 \\
+dino & complex & finetune & 0.511 $\pm$ 0.025 & 0.347 $\pm$ 0.008 & 0.510 $\pm$ 0.003 \\
+dino & concat & finetune & 0.306 $\pm$ 0.021 & 0.340 $\pm$ 0.030 & 0.441 $\pm$ 0.104 \\
+dino & concat_frequency & finetune & 0.366 $\pm$ 0.019 & 0.327 $\pm$ 0.018 & 0.475 $\pm$ 0.035 \\
+dino & frequency_3 & finetune & 0.460 $\pm$ 0.030 & 0.349 $\pm$ 0.004 & 0.511 $\pm$ 0.001 \\
+dino & magnitude & finetune & 0.485 $\pm$ 0.023 & 0.352 $\pm$ 0.008 & 0.511 $\pm$ 0.002 \\
+dino & none & finetune & 0.272 $\pm$ 0.067 & 0.318 $\pm$ 0.030 & 0.424 $\pm$ 0.012 \\
+dino & phase & finetune & 0.372 $\pm$ 0.017 & 0.343 $\pm$ 0.001 & 0.508 $\pm$ 0.002 \\
+mobilenet & complex & finetune & 0.441 $\pm$ 0.014 & 0.632 $\pm$ 0.010 & 0.047 $\pm$ 0.020 \\
+mobilenet & concat & finetune & 0.429 $\pm$ 0.018 & 0.605 $\pm$ 0.010 & 0.187 $\pm$ 0.035 \\
+mobilenet & concat_frequency & finetune & 0.415 $\pm$ 0.022 & 0.577 $\pm$ 0.026 & 0.189 $\pm$ 0.021 \\
+mobilenet & frequency_3 & finetune & 0.430 $\pm$ 0.019 & 0.556 $\pm$ 0.029 & 0.221 $\pm$ 0.071 \\
+mobilenet & magnitude & finetune & 0.457 $\pm$ 0.014 & 0.537 $\pm$ 0.075 & 0.266 $\pm$ 0.105 \\
+mobilenet & none & finetune & 0.330 $\pm$ 0.020 & 0.323 $\pm$ 0.014 & 0.362 $\pm$ 0.022 \\
+mobilenet & phase & finetune & 0.435 $\pm$ 0.009 & 0.656 $\pm$ 0.001 & 0.013 $\pm$ 0.019 \\
+resnet & complex & finetune & 0.411 $\pm$ 0.060 & 0.445 $\pm$ 0.129 & 0.340 $\pm$ 0.169 \\
+resnet & concat & finetune & 0.352 $\pm$ 0.027 & 0.363 $\pm$ 0.033 & 0.375 $\pm$ 0.080 \\
+resnet & concat_frequency & finetune & 0.386 $\pm$ 0.019 & 0.335 $\pm$ 0.010 & 0.473 $\pm$ 0.035 \\
+resnet & frequency_3 & finetune & 0.475 $\pm$ 0.018 & 0.403 $\pm$ 0.056 & 0.464 $\pm$ 0.049 \\
+resnet & magnitude & finetune & 0.472 $\pm$ 0.030 & 0.385 $\pm$ 0.031 & 0.475 $\pm$ 0.021 \\
+resnet & magnitude & scratch & 0.448 $\pm$ 0.032 & 0.352 $\pm$ 0.015 & 0.495 $\pm$ 0.010 \\
+resnet & none & finetune & 0.272 $\pm$ 0.034 & 0.343 $\pm$ 0.088 & 0.272 $\pm$ 0.094 \\
+resnet & none & scratch & 0.457 $\pm$ 0.012 & 0.637 $\pm$ 0.009 & 0.015 $\pm$ 0.006 \\
+resnet & phase & finetune & 0.355 $\pm$ 0.011 & 0.395 $\pm$ 0.100 & 0.326 $\pm$ 0.125 \\
+resnet & phase & scratch & 0.377 $\pm$ 0.009 & 0.331 $\pm$ 0.007 & 0.474 $\pm$ 0.012 \\
+vit & complex & finetune & 0.498 $\pm$ 0.019 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+vit & concat & finetune & 0.413 $\pm$ 0.021 & 0.339 $\pm$ 0.002 & 0.503 $\pm$ 0.005 \\
+vit & concat_frequency & finetune & 0.452 $\pm$ 0.014 & 0.343 $\pm$ 0.001 & 0.511 $\pm$ 0.001 \\
+vit & frequency_3 & finetune & 0.447 $\pm$ 0.020 & 0.353 $\pm$ 0.010 & 0.513 $\pm$ 0.001 \\
+vit & magnitude & finetune & 0.449 $\pm$ 0.026 & 0.350 $\pm$ 0.006 & 0.511 $\pm$ 0.001 \\
+vit & none & finetune & 0.302 $\pm$ 0.039 & 0.327 $\pm$ 0.016 & 0.425 $\pm$ 0.071 \\
+vit & phase & finetune & 0.465 $\pm$ 0.018 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+xception & complex & finetune & 0.437 $\pm$ 0.015 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+xception & concat & finetune & 0.419 $\pm$ 0.019 & 0.332 $\pm$ 0.004 & 0.495 $\pm$ 0.007 \\
+xception & concat_frequency & finetune & 0.458 $\pm$ 0.021 & 0.342 $\pm$ 0.002 & 0.508 $\pm$ 0.003 \\
+xception & frequency_3 & finetune & 0.441 $\pm$ 0.008 & 0.375 $\pm$ 0.011 & 0.476 $\pm$ 0.006 \\
+xception & magnitude & finetune & 0.476 $\pm$ 0.021 & 0.379 $\pm$ 0.017 & 0.487 $\pm$ 0.015 \\
+xception & none & finetune & 0.337 $\pm$ 0.013 & 0.341 $\pm$ 0.008 & 0.502 $\pm$ 0.008 \\
+xception & phase & finetune & 0.433 $\pm$ 0.013 & 0.344 $\pm$ 0.003 & 0.510 $\pm$ 0.002 \\
+\bottomrule
+\end{tabular}
+\end{table}

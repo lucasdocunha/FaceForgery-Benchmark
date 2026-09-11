@@ -26,7 +26,8 @@ LOGIT_LIMIT = 80.0
 
 def amp_context(device: torch.device, enabled: bool = True):
     if enabled and device.type == "cuda":
-        return torch.amp.autocast("cuda")
+        amp_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        return torch.amp.autocast("cuda", dtype=amp_dtype)
     return nullcontext()
 
 
@@ -37,11 +38,17 @@ def sanitize_inputs(x: torch.Tensor) -> torch.Tensor:
     return torch.nan_to_num(x, nan=0.0, posinf=1.0, neginf=-1.0)
 
 
+_warned_non_finite_logits = False
+
+
 def sanitize_logits(logits: torch.Tensor, limit: float = LOGIT_LIMIT) -> torch.Tensor:
+    global _warned_non_finite_logits
     logits = logits.float()
     if torch.isfinite(logits).all():
         return logits
-    logger.warning("Replacing non-finite logits before loss/metric computation.")
+    if not _warned_non_finite_logits:
+        logger.warning("Replacing non-finite logits before loss/metric computation (further warnings suppressed).")
+        _warned_non_finite_logits = True
     return torch.nan_to_num(
         logits,
         nan=0.0,

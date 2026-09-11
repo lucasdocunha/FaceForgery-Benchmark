@@ -18,6 +18,8 @@ def build(config) -> nn.Module:
     names = {"tiny":"convnext_tiny.dinov3_lvd1689m", "small":"convnext_small.dinov3_lvd1689m",
              "base":"convnext_base.dinov3_lvd1689m", "large":"convnext_large.dinov3_lvd1689m"}
     pretrained = config.regime == "finetune"
+    if pretrained and not config.allow_pretrained:
+        raise ValueError("External pretrained DINO weights are disabled")
     from src.data.paths import pretrained_root
     local_dino = pretrained_root() / "dino" / f"{config.model_size}.pth"
     local_dino_alt = pretrained_root() / "dino" / f"convnext_{config.model_size}.pth"

@@ -180,7 +180,7 @@ def train_one(family, config_yaml, batch_size, epochs, device_str):
     return result
 
 
-def run_gpu_group(gpu_id: int, configs: list[tuple]):
+def run_gpu_group(gpu_id: int, configs: list[tuple], tag: str = "partial"):
     """Executa sequencialmente uma lista de modelos na GPU indicada."""
     device_str = f"cuda:{gpu_id}"
     # Detecta visível como cuda:0 (CUDA_VISIBLE_DEVICES já definido antes de importar)
@@ -234,7 +234,7 @@ def run_gpu_group(gpu_id: int, configs: list[tuple]):
 
     # Salvar parcial por GPU
     import pandas as _pd
-    out_partial = Path(f"/home/lucas.ocunha/tcc/tables/robust_gpu{gpu_id}_partial.csv")
+    out_partial = Path(f"/home/lucas.ocunha/tcc/tables/robust_gpu{gpu_id}_{tag}.csv")
     _pd.DataFrame(rows).to_csv(out_partial, index=False)
     print(f"\n📝 GPU {gpu_id} — parcial salvo em {out_partial}", flush=True)
 

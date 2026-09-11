@@ -1,0 +1,2 @@
+model_family,fourier_mode,regime,seed,gpu,val_auc,test_auc,test_acc,test_f1,test_d_auc,test_d_acc,test_d_f1,delta_auc,elapsed_min
+vit,none,finetune,987,cuda:0,0.9466,0.8176,0.7331,0.7421,0.7596,0.6812,0.6908,-0.058,442.9

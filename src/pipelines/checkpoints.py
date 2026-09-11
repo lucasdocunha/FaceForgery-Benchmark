@@ -119,10 +119,13 @@ def _read_run_config(run: TrainedRun) -> dict:
 
 def config_from_run(run: TrainedRun) -> TrainingConfig:
     allowed = {field.name for field in fields(TrainingConfig)}
+    raw_cfg = _read_run_config(run)
     values = {
-        key: _coerce(key, value) for key, value in _read_run_config(run).items()
+        key: _coerce(key, value) for key, value in raw_cfg.items()
         if key in allowed and not (isinstance(value, float) and np.isnan(value))
     }
+    if "in_channels" in raw_cfg and raw_cfg["in_channels"] is not None:
+        values["in_channels_override"] = int(raw_cfg["in_channels"])
     values.update(model_family=run.model_family, fourier_mode=run.fourier_mode,
                   regime=run.regime, seed=run.seed)
     config = TrainingConfig(**values)

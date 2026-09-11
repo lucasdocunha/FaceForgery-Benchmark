@@ -1,0 +1,20 @@
+\begin{table}
+\caption{Celeb-DF Cross-Dataset Benchmark (celeb_df_frame)}
+\label{tab:celebdf_celeb_df_frame}
+\begin{tabular}{llllll}
+\toprule
+Model & Mode & Regime & AUC & ACC & F1 \\
+\midrule
+resnet & complex & finetune & 0.433 $\pm$ 0.043 & 0.438 $\pm$ 0.077 & 0.373 $\pm$ 0.047 \\
+resnet & concat & finetune & 0.385 $\pm$ 0.031 & 0.343 $\pm$ 0.010 & 0.456 $\pm$ 0.024 \\
+resnet & concat_frequency & finetune & 0.434 $\pm$ 0.023 & 0.337 $\pm$ 0.002 & 0.492 $\pm$ 0.003 \\
+resnet & frequency_3 & finetune & 0.478 $\pm$ 0.013 & 0.400 $\pm$ 0.019 & 0.472 $\pm$ 0.006 \\
+resnet & magnitude & finetune & 0.474 $\pm$ 0.017 & 0.397 $\pm$ 0.024 & 0.472 $\pm$ 0.004 \\
+resnet & magnitude & scratch & 0.458 $\pm$ 0.024 & 0.380 $\pm$ 0.039 & 0.476 $\pm$ 0.020 \\
+resnet & none & finetune & 0.329 $\pm$ 0.026 & 0.411 $\pm$ 0.053 & 0.247 $\pm$ 0.031 \\
+resnet & none & scratch & 0.465 $\pm$ 0.008 & 0.562 $\pm$ 0.016 & 0.223 $\pm$ 0.027 \\
+resnet & phase & finetune & 0.428 $\pm$ 0.004 & 0.404 $\pm$ 0.014 & 0.401 $\pm$ 0.018 \\
+resnet & phase & scratch & 0.437 $\pm$ 0.008 & 0.381 $\pm$ 0.008 & 0.443 $\pm$ 0.002 \\
+\bottomrule
+\end{tabular}
+\end{table}

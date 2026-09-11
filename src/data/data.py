@@ -82,8 +82,10 @@ class ImageDataset(Dataset):
         data_limit: int = np.inf,
         fourier: FourierMode = "none",
         spatial_size: tuple[int, int] | None = (128, 128),
+        in_channels: int | None = None,
     ):
         self.images_dir = images_dir
+        self.in_channels = in_channels
         self.df = pd.read_csv(file_csv)
         self.df.columns = self.df.columns.str.strip()
 
@@ -224,6 +226,8 @@ class ImageDataset(Dataset):
                 dim=0,
             )
             output = torch.cat([image, fft], dim=0)
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
 
         else:
             raise ValueError(f"Modo de Fourier inválido: {self.fourier}")

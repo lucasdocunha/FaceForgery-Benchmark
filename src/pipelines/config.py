@@ -59,9 +59,12 @@ class TrainingConfig:
     num_experts: int = 7
     routing_strategy: str = "dense"
     top_k: int = 3
+    in_channels_override: int | None = None
 
     @property
     def in_channels(self) -> int:
+        if self.in_channels_override is not None:
+            return self.in_channels_override
         return FOURIER_CHANNELS[self.fourier_mode]
 
     @property
