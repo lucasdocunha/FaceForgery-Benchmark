@@ -202,7 +202,7 @@ ax.set_ylabel("Test Difícil AUC (%)", fontsize=11)
 ax.set_title("Trade-off IID vs OOD — Modelos Robustos", fontsize=11, fontweight="bold")
 ax.grid(alpha=0.3)
 p1 = mpatches.Patch(color="gray", label="Individuais")
-p2 = mpatches.Patch(color="#E74C3C", marker="*", label="Ensembles")
+p2 = mpatches.Patch(color="#E74C3C", label="Ensembles")
 ax.legend(handles=[p1, p2], fontsize=9)
 
 # Bar chart: top-8 ensembles por test_d AUC

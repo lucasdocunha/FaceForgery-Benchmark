@@ -352,9 +352,9 @@ Os resultados obtidos no Seed 987 demonstram uma retenção notavelmente superio
 | **ResNet** | none | 25 / 32 | 0,9752 | 0,8366 | 0,7369 | 0,7379 | 0,7587 | 0,6622 | 0,6535 | -0,0779 (-7,8%) |
 | **MobileNet**| none | 20 / 16 | 0,9513 | 0,8373 | 0,7370 | 0,7345 | 0,7493 | 0,6646 | 0,6635 | -0,0880 (-8,8%) |
 | **Xception** | none | 20 / 16 | 0,8511 | 0,7605 | 0,6965 | 0,7419 | 0,6838 | 0,6514 | 0,7095 | -0,0767 (-7,7%) |
-| **DINO** | none | 20 / 16 | **0,9939** | *(em validação)* | *(em validação)*| *(em validação)*| *(em validação)* | *(em validação)* | *(em validação)* | *(em validação)* |
+| **DINO** | none | 20 / 16 | **0,9939** | **0,9242** | **0,8454** | **0,8541** | **0,8483** | **0,7656** | **0,7720** | **-0,0759** (-7,6%) |
 
-> **Achado Crucial de Robustez:** O modelo CLIP-ViT-B/16 treinado sob aumento robusto sustentou **84,62% de AUC em dados severamente corrompidos**, um ganho de quase **+10 pontos percentuais** sobre o CLIP treinado convencionalmente (0,7489) e quase **+16 pontos percentuais** sobre o baseline do Xception (0,6838).
+> **Achado Crucial de Robustez:** Os modelos DINO e CLIP treinados sob aumento robusto sustentaram **>84,6% de AUC em dados severamente corrompidos** (`test_d`), estabelecendo os maiores patamares de resiliência de todo o estudo. O DINO atingiu **84,83%** e o CLIP **84,62%**, superando os baselines sem augmentação robusta por uma margem de até **+16 pontos percentuais**.
 
 ---
 
@@ -403,6 +403,19 @@ A combinação sinérgica de modelos que operam em domínios complementares (Esp
 | **CLIP-987 + DINO-42** | CLIP/none (Seed 987 Robusto) + DINO/none (Seed 42) | Geometric Mean | 0,9982 | 0,9833 | **0,8284** | **-0,1549** |
 
 A inclusão do **ResNet treinado com `concat_frequency`** forneceu ortogonalidade informativa aos grandes modelos espaciais (CLIP e DINO), elevando o AUC de teste de ~93% para impressionantes **98,71%**.
+
+#### Ensembles dos Modelos Robustos (Seed 987 sob Corrupções Severas)
+Avaliando a fusão dos 6 modelos treinados com o protocolo `RandomizedRobustAugment`, foram alcançados novos patamares de robustez contra perturbações não-vistas (`test_d`):
+
+| Ensemble Robusto | Composição | Estratégia de Fusão | Test AUC | Test_d AUC | $\Delta\text{AUC}$ | Nota / Grade |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **CLIP + DINO Robustos** | CLIP (987) + DINO (987) | Geometric Mean | **0,9400** | **0,8826** | **-0,0574** | **A+ (9,15)** |
+| **CLIP + DINO + Xception** | CLIP (987) + DINO (987) + Xception (987) | Geometric Mean | 0,9362 | 0,8779 | -0,0583 | A+ (9,11) |
+| **CLIP + DINO Robustos** | CLIP (987) + DINO (987) | Mean | 0,9380 | 0,8768 | -0,0612 | A+ (9,11) |
+| **CLIP + DINO + ResNet** | CLIP (987) + DINO (987) + ResNet (987) | Geometric Mean | 0,9350 | 0,8755 | -0,0595 | A+ (9,09) |
+| **CLIP + DINO + ViT** | CLIP (987) + DINO (987) + ViT (987) | Geometric Mean | 0,9313 | 0,8753 | -0,0560 | A+ (9,09) |
+| **CLIP + DINO Robustos** | CLIP (987) + DINO (987) | Stacking | 0,9379 | 0,8750 | -0,0629 | A+ (9,09) |
+| **Todos os 6 Robustos** | CLIP + DINO + ViT + ResNet + MobileNet + Xception | Stacking | 0,9326 | 0,8665 | -0,0661 | A+ (9,03) |
 
 ---
 
