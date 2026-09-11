@@ -84,14 +84,25 @@ def main():
     api.create_repo(repo_id=args.repo_id, repo_type="model", private=args.private, exist_ok=True)
     print("✅ Repositório pronto.")
 
-    print("\n🚀 Iniciando upload da pasta para o Hugging Face Hub...")
-    print("   (O upload pode levar algum tempo dependendo da conexão. É suportada retomada automática em caso de queda)")
-    api.upload_folder(
-        folder_path=str(models_dir),
-        repo_id=args.repo_id,
-        repo_type="model",
-        ignore_patterns=ignore_patterns,
-    )
+    print("\n🚀 Iniciando upload otimizado para grandes volumes (upload_large_folder)...")
+    print("   (Suporta paralelismo com múltiplos workers, chunking e relatórios periódicos)")
+    if hasattr(api, "upload_large_folder"):
+        api.upload_large_folder(
+            folder_path=str(models_dir),
+            repo_id=args.repo_id,
+            repo_type="model",
+            ignore_patterns=ignore_patterns,
+            print_report=True,
+            print_report_every=30,
+            num_workers=8,
+        )
+    else:
+        api.upload_folder(
+            folder_path=str(models_dir),
+            repo_id=args.repo_id,
+            repo_type="model",
+            ignore_patterns=ignore_patterns,
+        )
     print(f"\n🎉 UPLOAD CONCLUÍDO COM SUCESSO!")
     print(f"🔗 Acesse em: https://huggingface.co/{args.repo_id}")
 
