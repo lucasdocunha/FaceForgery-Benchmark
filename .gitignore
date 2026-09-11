@@ -14,6 +14,8 @@ min_dataset
 *.npy
 .env
 .env.*
+.hf_token
+.hf_token*
 
 /models/**
 !/models/
