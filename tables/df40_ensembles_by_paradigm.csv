@@ -1,0 +1,10 @@
+Ensemble,Fusão,diffusion,gan,face_swap,editing_t2i,talking_reenactment,commercial_avatar
+CLIP Robusto + CLIP Concat (s2025) + RESNET Concat (s123),mean,82.49,84.02,91.92,89.0,90.49,81.2
+CLIP Robusto + CLIP Concat + RESNET Concat + DINO Concat,mean,82.01,81.51,92.38,90.68,89.99,84.08
+CLIP Robusto + RESNET Concat (s123),mean,80.57,82.7,91.62,87.09,91.12,85.49
+CLIP Robusto + DINO Robusto + RESNET Concat (s123),mean,77.34,81.16,92.77,87.87,92.54,77.26
+SUPER-ENSEMBLE TOP-5,mean,77.89,79.09,92.08,89.13,91.17,80.27
+CLIP + DINO (Robusto),mean,75.85,80.86,90.08,87.4,89.89,65.44
+RESNET + CLIP + DINO (Concat s42),mean,75.23,72.91,83.74,88.65,79.08,71.9
+TODOS OS 6 PADRÃO,mean,69.68,71.5,81.86,89.26,79.04,60.9
+Deep Ensemble: RESNET `concat` (5 seeds),mean,76.05,75.19,87.24,81.74,83.64,85.27

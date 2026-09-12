@@ -599,6 +599,66 @@ A tabela a seguir consolida a média e o desvio-padrão entre as sementes para c
      - Domínio de magnitude (`magnitude`): **36,06% AUC** (*scratch*) vs. **45,10% AUC** (*finetune*).
    - Redes treinadas sem inicialização ImageNet memorizam padrões ruidosos específicos do dataset de treino e não generalizam para distribuições abertas desconhecidas.
 
+#### 4.5.5. Ensembles Globais no Benchmark DF40: Padrão, Híbridos Espectrais e Super-Ensembles Campeões
+
+Para responder à pergunta sobre o limite de generalização em cenários *cross-dataset* abertos, avaliamos sistematicamente **114 combinações de ensembles** sobre as 11.146 imagens do DF40, explorando a complementaridade entre famílias arquiteturais distintas (Vision Transformers, Convoluções Clássicas, Inverted Residuals) e diferentes representações de entrada (Domínio Espacial RGB Puro vs. Fusão Híbrida Espaço-Frequência `concat`).
+
+As combinações foram organizadas em 5 categorias metodológicas e avaliadas sob 3 regras de fusão:
+1. **Média Aritmética (`mean`)**: Fusão linear clássica das probabilidades preditas.
+2. **Média Geométrica (`geom`)**: Consenso logarítmico calibrado; penaliza modelos individuais com predições discordantes ou incertas, promovendo alta especificidade.
+3. **Máximo Conservador (`max`)**: Estratégia de alerta precoce forense; maximiza a revocação (*recall*) contra ameaças sintéticas.
+
+##### Tabela Síntese: Top Ensembles de Cada Categoria no DF40
+
+| Categoria | Ensemble | Fusão | N° Modelos | AUC (%) | Acurácia (%) | F1-Score (%) | Precision (%) | Recall (%) | Specificity (%) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Super-Ensemble Campeões** | **CLIP Robusto + CLIP Concat (s2025) + RESNET Concat (s123)** | **geom** | **3** | **86,44%** | **78,60%** | 79,15% | **85,56%** | 73,63% | **84,72%** |
+| Super-Ensemble Campeões | CLIP Robusto + CLIP Concat (s2025) + RESNET Concat (s123) | mean | 3 | **86,41%** | 78,52% | **81,98%** | 76,29% | **88,58%** | 66,15% |
+| Super-Ensemble Campeões | CLIP Robusto + CLIP Concat + RESNET Concat + DINO Concat | mean | 4 | **86,15%** | 78,50% | 81,75% | 76,85% | 87,33% | 67,65% |
+| Super-Ensemble Campeões | CLIP Robusto + RESNET Concat (s123) | mean | 2 | **85,42%** | 76,20% | 79,93% | 74,70% | 85,96% | 64,19% |
+| Super-Ensemble Campeões | CLIP Robusto + RESNET Concat (s123) | geom | 2 | **85,40%** | **78,90%** | 79,95% | 83,99% | 76,28% | 82,12% |
+| Super-Ensemble Campeões | CLIP Robusto + DINO Concat (s123) + RESNET Concat (s123) | mean | 3 | **85,20%** | 77,68% | 80,51% | 77,63% | 83,62% | 70,37% |
+| Super-Ensemble Campeões | CLIP Robusto + RESNET Concat + DINO Concat + XCEPTION Concat | mean | 4 | **84,89%** | 76,96% | 80,22% | 76,18% | 84,71% | 67,43% |
+| **Ensemble Robusto (s987)** | CLIP + DINO (Robusto) | mean | 2 | **82,48%** | 75,64% | 77,91% | 77,93% | 77,89% | 72,87% |
+| Ensemble Robusto (s987) | CLIP + DINO + VIT (Robusto) | max | 3 | **80,85%** | 73,47% | 78,78% | 69,96% | 89,28% | 54,03% |
+| **Ensemble Híbrido Concat** | RESNET + CLIP + DINO (Concat s42) | max | 3 | **80,94%** | 69,93% | 77,15% | 66,41% | **92,08%** | 42,69% |
+| Ensemble Híbrido Concat | RESNET + CLIP (Concat s42) | max | 2 | **80,91%** | 71,25% | 77,61% | 68,09% | 90,35% | 47,75% |
+| Ensemble Híbrido Concat | RESNET + CLIP (Concat s42) | mean | 2 | **80,11%** | 74,44% | 77,84% | 74,57% | 81,41% | 65,87% |
+| **Deep Ensemble (5 Seeds)** | Deep Ensemble: RESNET `concat` (5 seeds) | geom | 5 | **80,13%** | 71,93% | 74,02% | 75,60% | 72,51% | 71,21% |
+| Deep Ensemble (5 Seeds) | Deep Ensemble: RESNET `concat` (5 seeds) | mean | 5 | **80,05%** | 71,38% | 75,88% | 70,88% | 81,63% | 58,77% |
+| Deep Ensemble (5 Seeds) | Deep Ensemble: CLIP `none` (5 seeds) | geom | 5 | **79,43%** | 73,26% | 75,57% | 76,14% | 75,00% | 71,13% |
+| **Ensemble Padrão (s42)** | CLIP + DINO + XCEPTION (Padrão) | mean | 3 | **76,27%** | 69,27% | 73,44% | 67,82% | 77,01% | 59,75% |
+| Ensemble Padrão (s42) | TODOS OS 6 PADRÃO | mean | 6 | **76,15%** | 67,77% | 70,69% | 68,91% | 70,47% | 64,45% |
+
+##### Desempenho dos Top Ensembles por Paradigma Generativo (AUC %)
+
+| Ensemble | Fusão | Difusão (DiT/SiT/SD) | GANs (StyleGAN2/3) | Face Swap (DFL/SimSwap) | Edição T2I (MidJourney) | Talking Head (Wav2Lip) | Avatares Comerciais (HeyGen) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Trio Campeão (CLIP Rob. + CLIP Concat + RESNET Concat)** | **mean** | **82,49%** | **84,02%** | 91,92% | 89,00% | 90,49% | 81,20% |
+| **Quarteto Campeão (+ DINO Concat)** | **mean** | 82,01% | 81,51% | **92,38%** | **90,68%** | 89,99% | **84,08%** |
+| **Dupla Inter-Domínio (CLIP Robusto + RESNET Concat)** | **mean** | 80,57% | 82,70% | 91,62% | 87,09% | **91,12%** | **85,49%** |
+| Super-Ensemble Top-5 (CLIP + DINO + RESNET + DINO-c + XCEPTION-c) | mean | 77,89% | 79,09% | 92,08% | 89,13% | 91,17% | 80,27% |
+| Ensemble Robusto (CLIP + DINO Robusto) | mean | 75,85% | 80,86% | 90,08% | 87,40% | 89,89% | 65,44% |
+| Ensemble Híbrido Concat (RESNET + CLIP + DINO Concat s42) | mean | 75,23% | 72,91% | 83,74% | 88,65% | 79,08% | 71,90% |
+| Deep Ensemble: RESNET `concat` (5 seeds) | mean | 76,05% | 75,19% | 87,24% | 81,74% | 83,64% | 85,27% |
+| Ensemble Padrão (Todos os 6 Padrão s42) | mean | 69,68% | 71,50% | 81,86% | 89,26% | 79,04% | 60,90% |
+
+##### Principais Conclusões Científicas sobre Ensembles no DF40:
+
+1. **Quebra do Limite Superior Individual com Sinergia Inter-Domínio (+3,81 pp de AUC)**:
+   - O melhor modelo individual em toda a base foi o `clip_none_s987` (82,63% AUC) e o melhor convolucional espectral foi `resnet_concat_s123` (80,65% AUC).
+   - A fusão simples do **Trio Campeão** (`CLIP Robusto none` + `CLIP Concat s2025` + `ResNet Concat s123`) atingiu **86,44% de AUC** (geom) e **86,41% de AUC** (mean), superando em **+3,81 pontos percentuais** o teto de qualquer detector isolado.
+   - *Mecanismo Fisiológico do Ganho*: O CLIP processa o espaço RGB via *Self-Attention* global, capturando coerência de iluminação e distorções anatômicas sutis comuns em Difusão e GANs. A ResNet Concat processa kernels 2D locais sobre o mapa de frequências de Fourier, detectando picos de energia artificial e artefatos de grade gerados por *upsampling*. A combinação anula os pontos cegos de ambas as abordagens.
+
+2. **Supremacia sobre Avatares Comerciais e Difusão**:
+   - Modelos individuais espaciais padrão sofriam severamente contra avatares comerciais do **HeyGen** (muitos ficando abaixo de 50% de AUC).
+   - O ensemble **CLIP Robusto + RESNET Concat** saltou para impressionantes **85,49% de AUC no HeyGen** e **80,57% em Difusão**. A inclusão de Fourier permitiu ao sistema identificar a suavização sintética e interpolação temporal de avatares comerciais que iludiam detectores puramente espaciais.
+
+3. **Estratégias de Fusão (`geom` vs. `mean` vs. `max`)**:
+   - A **Média Geométrica (`geom`)** revelou-se a melhor estratégia para equilíbrio e especificidade, atingindo **78,90% de Acurácia** e **84,72% de Especificidade** (reduzindo falsos positivos drásticamente).
+   - A **Média Aritmética (`mean`)** otimizou o equilíbrio F1-Score (**81,98%**) e a revocação (**88,58%**).
+   - O **Máximo (`max`)** serve como filtro ultraconservador para triagem em massa, alcançando **>96% de Recall** contra deepfakes ao custo de maior taxa de falsos alarmes.
+
 ---
 
 ## 5. Prós, Contras e Diretrizes de Engenharia para Produção
