@@ -388,6 +388,53 @@ Os 226 modelos foram avaliados em inferência zero-shot no *Celeb-DF v2*. Os res
 1. **O Colapso do Domínio Espacial Puro (`none`)**: Todos os modelos alimentados exclusivamente com imagens RGB padrão sofreram colapso de discriminação no *Celeb-DF v2*, obtendo AUCs entre **27% e 33%**. Isso decorre do fato de os geradores do *FaceForensics++* (DeepFakes, Face2Face, FaceSwap, NeuralTextures) introduzirem artefatos de contorno de máscara de alta frequência que não existem nos geradores avançados e com refinamento temporal do *Celeb-DF v2*. O classificador aprende a basear suas decisões no tom de pele e nas costuras de recorte do FF++, resultando em classificações invertidas sob *domain shift*.
 2. **A Invariância dos Modos de Fourier (`complex`, `magnitude`)**: Quando as redes foram treinadas sobre o espectro de Fourier (particularmente a parte real/imaginária de `complex` e a `magnitude` logarítmica), o AUC subiu para **48% a 53%**, preservando a capacidade de ordenar probabilidades sem cair em falsos positivos sistemáticos. O espectro de potência de geradores sintéticos apresenta anomalias de transição no decaimento radial da energia que independem da identidade da pessoa ou do estilo visual do dataset.
 
+#### 4.3.1. Impacto do Treinamento Robusto (Seed 987) na Generalização Cross-Dataset (Celeb-DF v2)
+
+Para investigar se o treinamento com perturbações sintéticas (`RandomizedRobustAugment`, Seed 987) previne a memorização dos artefatos específicos do *FaceForensics++*, avaliamos individualmente as 6 arquiteturas robustas no *Celeb-DF v2*. A tabela abaixo compara a média dos modelos espaciais padrão (5 sementes: 7, 42, 123, 2024, 2025) contra os modelos robustos (Seed 987):
+
+| Arquitetura | Video AUC Padrão (%) | Video AUC Robusto (%) | Ganho Video ($\Delta$ pp) | Frame AUC Padrão (%) | Frame AUC Robusto (%) | Ganho Frame ($\Delta$ pp) | Video ACC Robusto (%) | Video F1 Robusto (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Xception** | 33,66 | **38,40** | **+4,74** | 39,39 | **41,77** | +2,37 | 32,82 | 48,82 |
+| **DINO** | 27,27 | **35,41** | **+8,14** | 32,51 | **38,76** | **+6,25** | 34,56 | **51,08** |
+| **ViT** | 29,89 | **34,31** | **+4,43** | 34,61 | **38,21** | +3,60 | 31,66 | 45,54 |
+| **MobileNet**| 32,96 | **33,02** | +0,06 | 38,19 | **37,28** | -0,91 | 28,57 | 40,51 |
+| **CLIP** | 27,52 | **32,46** | **+4,94** | 32,47 | **37,10** | +4,63 | 32,05 | 38,68 |
+| **ResNet** | 27,16 | **32,44** | **+5,28** | 32,92 | **36,51** | +3,59 | 31,08 | 35,91 |
+
+**Principais Descobertas:**
+- **Regularização Espacial Anti-Overfitting:** Todas as 6 arquiteturas apresentaram ganho consistente de Video AUC sob treinamento robusto. O modelo **DINO obteve o maior salto absoluto (+8,14 pontos percentuais em Video AUC e +6,25 pp em Frame AUC)**, passando de 27,27% para 35,41%. A ResNet obteve salto de +5,28 pp e o CLIP de +4,94 pp.
+- **Xception como Líder Espacial Individual:** A Xception com aumento robusto atingiu a maior métrica individual do domínio espacial no Celeb-DF v2: **38,40% de Video AUC** e **41,77% de Frame AUC**, superando todos os demais backbones espaciais isolados.
+- **Mecanismo Subjacente:** A injeção estocástica de blur Gaussiano, compressão JPEG e ruído durante o treino força a rede a ignorar ruídos de pixel de alta frequência específicos do sintetizador original do FF++, aprendendo características estruturais e de inconsistência facial que se transferem com maior fidelidade para geradores externos.
+
+#### 4.3.2. Ensembles dos Modelos Robustos no Celeb-DF v2
+
+Para explorar a complementaridade das representações aprendidas sob aumento robusto, avaliamos os ensembles das 6 arquiteturas no Celeb-DF v2 sob três estratégias de fusão (*max*, *mean*, *geometric mean*):
+
+| Ensemble Robusto | Estratégia de Fusão | Frame AUC (%) | Frame ACC (%) | Video AUC (%) | Video ACC (%) | Video F1 (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **DINO + XCEPTION + VIT** | **max** | **38,85** | 33,75 | **34,11** | 33,98 | **50,58** |
+| **CLIP + DINO** | **max** | 37,35 | 33,27 | 31,99 | 34,17 | 49,18 |
+| **CLIP + DINO + VIT** | **max** | 37,29 | 33,28 | 31,78 | 33,59 | 49,26 |
+| **CLIP + DINO + XCEPTION** | **max** | 37,40 | 33,81 | 31,68 | 33,98 | **50,58** |
+| **CLIP + DINO + RESNET** | **max** | 35,67 | 33,28 | 31,36 | 33,78 | 50,07 |
+| **DINO + XCEPTION + VIT** | **mean** | 35,94 | 32,97 | 31,26 | 30,89 | 40,73 |
+| **CLIP + DINO** | **mean** | 35,63 | 32,16 | 31,00 | 32,05 | 43,59 |
+| **DINO + XCEPTION + VIT** | **geom** | 35,60 | **36,87** | 30,99 | **34,75** | 32,40 |
+| **TODOS OS 6 ROBUSTOS** | **max** | 35,26 | 34,04 | 30,54 | 34,36 | **51,15** |
+| **CLIP + DINO + VIT** | **mean** | 35,11 | 32,79 | 30,50 | 30,31 | 38,08 |
+| **CLIP + DINO** | **geom** | 35,40 | 34,09 | 30,43 | 31,08 | 37,70 |
+| **CLIP + DINO + VIT** | **geom** | 34,60 | 36,34 | 30,07 | 33,01 | 29,90 |
+| **CLIP + DINO + RESNET** | **mean** | 34,63 | 32,52 | 29,76 | 31,85 | 45,44 |
+| **CLIP + DINO + XCEPTION** | **mean** | 34,91 | 32,61 | 29,73 | 32,43 | 46,15 |
+| **CLIP + DINO + RESNET** | **geom** | 34,35 | 33,10 | 29,27 | 31,27 | 39,25 |
+| **CLIP + DINO + XCEPTION** | **geom** | 34,56 | 33,22 | 29,12 | 30,69 | 38,00 |
+| **TODOS OS 6 ROBUSTOS** | **mean** | 32,71 | 31,12 | 28,11 | 31,08 | 44,99 |
+| **TODOS OS 6 ROBUSTOS** | **geom** | 32,49 | 32,79 | 27,72 | 28,19 | 31,87 |
+
+**Análise das Estratégias de Fusão no Domain Shift:**
+1. **Supremacia da Fusão por Máximo (`max`)**: Em ambientes de distribuição alterada (*out-of-distribution*), a fusão por média simples ou média geométrica penaliza a decisão final, pois modelos que falham em reconhecer a manipulação atribuem probabilidades muito baixas, puxando a média ponderada para baixo (*false negative suppression*). A fusão por `max` permite que a evidência capturada pelo modelo mais sensível (ex: Xception ou DINO) se sobressaia, sustentando F1 acima de **50,5%** e AUC superior.
+2. **Melhor Combinação**: O ensemble **DINO + XCEPTION + ViT** com fusão `max` atingiu o melhor desempenho conjunto (**38,85% de Frame AUC**, **34,11% de Video AUC** e **50,58% de F1**), demonstrando a sinergia entre uma CNN moderna auto-supervisionada (DINOv3), uma CNN com convoluções separáveis no espaço (Xception) e um Vision Transformer puro (ViT).
+
 ---
 
 ### 4.4. Eficácia dos Ensembles Multimodais

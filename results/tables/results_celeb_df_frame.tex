@@ -5,16 +5,51 @@
 \toprule
 Model & Mode & Regime & AUC & ACC & F1 \\
 \midrule
+clip & complex & finetune & 0.529 $\pm$ 0.054 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+clip & concat & finetune & 0.395 $\pm$ 0.019 & 0.399 $\pm$ 0.031 & 0.385 $\pm$ 0.030 \\
+clip & concat_frequency & finetune & 0.469 $\pm$ 0.019 & 0.355 $\pm$ 0.009 & 0.471 $\pm$ 0.002 \\
+clip & frequency_3 & finetune & 0.454 $\pm$ 0.009 & 0.381 $\pm$ 0.011 & 0.457 $\pm$ 0.011 \\
+clip & magnitude & finetune & 0.485 $\pm$ 0.012 & 0.393 $\pm$ 0.015 & 0.469 $\pm$ 0.004 \\
+clip & none & finetune & 0.332 $\pm$ 0.031 & 0.392 $\pm$ 0.042 & 0.285 $\pm$ 0.059 \\
+clip & phase & finetune & 0.459 $\pm$ 0.011 & 0.402 $\pm$ 0.017 & 0.431 $\pm$ 0.013 \\
+dino & complex & finetune & 0.502 $\pm$ 0.005 & 0.344 $\pm$ 0.001 & 0.511 $\pm$ 0.000 \\
+dino & concat & finetune & 0.355 $\pm$ 0.018 & 0.348 $\pm$ 0.021 & 0.390 $\pm$ 0.018 \\
+dino & concat_frequency & finetune & 0.412 $\pm$ 0.028 & 0.338 $\pm$ 0.002 & 0.496 $\pm$ 0.002 \\
+dino & frequency_3 & finetune & 0.466 $\pm$ 0.023 & 0.371 $\pm$ 0.009 & 0.496 $\pm$ 0.004 \\
+dino & magnitude & finetune & 0.489 $\pm$ 0.010 & 0.375 $\pm$ 0.020 & 0.491 $\pm$ 0.008 \\
+dino & none & finetune & 0.336 $\pm$ 0.060 & 0.376 $\pm$ 0.066 & 0.297 $\pm$ 0.083 \\
+dino & phase & finetune & 0.423 $\pm$ 0.013 & 0.367 $\pm$ 0.015 & 0.456 $\pm$ 0.007 \\
+mobilenet & complex & finetune & 0.465 $\pm$ 0.007 & 0.524 $\pm$ 0.005 & 0.319 $\pm$ 0.007 \\
+mobilenet & concat & finetune & 0.451 $\pm$ 0.014 & 0.450 $\pm$ 0.020 & 0.387 $\pm$ 0.017 \\
+mobilenet & concat_frequency & finetune & 0.453 $\pm$ 0.006 & 0.433 $\pm$ 0.018 & 0.405 $\pm$ 0.018 \\
+mobilenet & frequency_3 & finetune & 0.447 $\pm$ 0.017 & 0.442 $\pm$ 0.026 & 0.396 $\pm$ 0.011 \\
+mobilenet & magnitude & finetune & 0.460 $\pm$ 0.006 & 0.431 $\pm$ 0.015 & 0.422 $\pm$ 0.014 \\
+mobilenet & none & finetune & 0.380 $\pm$ 0.011 & 0.400 $\pm$ 0.038 & 0.337 $\pm$ 0.033 \\
+mobilenet & phase & finetune & 0.468 $\pm$ 0.005 & 0.569 $\pm$ 0.017 & 0.268 $\pm$ 0.028 \\
 resnet & complex & finetune & 0.433 $\pm$ 0.043 & 0.438 $\pm$ 0.077 & 0.373 $\pm$ 0.047 \\
 resnet & concat & finetune & 0.385 $\pm$ 0.031 & 0.343 $\pm$ 0.010 & 0.456 $\pm$ 0.024 \\
 resnet & concat_frequency & finetune & 0.434 $\pm$ 0.023 & 0.337 $\pm$ 0.002 & 0.492 $\pm$ 0.003 \\
 resnet & frequency_3 & finetune & 0.478 $\pm$ 0.013 & 0.400 $\pm$ 0.019 & 0.472 $\pm$ 0.006 \\
 resnet & magnitude & finetune & 0.474 $\pm$ 0.017 & 0.397 $\pm$ 0.024 & 0.472 $\pm$ 0.004 \\
 resnet & magnitude & scratch & 0.458 $\pm$ 0.024 & 0.380 $\pm$ 0.039 & 0.476 $\pm$ 0.020 \\
-resnet & none & finetune & 0.329 $\pm$ 0.026 & 0.411 $\pm$ 0.053 & 0.247 $\pm$ 0.031 \\
+resnet & none & finetune & 0.335 $\pm$ 0.028 & 0.400 $\pm$ 0.054 & 0.273 $\pm$ 0.068 \\
 resnet & none & scratch & 0.465 $\pm$ 0.008 & 0.562 $\pm$ 0.016 & 0.223 $\pm$ 0.027 \\
 resnet & phase & finetune & 0.428 $\pm$ 0.004 & 0.404 $\pm$ 0.014 & 0.401 $\pm$ 0.018 \\
-resnet & phase & scratch & 0.437 $\pm$ 0.008 & 0.381 $\pm$ 0.008 & 0.443 $\pm$ 0.002 \\
+resnet & phase & scratch & 0.436 $\pm$ 0.007 & 0.375 $\pm$ 0.014 & 0.451 $\pm$ 0.015 \\
+vit & complex & finetune & 0.500 $\pm$ 0.013 & 0.344 $\pm$ 0.000 & 0.511 $\pm$ 0.000 \\
+vit & concat & finetune & 0.452 $\pm$ 0.015 & 0.344 $\pm$ 0.010 & 0.477 $\pm$ 0.005 \\
+vit & concat_frequency & finetune & 0.489 $\pm$ 0.003 & 0.339 $\pm$ 0.001 & 0.500 $\pm$ 0.002 \\
+vit & frequency_3 & finetune & 0.459 $\pm$ 0.015 & 0.374 $\pm$ 0.013 & 0.501 $\pm$ 0.003 \\
+vit & magnitude & finetune & 0.469 $\pm$ 0.018 & 0.370 $\pm$ 0.015 & 0.492 $\pm$ 0.004 \\
+vit & none & finetune & 0.352 $\pm$ 0.037 & 0.343 $\pm$ 0.016 & 0.396 $\pm$ 0.037 \\
+vit & phase & finetune & 0.473 $\pm$ 0.013 & 0.345 $\pm$ 0.004 & 0.511 $\pm$ 0.000 \\
+xception & complex & finetune & 0.463 $\pm$ 0.011 & 0.344 $\pm$ 0.000 & 0.512 $\pm$ 0.000 \\
+xception & concat & finetune & 0.446 $\pm$ 0.011 & 0.348 $\pm$ 0.005 & 0.472 $\pm$ 0.007 \\
+xception & concat_frequency & finetune & 0.477 $\pm$ 0.012 & 0.356 $\pm$ 0.006 & 0.488 $\pm$ 0.003 \\
+xception & frequency_3 & finetune & 0.464 $\pm$ 0.007 & 0.404 $\pm$ 0.011 & 0.460 $\pm$ 0.008 \\
+xception & magnitude & finetune & 0.486 $\pm$ 0.013 & 0.415 $\pm$ 0.018 & 0.466 $\pm$ 0.007 \\
+xception & none & finetune & 0.398 $\pm$ 0.014 & 0.344 $\pm$ 0.006 & 0.462 $\pm$ 0.010 \\
+xception & phase & finetune & 0.462 $\pm$ 0.009 & 0.352 $\pm$ 0.005 & 0.494 $\pm$ 0.008 \\
 \bottomrule
 \end{tabular}
 \end{table}
