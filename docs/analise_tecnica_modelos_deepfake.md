@@ -671,7 +671,7 @@ A tabela abaixo organiza todas as 24 técnicas generativas, desde a mais evasiva
 | :--- | :--- | :---: | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
 | **GAN** | `starganv2` | 199 | **31,07%** | CLIP Espacial (s987) | 57,11% | CLIP + DINO Robusto | 49,16% | 45,19% | 27,64% |
 | **Difusão** | `ddim` | 250 | **49,07%** | CLIP Espacial (s987) | 64,42% | Trio Campeão | 63,59% | 63,59% | 54,00% |
-| **Difusão** | `CollabDiff` | 250 | **49,97%** | ViT Espacial (s2025) | 67,01% | Deep Ensemble CLIP (`none`) | 62,08% | 56,85% | 44,00% |
+| **Difusão** | `CollabDiff` | 250 | **49,97%** | **DINO Concat Freq. (s7)** | **73,23%** | Deep Ensemble CLIP (`none`) | 62,08% | 56,85% | 44,00% |
 | **Difusão** | `RDDM` | 250 | **51,18%** | **DINO Concat (s123)** | **99,99%** | Quarteto Campeão | 87,89% | 81,96% | 94,80% |
 | **GAN** | `VQGAN` | 250 | **57,50%** | CLIP Espacial (s7) | 87,34% | Deep Ensemble CLIP (`none`) | 87,08% | 81,48% | 86,80% |
 | **GAN** | `stargan` | 200 | **59,76%** | CLIP Concat (s7) | 83,09% | Trio Campeão | 81,07% | 81,07% | 79,50% |
@@ -697,9 +697,8 @@ A tabela abaixo organiza todas as 24 técnicas generativas, desde a mais evasiva
 **Distribuição das Vitórias Individuais entre Arquiteturas:**
 - **ResNet-18 (`concat` FFT)**: **11 vitórias (45,8%)** — Campeã em geradores de alta frequência: StyleGAN2, StyleGAN3, StyleGANXL, PixArt, SD 2.1, DiT, SiT, HeyGen, MobileSwap, BlendFace e DeepFaceLab.
 - **CLIP-ViT-B/16**: **7 vitórias (29,2%)** — Campeã nas manipulações mais semânticas e evasivas: StarGAN-v2, StarGAN, DDIM, VQGAN, FaceSwap, WhichFaceIsReal e E4E.
-- **DINOv3-Base**: **5 vitórias (20,8%)** — Campeã em detalhes finos de edição e reenactment: MidJourney (96,99%), UniFace (94,69%), StyleCLIP (88,93%), CDF Reenactment (88,79%) e RDDM (99,99%).
-- **ViT-Base**: **1 vitória (4,2%)** — Campeã em CollabDiff (67,01%).
-- **Supremacia da Entrada Híbrida (`concat`)**: Em **16 das 24 técnicas (66,7%)**, o modelo individual campeão absoluto utilizou a representação concatenada $[R, G, B, |F(u,v)|]$!
+- **DINOv3-Base**: **6 vitórias (25,0%)** — Campeã em detalhes finos de edição e difusão complexa: MidJourney (96,99%), UniFace (94,69%), StyleCLIP (88,93%), CDF Reenactment (88,79%), RDDM (99,99%) e CollabDiff (73,23%).
+- **Supremacia das Representações com Fourier (`concat` e `concat_frequency`)**: Em **17 das 24 técnicas (70,8%)**, o modelo individual campeão absoluto utilizou canais de frequência de Fourier!
 
 ##### 4.5.6.2. Benchmark por Taxonomia Generativa (13 Categorias de Síntese)
 
