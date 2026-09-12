@@ -669,36 +669,37 @@ A tabela abaixo organiza todas as 24 técnicas generativas, desde a mais evasiva
 
 | Paradigma | Técnica Generativa | N° Img Fakes | Dificuldade Média AUC (%) | Modelo Individual Campeão | AUC Indiv. (%) | Ensemble Campeão | AUC Ens. (%) | Trio Campeão AUC (%) | Trio Campeão Recall (%) |
 | :--- | :--- | :---: | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
-| **GAN** | `starganv2` | 199 | **31,07%** | CLIP Espacial (s987) | 57,11% | CLIP + DINO Robusto | 49,16% | 45,19% | 27,64% |
-| **Difusão** | `ddim` | 250 | **49,07%** | CLIP Espacial (s987) | 64,42% | Trio Campeão | 63,59% | 63,59% | 54,00% |
-| **Difusão** | `CollabDiff` | 250 | **49,97%** | **DINO Concat Freq. (s7)** | **73,23%** | Deep Ensemble CLIP (`none`) | 62,08% | 56,85% | 44,00% |
-| **Difusão** | `RDDM` | 250 | **51,18%** | **DINO Concat (s123)** | **99,99%** | Quarteto Campeão | 87,89% | 81,96% | 94,80% |
-| **GAN** | `VQGAN` | 250 | **57,50%** | CLIP Espacial (s7) | 87,34% | Deep Ensemble CLIP (`none`) | 87,08% | 81,48% | 86,80% |
-| **GAN** | `stargan` | 200 | **59,76%** | CLIP Concat (s7) | 83,09% | Trio Campeão | 81,07% | 81,07% | 79,50% |
-| **Avatar Comercial** | `heygen` | 250 | **62,06%** | **ResNet Concat (s123)** | **87,22%** | CLIP Rob. + ResNet Concat | 85,49% | 81,20% | 80,80% |
-| **Difusão** | `DiT` (Transformer) | 250 | **68,45%** | ResNet Concat (s123) | 85,44% | CLIP Rob. + ResNet Concat | 89,54% | 89,26% | 92,40% |
-| **Difusão** | `SiT` (Interpolant) | 250 | **71,73%** | ResNet Concat (s123) | 87,85% | Trio Campeão | 90,26% | 90,26% | 95,20% |
-| **Face Swap** | `deepfacelab` | 250 | **73,16%** | ResNet Concat (s2024) | 86,22% | Quarteto Campeão | 89,98% | 89,54% | 93,60% |
-| **Face Swap** | `mobileswap` | 250 | **73,78%** | ResNet Concat (s123) | 91,81% | Super-Ensemble Top-5 | 90,94% | 90,22% | 96,80% |
-| **Talking Head** | `cdf_reenactment` | 500 | **74,07%** | DINO Espacial (s987) | 88,79% | Super-Ensemble Top-5 | 91,17% | 90,49% | 95,60% |
-| **Face Swap** | `faceswap` | 250 | **74,70%** | CLIP Espacial (s987) | 89,21% | Trio Campeão | 93,27% | 93,27% | 99,20% |
-| **Edição T2I** | `styleclip` | 250 | **75,54%** | DINO Espacial (s2025) | 88,93% | Deep Ensemble CLIP (`none`) | 87,97% | 85,24% | 91,20% |
-| **GAN** | `StyleGANXL` | 250 | **77,23%** | ResNet Concat (s123) | 96,04% | Deep Ensemble ResNet Concat | 96,05% | 92,53% | 97,60% |
-| **Face Swap** | `blendface` | 250 | **77,34%** | ResNet Concat (s123) | 92,53% | Super-Ensemble Top-5 | 93,42% | 91,78% | 98,00% |
-| **Edição T2I** | `whichfaceisreal` | 250 | **81,39%** | CLIP Espacial (s2024) | 93,22% | Todos os 6 Padrão | 91,24% | 87,49% | 99,20% |
-| **Face Swap** | `uniface` | 250 | **81,69%** | DINO Concat (s123) | 94,69% | Quarteto Campeão | 96,55% | 94,79% | 98,00% |
-| **Edição T2I** | `MidJourney` | 248 | **82,69%** | **DINO Concat (s123)** | **96,99%** | Super-Ensemble Top-5 | 93,97% | 86,73% | 85,89% |
-| **Edição T2I** | `e4e` | 250 | **82,72%** | CLIP Concat (s7) | 94,59% | Trio Campeão | 96,52% | 96,52% | 100,00% |
-| **GAN** | `StyleGAN2` | 250 | **86,31%** | **ResNet Concat (s42)** | **98,39%** | Deep Ensemble ResNet Concat | 99,34% | 97,92% | 100,00% |
-| **GAN** | `StyleGAN3` | 250 | **87,23%** | **ResNet Concat (s42)** | **98,98%** | Deep Ensemble ResNet Concat | 99,63% | 97,40% | 99,60% |
-| **Difusão** | `pixart` | 250 | **90,06%** | **ResNet Concat (s123)** | **98,51%** | Deep Ensemble ResNet Concat | 99,28% | 97,20% | 100,00% |
-| **Difusão** | `sd2.1` | 250 | **92,42%** | **ResNet Concat (s123)** | **98,44%** | Super-Ensemble Top-5 | 99,06% | 98,30% | 100,00% |
+| **GAN** | `starganv2` | 199 | **40,99%** | **ResNet Frequency-3 (s123)** | **71,45%** | CLIP + DINO Robusto | 49,16% | 45,19% | 27,64% |
+| **Difusão** | `RDDM` | 250 | **43,87%** | **DINO Concat (s123)** | **99,99%** | Quarteto Campeão | 87,89% | 81,96% | 94,80% |
+| **Avatar Comercial** | `heygen` | 250 | **48,54%** | **ResNet Concat (s123)** | **87,22%** | CLIP Rob. + ResNet Concat | 85,49% | 81,20% | 80,80% |
+| **GAN** | `VQGAN` | 250 | **49,37%** | CLIP Espacial (s7) | 87,34% | Deep Ensemble CLIP (`none`) | 87,08% | 81,48% | 86,80% |
+| **Difusão** | `CollabDiff` | 250 | **49,73%** | **DINO Concat Freq. (s7)** | **73,23%** | Deep Ensemble CLIP (`none`) | 62,08% | 56,85% | 44,00% |
+| **Difusão** | `ddim` | 250 | **50,50%** | **ViT Frequency-3 (s2025)** | **69,43%** | Trio Campeão | 63,59% | 63,59% | 54,00% |
+| **Difusão** | `DiT` (Transformer) | 250 | **51,72%** | ResNet Concat (s123) | 85,44% | CLIP Rob. + ResNet Concat | 89,54% | 89,26% | 92,40% |
+| **Face Swap** | `mobileswap` | 250 | **52,87%** | ResNet Concat (s123) | 91,81% | Super-Ensemble Top-5 | 90,94% | 90,22% | 96,80% |
+| **Face Swap** | `faceswap` | 250 | **53,25%** | CLIP Espacial (s987) | 89,21% | Trio Campeão | 93,27% | 93,27% | 99,20% |
+| **Talking Head** | `cdf_reenactment` | 500 | **54,19%** | DINO Espacial (s987) | 88,79% | Super-Ensemble Top-5 | 91,17% | 90,49% | 95,60% |
+| **Difusão** | `SiT` (Interpolant) | 250 | **54,23%** | ResNet Concat (s123) | 87,85% | Trio Campeão | 90,26% | 90,26% | 95,20% |
+| **Face Swap** | `deepfacelab` | 250 | **55,18%** | ResNet Concat (s2024) | 86,22% | Quarteto Campeão | 89,98% | 89,54% | 93,60% |
+| **GAN** | `stargan` | 200 | **56,49%** | CLIP Concat (s7) | 83,09% | Trio Campeão | 81,07% | 81,07% | 79,50% |
+| **Face Swap** | `blendface` | 250 | **57,51%** | ResNet Concat (s123) | 92,53% | Super-Ensemble Top-5 | 93,42% | 91,78% | 98,00% |
+| **Edição T2I** | `whichfaceisreal` | 250 | **59,33%** | CLIP Espacial (s2024) | 93,22% | Todos os 6 Padrão | 91,24% | 87,49% | 99,20% |
+| **Face Swap** | `uniface` | 250 | **59,91%** | DINO Concat (s123) | 94,69% | Quarteto Campeão | 96,55% | 94,79% | 98,00% |
+| **GAN** | `StyleGAN2` | 250 | **60,90%** | **ResNet Concat (s42)** | **98,39%** | Deep Ensemble ResNet Concat | 99,34% | 97,92% | 100,00% |
+| **Edição T2I** | `styleclip` | 250 | **61,46%** | DINO Espacial (s2025) | 88,93% | Deep Ensemble CLIP (`none`) | 87,97% | 85,24% | 91,20% |
+| **GAN** | `StyleGANXL` | 250 | **62,90%** | ResNet Concat (s123) | 96,04% | Deep Ensemble ResNet Concat | 96,05% | 92,53% | 97,60% |
+| **GAN** | `StyleGAN3` | 250 | **67,21%** | **ResNet Concat (s42)** | **98,98%** | Deep Ensemble ResNet Concat | 99,63% | 97,40% | 99,60% |
+| **Edição T2I** | `e4e` | 250 | **68,57%** | CLIP Concat (s7) | 94,59% | Trio Campeão | 96,52% | 96,52% | 100,00% |
+| **Edição T2I** | `MidJourney` | 248 | **71,04%** | **DINO Concat (s123)** | **96,99%** | Super-Ensemble Top-5 | 93,97% | 86,73% | 85,89% |
+| **Difusão** | `pixart` | 250 | **72,53%** | **ResNet Concat (s123)** | **98,51%** | Deep Ensemble ResNet Concat | 99,28% | 97,20% | 100,00% |
+| **Difusão** | `sd2.1` | 250 | **76,75%** | **ResNet Concat (s123)** | **98,44%** | Super-Ensemble Top-5 | 99,06% | 98,30% | 100,00% |
 
-**Distribuição das Vitórias Individuais entre Arquiteturas:**
-- **ResNet-18 (`concat` FFT)**: **11 vitórias (45,8%)** — Campeã em geradores de alta frequência: StyleGAN2, StyleGAN3, StyleGANXL, PixArt, SD 2.1, DiT, SiT, HeyGen, MobileSwap, BlendFace e DeepFaceLab.
-- **CLIP-ViT-B/16**: **7 vitórias (29,2%)** — Campeã nas manipulações mais semânticas e evasivas: StarGAN-v2, StarGAN, DDIM, VQGAN, FaceSwap, WhichFaceIsReal e E4E.
+**Distribuição das Vitórias Individuais entre Arquiteturas (Pool Completo de 216 Modelos):**
+- **ResNet-18**: **12 vitórias (50,0%)** — Dominância absoluta em metade do benchmark: StyleGAN2, StyleGAN3, StyleGANXL, PixArt, SD 2.1, DiT, SiT, HeyGen, MobileSwap, BlendFace, DeepFaceLab e StarGAN-v2 (`frequency_3`).
 - **DINOv3-Base**: **6 vitórias (25,0%)** — Campeã em detalhes finos de edição e difusão complexa: MidJourney (96,99%), UniFace (94,69%), StyleCLIP (88,93%), CDF Reenactment (88,79%), RDDM (99,99%) e CollabDiff (73,23%).
-- **Supremacia das Representações com Fourier (`concat` e `concat_frequency`)**: Em **17 das 24 técnicas (70,8%)**, o modelo individual campeão absoluto utilizou canais de frequência de Fourier!
+- **CLIP-ViT-B/16**: **5 vitórias (20,8%)** — Campeã em semântica global e transferências de domínio: StarGAN, VQGAN, FaceSwap, WhichFaceIsReal e E4E.
+- **ViT-Base**: **1 vitória (4,2%)** — Campeã em DDIM (`frequency_3`, 69,43%).
+- **Supremacia Esmagadora de Representações com Fourier**: Em **19 das 24 técnicas (79,2%)**, o modelo individual campeão absoluto utilizou canais espectrais de Fourier (`concat`, `concat_frequency` ou `frequency_3`), restando apenas 5 técnicas para modelos espaciais puros!
 
 ##### 4.5.6.2. Benchmark por Taxonomia Generativa (13 Categorias de Síntese)
 

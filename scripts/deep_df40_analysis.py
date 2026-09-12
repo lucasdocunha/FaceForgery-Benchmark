@@ -67,7 +67,7 @@ def main():
 
     root = models_root()
     families = ["clip", "dino", "vit", "resnet", "mobilenet", "xception"]
-    modes = ["none", "concat", "concat_frequency"]
+    modes = ["none", "concat", "concat_frequency", "magnitude", "phase", "complex", "frequency_3"]
     seeds_std = [7, 42, 123, 2024, 2025]
     all_seeds = [7, 42, 123, 2024, 2025, 987]
 
