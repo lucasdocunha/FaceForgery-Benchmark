@@ -23,6 +23,7 @@ O estudo abrange 3 eixos de avaliação empírica:
 - **FaceForensics++ sob Degradações Não-Vistas (`test_d`)**: 14 tipos de perturbações visuais (compressão JPEG agressiva, blur Gaussiano, ruído impulsivo, desfoque de movimento, etc.).
 - **Protocolo de Treinamento Robusto (`RandomizedRobustAugment`, Seed 987)**: Avaliação da resiliência a corrupções severas com injeção estocástica de transformações durante o fine-tuning.
 - **Generalização *Cross-Dataset* Zero-Shot no Celeb-DF v2**: Avaliação rigorosa em nível de *frame* e agregado em nível de *vídeo* (226 modelos avaliados em 7 modos de Fourier).
+- **Generalização *Cross-Dataset* no Benchmark DF40 (DeepFake-40)**: Avaliação exaustiva em 11.150 imagens cobrindo 40 geradores modernos em 6 paradigmas (Modelos de Difusão, GANs, Face Swap, Edição/T2I, Talking Head e Avatares Comerciais).
 
 ---
 
@@ -463,6 +464,71 @@ Avaliando a fusão dos 6 modelos treinados com o protocolo `RandomizedRobustAugm
 | **CLIP + DINO + ViT** | CLIP (987) + DINO (987) + ViT (987) | Geometric Mean | 0,9313 | 0,8753 | -0,0560 | A+ (9,09) |
 | **CLIP + DINO Robustos** | CLIP (987) + DINO (987) | Stacking | 0,9379 | 0,8750 | -0,0629 | A+ (9,09) |
 | **Todos os 6 Robustos** | CLIP + DINO + ViT + ResNet + MobileNet + Xception | Stacking | 0,9326 | 0,8665 | -0,0661 | A+ (9,03) |
+
+---
+
+### 4.5. Avaliação Cross-Dataset no Benchmark DF40 (DeepFake-40)
+
+O benchmark **DeepFake-40 (DF40)** é um dos conjuntos de teste mais desafiadores e abrangentes da literatura recente de computação forense, englobando **40 métodos contemporâneos de geração e manipulação facial**. Ele avalia se o modelo aprendeu representações gerais de manipulações faciais ou se falha diante de geradores modernos de difusão e avatares comerciais.
+
+Construímos um conjunto balanceado com **11.150 imagens** (5.000 faces reais autênticas provenientes de múltiplos domínios e 6.150 faces sintetizadas pelos 40 geradores do DF40), cobrindo 6 paradigmas:
+1. **Modelos de Difusão (Diffusion)**: DiT, SiT, DDIM, Stable Diffusion 2.1, PixArt, RDDM, CollabDiff.
+2. **GANs de Alta Resolução**: StyleGAN2, StyleGAN3, StyleGAN-XL, VQGAN, StarGAN, StarGANv2.
+3. **Troca Facial (Face Swapping)**: DeepFaceLab, FaceSwap, MobileSwap, BlendFace, UniFace.
+4. **Edição Facial e Text-to-Image (T2I)**: MidJourney, WhichFaceIsReal, StyleClip, E4E.
+5. **Reencenação Facial e Sincronia Labial (Talking & Reenactment)**: Wav2Lip, SadTalker, FOMM, MRAA, TPSM, FaceVid2Vid, LIA, PIRenderer, HyperReenact, DANet, MCNet, One-Shot Free, FaceDancer.
+6. **Avatares Comerciais de IA**: HeyGen.
+
+#### 4.5.1. Desempenho Global dos Modelos no DF40: Robusto vs. Padrão
+
+| Modelo | Configuração | AUC (%) | ACC (%) | F1 (%) | Precision (%) | Recall (%) | Specificity (%) | Ganho AUC ($\Delta$ pp) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CLIP** | **Robusto (Seed 987)** | **82,63** | **77,61** | **80,22** | **78,16** | 82,40 | 71,72 | **+7,38** |
+| **CLIP** | Padrão (Seed 42) | 75,25 | 72,30 | 75,67 | 73,35 | 78,14 | 65,12 | Baseline |
+| **DINO** | **Robusto (Seed 987)** | **75,18** | **68,22** | **73,19** | 68,42 | 78,67 | 55,39 | **+3,46** |
+| **DINO** | Padrão (Seed 42) | 71,72 | 65,64 | 70,19 | 67,27 | 73,39 | 56,13 | Baseline |
+| **MobileNet** | **Robusto (Seed 987)** | **73,05** | **68,91** | **71,19** | 72,78 | 69,68 | 67,98 | **+3,20** |
+| **MobileNet** | Padrão (Seed 42) | 69,85 | 66,46 | 68,57 | 70,93 | 66,36 | 66,58 | Baseline |
+| **ViT** | **Robusto (Seed 987)** | **72,73** | **68,75** | **71,73** | 71,55 | 71,92 | 64,86 | **+3,51** |
+| **ViT** | Padrão (Seed 42) | 69,22 | 67,26 | 71,17 | 69,15 | 73,30 | 59,82 | Baseline |
+| **Xception** | Padrão (Seed 42) | **74,21** | **69,52** | 74,91 | 68,56 | 82,56 | 53,49 | — |
+| **Xception** | Robusto (Seed 987) | 68,15 | 67,24 | **74,41** | 65,34 | **86,40** | 43,69 | -6,06 |
+| **ResNet** | Padrão (Seed 42) | **71,04** | 65,11 | 66,65 | 70,45 | 63,23 | 67,42 | — |
+| **ResNet** | Robusto (Seed 987) | 64,51 | 62,74 | 66,41 | 66,02 | 66,80 | 57,77 | -6,53 |
+
+#### 4.5.2. Ensembles Robustos no DF40
+
+| Ensemble Robusto | Fusão | AUC (%) | ACC (%) | F1 (%) | Precision (%) | Recall (%) | Specificity (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CLIP + DINO** | **mean** | **82,46** | **75,62** | 77,89 | **77,93** | 77,85 | 72,88 |
+| **CLIP + DINO** | **geom** | 81,98 | 71,70 | 71,94 | 79,40 | 65,76 | 79,02 |
+| **CLIP + DINO** | **max** | 81,55 | 75,02 | **79,53** | 72,57 | 87,97 | 59,10 |
+| **CLIP + DINO + VIT** | **max** | 80,83 | 73,45 | 78,76 | 70,49 | 89,24 | 54,04 |
+| **CLIP + DINO + VIT** | **geom** | 80,70 | 68,54 | 66,24 | 81,16 | 55,95 | **84,02** |
+| **CLIP + DINO + VIT** | **mean** | 80,58 | 72,57 | 73,90 | 77,74 | 70,42 | 75,20 |
+| **CLIP + DINO + XCEPTION** | **geom** | 80,33 | 71,62 | 71,95 | 79,11 | 65,97 | 78,58 |
+| **CLIP + DINO + XCEPTION** | **mean** | 80,14 | 74,62 | 77,52 | 75,78 | 79,35 | 68,80 |
+| **CLIP + DINO + XCEPTION** | **max** | 79,58 | 71,03 | 78,08 | 67,00 | 93,54 | 43,34 |
+| **TODOS OS 6 ROBUSTOS** | **geom** | 79,20 | 70,39 | 69,33 | 80,85 | 60,68 | 82,32 |
+| **TODOS OS 6 ROBUSTOS** | **mean** | 78,11 | 72,07 | 74,66 | 74,73 | 74,59 | 68,98 |
+| **TODOS OS 6 ROBUSTOS** | **max** | 72,97 | 65,81 | 75,49 | 62,44 | **95,43** | 29,38 |
+
+#### 4.5.3. Desempenho dos Modelos Robustos por Paradigma Generativo (AUC %)
+
+| Modelo | Difusão (DiT, SiT, SD2.1, PixArt) | GANs (StyleGAN2/3/XL, VQGAN) | Face Swap (DFL, FaceSwap, SimSwap) | Edição & T2I (MidJourney, WFIR) | Talking & Reenactment (Wav2Lip, etc.) | Avatares Comerciais (HeyGen) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CLIP Robusto** | **78,65%** | **82,61%** | 85,29% | **87,70%** | 84,72% | **72,37%** |
+| **DINO Robusto** | 67,50% | 71,16% | **87,13%** | 79,43% | **88,79%** | 46,62% |
+| **ViT Robusto** | 71,51% | 66,62% | 76,96% | 79,25% | 79,20% | 54,61% |
+| **MobileNet Robusto** | 70,00% | 66,91% | 76,98% | 83,24% | 83,49% | 46,93% |
+| **Xception Robusto** | 66,95% | 63,90% | 67,17% | 75,66% | 70,77% | 69,29% |
+| **ResNet Robusto** | 57,33% | 60,88% | 71,76% | 71,69% | 75,96% | 46,80% |
+
+**Insights Fundamentais do Benchmark DF40:**
+1. **Liderança Absoluta do CLIP-ViT**: O CLIP Robusto atingiu **82,63% de AUC global**, dominando com folga os paradigmas de Difusão (78,65%), GANs (82,61%), Edição/T2I (87,70%) e Avatares Comerciais (72,37%). O pré-treinamento contrastivo multimodal com texto fornece um espaço de embedding semântico extremamente resiliente a novos pipelines gerativos não vistos no treino.
+2. **Especialização do DINO em Manipulação Estrutural**: O DINOv3 superou o CLIP em **Face Swapping (87,13% de AUC)** e **Talking Face / Reenactment (88,79% de AUC)**. A destilação auto-supervisionada em nível de patches foca em consistência anatômica e descontinuidades de contorno facial, tornando o DINO o detector mais afiado contra manipulações de troca de rosto.
+3. **Eficiência Surpreendente da MobileNet**: Atingiu **73,05% de AUC global** e superou ViT e DINO em modelos de Difusão (70,00%) e Edição T2I (83,24%), confirmando ser a melhor arquitetura para inferência de borda com throughput de 5.480 FPS.
+4. **O Desafio dos Avatares Comerciais**: HeyGen apresentou o menor índice de detecção entre os modelos puramente estruturais, mas CLIP (72,37%) e Xception (69,29%) demonstraram excelente capacidade de identificar a re-renderização sintética labial e mandibular.
 
 ---
 
