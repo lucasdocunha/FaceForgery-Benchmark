@@ -1,0 +1,14 @@
+Taxonomia_Generativa,Tecnicas_Incluidas,N_Amostras_Total,Dificuldade_Media_AUC,Trio_Campeao_AUC,Melhor_Indiv_AUC,Melhores_Modelos
+Multi-Domain Attribute GANs,"stargan, starganv2",399,45.42,63.13,70.1,"clip_none_s987, clip_concat_s7"
+Continuous / Accelerated Diffusion,"CollabDiff, RDDM, ddim",750,50.07,67.47,77.14,"clip_none_s987, vit_none_s2025, dino_concat_s123"
+Vector-Quantized GANs,VQGAN,250,57.5,81.48,87.34,clip_none_s7
+Commercial Video Avatars,heygen,250,62.06,81.2,87.22,resnet_concat_s123
+Transformer Diffusion (DiT/SiT),"DiT, SiT",500,70.09,89.76,86.64,resnet_concat_s123
+Lightweight / Mobile Face Swap,mobileswap,250,73.78,90.22,91.81,resnet_concat_s123
+Classic Autoencoder Face Swap,"deepfacelab, faceswap",500,73.93,91.4,87.72,"resnet_concat_s2024, clip_none_s987"
+Talking Head / Facial Reenactment,cdf_reenactment,500,74.07,90.49,88.79,dino_none_s987
+Multi-Scale Discriminator GANs,StyleGANXL,250,77.23,92.53,96.04,resnet_concat_s123
+Unified Blend Face Swap,"uniface, blendface",500,79.52,93.28,93.61,"resnet_concat_s123, dino_concat_s123"
+Commercial T2I & Inversion,"MidJourney, whichfaceisreal, styleclip, e4e",998,80.59,88.99,93.43,"dino_none_s2025, clip_none_s2024, dino_concat_s123, clip_concat_s7"
+Convolutional StyleGANs (SG2/SG3),"StyleGAN2, StyleGAN3",500,86.77,97.66,98.68,resnet_concat_s42
+UNet Latent Diffusion,"pixart, sd2.1",500,91.24,97.75,98.48,resnet_concat_s123

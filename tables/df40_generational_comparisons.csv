@@ -1,0 +1,18 @@
+Grupo,Tecnica,Dificuldade_Media_AUC,Trio_Campeao_AUC,Melhor_Indiv_AUC,Melhor_Modelo
+GANs: StyleGAN2 vs StyleGAN3 vs StyleGANXL,StyleGAN2,86.31,97.92,98.39,resnet_concat_s42
+GANs: StyleGAN2 vs StyleGAN3 vs StyleGANXL,StyleGAN3,87.23,97.4,98.98,resnet_concat_s42
+GANs: StyleGAN2 vs StyleGAN3 vs StyleGANXL,StyleGANXL,77.23,92.53,96.04,resnet_concat_s123
+Diffusion: DiT (Transformer) vs SiT (Interpolant) vs PixArt vs SD 2.1 vs DDIM,DiT,68.45,89.26,85.44,resnet_concat_s123
+Diffusion: DiT (Transformer) vs SiT (Interpolant) vs PixArt vs SD 2.1 vs DDIM,SiT,71.73,90.26,87.85,resnet_concat_s123
+Diffusion: DiT (Transformer) vs SiT (Interpolant) vs PixArt vs SD 2.1 vs DDIM,pixart,90.06,97.2,98.51,resnet_concat_s123
+Diffusion: DiT (Transformer) vs SiT (Interpolant) vs PixArt vs SD 2.1 vs DDIM,sd2.1,92.42,98.3,98.44,resnet_concat_s123
+Diffusion: DiT (Transformer) vs SiT (Interpolant) vs PixArt vs SD 2.1 vs DDIM,ddim,49.07,63.59,64.42,clip_none_s987
+Face Swap: DeepFaceLab vs FaceSwap vs MobileSwap vs UniFace vs BlendFace,deepfacelab,73.16,89.54,86.22,resnet_concat_s2024
+Face Swap: DeepFaceLab vs FaceSwap vs MobileSwap vs UniFace vs BlendFace,faceswap,74.7,93.27,89.21,clip_none_s987
+Face Swap: DeepFaceLab vs FaceSwap vs MobileSwap vs UniFace vs BlendFace,mobileswap,73.78,90.22,91.81,resnet_concat_s123
+Face Swap: DeepFaceLab vs FaceSwap vs MobileSwap vs UniFace vs BlendFace,uniface,81.69,94.79,94.69,dino_concat_s123
+Face Swap: DeepFaceLab vs FaceSwap vs MobileSwap vs UniFace vs BlendFace,blendface,77.34,91.78,92.53,resnet_concat_s123
+Editing/T2I: MidJourney vs WhichFaceIsReal vs StyleCLIP vs E4E,MidJourney,82.69,86.73,96.99,dino_concat_s123
+Editing/T2I: MidJourney vs WhichFaceIsReal vs StyleCLIP vs E4E,whichfaceisreal,81.39,87.49,93.22,clip_none_s2024
+Editing/T2I: MidJourney vs WhichFaceIsReal vs StyleCLIP vs E4E,styleclip,75.54,85.24,88.93,dino_none_s2025
+Editing/T2I: MidJourney vs WhichFaceIsReal vs StyleCLIP vs E4E,e4e,82.72,96.52,94.59,clip_concat_s7

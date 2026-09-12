@@ -659,6 +659,140 @@ As combinações foram organizadas em 5 categorias metodológicas e avaliadas so
    - A **Média Aritmética (`mean`)** otimizou o equilíbrio F1-Score (**81,98%**) e a revocação (**88,58%**).
    - O **Máximo (`max`)** serve como filtro ultraconservador para triagem em massa, alcançando **>96% de Recall** contra deepfakes ao custo de maior taxa de falsos alarmes.
 
+#### 4.5.6. Análise Profunda Granular: Desempenho por Técnica, Taxonomia Generativa e Evasão Forense
+
+Para compreender com exatidão científica **quais arquiteturas e representações vencem em cada uma das técnicas sintéticas**, conduzimos uma investigação granular exaustiva cobrindo todas as **24 técnicas de manipulação generativa** do benchmark DF40 (avaliadas individualmente contra os subconjuntos de faces reais correspondentes), bem como uma taxonomia estruturada de 13 famílias de síntese.
+
+##### 4.5.6.1. Ranking Exaustivo das 24 Técnicas Sintéticas e Modelos Campeões
+
+A tabela abaixo organiza todas as 24 técnicas generativas, desde a mais evasiva (menor AUC médio de detecção) até a mais vulnerável (maior AUC médio), indicando o modelo individual campeão, o ensemble campeão e o desempenho do Trio Campeão:
+
+| Paradigma | Técnica Generativa | N° Img Fakes | Dificuldade Média AUC (%) | Modelo Individual Campeão | AUC Indiv. (%) | Ensemble Campeão | AUC Ens. (%) | Trio Campeão AUC (%) | Trio Campeão Recall (%) |
+| :--- | :--- | :---: | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
+| **GAN** | `starganv2` | 199 | **31,07%** | CLIP Espacial (s987) | 57,11% | CLIP + DINO Robusto | 49,16% | 45,19% | 27,64% |
+| **Difusão** | `ddim` | 250 | **49,07%** | CLIP Espacial (s987) | 64,42% | Trio Campeão | 63,59% | 63,59% | 54,00% |
+| **Difusão** | `CollabDiff` | 250 | **49,97%** | ViT Espacial (s2025) | 67,01% | Deep Ensemble CLIP (`none`) | 62,08% | 56,85% | 44,00% |
+| **Difusão** | `RDDM` | 250 | **51,18%** | **DINO Concat (s123)** | **99,99%** | Quarteto Campeão | 87,89% | 81,96% | 94,80% |
+| **GAN** | `VQGAN` | 250 | **57,50%** | CLIP Espacial (s7) | 87,34% | Deep Ensemble CLIP (`none`) | 87,08% | 81,48% | 86,80% |
+| **GAN** | `stargan` | 200 | **59,76%** | CLIP Concat (s7) | 83,09% | Trio Campeão | 81,07% | 81,07% | 79,50% |
+| **Avatar Comercial** | `heygen` | 250 | **62,06%** | **ResNet Concat (s123)** | **87,22%** | CLIP Rob. + ResNet Concat | 85,49% | 81,20% | 80,80% |
+| **Difusão** | `DiT` (Transformer) | 250 | **68,45%** | ResNet Concat (s123) | 85,44% | CLIP Rob. + ResNet Concat | 89,54% | 89,26% | 92,40% |
+| **Difusão** | `SiT` (Interpolant) | 250 | **71,73%** | ResNet Concat (s123) | 87,85% | Trio Campeão | 90,26% | 90,26% | 95,20% |
+| **Face Swap** | `deepfacelab` | 250 | **73,16%** | ResNet Concat (s2024) | 86,22% | Quarteto Campeão | 89,98% | 89,54% | 93,60% |
+| **Face Swap** | `mobileswap` | 250 | **73,78%** | ResNet Concat (s123) | 91,81% | Super-Ensemble Top-5 | 90,94% | 90,22% | 96,80% |
+| **Talking Head** | `cdf_reenactment` | 500 | **74,07%** | DINO Espacial (s987) | 88,79% | Super-Ensemble Top-5 | 91,17% | 90,49% | 95,60% |
+| **Face Swap** | `faceswap` | 250 | **74,70%** | CLIP Espacial (s987) | 89,21% | Trio Campeão | 93,27% | 93,27% | 99,20% |
+| **Edição T2I** | `styleclip` | 250 | **75,54%** | DINO Espacial (s2025) | 88,93% | Deep Ensemble CLIP (`none`) | 87,97% | 85,24% | 91,20% |
+| **GAN** | `StyleGANXL` | 250 | **77,23%** | ResNet Concat (s123) | 96,04% | Deep Ensemble ResNet Concat | 96,05% | 92,53% | 97,60% |
+| **Face Swap** | `blendface` | 250 | **77,34%** | ResNet Concat (s123) | 92,53% | Super-Ensemble Top-5 | 93,42% | 91,78% | 98,00% |
+| **Edição T2I** | `whichfaceisreal` | 250 | **81,39%** | CLIP Espacial (s2024) | 93,22% | Todos os 6 Padrão | 91,24% | 87,49% | 99,20% |
+| **Face Swap** | `uniface` | 250 | **81,69%** | DINO Concat (s123) | 94,69% | Quarteto Campeão | 96,55% | 94,79% | 98,00% |
+| **Edição T2I** | `MidJourney` | 248 | **82,69%** | **DINO Concat (s123)** | **96,99%** | Super-Ensemble Top-5 | 93,97% | 86,73% | 85,89% |
+| **Edição T2I** | `e4e` | 250 | **82,72%** | CLIP Concat (s7) | 94,59% | Trio Campeão | 96,52% | 96,52% | 100,00% |
+| **GAN** | `StyleGAN2` | 250 | **86,31%** | **ResNet Concat (s42)** | **98,39%** | Deep Ensemble ResNet Concat | 99,34% | 97,92% | 100,00% |
+| **GAN** | `StyleGAN3` | 250 | **87,23%** | **ResNet Concat (s42)** | **98,98%** | Deep Ensemble ResNet Concat | 99,63% | 97,40% | 99,60% |
+| **Difusão** | `pixart` | 250 | **90,06%** | **ResNet Concat (s123)** | **98,51%** | Deep Ensemble ResNet Concat | 99,28% | 97,20% | 100,00% |
+| **Difusão** | `sd2.1` | 250 | **92,42%** | **ResNet Concat (s123)** | **98,44%** | Super-Ensemble Top-5 | 99,06% | 98,30% | 100,00% |
+
+**Distribuição das Vitórias Individuais entre Arquiteturas:**
+- **ResNet-18 (`concat` FFT)**: **11 vitórias (45,8%)** — Campeã em geradores de alta frequência: StyleGAN2, StyleGAN3, StyleGANXL, PixArt, SD 2.1, DiT, SiT, HeyGen, MobileSwap, BlendFace e DeepFaceLab.
+- **CLIP-ViT-B/16**: **7 vitórias (29,2%)** — Campeã nas manipulações mais semânticas e evasivas: StarGAN-v2, StarGAN, DDIM, VQGAN, FaceSwap, WhichFaceIsReal e E4E.
+- **DINOv3-Base**: **5 vitórias (20,8%)** — Campeã em detalhes finos de edição e reenactment: MidJourney (96,99%), UniFace (94,69%), StyleCLIP (88,93%), CDF Reenactment (88,79%) e RDDM (99,99%).
+- **ViT-Base**: **1 vitória (4,2%)** — Campeã em CollabDiff (67,01%).
+- **Supremacia da Entrada Híbrida (`concat`)**: Em **16 das 24 técnicas (66,7%)**, o modelo individual campeão absoluto utilizou a representação concatenada $[R, G, B, |F(u,v)|]$!
+
+##### 4.5.6.2. Benchmark por Taxonomia Generativa (13 Categorias de Síntese)
+
+Agrupando os métodos em uma taxonomia estruturada de 13 famílias generativas, observamos com clareza o gradiente de dificuldade da detecção forense contemporânea:
+
+| Taxonomia Generativa | Métodos Incluídos | N° Img Fakes | Dificuldade Média AUC (%) | Trio Campeão AUC (%) | Melhor AUC Indiv. (%) | Arquitetura de Destaque |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **1. Multi-Domain Attribute GANs** | `stargan, starganv2` | 399 | **45,42%** | 63,13% | 70,10% | CLIP Espacial & Concat |
+| **2. Continuous / Accelerated Diffusion** | `CollabDiff, RDDM, ddim` | 750 | **50,07%** | 67,47% | 77,14% | DINO Concat & CLIP |
+| **3. Vector-Quantized GANs** | `VQGAN` | 250 | **57,50%** | 81,48% | 87,34% | CLIP Espacial |
+| **4. Avatares Comerciais de Vídeo** | `heygen` | 250 | **62,06%** | 81,20% | **87,22%** | **ResNet Concat** |
+| **5. Transformer Diffusion (DiT/SiT)** | `DiT, SiT` | 500 | **70,09%** | **89,76%** | 86,64% | **ResNet Concat** |
+| **6. Lightweight / Mobile Face Swap** | `mobileswap` | 250 | **73,78%** | 90,22% | 91,81% | ResNet Concat |
+| **7. Classic Autoencoder Face Swap** | `deepfacelab, faceswap` | 500 | **73,93%** | 91,40% | 87,72% | ResNet Concat & CLIP |
+| **8. Facial Reenactment & Talking Head** | `cdf_reenactment` | 500 | **74,07%** | 90,49% | 88,79% | DINO Espacial |
+| **9. Multi-Scale Discriminator GANs** | `StyleGANXL` | 250 | **77,23%** | 92,53% | **96,04%** | **ResNet Concat** |
+| **10. Unified Blend Face Swap** | `uniface, blendface` | 500 | **79,52%** | 93,28% | 93,61% | ResNet Concat & DINO |
+| **11. Commercial T2I & Inversion** | `MidJourney, whichfaceisreal, styleclip, e4e` | 998 | **80,59%** | 88,99% | 93,43% | DINO Concat & CLIP |
+| **12. Convolutional StyleGANs (SG2/SG3)** | `StyleGAN2, StyleGAN3` | 500 | **86,77%** | 97,66% | **98,68%** | **ResNet Concat** |
+| **13. UNet Latent Diffusion** | `pixart, sd2.1` | 500 | **91,24%** | 97,75% | **98,48%** | **ResNet Concat** |
+
+**Achados Fundamentais da Taxonomia:**
+1. **O Salto de Evasão entre UNets e Transformers em Difusão (-21,15 pp)**:
+   - Difusão baseada em UNet convolucional (`pixart`, `sd2.1`) tem detecção quase trivial (>91% AUC médio), pois camadas convolucionais de *upsampling* deixam artefatos espectrais periódicos muito pronunciados.
+   - Em contrapartida, modelos baseados em *Diffusion Transformers* (`DiT`, `SiT`) substituem a UNet por patch tokens lineares e *self-attention*, atenuando os artefatos de grade e derrubando a detecção média para **70,09% de AUC** (-21,15 pp).
+2. **A Evasão Crítica de Amostragem Contínua e Acelerada**:
+   - `ddim` e `CollabDiff` operam com amostragem diferencial contínua em passos reduzidos, resultando em rostos sintéticos praticamente desprovidos de resíduos de ruído de alta frequência (AUC médio de ~49-50%).
+3. **Resistência das GANs de Atributos Múltiplos (StarGAN)**:
+   - Modificações pontuais de atributos faciais (cabelo, gênero, idade) mantêm a maior parte do rosto real intacto, confundindo modelos treinados para detectar rostos integralmente sintéticos.
+
+##### 4.5.6.3. O Impacto Discriminativo de Fourier ($\Delta \text{AUC}$) por Técnica
+
+O ganho proporcionado pela inclusão do canal de magnitude de Fourier ($\Delta \text{AUC} = \text{AUC}_{\text{concat}} - \text{AUC}_{\text{none}}$) varia expressivamente conforme a mecânica do gerador:
+
+| Paradigma | Técnica Generativa | Família | AUC Espacial `none` (%) | AUC Híbrido `concat` (%) | Ganho $\Delta \text{AUC}$ Fourier |
+| :--- | :--- | :--- | :---: | :---: | :---: |
+| **Avatar Comercial** | **`heygen`** | **RESNET** | 43,48% | **83,19%** | **+39,72 pp** |
+| **Difusão** | **`RDDM`** | **DINO** | 56,62% | **90,22%** | **+33,60 pp** |
+| **GAN** | **`VQGAN`** | **RESNET** | 30,34% | **50,43%** | **+20,09 pp** |
+| **Difusão** | **`DiT`** | **RESNET** | 58,49% | **76,76%** | **+18,27 pp** |
+| **Difusão** | **`RDDM`** | **CLIP** | 76,06% | **92,60%** | **+16,55 pp** |
+| **Avatar Comercial** | **`heygen`** | **DINO** | 58,78% | **74,96%** | **+16,18 pp** |
+| **Face Swap** | **`mobileswap`** | **RESNET** | 71,19% | **86,33%** | **+15,14 pp** |
+| **Edição T2I** | **`MidJourney`** | **DINO** | 71,90% | **86,93%** | **+15,02 pp** |
+| **Face Swap** | **`faceswap`** | **RESNET** | 64,83% | **77,46%** | **+12,62 pp** |
+| **Face Swap** | **`mobileswap`** | **DINO** | 70,79% | **83,26%** | **+12,46 pp** |
+| **Difusão** | **`SiT`** | **RESNET** | 65,84% | **78,23%** | **+12,40 pp** |
+| **GAN** | **`StyleGANXL`** | **RESNET** | 80,91% | **92,95%** | **+12,04 pp** |
+| **Face Swap** | **`deepfacelab`** | **RESNET** | 69,16% | **81,16%** | **+12,00 pp** |
+
+**Médias Gerais de Ganho Espectral por Família:**
+- **RESNET**: Ganho médio de **+7,90 pp de AUC** (ganho positivo em 19 de 24 técnicas; picos de até +39,72 pp).
+- **DINO**: Ganho médio de **+4,16 pp de AUC** (ganho positivo em 18 de 24 técnicas; picos de até +33,60 pp).
+- **CLIP**: Ganho médio de **+1,19 pp de AUC** (ganho moderado, mantendo consistência).
+- **Conclusão Teórica**: Convoluções clássicas (ResNet) e Transformers com tokens locais densos (DINO) são as arquiteturas que mais aproveitam a Transformada de Fourier. A ResNet, por operar via kernels espaciais 2D com forte bias indutivo de translação, correlaciona diretamente as descontinuidades de interpolação no domínio da frequência.
+
+##### 4.5.6.4. Matriz de Correlação e Teorema de Ambiguidade dos Ensembles
+
+A correlação de Pearson entre as probabilidades preditas pelos modelos campeões sobre as 11.146 amostras do DF40 elucida o mecanismo estatístico por trás do sucesso dos Super-Ensembles:
+
+| Modelo | CLIP Rob. (`none`) | CLIP Concat | ResNet Concat | DINO Concat | DINO Rob. (`none`) | Xception Concat | MobileNet Rob. | ViT Rob. |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CLIP Robusto (`none`)** | **1,0000** | 0,6117 | **0,4265** | 0,5274 | 0,5806 | 0,5242 | 0,5916 | 0,5623 |
+| **CLIP Concat** | 0,6117 | **1,0000** | **0,3544** | 0,4675 | 0,4760 | 0,4291 | 0,5051 | 0,4485 |
+| **ResNet Concat** | **0,4265** | **0,3544** | **1,0000** | 0,5417 | 0,4619 | 0,4343 | 0,4547 | 0,3360 |
+| **DINO Concat** | 0,5274 | 0,4675 | 0,5417 | **1,0000** | 0,5905 | 0,4779 | 0,5623 | 0,4638 |
+| **DINO Robusto (`none`)** | 0,5806 | 0,4760 | 0,4619 | 0,5905 | **1,0000** | 0,5285 | 0,6342 | 0,5545 |
+| **Xception Concat** | 0,5242 | 0,4291 | 0,4343 | 0,4779 | 0,5285 | **1,0000** | 0,5272 | 0,4585 |
+| **MobileNet Robusto** | 0,5916 | 0,5051 | 0,4547 | 0,5623 | 0,6342 | 0,5272 | **1,0000** | 0,5683 |
+| **ViT Robusto** | 0,5623 | 0,4485 | 0,3360 | 0,4638 | 0,5545 | 0,4585 | 0,5683 | **1,0000** |
+
+*Fundamentação Matemática (Teorema de Krogh & Vedelsby, 1995)*:
+O erro quadrático de um ensemble satisfaz formalmente $E = \bar{E} - \bar{A}$, onde $\bar{E}$ é a média dos erros individuais ponderados e $\bar{A}$ é a **ambiguidade (diversidade)** entre os membros do ensemble. Quando os modelos são fortemente correlacionados ($r \to 1,0$), $\bar{A} \to 0$ e o ensemble não traz ganhos significativos. 
+
+Entre o **CLIP Robusto** (Vision Transformer semântico puro) e a **ResNet Concat** (CNN com magnitude FFT), a correlação é de apenas **$r = 0,4265$** (e entre **CLIP Concat** e **ResNet Concat** é de meros **$r = 0,3544$**). Como seus espaços de erro são praticamente ortogonais, os falsos positivos e falsos negativos de uma rede são cancelados pela outra, gerando alta ambiguidade $\bar{A}$ e impulsionando a AUC para **86,44%**.
+
+##### 4.5.6.5. Análise Forense de Erros: Falsos Positivos e Calibração por Média Geométrica
+
+A análise detalhada de erros expôs duas fontes preponderantes de distorção no mundo real:
+
+1. **Vulnerabilidade a Falsos Positivos em Rostos Reais Específicos**:
+   - `Real_whichfaceisreal`: Fotos reais extraídas de páginas web sofreram severa degradação por compressão JPEG em múltiplos ciclos e redimensionamento assimétrico. A fusão linear (`mean`) classificou erroneamente **74,0%** dessas fotos reais como fake (especificidade de apenas 26,0%).
+   - `Real_heygen`: Vídeos de humanos reais gravados para o HeyGen possuem iluminação de estúdio controlada e filtros de suavização de pele (*beauty filter*). A fusão linear obteve apenas 44,9% de especificidade.
+2. **A Solução via Média Geométrica (`geom`)**:
+   - Ao aplicar a **Média Geométrica**, o ensemble exige que todos os detectores convirjam em alta probabilidade para declarar um deepfake. Se qualquer um dos modelos identificar coerência anatômica real, a probabilidade conjunta decai exponencialmente.
+   - Isso elevou a **especificidade global de 66,15% para 84,72%**:
+     - No `Real_whichfaceisreal`, a especificidade saltou de 26,0% para **60,5%** (+34,5 pp).
+     - No `Real_heygen`, a especificidade saltou de 44,9% para **71,8%** (+26,9 pp).
+     - No `Real_MidJourney`, saltou de 59,1% para **86,1%** (+27,0 pp).
+     - No `Real_starganv2`, alcançou expressivos **98,7%**.
+3. **Perfil de Falsos Negativos (Deepfakes Evasivos)**:
+   - Enquanto `StyleGAN2`, `StyleGAN3`, `pixart`, `sd2.1` e `e4e` tiveram **Recall entre 99,6% e 100,0%** (zero evasão), os geradores `starganv2` (27,6% recall), `CollabDiff` (44,0% recall) e `ddim` (54,0% recall) concentram os falsos negativos, definindo a fronteira do estado-da-arte para pesquisas futuras.
+
 ---
 
 ## 5. Prós, Contras e Diretrizes de Engenharia para Produção
