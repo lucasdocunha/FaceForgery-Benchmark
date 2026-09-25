@@ -111,3 +111,11 @@ python research_cli.py evaluate-legacy --help
 ├── tests/                       # Suíte completa de 209 testes automatizados
 └── train.py                     # Script principal de treinamento
 ```
+
+
+## Execução no cluster CISIA
+
+Para SLURM/H100, use [o guia CISIA](docs/cisia-hpc.md) e os entrypoints
+`scripts/slurm_*.sh`. O guia cobre ambiente CUDA 12.8, caches/checkpoints locais,
+publicação versionada, retomada, recuperação de falhas e validações pendentes no
+cluster. Não execute treinos ou preparadores de modelos diretamente no Shell Access.

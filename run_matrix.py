@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import logging
+import sys
 from pathlib import Path
 from typing import Sequence
 
@@ -19,7 +21,7 @@ CONFIG_DIR = Path(__file__).resolve().parent / "configs"
 def _is_done(family, mode, regime, seed):
     return (models_root()/family/mode/regime/f"seed_{seed}"/"results"/"metrics_summary.csv").exists()
 
-def build_tasks(regime, only=None, force=False, raw_min=False, epochs=None, seeds=None, fourier=None):
+def build_tasks(regime, only=None, force=False, raw_min=False, epochs=None, seeds=None, fourier=None, num_workers=None):
     families=tuple(only) if only else FAMILIES
     unknown=[family for family in families if family not in FAMILIES]
     if unknown:
@@ -40,15 +42,18 @@ def build_tasks(regime, only=None, force=False, raw_min=False, epochs=None, seed
                 kwargs = {"config_path": str(path), "fourier": mode, "regime": regime, "seed": seed}
                 if raw_min: kwargs["raw_min"] = True
                 if epochs is not None: kwargs["epochs"] = epochs
+                if num_workers is not None: kwargs["num_workers"] = num_workers
                 tasks.append({"fn": train_from_config, "name": f"{family}/{mode}/{regime}/seed_{seed}", "kwargs": kwargs})
     return tasks
 
 def main(argv=None):
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(asctime)s %(levelname)s %(message)s")
     p=argparse.ArgumentParser()
     p.add_argument("--regime",required=True,choices=("scratch","finetune"))
     p.add_argument("--only")
     p.add_argument("--gpus")
     p.add_argument("--workers-per-gpu",type=int,default=1)
+    p.add_argument("--num-workers", type=int, default=None, help="DataLoader workers per training process")
     p.add_argument("--dry-run",action="store_true")
     p.add_argument("--force",action="store_true",help="re-run tasks even if results/metrics_summary.csv already exists")
     p.add_argument("--raw-min",action="store_true",help="use min dataset data/raw_min")
@@ -64,6 +69,7 @@ def main(argv=None):
         epochs=a.epochs,
         seeds=a.seeds.split(",") if a.seeds else None,
         fourier=a.fourier.split(",") if a.fourier else None,
+        num_workers=a.num_workers,
     )
     if a.dry_run:
         print("\n".join(t["name"] for t in tasks)); return

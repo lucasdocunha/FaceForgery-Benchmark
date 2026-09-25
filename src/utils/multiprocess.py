@@ -1,196 +1,139 @@
+"""Bounded task execution that respects the scheduler's CUDA visibility mask."""
 from __future__ import annotations
 
 import logging
 import multiprocessing as mp
 import os
+import queue
+import sys
 import time
 import traceback
+
 import torch
 
 logger = logging.getLogger(__name__)
 
 
-def _worker_fn(
-    task_queue: mp.JoinableQueue,
-    gpu_id: int | None,
-    log_level: int,
-) -> None:
-    """
-    Worker function executed in a separate spawned process.
-    Configures the environment for the specified GPU and runs tasks from the queue.
-    """
-    # 1. Configure environment variable to restrict process to specific GPU
-    if gpu_id is not None:
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-        # Ensure PyTorch initializes CUDA correctly on this specific GPU
-        if torch.cuda.is_available():
-            # Force eager initialization on the assigned GPU
-            torch.cuda.set_device(0)
-    else:
-        # If no GPU is assigned, force CPU mode
-        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+def _cpu_budget() -> int:
+    affinity = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    requested = os.environ.get("SLURM_CPUS_PER_TASK")
+    return max(1, min(affinity, int(requested))) if requested else max(1, affinity)
 
-    # 2. Configure logging inside the child process
-    logging.basicConfig(
-        level=log_level,
-        format=f"%(asctime)s [Worker GPU {gpu_id if gpu_id is not None else 'CPU'}] [%(levelname)s] %(name)s: %(message)s",
-        force=True,  # Resets the root logger configuration
-    )
-    
-    # Get logger for child process
-    child_logger = logging.getLogger(__name__)
 
-    # 3. Pull tasks from the queue and run them
+def _gpu_tokens(gpus: list[int], count: int, mask: str | None) -> list[str]:
+    """Map logical CUDA indices to inherited numeric, GPU UUID or MIG tokens."""
+    if len(gpus) != len(set(gpus)) or any(index < 0 or index >= count for index in gpus):
+        raise ValueError(f"gpus must be unique logical indices in [0, {count}); got {gpus}")
+    tokens = [value.strip() for value in mask.split(",")] if mask is not None else [str(i) for i in range(count)]
+    if len(tokens) < count or any(not token for token in tokens[:count]):
+        raise ValueError("CUDA_VISIBLE_DEVICES is inconsistent with visible CUDA devices")
+    return [tokens[index] for index in gpus]
+
+
+def _invoke(task: dict) -> None:
+    function = task["fn"]
+    name = task.get("name", function.__name__)
+    started = time.monotonic()
+    logger.info("Starting task: %s", name)
+    kwargs = dict(task.get("kwargs", {}))
+    kwargs["multi_gpu"] = False
+    function(*task.get("args", ()), **kwargs)
+    logger.info("Completed task: %s in %.1fs", name, time.monotonic() - started)
+
+
+def _worker_fn(tasks, results, gpu_token: str | None, log_level: int) -> None:
+    # Spawned children have not initialized CUDA. Never replace a scheduler mask
+    # with an unmapped logical index, and never modify the parent's mask.
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_token if gpu_token is not None else ""
+    logging.basicConfig(level=log_level, stream=sys.stdout,
+                        format="%(asctime)s %(levelname)s %(message)s", force=True)
+    if gpu_token is not None:
+        torch.cuda.set_device(0)
     while True:
-        task = task_queue.get()
-        if task is None:
-            task_queue.task_done()
-            break
-
-        fn, name, args, kwargs = task
-        gpu_prefix = f"GPU {gpu_id}" if gpu_id is not None else "CPU"
-        child_logger.info(f"===> [{gpu_prefix}] Starting task: {name}")
-
-        start_time = time.time()
+        item = tasks.get()
+        if item is None:
+            return
+        index, task = item
         try:
-            # Enforce single GPU within the task by overriding multi_gpu
-            kwargs = dict(kwargs)
-            kwargs["multi_gpu"] = False
-
-            # Run the actual pipeline function
-            fn(*args, **kwargs)
-
-            elapsed = time.time() - start_time
-            child_logger.info(
-                f"===> [{gpu_prefix}] Completed task: {name} in {elapsed:.2f}s"
-            )
-        except Exception as e:
-            elapsed = time.time() - start_time
-            child_logger.error(
-                f"===> [{gpu_prefix}] Failed task: {name} after {elapsed:.2f}s with error: {e}"
-            )
-            traceback.print_exc()
-        finally:
-            task_queue.task_done()
-
-
-def run_tasks_on_gpus(
-    tasks: list[dict],
-    gpus: list[int] | None = None,
-    workers_per_gpu: int = 1,
-) -> None:
-    """
-    Runs a list of training tasks concurrently using multiprocessing,
-    distributing them across the specified GPUs.
-
-    Args:
-        tasks: A list of dicts. Each dict must contain:
-               - 'fn': The callable function to run (e.g. run_resnet).
-               - 'name': A unique string name for the task.
-               - 'args': Positional arguments for 'fn' (optional, defaults to ()).
-               - 'kwargs': Keyword arguments for 'fn' (optional, defaults to {}).
-        gpus: A list of GPU physical IDs to use (e.g. [0, 1]).
-              If None, all available GPUs are auto-detected.
-              If no GPUs are found, falls back to CPU multiprocessing.
-        workers_per_gpu: Number of worker processes to spawn per physical GPU,
-              so multiple tasks can share the same GPU concurrently (useful when
-              a single GPU has enough VRAM to hold several models at once).
-    """
-    if not tasks:
-        logger.warning("No tasks provided to run_tasks_on_gpus.")
-        return
-
-    # 1. Determine available GPUs
-    if gpus is None:
-        if torch.cuda.is_available():
-            num_gpus = torch.cuda.device_count()
-            gpus = list(range(num_gpus))
-            logger.info(f"Auto-detected {num_gpus} GPUs: {gpus}")
+            _invoke(task)
+        except Exception:
+            error = traceback.format_exc()
+            logger.error("Task failed: %s\n%s", task.get("name", index), error)
+            results.put((index, error))
         else:
-            gpus = []
-            logger.warning("No CUDA GPUs detected. Running on CPU.")
+            results.put((index, None))
 
-    # Determine workers pool based on GPUs or CPU count
-    if len(gpus) > 0:
-        worker_gpus = [gpu_id for gpu_id in gpus for _ in range(workers_per_gpu)]
-        num_workers = len(worker_gpus)
-        logger.info(
-            f"Configured {num_workers} workers ({workers_per_gpu} per GPU), "
-            f"mapping to physical GPUs: {gpus}"
-        )
-    else:
-        # Fallback to CPU with a pool of processes
-        num_workers = max(1, os.cpu_count() // 2)
-        worker_gpus = [None] * num_workers
-        logger.info(f"Configured {num_workers} CPU workers.")
 
-    # If only 1 worker is needed, run sequentially in the main process to completely
-    # bypass multiprocessing, IPC queues, and /dev/shm SemLock constraints.
-    if num_workers == 1:
-        gpu_id = worker_gpus[0]
-        if gpu_id is not None:
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-            if torch.cuda.is_available():
-                torch.cuda.set_device(0)
-        logger.info(f"Single worker mode (GPU {gpu_id}): executing tasks sequentially in main process.")
-        for task_info in tasks:
-            fn = task_info["fn"]
-            name = task_info.get("name", fn.__name__)
-            args = task_info.get("args", ())
-            kwargs = dict(task_info.get("kwargs", {}))
-            kwargs["multi_gpu"] = False
-            logger.info(f"===> Starting task: {name}")
-            start_time = time.time()
-            try:
-                fn(*args, **kwargs)
-                elapsed = time.time() - start_time
-                logger.info(f"===> Completed task: {name} in {elapsed:.2f}s")
-            except Exception as e:
-                elapsed = time.time() - start_time
-                logger.error(f"===> Failed task: {name} after {elapsed:.2f}s with error: {e}")
-                traceback.print_exc()
-        logger.info("All tasks finished execution.")
+def run_tasks_on_gpus(tasks: list[dict], gpus: list[int] | None = None,
+                      workers_per_gpu: int = 1) -> None:
+    """Run tasks on *logical visible* GPUs; any task or worker failure raises.
+
+    CPU fallback is bounded by CPU affinity/SLURM and task count. No queue.join()
+    waits forever for task_done() from a worker killed by an OOM or a signal.
+    """
+    if workers_per_gpu < 1:
+        raise ValueError("workers_per_gpu must be positive")
+    if not tasks:
+        logger.info("No pending tasks.")
+        return
+    count = torch.cuda.device_count() if torch.cuda.is_available() else 0
+    selected = list(range(count)) if gpus is None else list(gpus)
+    tokens = _gpu_tokens(selected, count, os.environ.get("CUDA_VISIBLE_DEVICES")) if selected else []
+    worker_tokens = ([token for token in tokens for _ in range(workers_per_gpu)]
+                     if tokens else [None] * _cpu_budget())[:len(tasks)]
+
+    # Single-GPU sequential mode avoids IPC and keeps the already initialized
+    # CUDA namespace intact. CPU mode may only run in-process on a CPU host.
+    if len(worker_tokens) == 1 and (tokens or count == 0):
+        if selected:
+            torch.cuda.set_device(selected[0])
+        for task in tasks:
+            _invoke(task)  # Failure deliberately propagates to SLURM.
         return
 
-    # 2. Setup multiprocessing context (always use 'spawn' for CUDA safety)
-    ctx = mp.get_context("spawn")
-
-    # 3. Create a task queue and load all tasks
-    task_queue = ctx.JoinableQueue()
-    for task_info in tasks:
-        fn = task_info["fn"]
-        name = task_info.get("name", fn.__name__)
-        args = task_info.get("args", ())
-        kwargs = task_info.get("kwargs", {})
-        task_queue.put((fn, name, args, kwargs))
-
-    # Add poison pills/sentinels to stop the workers when queue is empty
-    for _ in range(num_workers):
-        task_queue.put(None)
-
-    # 4. Spawn the worker processes
+    context = mp.get_context("spawn")
+    task_queue, result_queue = context.Queue(), context.Queue()
     processes = []
-    log_level = logging.getLogger().getEffectiveLevel()
-
-    for i in range(num_workers):
-        gpu_id = worker_gpus[i]
-        p = ctx.Process(
-            target=_worker_fn,
-            args=(task_queue, gpu_id, log_level),
-            name=f"Worker-{gpu_id if gpu_id is not None else 'CPU'}-{i}",
-        )
-        p.start()
-        processes.append(p)
-
-    logger.info(
-        f"All {num_workers} worker processes spawned. Processing tasks..."
-    )
-
-    # 5. Wait for all tasks to be completed in the queue
-    task_queue.join()
-    logger.info("All tasks in the queue have finished execution.")
-
-    # 6. Wait for all processes to finish cleanly
-    for p in processes:
-        p.join()
-    logger.info("All worker processes have exited successfully.")
+    completed, failures = set(), []
+    try:
+        for index, task in enumerate(tasks):
+            task_queue.put((index, task))
+        for _ in worker_tokens:
+            task_queue.put(None)
+        for token in worker_tokens:
+            process = context.Process(target=_worker_fn,
+                                      args=(task_queue, result_queue, token, logging.INFO))
+            process.start()
+            processes.append(process)
+        while len(completed) < len(tasks):
+            try:
+                index, error = result_queue.get(timeout=0.2)
+                completed.add(index)
+                if error:
+                    failures.append(f"{tasks[index].get('name', index)}: {error}")
+            except queue.Empty:
+                crashed = [p for p in processes if p.exitcode not in (None, 0)]
+                if crashed:
+                    raise RuntimeError("Training worker exited unexpectedly: " +
+                                       ", ".join(f"pid={p.pid}, exit={p.exitcode}" for p in crashed))
+                if all(not p.is_alive() for p in processes):
+                    raise RuntimeError(f"Workers exited with only {len(completed)}/{len(tasks)} results")
+        for process in processes:
+            process.join(timeout=30)
+            if process.is_alive() or process.exitcode != 0:
+                raise RuntimeError(f"Worker pid={process.pid} did not exit cleanly ({process.exitcode})")
+        if failures:
+            raise RuntimeError(f"{len(failures)} training task(s) failed:\n" + "\n".join(failures))
+    finally:
+        for process in processes:
+            if process.is_alive():
+                process.terminate()
+        for process in processes:
+            process.join(timeout=5)
+            if process.is_alive():
+                process.kill()
+                process.join(timeout=5)
+        # A dead consumer must not make interpreter shutdown wait on its feeder.
+        for pending_queue in (task_queue, result_queue):
+            pending_queue.cancel_join_thread()
+            pending_queue.close()

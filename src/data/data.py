@@ -114,6 +114,13 @@ class ImageDataset(Dataset):
             lambda x: os.path.join(self.images_dir, x)
         )
 
+        if os.environ.get("TCC_JOB_DIR"):
+            # Absolute paths inside a CSV override images_dir in os.path.join.
+            # Reject workstation manifests and traversal before a long HPC run.
+            for name in self.df["img_name"]:
+                if not Path(os.path.abspath(name)).is_relative_to("/datasets"):
+                    raise ValueError(f"CISIA input image is outside /datasets: {name}")
+
         self.spatial_transform = (
             transforms.Resize(spatial_size) if spatial_size is not None else None
         )

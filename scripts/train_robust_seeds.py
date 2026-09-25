@@ -226,10 +226,12 @@ def train_single_seed(
     overrides = {
         "model_family": family,
         "fourier_mode": fourier_mode,
-        "regime": "finetune" if "finetune" in regime else "scratch",
+        "regime": regime,
         "seed": seed,
         "early_stop_patience": early_stop_patience,
         "multi_gpu": False,
+        "num_workers": num_workers,
+        "robust": True,
     }
     if epochs is not None:
         overrides["epochs"] = epochs
@@ -321,7 +323,7 @@ def train_single_seed(
     )
 
     # Avaliação no DF40 se manifest existir
-    df40_csv = ROOT_DIR / "data" / "df40" / "test.csv"
+    df40_csv = data_root() / "df40" / "test.csv"
     df40_auc = None
     if df40_csv.exists():
         try:

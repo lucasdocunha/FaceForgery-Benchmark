@@ -1,45 +1,31 @@
 #!/usr/bin/env python3
-"""Configura e verifica os modelos pré-treinados no cluster CISIA.
+"""Prepare/verify pretrained backbones inside an allocated CISIA job.
 
-Cria uma pasta dedicada para cada arquitetura em:
-    /projects/models/lucas.ocunha/pretrained/
-        ├── clip/
-        ├── vit/
-        ├── dino/
-        ├── resnet/
-        ├── mobilenet/
-        └── xception/
+Submit from the repository root after creating logs/:
+    sbatch scripts/download_pretrained_cisia.sh
 
-Para cada modelo:
-- Verifica se os pesos já existem na pasta.
-- Se JÁ EXISTIREM: reaproveita instantaneamente sem fazer download.
-- Se NÃO EXISTIREM: baixa no nó de login (boolevm) e salva de forma definitiva na pasta correspondente.
-
-Execute este script no nó de login:
-    python scripts/setup_pretrained_cisia.py
+Downloads and serialization use job-local storage. The job runner publishes a
+versioned read-only source under /projects/models/$USER only when the process
+finishes. No package installation or TLS verification bypass is performed here.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
+import re
+import tempfile
+from urllib.parse import urlsplit
 import os
-import ssl
 import sys
 from pathlib import Path
-
-# Resolve problemas de verificação de certificado SSL em ambientes Conda/HPC para downloads do PyTorch
-try:
-    import certifi
-    ssl._create_default_https_context = ssl._create_unverified_context
-except Exception:
-    ssl._create_default_https_context = ssl._create_unverified_context
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
 from src.data.paths import pretrained_root
-
-DEFAULT_TARGET = Path("/projects/models/lucas.ocunha/pretrained")
+from src.utils.atomic import atomic_copy, atomic_torch_save
 
 
 def get_dir_size_mb(path: Path) -> float:
@@ -52,45 +38,30 @@ def get_dir_size_mb(path: Path) -> float:
 
 
 def safe_save_state_dict(state_dict, target_file: Path) -> None:
-    """Salva com segurança em sistemas de arquivos de rede (NFS/Lustre).
-
-    Grava primeiro no disco local temporário (/tmp), que usa ext4/tmpfs sem
-    problemas de streams C++ do zipfile_writer, e depois copia atomicamente para o destino.
-    """
-    import tempfile
-    import shutil
-    import torch
-    target_file.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = None
-    try:
-        with tempfile.NamedTemporaryFile(suffix=".pth", delete=False, dir="/tmp") as tmp:
-            tmp_path = Path(tmp.name)
-        torch.save(state_dict, tmp_path)
-        shutil.copyfile(str(tmp_path), str(target_file))
-    except Exception:
-        with open(target_file, "wb") as f:
-            torch.save(state_dict, f, _use_new_zipfile_serialization=False)
-    finally:
-        if tmp_path and tmp_path.exists():
-            tmp_path.unlink()
+    atomic_torch_save(state_dict, target_file)
 
 
 def download_file_safely(url: str, target_file: Path) -> None:
-    """Baixa um arquivo via HTTP diretamente para o /tmp local (ext4) e copia para o destino (NFS).
-
-    Evita [Errno 5] Input/output error que o torch.hub causa ao tentar salvar direto no NFS.
-    """
+    """Stream a verified HTTPS download to a unique local file, then publish it."""
     import urllib.request
-    import shutil
+
+    parsed = urlsplit(url)
+    prefix = re.search(r"-([a-f0-9]{8,64})\.", parsed.path)
+    if parsed.scheme != "https" or prefix is None:
+        raise ValueError("Expected an HTTPS torchvision URL with a SHA-256 filename prefix")
     target_file.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = Path("/tmp") / target_file.name
-
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (PyTorch Checkpoint Downloader)"})
-    with urllib.request.urlopen(req) as response, open(temp_path, "wb") as out_file:
-        shutil.copyfileobj(response, out_file)
-
-    shutil.copyfile(str(temp_path), str(target_file))
-    temp_path.unlink(missing_ok=True)
+    digest = hashlib.sha256()
+    # TMPDIR is assigned by src.hpc.runtime before this process starts.
+    with tempfile.TemporaryDirectory(prefix="pretrained-") as temporary:
+        downloaded = Path(temporary) / "weights.pth"
+        request = urllib.request.Request(url, headers={"User-Agent": "FaceForgery-Benchmark"})
+        with urllib.request.urlopen(request, timeout=120) as response, downloaded.open("wb") as output:
+            while chunk := response.read(1024 * 1024):
+                output.write(chunk)
+                digest.update(chunk)
+        if not digest.hexdigest().startswith(prefix.group(1)):
+            raise ValueError(f"SHA-256 mismatch for {url}")
+        atomic_copy(downloaded, target_file)
 
 
 def setup_clip(target_dir: Path) -> None:
@@ -107,7 +78,7 @@ def setup_clip(target_dir: Path) -> None:
         return
 
     print(f"   ⬇️  Baixando pesos do CLIP e salvando em: {clip_dir}...")
-    from transformers import CLIPVisionConfig, CLIPVisionModel
+    from transformers import CLIPVisionModel
     repo_id = "openai/clip-vit-base-patch16"
     model = CLIPVisionModel.from_pretrained(repo_id, use_safetensors=True)
     model.save_pretrained(str(clip_dir), safe_serialization=True)
@@ -129,7 +100,7 @@ def setup_vit(target_dir: Path) -> None:
         return
 
     print(f"   ⬇️  Baixando pesos do ViT e salvando em: {vit_dir}...")
-    from transformers import ViTConfig, ViTModel
+    from transformers import ViTModel
     repo_id = "google/vit-base-patch16-224"
     model = ViTModel.from_pretrained(repo_id, use_safetensors=True)
     model.save_pretrained(str(vit_dir), safe_serialization=True)
@@ -224,7 +195,6 @@ def setup_xception(target_dir: Path) -> None:
     import timm
     import torch
     import torch.hub
-    torch.hub.set_dir("/tmp/torch_hub")
     model = timm.create_model("legacy_xception", pretrained=True, num_classes=0)
     safe_save_state_dict(model.state_dict(), target_file)
     sz = get_dir_size_mb(target_file)
@@ -237,11 +207,15 @@ def main() -> None:
         "--target-dir",
         type=Path,
         default=None,
-        help="Diretório raiz onde as subpastas serão criadas (padrão: /projects/models/lucas.ocunha/pretrained)",
+        help="Local job staging directory (normally supplied by TCC_PRETRAINED_ROOT)",
     )
     args = parser.parse_args()
 
-    target_dir = args.target_dir or pretrained_root()
+    if not os.environ.get("SLURM_JOB_ID") or not os.environ.get("TCC_JOB_DIR"):
+        parser.error("Use sbatch scripts/download_pretrained_cisia.sh; direct Shell Access execution is not allowed")
+    target_dir = (args.target_dir or pretrained_root()).resolve()
+    if not target_dir.is_relative_to(Path(os.environ["TCC_JOB_DIR"]).resolve()):
+        parser.error("Target must be within the job-local workspace; final publication is handled by the runner")
     target_dir.mkdir(parents=True, exist_ok=True)
 
     print("\n" + "█" * 70)
@@ -249,9 +223,6 @@ def main() -> None:
     print(f"  Diretório Base: {target_dir}")
     print("█" * 70)
 
-    # Configura o cache do torch.hub em /tmp local para que downloads intermediários nunca passem pelo NFS
-    import torch.hub
-    torch.hub.set_dir("/tmp/torch_hub")
 
     # Executa a verificação/download para cada modelo
     setup_clip(target_dir)
@@ -260,6 +231,20 @@ def main() -> None:
     setup_resnet(target_dir)
     setup_mobilenet(target_dir)
     setup_xception(target_dir)
+
+    # Validate serialization/architecture compatibility using the same builders
+    # as training, not just file existence. This runs on allocated CPUs.
+    os.environ["TCC_PRETRAINED_ROOT"] = str(target_dir)
+    from src.models.registry import get_model_spec
+    from src.pipelines.config import load_config
+    verified = {}
+    for family in ("resnet", "xception", "mobilenet", "vit", "clip", "dino"):
+        config = load_config(ROOT_DIR / "configs" / f"{family}.yaml", {"regime": "finetune", "multi_gpu": False})
+        model = get_model_spec(family).build(config)
+        verified[family] = {"config": config.to_dict(), "parameters": sum(p.numel() for p in model.parameters())}
+        del model
+        print(f"Verified local backbone: {family}", flush=True)
+    (target_dir / "BACKBONES.json").write_text(json.dumps(verified, indent=2), encoding="utf-8")
 
     print("\n" + "█" * 70)
     print("🎉 STATUS FINAL: TODAS AS 6 PASTAS ESTÃO PRONTAS E REAPROVEITÁVEIS!")
@@ -270,7 +255,7 @@ def main() -> None:
             sz = get_dir_size_mb(sub)
             print(f"   📁 {sub.name:<12s} -> {len(files)} arquivo(s), total: {sz:.1f} MB")
     print("█" * 70)
-    print("\nOs jobs do Slurm carregarão diretamente dessas pastas sem usar a internet!\n")
+    print("\nValidated staging files; the runner will print the final published path.\n")
 
 
 if __name__ == "__main__":
