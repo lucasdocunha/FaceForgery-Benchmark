@@ -14,6 +14,8 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 logger = logging.getLogger(__name__)
 
+from src.utils.atomic import atomic_torch_save
+from src.utils.progress import progress
 from src.pipelines.config import RUN_CONFIG_FILENAME
 from src.pipelines.evaluation import (
     best_threshold, checkpoint_score, evaluate_classifier, sanitize_inputs, sanitize_logits,
@@ -91,21 +93,7 @@ def _scalar_metrics(metrics: dict) -> dict:
 
 
 def _safe_torch_save(obj, path: Path) -> None:
-    """Salva estado PyTorch de forma resiliente contra falhas em sistemas de arquivos NFS/Lustre."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    import tempfile, shutil
-    tmp_path = None
-    try:
-        with tempfile.NamedTemporaryFile(suffix=".pth", delete=False, dir="/tmp") as tmp:
-            tmp_path = Path(tmp.name)
-        torch.save(obj, tmp_path)
-        shutil.copyfile(str(tmp_path), str(path))
-    except Exception:
-        with open(path, "wb") as f:
-            torch.save(obj, f, _use_new_zipfile_serialization=False)
-    finally:
-        if tmp_path and tmp_path.exists():
-            tmp_path.unlink()
+    atomic_torch_save(obj, path)
 
 
 class Trainer:
@@ -177,6 +165,7 @@ class Trainer:
         for folder in ("weights", "results", "plots"):
             (self.output_dir / folder).mkdir(parents=True, exist_ok=True)
         self._save_run_config()
+        print("Effective training configuration: " + json.dumps(self.config.to_dict(), sort_keys=True), flush=True)
         criterion = self._criterion()
         optimizer = self._optimizer()
         scheduler = ReduceLROnPlateau(optimizer, mode="max", patience=self.config.scheduler_patience)
@@ -189,7 +178,7 @@ class Trainer:
         for epoch in range(self.config.epochs):
             self.model.train()
             losses = []
-            for x, y, _ in self.train_loader:
+            for x, y, _ in progress(self.train_loader, f"Train epoch {epoch + 1}/{self.config.epochs}"):
                 x, y = sanitize_inputs(x.to(self.device)), y.to(self.device)
                 optimizer.zero_grad(set_to_none=True)
                 x, y_a, y_b, lam = apply_mixup_or_cutmix(x, y, self.config.mixup_alpha, self.config.cutmix_alpha)
@@ -281,4 +270,6 @@ class Trainer:
         pd.DataFrame(history).to_csv(self.output_dir / "results" / "history.csv", index=False)
         plot_confusion_matrix(test, str(self.output_dir), title=f"{self.config.model_family} confusion matrix")
         plot_roc_auc(test, str(self.output_dir), title=f"{self.config.model_family} ROC", family=self.config.model_family)
+        print("Final test metrics: " + json.dumps(_scalar_metrics(test), sort_keys=True), flush=True)
+        print(f"Run artifacts: {self.output_dir}", flush=True)
         return test

@@ -1,48 +1,15 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=tcc-mobilenet
 #SBATCH --partition=gpu
-#SBATCH --output=%x_%j.out
-#SBATCH --error=%x_%j.err
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
+#SBATCH --time=48:00:00
 #SBATCH --mail-user=lucas.ocunha@ppgia.pucpr.br
 #SBATCH --mail-type=ALL
-#SBATCH --time=120:00:00
-
-source /opt/conda/etc/profile.d/conda.sh
-conda activate tcc
-
-# ==========================================
-# 1. Configurações de Ambiente (Paths CISIA)
-# ==========================================
-export TCC_DATASET_ROOT=/datasets/Images/MFFI
-export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
-export TCC_MODELS_ROOT=/projects/models/lucas.ocunha
-export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
-
-# Ir para a pasta do repositório
-cd /users/home/lucas.ocunha/research/TCC
-
-# ==========================================
-# 2. Execução do Modelo MobileNet
-# ==========================================
-export PYTHONUNBUFFERED=1
-
-REGIME="${1:-scratch}"
-WORKERS="${2:-1}"
-
-echo "=========================================================="
-echo "Job ID: $SLURM_JOB_ID | Nó: $(hostname)"
-echo "Iniciando treinamento: mobilenet (regime: $REGIME, workers: $WORKERS)"
-echo "Data de início: $(date)"
-echo "=========================================================="
-
-python -u run_matrix.py \
-    --regime "$REGIME" \
-    --only mobilenet \
-    --workers-per-gpu "$WORKERS"
-
-echo "=========================================================="
-echo "Treinamento mobilenet finalizado em: $(date)"
-echo "=========================================================="
+# Submit from the repository root: mkdir -p logs && sbatch scripts/slurm_mobilenet.sh
+set -euo pipefail
+ROOT="${TCC_PROJECT_ROOT:-${SLURM_SUBMIT_DIR:?Use sbatch from the repository root}}"
+source "$ROOT/scripts/cisia_common.sh" matrix mobilenet "$@"

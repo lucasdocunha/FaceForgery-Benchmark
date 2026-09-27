@@ -30,3 +30,6 @@ logs/
 # Research outputs may contain faces, predictions and private annotation linkage.
 /outputs/
 .pytest_cache/
+
+# CISIA job reports and per-job predictions stay out of version control.
+/saidas/
