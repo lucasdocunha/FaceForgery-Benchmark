@@ -57,3 +57,15 @@ def test_original_dataset_never_replaces_missing_sample(tmp_path):
     dataset = ImageDataset(csv, tmp_path, spatial_size=(32, 32))
     with pytest.raises(RuntimeError, match="substitution is forbidden"):
         dataset[0]
+
+
+def test_dataset_allows_skip_unreadable_when_configured(tmp_path):
+    Image.fromarray(np.ones((32, 32, 3), dtype=np.uint8) * 128).save(tmp_path / "exists.png")
+    csv = tmp_path / "m.csv"
+    pd.DataFrame({"img_name": ["missing.png", "exists.png"], "label": [0, 1]}).to_csv(
+        csv, index=False
+    )
+    dataset = ImageDataset(csv, tmp_path, spatial_size=(32, 32), allow_skip_unreadable=True)
+    item, label, _ = dataset[0]
+    assert label == 1
+

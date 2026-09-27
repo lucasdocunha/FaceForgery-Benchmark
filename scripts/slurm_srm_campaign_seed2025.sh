@@ -52,6 +52,7 @@ export PIP_CACHE_DIR="$CACHE_DIR/pip"
 export TMPDIR="$CACHE_DIR/tmp"
 export PYTHONUNBUFFERED=1
 export PYTHONDONTWRITEBYTECODE=1
+export TCC_SKIP_UNREADABLE=1
 
 # Garante limpeza absoluta do cache local ao finalizar ou em caso de erro
 limpar_scratch() {

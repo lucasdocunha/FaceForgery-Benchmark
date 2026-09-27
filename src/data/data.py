@@ -102,9 +102,11 @@ class ImageDataset(Dataset):
         fourier: FourierMode = "none",
         spatial_size: tuple[int, int] | None = (128, 128),
         in_channels: int | None = None,
+        allow_skip_unreadable: bool = False,
     ):
         self.images_dir = images_dir
         self.in_channels = in_channels
+        self.allow_skip_unreadable = allow_skip_unreadable
         self.df = pd.read_csv(file_csv)
         self.df.columns = self.df.columns.str.strip()
 
@@ -169,6 +171,10 @@ class ImageDataset(Dataset):
                     img = self.spatial_transform(img)
 
         except Exception as e:
+            if getattr(self, "allow_skip_unreadable", False) or os.environ.get("TCC_SKIP_UNREADABLE") == "1":
+                if _skip_count < 20:
+                    next_idx = (idx + 1) % len(self)
+                    return self.__getitem__(next_idx, _skip_count=_skip_count + 1)
             raise RuntimeError(f"Unreadable image at original index {idx}: {img_path}; substitution is forbidden") from e
 
         label = self.df.iloc[idx, 1]

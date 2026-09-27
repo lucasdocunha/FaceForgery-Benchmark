@@ -294,6 +294,7 @@ def train_single_seed(
         raw_dir / "train.csv", phase1_split_root("train"),
         transform=RandomizedRobustAugment(img_size),
         data_limit=limit, fourier=fourier_mode, spatial_size=(img_size, img_size),
+        allow_skip_unreadable=True,
     )
     val_ds = ImageDataset(
         raw_dir / "val.csv", phase1_split_root("val"),
