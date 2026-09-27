@@ -32,6 +32,7 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
+os.environ.setdefault("TCC_SKIP_UNREADABLE", "1")
 
 from src.data.augmentations import RandomizedRobustAugment, clean_transform
 from src.data.data import ImageDataset
@@ -86,6 +87,7 @@ def eval_test_d(
         transform=clean_transform(image_size),
         fourier=fourier_mode,
         spatial_size=(image_size, image_size),
+        allow_skip_unreadable=True,
     )
     test_d_loader = DataLoader(
         test_d_dataset, batch_size=batch_size, shuffle=False,
@@ -112,6 +114,7 @@ def eval_df40(
     df40_dataset = ImageDataset(
         df40_csv, Path(""), transform=clean_transform(image_size),
         fourier=fourier_mode, spatial_size=(image_size, image_size),
+        allow_skip_unreadable=True,
     )
     df40_loader = DataLoader(
         df40_dataset, batch_size=batch_size, shuffle=False,
@@ -139,6 +142,7 @@ def eval_celeb_df(
     celeb_dataset = ImageDataset(
         celeb_csv, crops_dir, transform=clean_transform(image_size),
         fourier=fourier_mode, spatial_size=(image_size, image_size),
+        allow_skip_unreadable=True,
     )
     celeb_loader = DataLoader(
         celeb_dataset, batch_size=batch_size, shuffle=False,
@@ -300,11 +304,13 @@ def train_single_seed(
         raw_dir / "val.csv", phase1_split_root("val"),
         transform=clean_transform(img_size),
         data_limit=limit, fourier=fourier_mode, spatial_size=(img_size, img_size),
+        allow_skip_unreadable=True,
     )
     test_ds = ImageDataset(
         raw_dir / "test.csv", phase1_split_root("test"),
         transform=clean_transform(img_size),
         data_limit=limit, fourier=fourier_mode, spatial_size=(img_size, img_size),
+        allow_skip_unreadable=True,
     )
 
     common_loader = {

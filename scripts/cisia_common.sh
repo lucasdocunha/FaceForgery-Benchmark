@@ -20,6 +20,6 @@ conda activate "$CISIA_CONDA_ENV"
 [[ "$CONDA_PREFIX" == "$HOME/.conda/envs/"* ]] || {
     echo "Conda environment must be under $HOME/.conda/envs; got $CONDA_PREFIX" >&2; exit 2;
 }
-export PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+export PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 TCC_SKIP_UNREADABLE=1
 # exec gives the job runner direct ownership of SLURM's batch signals/status.
 exec python -u -m src.hpc.runtime "$@"

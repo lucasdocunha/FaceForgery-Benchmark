@@ -49,7 +49,8 @@ def cache_environment(workspace: Path, inherited: dict[str, str]) -> dict[str, s
         environment[variable] = str(path)
     environment.update(PYTHONUNBUFFERED="1", PYTHONDONTWRITEBYTECODE="1", MPLBACKEND="Agg",
                        OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1",
-                       NUMEXPR_NUM_THREADS="1", TCC_JOB_DIR=str(workspace))
+                       NUMEXPR_NUM_THREADS="1", TCC_JOB_DIR=str(workspace),
+                       TCC_SKIP_UNREADABLE="1")
     # Do not inherit the former scripts' blanket TLS bypass.
     environment.pop("PYTHONHTTPSVERIFY", None)
     return environment
