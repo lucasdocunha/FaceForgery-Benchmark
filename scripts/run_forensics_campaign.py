@@ -345,7 +345,7 @@ def train_single_seed(
 
     # 3. Avaliação Celeb-DF v2
     celeb_csv = data_root() / "celeb_df" / "test.csv"
-    crops_dir = Path("/media/ssd2/lucas.ocunha/datasets/celeb_df_crops")
+    crops_dir = Path(os.environ.get("TCC_CELEB_CROPS_DIR", "/datasets/Images/celeb_df_crops" if Path("/datasets/Images/celeb_df_crops").exists() else "/media/ssd2/lucas.ocunha/datasets/celeb_df_crops"))
     celeb_metrics = eval_celeb_df(
         model, family, fourier_mode, regime, seed, output_dir, img_size,
         bs, num_workers, device, celeb_csv, crops_dir, val_threshold,
