@@ -112,3 +112,35 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
    - O **CLIP SRM** manteve liderança sólida de **0.8110 de AUC** frente a 40 geradores modernos (Midjourney, SDXL, Flux, etc.), e o **DINO SRM** registrou **0.7981 de AUC**.
 4. **Consistência Estatística Multissemente:**
    - O desvio padrão ($\sigma$) entre as seeds no SRM manteve-se extremamente baixo ($pprox 0.003$ no CLIP, $pprox 0.007$ no DINO e ViT), confirmando a robustez experimental e ausência de viés de amostragem.
+
+---
+
+## 5. Ensembles e Fusões com os Modelos SRM da Melhor Semente (Seed 123 e Seed 42)
+
+Avaliamos exaustivamente todas as combinações de modelos ($K=2$ a $K=6$) sob as estratégias de fusão: **Média Geométrica (`geometric`)**, **Média Aritmética (`mean`)**, **Stacking Linear (`stacking`)** e **Max Pooling (`max`)**.
+
+### 5.1. Top Ensembles na Semente Canônica 123 (Melhor Desempenho Global em Test-D)
+
+| Rank | Composição do Comitê | Estratégia | N° Redes | Test AUC (Limpo) | Test Acc | Test-D AUC (Corrompido) | Test-D Acc | ΔAUC | DF-40 AUC | Celeb-DF Vídeo AUC |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 🥇 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `geometric` | 2x | **0.9334** | 84.71% | **0.8769** 🚀 | 78.43% | **-0.0565** | **0.8332** | **0.7270** |
+| 🥈 | **CLIP ViT-B/16 + DINO + Xception** | `geometric` | 3x | **0.9293** | 84.82% | **0.8706** | 78.11% | **-0.0586** | **0.8303** | **0.7325** |
+| 🥉 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `stacking` | 2x | **0.9306** | 85.12% | **0.8698** | 78.35% | -0.0608 | **0.8219** | **0.7392** |
+| 4 | **CLIP ViT-B/16 + DINO + MobileNetV3** | `geometric` | 3x | 0.9284 | 84.75% | 0.8698 | 78.20% | -0.0586 | 0.8265 | 0.7358 |
+| 5 | **CLIP ViT-B/16 + DINO + Xception** | `stacking` | 3x | 0.9296 | 85.05% | 0.8680 | 78.02% | -0.0616 | 0.8208 | 0.7397 |
+| 6 | **CLIP ViT-B/16 + DINO + ViT-B/16** | `stacking` | 3x | 0.9285 | 84.90% | 0.8679 | 77.95% | -0.0605 | 0.8214 | 0.7374 |
+| 7 | **CLIP ViT-B/16 + DINO + ViT + Xception** | `stacking` | 4x | 0.9288 | 84.95% | 0.8679 | 78.00% | -0.0609 | 0.8211 | 0.7381 |
+| 8 | **CLIP ViT-B/16 + DINO + ViT + MobileNet** | `stacking` | 4x | 0.9288 | 84.98% | 0.8666 | 77.89% | -0.0622 | 0.8179 | 0.7421 |
+| 9 | **CLIP ViT-B/16 + DINO + ResNet-18** | `stacking` | 3x | 0.9298 | 84.88% | 0.8666 | 77.85% | -0.0632 | 0.8107 | 0.7325 |
+| 10 | **Todos os 6 Modelos SRM (CLIP+DINO+ViT+ResNet+Mob+Xcep)** | `geometric` | 6x | 0.9215 | 83.92% | **0.8622** | 77.10% | -0.0593 | 0.8198 | **0.7385** |
+
+### 5.2. Top Ensembles na Semente 42 (Pico Máximo de Vídeo no Celeb-DF v2)
+
+| Rank | Composição do Comitê | Estratégia | N° Redes | Test AUC (Limpo) | Test-D AUC (Corrompido) | DF-40 AUC | Celeb-DF Vídeo AUC |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| 🥇 | **DINO (ConvNeXt-B) + MobileNetV3** | `geometric` | 2x | 0.9041 | 0.8399 | 0.8008 | **0.8379** 🚀 |
+| 🥈 | **DINO (ConvNeXt-B) + MobileNetV3** | `stacking` | 2x | 0.9060 | 0.8370 | 0.7908 | **0.8378** 🚀 |
+| 🥉 | **DINO + MobileNetV3 + Xception** | `stacking` | 3x | 0.9043 | 0.8348 | 0.7900 | **0.8359** 🚀 |
+| 4 | **CLIP ViT-B/16 + DINO + MobileNet + Xception** | `stacking` | 4x | 0.9223 | **0.8610** | 0.8131 | **0.8239** 🚀 |
+| 5 | **CLIP ViT-B/16 + DINO + MobileNetV3** | `stacking` | 3x | 0.9232 | **0.8624** | 0.8139 | **0.8236** 🚀 |
+| 6 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `stacking` | 2x | 0.9239 | **0.8658** | 0.8162 | **0.8198** 🚀 |
