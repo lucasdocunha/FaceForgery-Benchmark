@@ -30,7 +30,13 @@ def data_root() -> Path:
 
 def models_root() -> Path:
     """Training work tree (job-local when launched by the CISIA runner)."""
-    return Path(os.environ.get("TCC_MODELS_ROOT", str(_REPO_DATA_ROOT.parent / "models"))).expanduser()
+    explicit = os.environ.get("TCC_MODELS_ROOT")
+    if explicit:
+        return Path(explicit).expanduser()
+    ssd2 = Path("/media/ssd2/lucas.ocunha/models-tcc")
+    if ssd2.is_dir():
+        return ssd2
+    return Path(str(_REPO_DATA_ROOT.parent / "models")).expanduser()
 
 
 def output_root() -> Path:
