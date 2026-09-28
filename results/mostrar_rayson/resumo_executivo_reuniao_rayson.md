@@ -78,7 +78,7 @@ Implementamos e avaliamos a representação espectral/esteganográfica **SRM** (
 
 ---
 
-## 2. Mapa das 9 Tabelas Oficiais para a Reunião (`results/mostrar_rayson/`)
+## 2. Mapa das 10 Tabelas Oficiais para a Reunião (`results/mostrar_rayson/`)
 
 Todas as tabelas foram padronizadas com a nomenclatura e formato solicitados:
 
@@ -91,8 +91,9 @@ Todas as tabelas foram padronizadas com a nomenclatura e formato solicitados:
 | **Tabela 5** | [`tabela5-crossdata-df40.md`](tabela5-crossdata-df40.md) | **Cross-Dataset DF-40:** Desempenho individual e de comitês contra 40 geradores modernos. |
 | **Tabela 6** | [`tabela6-crossdata-celebdf.md`](tabela6-crossdata-celebdf.md) | **Celeb-DF v2 Corrigido:** Avaliação frame e agregação de vídeo com **72.60% de Vídeo AUC**. |
 | **Tabela 7** | [`tabela7-ensemble-robusto.md`](tabela7-ensemble-robusto.md) | **Ensembles Robustos RGB:** Comitês campeões de modelos robustos atingindo o estado-da-arte. |
-| **Tabela 8** | [`tabela8-resultados-srm.md`](tabela8-resultados-srm.md) | **Modelos SRM Individuais:** Avaliação de resíduos de ruído de alta frequência em 19 modelos. |
+| **Tabela 8** | [`tabela8-resultados-srm.md`](tabela8-resultados-srm.md) | **Modelos SRM Individuais:** Avaliação de resíduos de ruído de alta frequência em 20 modelos. |
 | **Tabela 9** | [`tabela9-ensemble-srm.md`](tabela9-ensemble-srm.md) | **Ensembles SRM:** Comitês espectrais com **0.8769 no Test-D** e **83.79% no Celeb-DF v2 Vídeo**. |
+| **Tabela 10** | [`tabela10-comparativo-master-modelos-tecnicas-ensembles.md`](tabela10-comparativo-master-modelos-tecnicas-ensembles.md) | **Comparativo Master Geral:** Síntese de todos os modelos, técnicas e ensembles com medalhas 🟡. |
 
 ---
 
