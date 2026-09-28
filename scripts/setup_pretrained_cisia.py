@@ -74,8 +74,10 @@ def setup_clip(target_dir: Path) -> None:
     print("1/6 🔍 CLIP (openai/clip-vit-base-patch16)")
     if weight_files and has_config:
         sz = get_dir_size_mb(clip_dir)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {clip_dir} ({sz:.1f} MB)")
-        return
+        if sz >= 300.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {clip_dir} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {clip_dir} tem apenas {sz:.1f} MB (< 300 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do CLIP e salvando em: {clip_dir}...")
     from transformers import CLIPVisionModel
@@ -96,8 +98,10 @@ def setup_vit(target_dir: Path) -> None:
     print("2/6 🔍 ViT (google/vit-base-patch16-224)")
     if weight_files and has_config:
         sz = get_dir_size_mb(vit_dir)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {vit_dir} ({sz:.1f} MB)")
-        return
+        if sz >= 300.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {vit_dir} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {vit_dir} tem apenas {sz:.1f} MB (< 300 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do ViT e salvando em: {vit_dir}...")
     from transformers import ViTModel
@@ -119,8 +123,10 @@ def setup_dino(target_dir: Path) -> None:
     if target_file.exists() or alt_file.exists():
         found = target_file if target_file.exists() else alt_file
         sz = get_dir_size_mb(found)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {found} ({sz:.1f} MB)")
-        return
+        if sz >= 300.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {found} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {found} tem apenas {sz:.1f} MB (< 300 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do DINOv3 ConvNeXt-Base e salvando em: {target_file}...")
     import timm
@@ -140,8 +146,10 @@ def setup_resnet(target_dir: Path) -> None:
     print("4/6 🔍 ResNet (resnet18 torchvision)")
     if target_file.exists():
         sz = get_dir_size_mb(target_file)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
-        return
+        if sz >= 40.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {target_file} tem apenas {sz:.1f} MB (< 40 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do ResNet-18...")
     import torchvision.models as tvm
@@ -163,8 +171,10 @@ def setup_mobilenet(target_dir: Path) -> None:
     print("5/6 🔍 MobileNet (mobilenet_v3_large torchvision)")
     if target_file.exists():
         sz = get_dir_size_mb(target_file)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
-        return
+        if sz >= 18.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {target_file} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {target_file} tem apenas {sz:.1f} MB (< 18 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do MobileNetV3-Large...")
     import torchvision.models as tvm
@@ -188,8 +198,10 @@ def setup_xception(target_dir: Path) -> None:
     if target_file.exists() or alt_file.exists():
         found = target_file if target_file.exists() else alt_file
         sz = get_dir_size_mb(found)
-        print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {found} ({sz:.1f} MB)")
-        return
+        if sz >= 75.0:
+            print(f"   ✅ [JÁ EXISTE] Reaproveitando pesos locais em: {found} ({sz:.1f} MB)")
+            return
+        print(f"   ⚠️  [ARQUIVO INCOMPLETO OU CORROMPIDO] {found} tem apenas {sz:.1f} MB (< 75 MB). Re-baixando...")
 
     print(f"   ⬇️  Baixando pesos do Xception e salvando em: {target_file}...")
     import timm
