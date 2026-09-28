@@ -72,10 +72,13 @@ Implementamos e avaliamos a representação espectral/esteganográfica **SRM** (
 - **Resiliência Extrema sob Degradação:** O **DINO SRM** alcançou **0.8500 ± 0.0070 de AUC no teste corrompido (`test_d`)**, superando o próprio modelo robusto RGB puro ($0.8440$).
 - **Salto Histórico no Celeb-DF v2 Individual:** Sem necessidade de ensemble, os modelos SRM individuais atingiram até **76.21% de Vídeo AUC no DINO (com pico de 83.19% na seed 42)**, **69.34% na MobileNet**, **65.97% no CLIP**, **62.62% na ResNet** e **62.17% no ViT**, confirmando que os resíduos de ruído de alta frequência capturam os micro-artefatos de compressão e interpolação dos deepfakes com altíssima fidelidade.
 - **Status da Campanha:** 19 modelos concluídos (63.3%), 2 em execução nas GPUs locais e seed 2025 alocada para o cluster CISIA.
+- **Fusões Espectrais SRM Campeãs:**
+  - **CLIP SRM + DINO SRM (Média Geométrica):** **0.8769 de Test-D AUC** | **0.9334 de Test AUC** | **0.8332 no DF-40** | **-0.0565 de ΔAUC**.
+  - **DINO SRM + MobileNetV3 SRM (Média Geométrica):** **83.79% de Vídeo AUC no Celeb-DF v2** 🚀 (Novo recorde histórico do projeto contra deepfakes de alta qualidade).
 
 ---
 
-## 2. Mapa das 8 Tabelas Oficiais para a Reunião (`results/mostrar_rayson/`)
+## 2. Mapa das 9 Tabelas Oficiais para a Reunião (`results/mostrar_rayson/`)
 
 Todas as tabelas foram padronizadas com a nomenclatura e formato solicitados:
 
@@ -87,8 +90,9 @@ Todas as tabelas foram padronizadas com a nomenclatura e formato solicitados:
 | **Tabela 4** | [`tabela4-seedrobusta-rgb.md`](tabela4-seedrobusta-rgb.md) | **Modelos Robustos:** 6 arquiteturas treinadas com aumentos adversos em 5 sementes completas. |
 | **Tabela 5** | [`tabela5-crossdata-df40.md`](tabela5-crossdata-df40.md) | **Cross-Dataset DF-40:** Desempenho individual e de comitês contra 40 geradores modernos. |
 | **Tabela 6** | [`tabela6-crossdata-celebdf.md`](tabela6-crossdata-celebdf.md) | **Celeb-DF v2 Corrigido:** Avaliação frame e agregação de vídeo com **72.60% de Vídeo AUC**. |
-| **Tabela 7** | [`tabela7-ensemble-robusto.md`](tabela7-ensemble-robusto.md) | **Ensembles Robustos:** Comitês campeões de modelos robustos atingindo o estado-da-arte. |
-| **Tabela 8** | [`tabela8-resultados-srm.md`](tabela8-resultados-srm.md) | **Campanha SRM (Parcial 19/30):** Modelos com 30 filtros de ruído de alta frequência e superação em Test-D e Celeb-DF. |
+| **Tabela 7** | [`tabela7-ensemble-robusto.md`](tabela7-ensemble-robusto.md) | **Ensembles Robustos RGB:** Comitês campeões de modelos robustos atingindo o estado-da-arte. |
+| **Tabela 8** | [`tabela8-resultados-srm.md`](tabela8-resultados-srm.md) | **Modelos SRM Individuais:** Avaliação de resíduos de ruído de alta frequência em 19 modelos. |
+| **Tabela 9** | [`tabela9-ensemble-srm.md`](tabela9-ensemble-srm.md) | **Ensembles SRM:** Comitês espectrais com **0.8769 no Test-D** e **83.79% no Celeb-DF v2 Vídeo**. |
 
 ---
 
