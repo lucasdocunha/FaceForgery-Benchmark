@@ -11,7 +11,7 @@ _REPO_DATA_ROOT = Path(__file__).resolve().parents[2] / "data"
 def phase1_split_root(split: str) -> Path:
     explicit = os.environ.get("TCC_DATASET_ROOT")
     candidates = ([Path(explicit).expanduser()] if explicit else
-                  [_REPO_DATA_ROOT / "datasets" / "phase1", _REPO_DATA_ROOT / "datasets" / "min_dataset"])
+                  [_REPO_DATA_ROOT / "datasets" / "phase1", _REPO_DATA_ROOT / "datasets" / "min_dataset", Path("/media/ssd2/lucas.ocunha/datasets/phase1")])
     for base in candidates:
         for name in dict.fromkeys((_SPLIT_TO_SUBDIR.get(split, split), split)):
             path = base / name
