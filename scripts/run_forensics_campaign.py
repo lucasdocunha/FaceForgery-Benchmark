@@ -27,6 +27,11 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score
 import torch
+import torch.multiprocessing as mp
+try:
+    mp.set_sharing_strategy("file_system")
+except Exception:
+    pass
 import torch.nn as nn
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
