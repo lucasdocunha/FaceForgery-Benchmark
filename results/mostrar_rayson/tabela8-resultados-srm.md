@@ -3,7 +3,7 @@
 **Documento:** `tabela8-resultados-srm.md`  
 **Destinatário:** Apresentação Técnica / Rayson  
 **Ambiente de Execução:** Dual NVIDIA GeForce RTX 3090 (24GB) | Workstation Local (`sicret2`) + Cluster CISIA  
-**Status Geral do Experimento:** **19 de 30 modelos concluídos (63.3%)**  
+**Status Geral do Experimento:** **20 de 30 modelos concluídos (66.7%)**  
 **Data de Extração:** 28 de Setembro de 2026  
 
 ---
@@ -26,7 +26,7 @@ O regime **SRM (Spatial Rich Models)** é uma técnica consagrada de esteganáli
 | **DINO (ConvNeXt-B)** | `srm_robust` | 4/5 | 0.9229 ± 0.0092 | 0.8251 ± 0.0145 | **0.8500 ± 0.0070** | 0.7444 ± 0.0139 | -0.0730 ± 0.0115 | 0.7981 ± 0.0128 | 0.7200 ± 0.0408 | **0.7621 ± 0.0490** |
 | **CLIP ViT-B/16** | `srm_robust` | 4/5 | 0.8964 ± 0.0039 | 0.7964 ± 0.0106 | **0.8340 ± 0.0033** | 0.7277 ± 0.0105 | -0.0624 ± 0.0050 | 0.8110 ± 0.0200 | 0.6257 ± 0.0296 | **0.6597 ± 0.0386** |
 | Vision Transformer (ViT-B/16) | `srm_robust` | 4/5 | 0.8168 ± 0.0055 | 0.7307 ± 0.0069 | 0.7643 ± 0.0073 | 0.6834 ± 0.0081 | -0.0524 ± 0.0047 | 0.7493 ± 0.0062 | 0.5916 ± 0.0108 | 0.6217 ± 0.0150 |
-| ResNet-18 | `srm_robust` | 2/5 | 0.8437 ± 0.0008 | 0.7418 ± 0.0075 | 0.7622 ± 0.0002 | 0.6711 ± 0.0066 | -0.0815 ± 0.0006 | 0.6793 ± 0.0008 | 0.5959 ± 0.0386 | 0.6262 ± 0.0410 |
+| ResNet-18 | `srm_robust` | 3/5 | 0.8433 ± 0.0009 | 0.7457 ± 0.0086 | 0.7619 ± 0.0005 | 0.6768 ± 0.0109 | -0.0814 ± 0.0005 | 0.6608 ± 0.0321 | 0.6056 ± 0.0320 | 0.6391 ± 0.0366 |
 | MobileNetV3-Large | `srm_robust` | 3/5 | 0.8281 ± 0.0069 | 0.7356 ± 0.0050 | 0.7418 ± 0.0084 | 0.6643 ± 0.0046 | -0.0863 ± 0.0058 | 0.7363 ± 0.0096 | 0.6420 ± 0.0174 | 0.6934 ± 0.0216 |
 | Xception | `srm_robust` | 2/5 | 0.7574 ± 0.0024 | 0.6922 ± 0.0034 | 0.6872 ± 0.0004 | 0.6487 ± 0.0014 | -0.0703 ± 0.0028 | 0.6899 ± 0.0130 | 0.5878 ± 0.0161 | 0.6201 ± 0.0239 |
 
@@ -52,7 +52,7 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
 | **CLIP ViT-B/16** | **`srm_robust` (SRM)** | **0.8964 ± 0.0039** | **0.8340 ± 0.0033** | **-0.0624 ± 0.0050** | **0.8110 ± 0.0200** | **0.6597 ± 0.0386** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- |
 | ResNet-18 | `finetune_robust` (RGB) | 0.8490 ± 0.0078 | 0.7693 ± 0.0065 | -0.0797 | 0.6646 ± 0.0147 | 0.3244 |
-| **ResNet-18** | **`srm_robust` (SRM)** | **0.8437 ± 0.0008** | **0.7622 ± 0.0002** | **-0.0815 ± 0.0006** | **0.6793 ± 0.0008** | **0.6262 ± 0.0410** 🚀 |
+| **ResNet-18** | **`srm_robust` (SRM)** | **0.8433 ± 0.0009** | **0.7619 ± 0.0005** | **-0.0814 ± 0.0005** | **0.6608 ± 0.0321** | **0.6391 ± 0.0366** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- |
 | Vision Transformer (ViT-B/16) | `finetune_robust` (RGB) | 0.8229 ± 0.0051 | 0.7644 ± 0.0044 | -0.0585 | 0.7219 ± 0.0194 | 0.3431 |
 | **Vision Transformer (ViT-B/16)** | **`srm_robust` (SRM)** | **0.8168 ± 0.0055** | **0.7643 ± 0.0073** | **-0.0524 ± 0.0047** | **0.7493 ± 0.0062** | **0.6217 ± 0.0150** 🚀 |
@@ -87,7 +87,7 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
 | MobileNetV3-Large | 2025 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
 | ResNet-18 | 42 | 0.8443 | 0.7471 | 0.7624 | 0.6757 | -0.0819 | 0.6787 | 0.6232 | 0.6552 | ✅ Concluído |
 | ResNet-18 | 123 | 0.8431 | 0.7366 | 0.7621 | 0.6664 | -0.0810 | 0.6798 | 0.5686 | 0.5972 | ✅ Concluído |
-| ResNet-18 | 2024 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
+| ResNet-18 | 2024 | 0.8425 | 0.7536 | 0.7614 | 0.6882 | -0.0811 | 0.6238 | 0.6249 | 0.6648 | ✅ Concluído |
 | ResNet-18 | 2025 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
 | Vision Transformer (ViT-B/16) | 7 | 0.8215 | 0.7359 | 0.7658 | 0.6881 | -0.0557 | 0.7526 | 0.6047 | 0.6412 | ✅ Concluído |
 | Vision Transformer (ViT-B/16) | 42 | 0.8097 | 0.7214 | 0.7537 | 0.6743 | -0.0560 | 0.7522 | 0.5804 | 0.6091 | ✅ Concluído |
@@ -96,6 +96,7 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
 | Vision Transformer (ViT-B/16) | 2025 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
 | Xception | 42 | 0.7591 | 0.6946 | 0.6869 | 0.6497 | -0.0722 | 0.6807 | 0.5992 | 0.6370 | ✅ Concluído |
 | Xception | 123 | 0.7557 | 0.6898 | 0.6875 | 0.6477 | -0.0683 | 0.6990 | 0.5765 | 0.6032 | ✅ Concluído |
+| Xception | 2024 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
 | Xception | 2025 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
 
 ---
