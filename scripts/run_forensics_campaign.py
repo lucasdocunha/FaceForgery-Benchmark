@@ -210,17 +210,24 @@ def is_lock_active(lock_file: Path) -> bool:
         return False
     try:
         content = lock_file.read_text().strip()
+        if "cisia" in content:
+            return True
         for part in content.split(","):
             if part.startswith("pid="):
                 pid = int(part.split("=")[1])
-                os.kill(pid, 0)
-                return True
-    except (OSError, ValueError):
-        try:
-            lock_file.unlink(missing_ok=True)
-        except Exception:
-            pass
-        return False
+                try:
+                    os.kill(pid, 0)
+                    return True
+                except PermissionError:
+                    return True
+                except ProcessLookupError:
+                    pass
+    except Exception:
+        pass
+    try:
+        lock_file.unlink(missing_ok=True)
+    except Exception:
+        pass
     return False
 
 

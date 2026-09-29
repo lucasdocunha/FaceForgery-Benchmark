@@ -55,7 +55,7 @@ Evidencia a trajetória e sensibilidade de cada família de arquitetura frente �
 | **Baseline Padrão (RGB)** | `finetune` | 0.9650 | **0.8765 🟡** | 0.6804 | -0.1961 | 0.6909 | **0.7196 🟡** |
 | **Frequência Espectral (FFT 2D 7C)** | `finetune` | 0.8650 | 0.8337 | 0.6866 | -0.1472 | **0.7071 🟡** | 0.6140 |
 | **Treino Robusto (RGB - 5 Seeds)** | `finetune_robust` | **0.9738 🟡** | 0.8490 | **0.7693 🟡** | **-0.0797 🟡** | 0.6646 | 0.6756 |
-| **Resíduos Forenses (SRM)** | `srm_robust` | 0.9730 | 0.8433 | 0.7619 | -0.0814 | 0.6608 | 0.6391 |
+| **Resíduos Forenses (SRM)** | `srm_robust` | 0.9730 | 0.8410 | 0.7585 | -0.0826 | 0.6703 | 0.6545 *(pico 0.7009)* |
 
 ---
 
@@ -66,7 +66,7 @@ Evidencia a trajetória e sensibilidade de cada família de arquitetura frente �
 | **Baseline Padrão (RGB)** | `finetune` | 0.9410 | **0.8454 🟡** | 0.6832 | -0.1622 | 0.7037 | 0.6703 |
 | **Frequência Espectral (FFT 2D 7C)** | `finetune` | 0.7420 | 0.7084 | 0.6032 | -0.1052 | 0.5635 | 0.5853 |
 | **Treino Robusto (RGB - 5 Seeds)** | `finetune_robust` | **0.9470 🟡** | 0.8307 | **0.7474 🟡** | -0.0833 | 0.7035 | 0.6698 |
-| **Resíduos Forenses (SRM)** | `srm_robust` | 0.9450 | 0.8281 | 0.7418 | **-0.0863 🟡** | **0.7363 🟡** | **0.6934 🟡** *(pico 0.7140)* |
+| **Resíduos Forenses (SRM)** | `srm_robust` | 0.9450 | 0.8282 | 0.7403 | **-0.0879 🟡** | **0.7391 🟡** | **0.7047 🟡** *(pico 0.7383)* |
 
 ---
 
@@ -88,7 +88,7 @@ Evidencia a trajetória e sensibilidade de cada família de arquitetura frente �
 | **Baseline Padrão (RGB)** | `finetune` | 0.8450 | **0.7708 🟡** | 0.6388 | -0.1321 | **0.7298 🟡** | **0.6555 🟡** |
 | **Frequência Espectral (FFT 2D 7C)** | `finetune` | 0.7120 | 0.6592 | 0.5746 | -0.0846 | 0.5973 | 0.5422 |
 | **Treino Robusto (RGB - 5 Seeds)** | `finetune_robust` | **0.8493 🟡** | 0.7558 | 0.6836 | -0.0722 | 0.6740 | 0.6160 |
-| **Resíduos Forenses (SRM)** | `srm_robust` | 0.8480 | 0.7574 | **0.6872 🟡** | **-0.0703 🟡** | 0.6899 | 0.6201 |
+| **Resíduos Forenses (SRM)** | `srm_robust` | 0.8480 | 0.7558 | **0.6842 🟡** | **-0.0715 🟡** | 0.6917 | 0.6043 |
 
 ---
 
@@ -101,7 +101,7 @@ Quadro consolidado com a média das 6 arquiteturas e o melhor modelo individual 
 | **1. Baseline Convencional (RGB Puro)** | DINO / CLIP | 0.9269 | **0.8598 🟡** | 0.7013 | -0.1584 | 0.7188 | **0.6949 🟡** |
 | **2. Frequência Espectral (FFT 2D 7C)** | ResNet-18 | 0.8112 | 0.7720 | 0.6454 | -0.1266 | 0.6348 | 0.5821 |
 | **3. Treinamento Robusto (RGB 5 Seeds)** | CLIP / DINO | **0.9495 🟡** | 0.8487 | **0.7757 🟡** | -0.0730 | **0.7270 🟡** | 0.6563 |
-| **4. Resíduos Forenses (SRM 30 Filtros)** | DINO / CLIP | 0.9482 | 0.8441 | **0.7732 🟡** | **-0.0710 🟡** | **0.7409 🟡** | **0.6660 🟡** *(pico ind. 0.8319)* |
+| **4. Resíduos Forenses (SRM 30 Filtros)** | DINO / CLIP | 0.9482 | 0.8435 | **0.7719 🟡** | **-0.0716 🟡** | **0.7432 🟡** | **0.6678 🟡** *(pico ind. 0.8319)* |
 
 > 📌 **Conclusão Metodológica por Técnica:**
 > - **O Treinamento Robusto (RGB)** e o **SRM (Ruído)** empatam na liderança de resiliência ao `Test-D` (~0.775 AUC), mas o **SRM** supera o RGB puro em **+1.39 pp no DF-40** e apresenta picos históricos individuais muito superiores no **Celeb-DF v2** (DINO SRM atingindo **0.8319 de AUC individual**).
@@ -121,6 +121,7 @@ Avaliação dos melhores comitês multi-modelo e multi-espectrais:
 | **Ensemble Robusto RGB (6 Modelos)** | `CLIP + DINO + ViT + ResNet + MobileNet + Xception` | `mean` | 6x | 0.9950 | **0.9614 🟡** | **0.8845 🟡** | **-0.0769 🟡** | **0.8610 🟡** | 0.7260 |
 | **Ensemble Robusto RGB (2 Modelos)** | `CLIP + DINO (Robustos)` | `geometric` | 2x | 0.9963 | 0.9396 | **0.8781 🟡** | **-0.0615 🟡** | 0.8247 | 0.7180 |
 | **Ensemble SRM Campeão Geral** | `CLIP SRM + DINO SRM (Seed 123)` | `geometric` | 2x | 0.9960 | 0.9334 | **0.8769 🟡** | **-0.0565 🟡** | 0.8332 | 0.7270 |
+| **Ensemble SRM Recorde DF-40** | `CLIP SRM + DINO SRM (Seed 2024)` | `geometric` | 2x | 0.9951 | 0.9306 | **0.8701 🟡** | **-0.0605 🟡** | **0.8449 🟡** | 0.7358 |
 | **Ensemble SRM (3 Modelos)** | `CLIP SRM + DINO SRM + Xception SRM (Seed 123)` | `geometric` | 3x | 0.9955 | 0.9293 | 0.8706 | -0.0586 | 0.8303 | 0.7325 |
 | **Ensemble SRM Recorde Celeb-DF** | `DINO SRM + MobileNetV3 SRM (Seed 42)` | `geometric` | 2x | 0.9940 | 0.9154 | 0.8399 | -0.0755 | 0.8008 | **0.8379 🟡 🚀** |
 | **Ensemble SRM (3 Modelos - Celeb)** | `DINO SRM + MobileNetV3 SRM + Xception SRM` | `stacking` | 3x | 0.9938 | 0.9140 | 0.8348 | -0.0792 | 0.7900 | **0.8359 🟡** |

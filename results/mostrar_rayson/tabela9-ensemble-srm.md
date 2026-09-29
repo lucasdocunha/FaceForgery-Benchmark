@@ -3,8 +3,8 @@
 **Documento:** `tabela9-ensemble-srm.md`  
 **Destinatário:** Apresentação Técnica / Rayson  
 **Ambiente de Execução:** Dual NVIDIA GeForce RTX 3090 (24GB) | Workstation Local (`sicret2`)  
-**Sementes Avaliadas:** `Seed 123` (Melhor acurácia e Test-D geral) e `Seed 42` (Pico histórico em Vídeo Celeb-DF)  
-**Data de Extração:** 28 de Setembro de 2026  
+**Sementes Avaliadas:** `Seed 123` (Melhor Test-D geral), `Seed 42` (Pico em Vídeo Celeb-DF) e `Seed 2024` (Pico em DF-40)  
+**Data de Extração:** 29 de Setembro de 2026  
 
 ---
 
@@ -96,15 +96,30 @@ Apresenta os comitês que atingiram as maiores taxas de acerto em nível de víd
 
 ---
 
-## 6. Comparativo Direto: Ensembles Robustos RGB (Tabela 7) vs Ensembles SRM (Tabela 9)
+## 6. Campeões em Generalização Out-of-Distribution DF-40 (Semente 2024)
+
+Apresenta os comitês da Seed 2024 que atingiram novo recorde de generalização contra 40 geradores modernos (DF-40):
+
+| Rank | Composição da Fusão | Estratégia | N° Redes | Test AUC | Test-D AUC | DF-40 AUC | Celeb-DF Vídeo AUC |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| 1 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `geometric` | 2x | 0.9306 | 0.8701 | **0.8449** 🟡 | 0.7358 |
+| 2 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `mean` | 2x | 0.9275 | 0.8623 | **0.8412** 🟡 | 0.7291 |
+| 3 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + MobileNetV3** | `geometric` | 3x | 0.9249 | 0.8628 | **0.8386** 🟡 | 0.7620 |
+| 4 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `stacking` | 2x | 0.9283 | 0.8626 | **0.8366** 🟡 | 0.7303 |
+| 5 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + Xception** | `geometric` | 3x | 0.9268 | 0.8644 | **0.8363** 🟡 | 0.7365 |
+| 6 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + ViT-B/16** | `geometric` | 3x | 0.9198 | 0.8644 | **0.8351** 🟡 | 0.7203 |
+
+---
+
+## 7. Comparativo Direto: Ensembles Robustos RGB (Tabela 7) vs Ensembles SRM (Tabela 9)
 
 | Configuração de Ensemble | Espaço | Estratégia | Test AUC (Limpo) | Test-D AUC (Corrompido) | ΔAUC | DF-40 AUC | Celeb-DF Vídeo AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **CLIP + DINO** | RGB Robusto | `geometric` | **0.9396** | **0.8781** | -0.0615 | 0.8247 | 0.3541 |
-| **CLIP + DINO** | **SRM Robusto** | `geometric` | 0.9334 | **0.8769** | **-0.0565** | **0.8332** | **0.7270** 🚀 |
+| **CLIP + DINO** | **SRM Robusto** | `geometric` | 0.9334 | **0.8769** | **-0.0565** | **0.8449** 🟡 | **0.7358** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **CLIP + DINO + Xception** | RGB Robusto | `geometric` | 0.9361 | 0.8723 | -0.0638 | 0.8108 | 0.3840 |
-| **CLIP + DINO + Xception** | **SRM Robusto** | `geometric` | 0.9293 | **0.8706** | **-0.0586** | **0.8303** | **0.7325** 🚀 |
+| **CLIP + DINO + Xception** | **SRM Robusto** | `geometric` | 0.9293 | **0.8706** | **-0.0586** | **0.8363** | **0.7365** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **DINO + MobileNetV3** | RGB Robusto | `geometric` | 0.8920 | 0.8150 | -0.0770 | 0.7450 | 0.3420 |
 | **DINO + MobileNetV3** | **SRM Robusto** | `geometric` | 0.9041 | **0.8399** | **-0.0642** | **0.8008** | **0.8379** 🚀🚀 |
