@@ -21,6 +21,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
+import resource
+try:
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    resource.setrlimit(resource.RLIMIT_NOFILE, (min(65536, hard), hard))
+except Exception:
+    pass
+
 import numpy as np
 import pandas as pd
 from PIL import ImageFile
@@ -334,41 +341,62 @@ def train_single_seed(
     val_loader = DataLoader(val_ds, shuffle=False, **common_loader)
     test_loader = DataLoader(test_ds, shuffle=False, **common_loader)
 
-    # Treinamento com Early Stopping
+    # Treinamento com Early Stopping ou Retomada de Avaliação a partir de best.pth
     trainer = Trainer(model, train_loader, val_loader, test_loader, config, output_dir, spec, device=device)
-    test_metrics = trainer.fit()
+    best_weights_path = output_dir / "weights" / "best.pth"
+    val_metrics_csv = output_dir / "results" / "metrics_val.csv"
+    test_metrics_csv = output_dir / "results" / "metrics_test.csv"
+
+    if best_weights_path.exists() and not force:
+        print(f"📦 Checkpoint existente encontrado em {best_weights_path}. Retomando avaliações pendentes...", flush=True)
+        if test_metrics_csv.exists() and val_metrics_csv.exists():
+            test_metrics = pd.read_csv(test_metrics_csv).iloc[0].to_dict()
+        else:
+            test_metrics = trainer.evaluate_from_checkpoint(best_weights_path)
+    else:
+        test_metrics = trainer.fit()
 
     # Recarrega melhor modelo salvo
-    best_weights_path = output_dir / "weights" / "best.pth"
     if best_weights_path.exists():
         state = torch.load(best_weights_path, map_location=device, weights_only=True)
         model.load_state_dict(state)
 
-    val_metrics_csv = output_dir / "results" / "metrics_val.csv"
     val_threshold = float(pd.read_csv(val_metrics_csv).iloc[0]["threshold"]) if val_metrics_csv.exists() else 0.5
 
     # 1. Avaliação Test_d
-    test_d_csv = raw_dir / "test.csv"
-    test_d_images_dir = phase1_split_root("test_d")
-    test_d_metrics = eval_test_d(
-        model, family, fourier_mode, regime, seed, output_dir, img_size,
-        bs, num_workers, device, test_d_images_dir, test_d_csv, val_threshold,
-    )
+    test_d_res_csv = output_dir / "results" / "metrics_test_d.csv"
+    if not force and test_d_res_csv.exists():
+        test_d_metrics = pd.read_csv(test_d_res_csv).iloc[0].to_dict()
+    else:
+        test_d_csv = raw_dir / "test.csv"
+        test_d_images_dir = phase1_split_root("test_d")
+        test_d_metrics = eval_test_d(
+            model, family, fourier_mode, regime, seed, output_dir, img_size,
+            bs, num_workers, device, test_d_images_dir, test_d_csv, val_threshold,
+        )
 
     # 2. Avaliação DF-40
-    df40_csv = data_root() / "df40" / "test.csv"
-    df40_metrics = eval_df40(
-        model, family, fourier_mode, regime, seed, output_dir, img_size,
-        bs, num_workers, device, df40_csv, val_threshold,
-    )
+    df40_res_csv = output_dir / "results" / "metrics_df40.csv"
+    if not force and df40_res_csv.exists():
+        df40_metrics = pd.read_csv(df40_res_csv).iloc[0].to_dict()
+    else:
+        df40_csv = data_root() / "df40" / "test.csv"
+        df40_metrics = eval_df40(
+            model, family, fourier_mode, regime, seed, output_dir, img_size,
+            bs, num_workers, device, df40_csv, val_threshold,
+        )
 
     # 3. Avaliação Celeb-DF v2
-    celeb_csv = data_root() / "celeb_df" / "test.csv"
-    crops_dir = Path(os.environ.get("TCC_CELEB_CROPS_DIR", "/datasets/Images/celeb_df_crops" if Path("/datasets/Images/celeb_df_crops").exists() else "/media/ssd2/lucas.ocunha/datasets/celeb_df_crops"))
-    celeb_metrics = eval_celeb_df(
-        model, family, fourier_mode, regime, seed, output_dir, img_size,
-        bs, num_workers, device, celeb_csv, crops_dir, val_threshold,
-    )
+    celeb_res_csv = output_dir / "results" / "metrics_celeb_df.csv"
+    if not force and celeb_res_csv.exists():
+        celeb_metrics = pd.read_csv(celeb_res_csv).iloc[0].to_dict()
+    else:
+        celeb_csv = data_root() / "celeb_df" / "test.csv"
+        crops_dir = Path(os.environ.get("TCC_CELEB_CROPS_DIR", "/datasets/Images/celeb_df_crops" if Path("/datasets/Images/celeb_df_crops").exists() else "/media/ssd2/lucas.ocunha/datasets/celeb_df_crops"))
+        celeb_metrics = eval_celeb_df(
+            model, family, fourier_mode, regime, seed, output_dir, img_size,
+            bs, num_workers, device, celeb_csv, crops_dir, val_threshold,
+        )
 
     elapsed_min = round((time.time() - t_start) / 60.0, 1)
 

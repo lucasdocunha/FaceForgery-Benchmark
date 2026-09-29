@@ -3,7 +3,7 @@
 **Documento:** `tabela8-resultados-srm.md`  
 **Destinatário:** Apresentação Técnica / Rayson  
 **Ambiente de Execução:** Dual NVIDIA GeForce RTX 3090 (24GB) | Workstation Local (`sicret2`) + Cluster CISIA  
-**Status Geral do Experimento:** **23 de 30 modelos concluídos (76.7%)**  
+**Status Geral do Experimento:** **24 de 30 modelos concluídos (80.0%)**  
 **Data de Extração:** 28 de Setembro de 2026  
 
 ---
@@ -28,14 +28,12 @@ O regime **SRM (Spatial Rich Models)** é uma técnica consagrada de esteganáli
 | Vision Transformer (ViT-B/16) | `srm_robust` | 4/5 | 0.8168 ± 0.0055 | 0.7307 ± 0.0069 | 0.7643 ± 0.0073 | 0.6834 ± 0.0081 | -0.0524 ± 0.0047 | 0.7493 ± 0.0062 | 0.5916 ± 0.0108 | 0.6217 ± 0.0150 |
 | ResNet-18 | `srm_robust` | 4/5 | 0.8410 ± 0.0046 | 0.7429 ± 0.0091 | 0.7585 ± 0.0070 | 0.6715 ± 0.0138 | -0.0826 ± 0.0024 | 0.6703 ± 0.0324 | 0.6173 ± 0.0351 | 0.6545 ± 0.0430 |
 | MobileNetV3-Large | `srm_robust` | 4/5 | 0.8282 ± 0.0056 | 0.7351 ± 0.0042 | 0.7403 ± 0.0075 | 0.6633 ± 0.0042 | -0.0879 ± 0.0057 | 0.7391 ± 0.0096 | 0.6504 ± 0.0221 | 0.7047 ± 0.0285 |
-| Xception | `srm_robust` | 3/5 | 0.7558 ± 0.0033 | 0.6909 ± 0.0033 | 0.6842 ± 0.0051 | 0.6475 ± 0.0024 | -0.0715 ± 0.0029 | 0.6917 ± 0.0097 | 0.5771 ± 0.0218 | 0.6043 ± 0.0322 |
+| Xception | `srm_robust` | 4/5 | 0.7533 ± 0.0056 | 0.6894 ± 0.0041 | 0.6824 ± 0.0055 | 0.6462 ± 0.0033 | -0.0709 ± 0.0027 | 0.6917 ± 0.0079 | 0.5753 ± 0.0182 | 0.6015 ± 0.0269 |
 
 > [!NOTE]
 > **Status da Fila de Execução:**
-> - **19 modelos já finalizados** com avaliação completa nos 4 benchmarks (Test, Test-D, DF-40 e Celeb-DF v2).
-> - **GPU 0 (`sicret2`):** Treinamento da `ResNet-18` seed `2024` finalizando época 15/15 (pronta para avaliação), seguida de `Xception` seed `2024` e seeds `7` restantes.
-> - **GPU 1 (`sicret2`):** Treinamento da `MobileNetV3` seed `7` na época 6/15.
-> - **Cluster CISIA:** Semente `2025` de todas as arquiteturas designada para execução nos nós do cluster.
+> - **100% dos modelos locais concluídos na workstation `sicret2`:** 24 de 24 modelos (4 seeds canônicas: 42, 123, 2024 e 7) completamente treinados e avaliados nos 4 benchmarks (Test, Test-D, DF-40 e Celeb-DF v2).
+> - **Cluster CISIA:** Semente `2025` de todas as 6 arquiteturas em execução nos nós de cluster.
 
 ---
 
@@ -61,7 +59,7 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
 | **MobileNetV3-Large** | **`srm_robust` (SRM)** | **0.8282 ± 0.0056** | **0.7403 ± 0.0075** | **-0.0879 ± 0.0057** | **0.7391 ± 0.0096** | **0.7047 ± 0.0285** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- |
 | Xception | `finetune_robust` (RGB) | 0.7558 ± 0.0029 | 0.6836 ± 0.0023 | -0.0722 | 0.6740 ± 0.0107 | 0.3840 |
-| **Xception** | **`srm_robust` (SRM)** | **0.7558 ± 0.0033** | **0.6842 ± 0.0051** | **-0.0715 ± 0.0029** | **0.6917 ± 0.0097** | **0.6043 ± 0.0322** 🚀 |
+| **Xception** | **`srm_robust` (SRM)** | **0.7533 ± 0.0056** | **0.6824 ± 0.0055** | **-0.0709 ± 0.0027** | **0.6917 ± 0.0079** | **0.6015 ± 0.0269** 🚀 |
 | --- | --- | --- | --- | --- | --- | --- |
 
 ---
@@ -95,7 +93,7 @@ Compara o desempenho dos modelos treinados com SRM frente ao baseline com aument
 | Vision Transformer (ViT-B/16) | 123 | 0.8207 | 0.7360 | 0.7685 | 0.6919 | -0.0522 | 0.7523 | 0.5856 | 0.6108 | ✅ Concluído |
 | Vision Transformer (ViT-B/16) | 2024 | 0.8152 | 0.7293 | 0.7694 | 0.6792 | -0.0458 | 0.7400 | 0.5959 | 0.6258 | ✅ Concluído |
 | Vision Transformer (ViT-B/16) | 2025 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
-| Xception | 7 | - | - | - | - | - | - | - | - | ⏳ Em Fila / Executando |
+| Xception | 7 | 0.7460 | 0.6847 | 0.6771 | 0.6423 | -0.0690 | 0.6916 | 0.5698 | 0.5932 | ✅ Concluído |
 | Xception | 42 | 0.7591 | 0.6946 | 0.6869 | 0.6497 | -0.0722 | 0.6807 | 0.5992 | 0.6370 | ✅ Concluído |
 | Xception | 123 | 0.7557 | 0.6898 | 0.6875 | 0.6477 | -0.0683 | 0.6990 | 0.5765 | 0.6032 | ✅ Concluído |
 | Xception | 2024 | 0.7525 | 0.6883 | 0.6784 | 0.6449 | -0.0741 | 0.6954 | 0.5556 | 0.5726 | ✅ Concluído |

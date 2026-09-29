@@ -1,3 +1,2 @@
 model_family,fourier_mode,seed,test_auc,test_acc,test_d_auc,test_d_acc,df40_auc,celeb_video_auc,elapsed_min,cached
-mobilenet,srm,7,0.8284,0.7337,0.7358,0.6605,0.7475,0.7383,582.9,False
-resnet,srm,7,0.8342,0.7343,0.7481,0.6557,0.6989,0.7009,428.0,False
+xception,srm,7,0.746,0.6847,0.6771,0.6423,0.6916,0.5932,10.2,False

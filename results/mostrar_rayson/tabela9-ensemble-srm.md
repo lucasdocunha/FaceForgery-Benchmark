@@ -3,7 +3,7 @@
 **Documento:** `tabela9-ensemble-srm.md`  
 **Destinatário:** Apresentação Técnica / Rayson  
 **Ambiente de Execução:** Dual NVIDIA GeForce RTX 3090 (24GB) | Workstation Local (`sicret2`)  
-**Sementes Avaliadas:** `Seed 123` (Melhor Test-D geral), `Seed 42` (Pico em Vídeo Celeb-DF) e `Seed 2024` (Pico em DF-40)  
+**Sementes Avaliadas:** `Seed 123` (Test-D geral), `Seed 42` (Pico Celeb-DF), `Seed 2024` (Pico DF-40) e `Seed 7` (Pico Test AUC / Robustez)  
 **Data de Extração:** 29 de Setembro de 2026  
 
 ---
@@ -111,7 +111,22 @@ Apresenta os comitês da Seed 2024 que atingiram novo recorde de generalização
 
 ---
 
-## 7. Comparativo Direto: Ensembles Robustos RGB (Tabela 7) vs Ensembles SRM (Tabela 9)
+## 7. Campeões da Semente 7 (Pico em Test AUC e Celeb-DF Vídeo)
+
+Apresenta os comitês da Seed 7, onde a combinação CLIP + DINO atingiu **0.9386 de Test AUC** e **0.8747 de Test-D AUC**, e a trinca com MobileNetV3 atingiu **0.7665 de Celeb-DF Vídeo AUC**:
+
+| Rank | Composição da Fusão | Estratégia | N° Redes | Test AUC | Test-D AUC | DF-40 AUC | Celeb-DF Vídeo AUC |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| 1 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `geometric` | 2x | **0.9386** | **0.8747** | 0.8114 | **0.7452** |
+| 2 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `mean` | 2x | **0.9329** | **0.8672** | 0.8042 | **0.7421** |
+| 3 | **CLIP ViT-B/16 + DINO (ConvNeXt-B)** | `stacking` | 2x | **0.9353** | **0.8655** | 0.8013 | **0.7458** |
+| 4 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + Xception** | `geometric` | 3x | **0.9327** | **0.8653** | 0.8066 | **0.7445** |
+| 5 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + MobileNetV3** | `geometric` | 3x | **0.9319** | **0.8651** | 0.8120 | **0.7665** |
+| 6 | **CLIP ViT-B/16 + DINO (ConvNeXt-B) + ViT-B/16** | `stacking` | 3x | **0.9331** | **0.8642** | 0.8026 | **0.7438** |
+
+---
+
+## 8. Comparativo Direto: Ensembles Robustos RGB (Tabela 7) vs Ensembles SRM (Tabela 9)
 
 | Configuração de Ensemble | Espaço | Estratégia | Test AUC (Limpo) | Test-D AUC (Corrompido) | ΔAUC | DF-40 AUC | Celeb-DF Vídeo AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -129,7 +144,7 @@ Apresenta os comitês da Seed 2024 que atingiram novo recorde de generalização
 
 ---
 
-## 7. Principais Conclusões Forenses dos Ensembles SRM
+## 9. Principais Conclusões Forenses dos Ensembles SRM
 
 1. **Complementaridade Perfeita (CLIP + DINO):**
    - No domínio SRM, a fusão CLIP+DINO com média geométrica alcança **0.8769 de Test-D AUC**, com retenção de performance estrita ($\Delta	ext{AUC} = -0.0565$) e liderança no DF-40 (**0.8332 de AUC**).

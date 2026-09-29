@@ -88,7 +88,7 @@ Evidencia a trajetória e sensibilidade de cada família de arquitetura frente �
 | **Baseline Padrão (RGB)** | `finetune` | 0.8450 | **0.7708 🟡** | 0.6388 | -0.1321 | **0.7298 🟡** | **0.6555 🟡** |
 | **Frequência Espectral (FFT 2D 7C)** | `finetune` | 0.7120 | 0.6592 | 0.5746 | -0.0846 | 0.5973 | 0.5422 |
 | **Treino Robusto (RGB - 5 Seeds)** | `finetune_robust` | **0.8493 🟡** | 0.7558 | 0.6836 | -0.0722 | 0.6740 | 0.6160 |
-| **Resíduos Forenses (SRM)** | `srm_robust` | 0.8480 | 0.7558 | **0.6842 🟡** | **-0.0715 🟡** | 0.6917 | 0.6043 |
+| **Resíduos Forenses (SRM)** | `srm_robust` | 0.8480 | 0.7533 | **0.6824 🟡** | **-0.0709 🟡** | 0.6917 | 0.6015 |
 
 ---
 
@@ -101,10 +101,10 @@ Quadro consolidado com a média das 6 arquiteturas e o melhor modelo individual 
 | **1. Baseline Convencional (RGB Puro)** | DINO / CLIP | 0.9269 | **0.8598 🟡** | 0.7013 | -0.1584 | 0.7188 | **0.6949 🟡** |
 | **2. Frequência Espectral (FFT 2D 7C)** | ResNet-18 | 0.8112 | 0.7720 | 0.6454 | -0.1266 | 0.6348 | 0.5821 |
 | **3. Treinamento Robusto (RGB 5 Seeds)** | CLIP / DINO | **0.9495 🟡** | 0.8487 | **0.7757 🟡** | -0.0730 | **0.7270 🟡** | 0.6563 |
-| **4. Resíduos Forenses (SRM 30 Filtros)** | DINO / CLIP | 0.9482 | 0.8435 | **0.7719 🟡** | **-0.0716 🟡** | **0.7432 🟡** | **0.6678 🟡** *(pico ind. 0.8319)* |
+| **4. Resíduos Forenses (SRM 30 Filtros)** | DINO / CLIP | 0.9482 | 0.8431 | **0.7716 🟡** | **-0.0715 🟡** | **0.7433 🟡** | **0.6674 🟡** *(pico ind. 0.8319)* |
 
 > 📌 **Conclusão Metodológica por Técnica:**
-> - **O Treinamento Robusto (RGB)** e o **SRM (Ruído)** empatam na liderança de resiliência ao `Test-D` (~0.775 AUC), mas o **SRM** supera o RGB puro em **+1.39 pp no DF-40** e apresenta picos históricos individuais muito superiores no **Celeb-DF v2** (DINO SRM atingindo **0.8319 de AUC individual**).
+> - **O Treinamento Robusto (RGB)** e o **SRM (Ruído)** empatam na liderança de resiliência ao `Test-D` (~0.775 AUC), mas o **SRM** supera o RGB puro em **+1.63 pp no DF-40** e apresenta picos históricos individuais muito superiores no **Celeb-DF v2** (DINO SRM atingindo **0.8319 de AUC individual**).
 > - O **Baseline Convencional** é excelente no teste limpo, mas sofre queda catastrófica de **-15.8 pp sob corrupção**.
 
 ---
@@ -121,6 +121,7 @@ Avaliação dos melhores comitês multi-modelo e multi-espectrais:
 | **Ensemble Robusto RGB (6 Modelos)** | `CLIP + DINO + ViT + ResNet + MobileNet + Xception` | `mean` | 6x | 0.9950 | **0.9614 🟡** | **0.8845 🟡** | **-0.0769 🟡** | **0.8610 🟡** | 0.7260 |
 | **Ensemble Robusto RGB (2 Modelos)** | `CLIP + DINO (Robustos)` | `geometric` | 2x | 0.9963 | 0.9396 | **0.8781 🟡** | **-0.0615 🟡** | 0.8247 | 0.7180 |
 | **Ensemble SRM Campeão Geral** | `CLIP SRM + DINO SRM (Seed 123)` | `geometric` | 2x | 0.9960 | 0.9334 | **0.8769 🟡** | **-0.0565 🟡** | 0.8332 | 0.7270 |
+| **Ensemble SRM Pico Test/Robustez** | `CLIP SRM + DINO SRM (Seed 7)` | `geometric` | 2x | 0.9968 | **0.9386 🟡** | **0.8747 🟡** | -0.0639 | 0.8114 | 0.7452 |
 | **Ensemble SRM Recorde DF-40** | `CLIP SRM + DINO SRM (Seed 2024)` | `geometric` | 2x | 0.9951 | 0.9306 | **0.8701 🟡** | **-0.0605 🟡** | **0.8449 🟡** | 0.7358 |
 | **Ensemble SRM (3 Modelos)** | `CLIP SRM + DINO SRM + Xception SRM (Seed 123)` | `geometric` | 3x | 0.9955 | 0.9293 | 0.8706 | -0.0586 | 0.8303 | 0.7325 |
 | **Ensemble SRM Recorde Celeb-DF** | `DINO SRM + MobileNetV3 SRM (Seed 42)` | `geometric` | 2x | 0.9940 | 0.9154 | 0.8399 | -0.0755 | 0.8008 | **0.8379 🟡 🚀** |

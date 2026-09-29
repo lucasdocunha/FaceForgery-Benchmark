@@ -273,3 +273,30 @@ class Trainer:
         print("Final test metrics: " + json.dumps(_scalar_metrics(test), sort_keys=True), flush=True)
         print(f"Run artifacts: {self.output_dir}", flush=True)
         return test
+
+    def evaluate_from_checkpoint(self, checkpoint_path: Path | None = None) -> dict:
+        ckpt = checkpoint_path or (self.output_dir / "weights" / "best.pth")
+        unwrap_model(self.model).load_state_dict(torch.load(ckpt, map_location=self.device, weights_only=True))
+        criterion = self._criterion()
+        validation = evaluate_classifier(
+            self.model, self.val_loader, criterion, self.device,
+            use_amp=self.device.type == "cuda", desc="Val best",
+        )
+        threshold, _ = best_threshold(
+            validation["y_true"], validation["probs"], self.config.threshold_strategy,
+        )
+        test = evaluate_classifier(
+            self.model, self.test_loader, criterion, self.device, threshold=threshold,
+            use_amp=self.device.type == "cuda", desc="Test",
+        )
+        self._save_split("val", validation, threshold)
+        self._save_split("test", test, threshold)
+        save_metrics_csv(test, str(self.output_dir), extra_info={
+            **self.config.to_dict(), "threshold": threshold,
+        })
+        plot_confusion_matrix(test, str(self.output_dir), title=f"{self.config.model_family} confusion matrix")
+        plot_roc_auc(test, str(self.output_dir), title=f"{self.config.model_family} ROC", family=self.config.model_family)
+        print("Final test metrics: " + json.dumps(_scalar_metrics(test), sort_keys=True), flush=True)
+        print(f"Run artifacts: {self.output_dir}", flush=True)
+        return test
+
