@@ -1,0 +1,49 @@
+Modelo,Paradigma,Paradigma_Raw,N_Fake,Taxa_Acerto_Fake_Recall_%,Taxa_Acerto_Real_Espec_%,Acuracia_Balanceada_%,AUC_%,Threshold_Usado
+CLIP ViT-B/16 (SRM),Troca Facial (Face Swap),face_swap,1250,82.96,75.48,79.22,84.13,0.493
+CLIP ViT-B/16 (SRM),Edição Text-to-Image (T2I),editing_t2i,998,90.48,75.48,82.98,89.99,0.493
+CLIP ViT-B/16 (SRM),Reencenação Facial (Talking),talking_reenactment,500,74.6,75.48,75.04,82.63,0.493
+CLIP ViT-B/16 (SRM),Síntese GAN,gan,1399,78.41,75.48,76.94,83.35,0.493
+CLIP ViT-B/16 (SRM),Modelos de Difusão (Diffusion),diffusion,1750,68.17,75.48,71.82,79.5,0.493
+CLIP ViT-B/16 (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,30.4,75.48,52.94,60.1,0.493
+DINO ConvNeXt-B (SRM),Troca Facial (Face Swap),face_swap,1250,95.2,67.83,81.52,88.38,0.173
+DINO ConvNeXt-B (SRM),Edição Text-to-Image (T2I),editing_t2i,998,97.39,67.83,82.61,91.26,0.173
+DINO ConvNeXt-B (SRM),Reencenação Facial (Talking),talking_reenactment,500,93.8,67.83,80.82,87.63,0.173
+DINO ConvNeXt-B (SRM),Síntese GAN,gan,1399,80.2,67.83,74.02,80.54,0.173
+DINO ConvNeXt-B (SRM),Modelos de Difusão (Diffusion),diffusion,1750,68.0,67.83,67.92,76.84,0.173
+DINO ConvNeXt-B (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,33.2,67.83,50.52,52.96,0.173
+Fusão CLIP + DINO (SRM),Troca Facial (Face Swap),face_swap,1250,93.28,72.21,82.75,88.05,0.333
+Fusão CLIP + DINO (SRM),Edição Text-to-Image (T2I),editing_t2i,998,97.49,72.21,84.85,92.2,0.333
+Fusão CLIP + DINO (SRM),Reencenação Facial (Talking),talking_reenactment,500,89.0,72.21,80.61,86.71,0.333
+Fusão CLIP + DINO (SRM),Síntese GAN,gan,1399,84.99,72.21,78.6,83.79,0.333
+Fusão CLIP + DINO (SRM),Modelos de Difusão (Diffusion),diffusion,1750,72.34,72.21,72.28,79.44,0.333
+Fusão CLIP + DINO (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,33.2,72.21,52.71,56.65,0.333
+ViT-B/16 (SRM),Troca Facial (Face Swap),face_swap,1250,91.76,57.27,74.52,79.09,0.124
+ViT-B/16 (SRM),Edição Text-to-Image (T2I),editing_t2i,998,90.98,57.27,74.13,82.26,0.124
+ViT-B/16 (SRM),Reencenação Facial (Talking),talking_reenactment,500,92.0,57.27,74.64,81.66,0.124
+ViT-B/16 (SRM),Síntese GAN,gan,1399,77.48,57.27,67.38,70.68,0.124
+ViT-B/16 (SRM),Modelos de Difusão (Diffusion),diffusion,1750,80.34,57.27,68.81,74.25,0.124
+ViT-B/16 (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,66.4,57.27,61.84,61.51,0.124
+ResNet-50 (SRM),Troca Facial (Face Swap),face_swap,1250,85.44,60.53,72.99,76.66,0.44
+ResNet-50 (SRM),Edição Text-to-Image (T2I),editing_t2i,998,79.46,60.53,70.0,76.61,0.44
+ResNet-50 (SRM),Reencenação Facial (Talking),talking_reenactment,500,88.6,60.53,74.57,80.16,0.44
+ResNet-50 (SRM),Síntese GAN,gan,1399,62.19,60.53,61.36,65.43,0.44
+ResNet-50 (SRM),Modelos de Difusão (Diffusion),diffusion,1750,60.46,60.53,60.49,65.91,0.44
+ResNet-50 (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,31.2,60.53,45.87,47.26,0.44
+MobileNet-v2 (SRM),Troca Facial (Face Swap),face_swap,1250,84.72,66.43,75.58,79.0,0.558
+MobileNet-v2 (SRM),Edição Text-to-Image (T2I),editing_t2i,998,87.27,66.43,76.85,84.4,0.558
+MobileNet-v2 (SRM),Reencenação Facial (Talking),talking_reenactment,500,94.8,66.43,80.62,85.32,0.558
+MobileNet-v2 (SRM),Síntese GAN,gan,1399,60.83,66.43,63.63,67.38,0.558
+MobileNet-v2 (SRM),Modelos de Difusão (Diffusion),diffusion,1750,69.09,66.43,67.76,72.14,0.558
+MobileNet-v2 (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,28.0,66.43,47.22,52.52,0.558
+Xception (SRM),Troca Facial (Face Swap),face_swap,1250,92.0,41.73,66.86,68.21,0.326
+Xception (SRM),Edição Text-to-Image (T2I),editing_t2i,998,95.39,41.73,68.56,78.65,0.326
+Xception (SRM),Reencenação Facial (Talking),talking_reenactment,500,96.2,41.73,68.96,72.79,0.326
+Xception (SRM),Síntese GAN,gan,1399,75.05,41.73,58.39,63.72,0.326
+Xception (SRM),Modelos de Difusão (Diffusion),diffusion,1750,87.6,41.73,64.66,69.06,0.326
+Xception (SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,92.4,41.73,67.06,67.58,0.326
+Mega-Ensemble (30 Modelos SRM),Troca Facial (Face Swap),face_swap,1250,96.56,62.81,79.69,85.42,0.352
+Mega-Ensemble (30 Modelos SRM),Edição Text-to-Image (T2I),editing_t2i,998,97.29,62.81,80.05,89.27,0.352
+Mega-Ensemble (30 Modelos SRM),Reencenação Facial (Talking),talking_reenactment,500,96.4,62.81,79.61,86.93,0.352
+Mega-Ensemble (30 Modelos SRM),Síntese GAN,gan,1399,77.84,62.81,70.33,75.89,0.352
+Mega-Ensemble (30 Modelos SRM),Modelos de Difusão (Diffusion),diffusion,1750,76.4,62.81,69.61,75.93,0.352
+Mega-Ensemble (30 Modelos SRM),Avatares Comerciais (HeyGen),commercial_avatar,250,47.6,62.81,55.21,59.78,0.352
