@@ -1,0 +1,12 @@
+{
+  "kind": "min-train real landmark feasibility, no training",
+  "mediapipe": "1.0.1",
+  "asset_sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
+  "delegate": "CPU",
+  "seconds": 2.80691139999999,
+  "n": 202,
+  "status_counts": {
+    "ok": 202
+  },
+  "max_rss_kib": 264552
+}

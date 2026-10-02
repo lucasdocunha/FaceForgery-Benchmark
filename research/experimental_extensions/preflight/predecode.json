@@ -1,0 +1,19 @@
+{
+  "preprocessing": "PIL RGB, square 224 bilinear, uint8 HWC; no normalization",
+  "splits": {
+    "train": {
+      "n": 1000,
+      "cache_bytes": 150528128
+    },
+    "val": {
+      "n": 1000,
+      "cache_bytes": 150528128
+    },
+    "test": {
+      "n": 1000,
+      "cache_bytes": 150528128
+    }
+  },
+  "decode_failures": [],
+  "cross_split_exact_duplicates": []
+}
