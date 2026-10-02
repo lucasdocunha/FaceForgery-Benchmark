@@ -27,3 +27,21 @@ Director messages 001 and 002 read. Hard deadline 22:30 -03; code freeze 21:30. 
 Lead owns all subsequent work. A-D reconstruction, E SBI/evaluation, F VLM, G metric learning, H graph learning and I MoE are planned, not implemented. Next, after director review: audited evaluator and feature cache, then a coherent reconstruction/SBI path with actual min-data smoke; G/I only if quota permits. F/H and remaining variants require an explicit scope decision if quota precludes implementation. Never mark an unimplemented path server-ready. Final-server TODOs include real four-target execution, canonical five seeds, independent fusion fitting and label-efficiency controls.
 
 Known inherited defects are documented in planning/evaluation_audit.md. No rejected method or claimed improvement yet. No expensive pilot or new training has run. No push or PR until Gate 4 reply and authenticated channel.
+
+## 2026-10-02 16:49 -03: Gate 1 approved, parallel implementation restored
+
+Messages 003/004 supersede the solo/no-agent state above. Full A-I scope remains. Owners and worktrees:
+
+| Owner | Worktree / branch | Scope | Next action |
+|---|---|---|---|
+| Lead | FaceForgery-Benchmark / research/experimental-extensions | Runtime, feature cache, SBI, integration, records | Land shared runner/cache contracts; retry stopped probes |
+| Evaluation, GPT 6.1 max | wt-evaluation / research/plan-evaluation | Stack B metrics/SRM/suite/CLI/HPC/tests | First tested evaluator slice |
+| Reconstruction, Astra max | wt-reconstruction / research/plan-reconstruction | A-D modules/train/load/tests/configs | Build models/losses then integrate runtime |
+| Representations, Astra max | wt-representations / research/plan-representations | G/H, mandatory baselines and scalable graphs | Structural tests against declared feature-store API |
+| VLM, GPT 6.1 max | wt-vlm / research/plan-vlm | F, then I if available | Scoring/masking/PEFT tests, real Smol smoke via lead |
+
+Common runtime: src.experimental.runtime.fit_model with loss_step(model,batch,step_state) returning mean loss, scalar metrics and weight count; validate(model) returns scalar metrics. Artifacts run.json, best.pt/last.pt with state_dict, optimizer, RNG, epoch/global_step; optional PEFT state callbacks. FeatureStore exposes float16 features, float32 logits, canonical frame, identity and metadata including manifest certificate. Evaluation accepts canonical prediction callback for VLM and cached methods.
+
+Current jobs: the first verification/probe queue has finished. Seven checkpoints passed. CLIP RGB and optional probes were stopped by the watchdog when system memory pressure exceeded its limit; this is a resource stop, not a model/kernel failure. Pressure cleared before any retry. CPU tests now share locks/cpu-tests.lock; GPU jobs retain locks/gpu.lock. No method pilot yet.
+
+Pause protocol: send all owners stop-and-commit, record commands/PIDs/logs for any live task jobs, commit this record, write at most ten outbox/paused-state.md lines, end turn. No new agents beyond these four. Code freeze 21:30; Gate 2 19:15, Gate 3 20:45, Gate 4 22:00; push only after director reply.
