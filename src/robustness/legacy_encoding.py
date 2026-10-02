@@ -20,6 +20,15 @@ def encode_legacy_tensor(raw: torch.Tensor, mode: str, in_channels=None):
         rgb = normalize_rgb(image)
         if mode == "none":
             out = rgb
+        elif mode == "srm":
+            from src.forensics.srm import extract_srm_residuals
+
+            out = torch.cat([rgb, extract_srm_residuals(rgb[None])[0]])
+        elif mode == "dtcwt":
+            from src.forensics.dtcwt_module import extract_dtcwt_features
+
+            bands = extract_dtcwt_features(rgb[None], mode="directional_only")[0]
+            out = torch.cat([rgb, bands])
         elif mode == "magnitude":
             out = helper._fft_magnitude(image) * 2 - 1
         elif mode == "phase":

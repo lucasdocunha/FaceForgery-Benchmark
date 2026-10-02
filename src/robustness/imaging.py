@@ -29,6 +29,8 @@ MODES = {
     "concat": 4,
     "frequency_3": 1,
     "concat_frequency": 7,
+    "srm": 6,
+    "dtcwt": 9,
 }
 RECIPE = {
     "name": "robust_v1",
@@ -72,6 +74,20 @@ def encode_tensor(
     rgb = normalize_rgb(x)
     if mode == "none":
         out = rgb
+    elif mode == "srm":
+        from src.forensics.srm import SRMConv2d
+
+        residuals = SRMConv2d(mode="residual_only").to(rgb.device)(rgb)
+        out = torch.cat([rgb, residuals], dim=1)
+    elif mode == "dtcwt":
+        from src.forensics.dtcwt_module import extract_dtcwt_features
+
+        # Legacy datasets normalize each image separately, including each band.
+        bands = torch.cat([
+            extract_dtcwt_features(item[None], mode="directional_only")
+            for item in rgb
+        ])
+        out = torch.cat([rgb, bands], dim=1)
     else:
         gray = 0.299 * x[:, 0] + 0.587 * x[:, 1] + 0.114 * x[:, 2]
         fft = torch.fft.fftshift(torch.fft.fft2(gray), dim=(-2, -1))

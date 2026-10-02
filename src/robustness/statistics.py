@@ -14,6 +14,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
     brier_score_loss,
     log_loss,
+    roc_curve,
 )
 from .manifests import binary
 
@@ -55,7 +56,9 @@ def align(reference: pd.DataFrame, other: pd.DataFrame):
     return a, b
 
 
-def choose_threshold(y, p) -> float:
+def choose_threshold(y, p, policy: str = "balanced_accuracy") -> float:
+    if policy not in {"balanced_accuracy", "youden"}:
+        raise ValueError("Threshold policy must be balanced_accuracy or youden")
     y, p = binary(y), probabilities(p)
     if len(y) != len(p) or len(np.unique(y)) != 2:
         raise ValueError("Calibration requires aligned predictions and both classes")
@@ -67,6 +70,35 @@ def choose_threshold(y, p) -> float:
     fn, tn = cumulative[i], i - cumulative[i]
     ba = 0.5 * ((y.sum() - fn) / y.sum() + tn / (len(y) - y.sum()))
     return float(candidates[np.flatnonzero(ba == ba.max())[0]])
+
+
+def equal_error_point(y, p) -> dict:
+    """Piecewise-linear empirical ROC crossing of FPR and FNR.
+
+    This target-label diagnostic is not an operating threshold or calibration.
+    """
+    y, p = binary(y), probabilities(p)
+    if len(y) != len(p) or not len(y):
+        raise ValueError("EER requires nonempty aligned scores")
+    if len(np.unique(y)) != 2:
+        return {"eer": None, "eer_threshold": None}
+    fpr, tpr, thresholds = roc_curve(y, p, drop_intermediate=False)
+    # The all-negative endpoint needs a finite score-domain threshold for JSON.
+    thresholds[0] = np.nextafter(float(p.max()), np.inf)
+    difference = fpr + tpr - 1
+    right = int(np.flatnonzero(difference >= 0)[0])
+    if difference[right] == 0:
+        return {"eer": float(fpr[right]), "eer_threshold": float(thresholds[right])}
+    left = right - 1
+    fraction = -difference[left] / (difference[right] - difference[left])
+    return {
+        "eer": float(fpr[left] + fraction * (fpr[right] - fpr[left])),
+        "eer_threshold": float(thresholds[left] + fraction * (thresholds[right] - thresholds[left])),
+    }
+
+
+def equal_error_rate(y, p) -> float | None:
+    return equal_error_point(y, p)["eer"]
 
 
 def summary(y, p, threshold: float = 0.5) -> dict:
@@ -95,6 +127,11 @@ def summary(y, p, threshold: float = 0.5) -> dict:
         "auc": float(roc_auc_score(y, p)) if both else None,
         "average_precision": float(average_precision_score(y, p)) if both else None,
         "balanced_accuracy": float(balanced_accuracy_score(y, pred)) if both else None,
+        **equal_error_point(y, p),
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined" if both else "undefined: one class",
+        "f1": float(2 * tp / (2 * tp + fp + fn)) if 2 * tp + fp + fn else 0.0,
+        "f1_policy": "fake is positive; zero division returns zero",
         "accuracy": float((pred == y).mean()),
         "brier": float(brier_score_loss(y, p)),
         "log_loss": float(log_loss(y, p, labels=[0, 1])),
@@ -104,6 +141,12 @@ def summary(y, p, threshold: float = 0.5) -> dict:
         "fp": int(fp),
         "fn": int(fn),
         "tp": int(tp),
+        "confusion_matrix": [[int(tn), int(fp)], [int(fn), int(tp)]],
+        "confusion_matrix_normalized": [
+            [float(tn / (tn + fp)), float(fp / (tn + fp))] if tn + fp else [None, None],
+            [float(fn / (fn + tp)), float(tp / (fn + tp))] if fn + tp else [None, None],
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": float(fp / (tn + fp)) if tn + fp else None,
         "tpr": float(tp / (tp + fn)) if tp + fn else None,
         "auc_status": "defined" if both else "undefined: one class, not zero AUC",
@@ -266,4 +309,46 @@ def generator_metrics(frame: pd.DataFrame, threshold: float) -> dict:
         "auc_defined_groups": len(valid),
         "total_groups": len(rows),
         "limitation": "Groups reuse real references and are not independent replications. Missing real references yield undefined AUC.",
+    }
+
+
+def subgroup_metrics(frame, threshold, *, column="generator",
+                     real_reference_policy="source_matched", draws=0, seed=42, confidence=0.95):
+    """Explicit fake subgroup versus reviewed real-reference policy."""
+    frame = checked_predictions(frame)
+    if column not in {"generator", "paradigm"} or column not in frame:
+        raise ValueError("A generator or paradigm annotation is required")
+    if real_reference_policy not in {"source_matched", "pooled_all_real"}:
+        raise ValueError("Declare source_matched or pooled_all_real references")
+    if real_reference_policy == "source_matched":
+        if "source_domain" not in frame:
+            raise ValueError("Source-matched AUC requires reviewed source_domain annotations")
+        for value in frame.source_domain:
+            if pd.isna(value) or str(value).strip() in {"", "unknown"}:
+                raise ValueError("Incomplete source_domain annotations")
+        keys = ["source_domain", column]
+    else:
+        keys = [column]
+    fake_frame = frame.loc[frame.label.eq(1)]
+    if fake_frame[column].isna().any() or fake_frame[column].astype(str).str.strip().isin(["", "unknown"]).any():
+        raise ValueError(f"Incomplete {column} annotations")
+    rows = []
+    for key, fake in fake_frame.groupby(keys, sort=True):
+        key = key if isinstance(key, tuple) else (key,)
+        real = frame.loc[frame.label.eq(0)]
+        if real_reference_policy == "source_matched":
+            real = real.loc[real.source_domain.eq(key[0])]
+        pair = pd.concat([real, fake], ignore_index=True)
+        row = {name: str(value) for name, value in zip(keys, key)}
+        row.update(real_reference=real_reference_policy, **summary(pair.label, pair.p_fake, threshold))
+        if draws and row["auc"] is not None:
+            row["auc_interval"] = grouped_auc_interval(pair, draws=draws, seed=seed, confidence=confidence)
+        rows.append(row)
+    aucs = [row["auc"] for row in rows if row["auc"] is not None]
+    return {
+        "groups": rows, "real_reference_policy": real_reference_policy,
+        "macro_auc": float(np.mean(aucs)) if aucs else None,
+        "worst_group_auc": min(aucs) if aucs else None,
+        "auc_defined_groups": len(aucs), "total_groups": len(rows),
+        "limitation": "Real references are reused; subgroup estimates are dependent. Pooled references may confound source domains.",
     }
