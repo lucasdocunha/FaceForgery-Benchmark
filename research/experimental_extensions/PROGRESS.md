@@ -45,3 +45,33 @@ Common runtime: src.experimental.runtime.fit_model with loss_step(model,batch,st
 Current jobs: the first verification/probe queue has finished. Seven checkpoints passed. CLIP RGB and optional probes were stopped by the watchdog when system memory pressure exceeded its limit; this is a resource stop, not a model/kernel failure. Pressure cleared before any retry. CPU tests now share locks/cpu-tests.lock; GPU jobs retain locks/gpu.lock. No method pilot yet.
 
 Pause protocol: send all owners stop-and-commit, record commands/PIDs/logs for any live task jobs, commit this record, write at most ten outbox/paused-state.md lines, end turn. No new agents beyond these four. Code freeze 21:30; Gate 2 19:15, Gate 3 20:45, Gate 4 22:00; push only after director reply.
+
+## 2026-10-02 17:00:33 -0300: PAUSED by director message 005
+
+Quota pause requested. All four owners instructed to stop immediately, commit WIP and wait for RESUME. Do not start work until RESUME. Background jobs may finish. Gate 1 remains approved with changes and full A-I scope. No push or PR.
+
+Main branch ends at 0724ea1 before this pause record. Integrated: shared resumable runtime 6bf94d0, provenance-bound feature cache 7cdc5b5, VLM implementation 0724ea1, reconstruction models/losses 5a8132d, first evaluation slice a042256. Main worktree was clean. Feature tests: 3 passed in 3.17 s; runtime/cache earlier batch: 4 passed in 1.92 s. VLM owner: 5 CPU tests passed including actual tiny PEFT backward/reload; no real Smol pilot launched at snapshot.
+
+All eight HF RGB/SRM checkpoint compatibility checks passed. CLIP RGB retry min-val AUC 0.98190746, min-test 0.91680085; retry completed in 17.51 s, peak sampled RSS 1855828 KiB. Only mandated compatibility test accesses; no method test selection. New verification JSON remains local/verification/clip-none-retry/verification.json for later small-report copy. NF4 double-quant LoRA backward, PyG GCN/GAT/SAGE backward and pretrained Alex LPIPS backward probes all passed on ROCm after resource-pressure retry. Full LPIPS state available at local/pretrained/lpips-alex-full.pth (9.5 MiB).
+
+Workstreams at pause (all paths relative to /home/lucas/ffb-research):
+- wt-evaluation, research/plan-evaluation: first eb6dcbb integrated; suite/CLI/HPC/four-target synthetic test WIP, owner told to commit. Read newest branch commit at resume.
+- wt-reconstruction, research/plan-reconstruction: cb43dfa adds fit/load/configs, not integrated yet. No jobs.
+- wt-representations, research/plan-representations: 0aae693 core metric/graph code tested (16 tests, 2.22 s), then 4c00ca1 WIP training/inference; neither integrated. Do not cherry-pick copies of shared commits 76605ea/203ea5e.
+- wt-vlm, research/plan-vlm: 6e30ed4 integrated as 0724ea1. Actual Smol pilot was approved but pause cancels any unstarted launch. Next task after real BF16/NF4 pilot is MoE I with val_fit/val_select and frozen experts.
+
+Running background job snapshot:
+- PID 95917; cwd `/home/lucas/ffb-research/wt-evaluation`; command `flock /home/lucas/ffb-research/locks/cpu-tests.lock env OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= /home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python -m pytest tests/robustness tests/hpc/test_runtime.py tests/hpc/test_contracts.py -q`; log: tool-session stdout/stderr, no on-disk log; owner must report result on resume.
+- PID 95924; cwd `/home/lucas/ffb-research/wt-evaluation`; command `/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python -m pytest tests/robustness tests/hpc/test_runtime.py tests/hpc/test_contracts.py -q`; log: tool-session stdout/stderr, no on-disk log; owner must report result on resume.
+
+No GPU job running in the pause snapshot. Completed prior jobs: CLIP retry session 18418, LPIPS export 41003, cache tests 26350, runtime/cache tests 17603, all exit 0.
+
+Exact next actions after RESUME:
+1. Read new director messages and agent pause replies; collect evaluation test result and WIP hashes, then inspect/cherry-pick only workstream-owned commits. Preserve protections and locks.
+2. Send feature API/commit 7cdc5b5 to representations owner: open_cache returns float16 features, float32 logits, canonical frame, identity, metadata; extract_features binds checkpoint, manifest, preprocessing and code. First extract MobileNet SRM train/val caches, then remaining frozen experts, outside git. Queue behind any resumed Smol pilot with GPU flock and bounded watchdog. No caches have been extracted yet.
+3. Run actual pinned Smol256M BF16 16-train/16-val four-update pilot and exact reload with VLM owner, <=3072 MiB RSS, <=600 s watchdog; NF4 after successful BF16 if resources permit. Keep all pilots off min-test until comparison frozen.
+4. Integrate reconstruction fit/load; run genuine-only CAE/VAE/gated and reconstruction-error baseline, then residual/latent detectors. Record residual correlation against HF RGB/SRM on min-val. Full offline LPIPS state now staged.
+5. Lead still must implement portable SBI landmark/mask/training path and three equal-budget generic-init arms (SBI, MFFI, mixed); MediaPipe landmark cache is local/data/train_real_landmarks.json, 202/202 valid. Include mask QA, counted failures and source-configurable hull.
+6. Complete metric/graph cache round trips and low-label baselines, full-scale sparse graph server path; complete MoE baselines and leakage-safe calibration; integrate new CLI/server configs, full tests, REPORT and experiment matrix. Gate 2 19:15, Gate 3 20:45, freeze 21:30, Gate 4 22:00, final deadline 22:30 -03 unless director updates.
+
+Final pause replies: evaluation committed 2b62bae9e80eb809b136fb860d503cd38ac7b30a and reports no running jobs; reconstruction cb43dfa and representations 4c00ca1 report no jobs; VLM 6e30ed4 reports no jobs and confirms GPU pilot was not launched. All owners stopped. The evaluation PIDs above were only the earlier snapshot.
