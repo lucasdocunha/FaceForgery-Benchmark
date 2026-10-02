@@ -1,6 +1,8 @@
 # Reconstruction and SBI plan for Gate 1
 
-Planning review only, 2026-10-02, based on repository commit `1b2b0e27693b695114c888c8e12e874714d950a6`. No training, detector installation, checkpoint modification or GPU work was performed. This note covers A-E; the lead owns shared integration and the audited evaluation extensions.
+Initial planning review, 2026-10-02, based on repository commit `1b2b0e27693b695114c888c8e12e874714d950a6`. This note covers A-E; the lead owns shared integration and the audited evaluation extensions.
+
+Implementation milestone after Gate 1 approval: CAE/VAE/gated AE, raw fusion, residual/latent detectors, anomaly and fixed-mean scores, SSIM/KL/beta schedules and explicit offline LPIPS loading are implemented. Twelve focused CPU tests passed with the shared CPU lock and one Torch thread. Fit/calibration/reload integration and min-dataset smokes remain next; no GPU job is running for this workstream.
 
 **Decision.** Implement compact reconstruction components with one shared training contract, then spend local compute on a generic-pretrained SBI comparator and whether a frozen reconstruction expert improves existing scores. Implement all requested variants, but reserve extensive ablations for the servers. The deadline update in `director/inbox/msg-001.md` sets implementation integration at 19:15, pilot completion at 20:45 and code freeze at 21:30, all America/Sao_Paulo.
 
