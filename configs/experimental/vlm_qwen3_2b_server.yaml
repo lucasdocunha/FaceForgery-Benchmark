@@ -1,0 +1,41 @@
+task: vlm
+name: qwen3vl2b_nf4_qlora
+scope: full-benchmark-server
+seed: 42
+output_dir: ${TCC_MODELS_ROOT}/experimental/vlm_qwen3_2b/seed_42
+data:
+  train_manifest: ${TCC_DATA_ROOT}/train.csv
+  val_manifest: ${TCC_DATA_ROOT}/val.csv
+  train_root: ${TCC_DATASET_ROOT}/trainset
+  val_root: ${TCC_DATASET_ROOT}/valset
+model:
+  model_id: Qwen/Qwen3-VL-2B-Instruct
+  revision: 89644892e4d85e24eaac8bacfd4f463576704203
+  model_type: qwen3_vl
+  pretrained_path: ${TCC_PRETRAINED_ROOT}/Qwen3-VL-2B-Instruct
+  dtype: bfloat16
+  quantization: nf4
+  attention: sdpa
+  gradient_checkpointing: true
+  max_length: 1024
+  processor:
+    min_pixels: 65536
+    max_pixels: 262144
+  lora:
+    rank: 16
+    alpha: 32
+    dropout: 0.05
+    projections: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+training:
+  device: cuda
+  amp: true
+  cpu_threads: 2
+  workers: 0
+  batch_size: 1
+  eval_batch_size: 1
+  grad_accum_steps: 16
+  epochs: 3
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  threshold_policy: youden

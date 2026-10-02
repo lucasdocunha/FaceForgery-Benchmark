@@ -1,0 +1,43 @@
+task: vlm
+name: smolvlm256_bf16_lora_smoke
+scope: min-dataset-smoke
+seed: 42
+output_dir: ${TCC_MODELS_ROOT}/experimental/vlm_smol256_bf16/seed_42
+data:
+  train_manifest: ${TCC_DATA_ROOT}/min-train.csv
+  val_manifest: ${TCC_DATA_ROOT}/min-val.csv
+  train_root: ${TCC_DATASET_ROOT}/train
+  val_root: ${TCC_DATASET_ROOT}/val
+  train_limit: 16
+  val_limit: 16
+model:
+  model_id: HuggingFaceTB/SmolVLM-256M-Instruct
+  revision: 7e3e67edbbed1bf9888184d9df282b700a323964
+  model_type: idefics3
+  pretrained_path: ${TCC_PRETRAINED_ROOT}/SmolVLM-256M-Instruct
+  dtype: bfloat16
+  quantization: none
+  attention: sdpa
+  gradient_checkpointing: true
+  max_length: 256
+  processor:
+    max_image_edge: 512
+    do_image_splitting: false
+  lora:
+    rank: 8
+    alpha: 16
+    dropout: 0.05
+    projections: [q_proj, v_proj]
+training:
+  device: cuda
+  amp: true
+  cpu_threads: 2
+  workers: 0
+  batch_size: 1
+  eval_batch_size: 1
+  grad_accum_steps: 8
+  epochs: 2
+  lr: 0.0002
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  threshold_policy: youden
