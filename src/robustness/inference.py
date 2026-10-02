@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from .imaging import CanonicalDataset, PREPROCESSING
 from .legacy_encoding import encode_legacy_tensor
 from .manifests import load_manifest
-from .provenance import SCHEMA, digest, digest_file, source_identity, write_json
+from .provenance import SCHEMA, digest, digest_file, source_identity, write_json, write_csv
 from .artifacts import save_predictions
 from .statistics import (
     aggregate_videos,
@@ -144,6 +144,8 @@ def calibrate(
 ):
     if checkpoint_class1 not in {"fake", "real"}:
         raise ValueError("Invalid score orientation")
+    if input_contract is not None and input_contract.get("checkpoint_class1", checkpoint_class1) != checkpoint_class1:
+        raise ValueError("Calibration input contract has a different score orientation")
     if manifest_record["split"] != "val":
         raise ValueError("Threshold fitting requires source validation split=val")
     output = Path(output)
@@ -195,6 +197,7 @@ def evaluation_report(predictions, calibration, checkpoint_hash, *, primary_unit
         "calibration": calibration,
         "label_convention": "fake-is-1",
     }
+    result["frame"]["threshold_policy"] = f"frozen source-validation {calibration.get('policy', 'balanced_accuracy')}"
     if "video_id" in p and p.video_id.astype(str).str.strip().ne("").all():
         videos = aggregate_videos(p)
         t = calibration.get("video_threshold", calibration["frame_threshold"])
@@ -207,7 +210,7 @@ def evaluation_report(predictions, calibration, checkpoint_hash, *, primary_unit
         result["video"]["aggregation"] = (
             "mean fake probability; one observation per video"
         )
-    if {"generator", "source_domain"} <= set(p):
+    if {"generator", "source_domain"} <= set(p) and not breakdown:
         result["per_generator"] = generator_metrics(
             p, float(calibration["frame_threshold"])
         )
@@ -270,6 +273,7 @@ def evaluate(
     calibration = json.loads(Path(calibration_path).read_text())
     contract = input_contract or prediction_contract(image_size, mode, in_channels, positive_class)
     validate_input_contract(calibration, contract)
+    validate_prediction_settings(contract, image_size, mode, in_channels, positive_class)
     if calibration.get("checkpoint_class1", "fake") != positive_class:
         raise ValueError(
             "Calibration score orientation differs from this checkpoint interpretation"
@@ -316,6 +320,16 @@ def validate_input_contract(calibration, contract):
             raise ValueError("Calibration belongs to a different input or score contract")
 
 
+def validate_prediction_settings(contract, image_size, mode, in_channels, positive_class):
+    """Reject tensor settings that disagree with an explicitly recorded contract."""
+    expected = {"image_size": int(image_size), "checkpoint_class1": positive_class}
+    if mode is not None:
+        expected.update(representation=mode, in_channels=in_channels)
+    for key, value in expected.items():
+        if key in contract and contract[key] != value:
+            raise ValueError(f"Inference setting differs from input contract: {key}")
+
+
 def evaluate_predictions(predictions, manifest, output, *, checkpoint_path,
                          calibration_path, input_contract, research_run=None, **report_kwargs):
     """Report certified externally computed scores through the same artifact writer."""
@@ -356,7 +370,8 @@ def _publish_predictions(p, record, output, calibration, checksum, *, calibratio
         manifest=record,
         checkpoint_sha256=checksum,
         checkpoint_class1=calibration.get("checkpoint_class1", "fake"),
-        preprocessing=PREPROCESSING,
+        preprocessing=(PREPROCESSING if contract.get("representation") == "model-internal"
+                       else "PIL RGB bilinear; exact predictor preprocessing bound by input_contract"),
         representation=contract.get("representation", "external"),
         input_contract=contract,
         input_contract_sha256=digest(contract),
@@ -380,7 +395,13 @@ def _publish_predictions(p, record, output, calibration, checksum, *, calibratio
             "input_contract_sha256": digest(contract),
         },
     )
-    files = ["predictions.csv", "predictions.csv.json", "metrics.json"]
+    files = ["predictions.csv", "predictions.csv.json", "metrics.json", "metrics.csv"]
+    units = [unit for unit in ("frame", "video") if unit in report]
+    write_csv(output / "metrics.csv", pd.DataFrame([_metric_row(report[unit], unit=unit) for unit in units]))
+    for name in ("per_generator", "per_paradigm"):
+        if name in report:
+            write_csv(output / f"{name}.csv", pd.DataFrame([_metric_row(row) for row in report[name]["groups"]]))
+            files.append(f"{name}.csv")
     if "video" in report:
         videos = aggregate_videos(p)
         save_predictions(
@@ -408,3 +429,11 @@ def _publish_predictions(p, record, output, calibration, checksum, *, calibratio
         },
     )
     return report
+
+
+def _metric_row(metrics, **labels):
+    row = {**labels, **{key: value for key, value in metrics.items()
+                       if value is None or isinstance(value, (str, int, float, bool))}}
+    row.update({"auc_ci_" + key: value for key, value in metrics.get("auc_interval", {}).items()
+                if value is None or isinstance(value, (str, int, float, bool))})
+    return row

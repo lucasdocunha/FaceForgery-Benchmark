@@ -124,3 +124,13 @@ def test_pretrained_job_does_not_reserve_an_unused_gpu():
         text = (ROOT / "scripts" / name).read_text()
         assert "#SBATCH --gres" not in text
         assert "--cpus-per-task=8" in text and "--mem=32G" in text
+
+
+def test_evaluation_wrapper_is_spool_safe_and_respects_scheduler_mask():
+    script = ROOT / "scripts" / "slurm_evaluation.sh"
+    text = script.read_text()
+    assert "SLURM_SUBMIT_DIR" in text and "cisia_common.sh" in text
+    assert "#SBATCH --gres=gpu:1" in text
+    assert "CUDA_VISIBLE_DEVICES=" not in text and "PYTHONHTTPSVERIFY" not in text
+    assert 'evaluate "$1"' in text
+    subprocess.run(["bash", "-n", str(script)], check=True)

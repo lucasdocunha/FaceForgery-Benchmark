@@ -30,6 +30,8 @@ def register(commands):
     )
     p.add_argument("--predictions", required=True)
     p.add_argument("--output", required=True)
+    p.add_argument("--threshold-policy", choices=["balanced_accuracy", "youden"], default="balanced_accuracy")
+    p.add_argument("--input-contract", help="JSON score/preprocessing contract, including checkpoint bundle identity")
     p = commands.add_parser(
         "expand-plan", help="Write explicit ablation configs; never submit or run jobs"
     )
@@ -90,6 +92,9 @@ def run(args):
             output=args.output,
             model_sha256=record["model_sha256"],
             checkpoint_class1=record["checkpoint_class1"],
+            policy=getattr(args, "threshold_policy", "balanced_accuracy"),
+            input_contract=(json.loads(Path(args.input_contract).read_text())
+                            if getattr(args, "input_contract", None) else record.get("input_contract")),
         )
     if args.command == "expand-plan":
         return expand(args)
@@ -291,7 +296,13 @@ def aggregate_seeds(args):
                 "dataset": report["manifest"]["dataset"],
                 "split": report["manifest"]["split"],
                 "seed": identity["seed"],
-                "auc": report["frame"]["auc"],
+                "unit": report.get("primary_unit", "frame"),
+                "target": report.get("target_name", report["manifest"]["dataset"]),
+                "auc": report[report.get("primary_unit", "frame")]["auc"],
+                "eer": report[report.get("primary_unit", "frame")].get("eer"),
+                "f1": report[report.get("primary_unit", "frame")].get("f1"),
+                "accuracy": report[report.get("primary_unit", "frame")].get("accuracy"),
+                "threshold_policy": report["calibration"].get("policy", "balanced_accuracy"),
                 "model_sha256": report["checkpoint_sha256"],
                 "condition_sha256": identity["condition_sha256"],
                 "manifest_sha256": report["manifest"]["manifest_sha256"],
@@ -299,7 +310,7 @@ def aggregate_seeds(args):
         )
     frame = pd.DataFrame(rows)
     results = []
-    for key, group in frame.groupby(["variant", "dataset", "split"], sort=True):
+    for key, group in frame.groupby(["variant", "dataset", "split", "unit", "target"], sort=True):
         if group.seed.duplicated().any() or set(group.seed) != expected:
             raise ValueError(f"Missing/extra/duplicate seeds for {key}")
         if group.manifest_sha256.nunique() != 1:
@@ -308,6 +319,8 @@ def aggregate_seeds(args):
             raise ValueError(
                 "Seed runs differ in model, training, source data or software conditions"
             )
+        if group.threshold_policy.nunique() != 1:
+            raise ValueError("Seed runs use different threshold policies")
         if group.auc.isna().any():
             raise ValueError("Undefined AUC in seed table")
         results.append(
@@ -315,12 +328,16 @@ def aggregate_seeds(args):
                 "variant": key[0],
                 "dataset": key[1],
                 "split": key[2],
+                "unit": key[3],
+                "target": key[4],
                 "n_seeds": len(group),
                 "mean_auc": float(group.auc.mean()),
                 "sample_std_auc": float(group.auc.std(ddof=1))
                 if len(group) > 1
                 else None,
                 "manifest_sha256": group.manifest_sha256.iloc[0],
+                **{f"mean_{metric}": float(group[metric].mean()) if group[metric].notna().all() else None
+                   for metric in ("eer", "f1", "accuracy")},
             }
         )
     result = {

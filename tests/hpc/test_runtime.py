@@ -129,6 +129,49 @@ def test_worker_budget_and_smoke_flags():
     assert runtime.build_command("pretrained", None, [], 8)[-1] == "scripts/setup_pretrained_cisia.py"
 
 
+def test_evaluation_dispatch_uses_reviewed_config_and_cpu_budget():
+    command = runtime.build_command("evaluate", "configs/research/suite.yaml", [], 2)
+    assert command[2:4] == ["research_cli.py", "evaluate-suite"]
+    assert command[command.index("--device") + 1] == "cuda"
+    assert command[command.index("--workers") + 1] == "1"
+    assert command[-1] == "--execute"
+    for config, arguments in [(None, []), ("suite.yaml", ["--anything"])]:
+        with pytest.raises(ValueError):
+            runtime.build_command("evaluate", config, arguments, 8)
+
+
+def test_evaluation_reports_are_scratch_local_and_checkpoint_is_read_only(tmp_path, monkeypatch):
+    project, scratch, reports = [tmp_path / name for name in ("project", "scratch", "reports")]
+    for root in (project, scratch):
+        root.mkdir()
+    (project / "train.py").touch()
+    config = project / "suite.yaml"
+    config.write_text("reviewed config")
+    checkpoint = tmp_path / "source_checkpoint.pt"
+    checkpoint.write_bytes(b"read-only source")
+    for key, value in {"SLURM_JOB_ID": "456", "SLURM_CPUS_PER_TASK": "2", "USER": "tester",
+                       "TCC_PROJECT_ROOT": str(project), "TMPDIR": str(scratch), "CISIA_MIN_FREE_GB": "0",
+                       "CISIA_MODELS_ROOT": str(tmp_path / "unused_models"), "CISIA_OUTPUT_ROOT": str(reports),
+                       "TCC_DATASET_ROOT": str(tmp_path / "not_used_for_suite")}.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.setattr(runtime, "require_under", lambda path, _roots, _label: path)
+    monkeypatch.setattr(runtime.subprocess, "run", lambda *_args, **_kwargs: SimpleNamespace(stdout="commit456\n"))
+
+    def workload(command, environment, _project):
+        output = Path(command[command.index("--output") + 1])
+        assert output.is_relative_to(Path(environment["TCC_JOB_DIR"]))
+        output.mkdir()
+        (output / "suite_metrics.json").write_text('{"state":"synthetic"}')
+        return 0
+
+    monkeypatch.setattr(runtime, "run_command", workload)
+    assert runtime.main(["evaluate", str(config)]) == 0
+    assert checkpoint.read_bytes() == b"read-only source"
+    assert not (tmp_path / "unused_models").exists()
+    assert not list(scratch.iterdir())
+    assert next(reports.glob("*/evaluation/suite_metrics.json")).is_file()
+
+
 def test_unallocated_entrypoint_refuses_work(monkeypatch):
     monkeypatch.delenv("SLURM_JOB_ID", raising=False)
     with pytest.raises(SystemExit) as exc:

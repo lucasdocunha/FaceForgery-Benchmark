@@ -155,6 +155,11 @@ def build_command(kind: str, family: str | None, arguments: list[str], cpus: int
         if family is not None or arguments:
             raise ValueError("Pretrained job accepts no positional arguments; use TCC_PRETRAINED_ROOT as source")
         return [sys.executable, "-u", "scripts/setup_pretrained_cisia.py"]
+    if kind == "evaluate":
+        if not family or arguments:
+            raise ValueError("Evaluation job accepts one suite YAML path; inference settings belong in that config")
+        return [sys.executable, "-u", "research_cli.py", "evaluate-suite", "--config", family,
+                "--device", "cuda", "--workers", str(min(4, max(0, cpus - 1))), "--execute"]
     if family not in FAMILIES:
         raise ValueError(f"Unknown family: {family}")
     if kind == "matrix":
@@ -195,7 +200,7 @@ def stage_pretrained(workspace: Path, sources: list[Path], *, copy: bool) -> Pat
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("kind", choices=("matrix", "robust", "pretrained"))
+    parser.add_argument("kind", choices=("matrix", "robust", "pretrained", "evaluate"))
     parser.add_argument("family", nargs="?")
     parser.add_argument("arguments", nargs=argparse.REMAINDER)
     args = parser.parse_args(argv)
@@ -210,16 +215,22 @@ def main(argv: list[str] | None = None) -> int:
     user_models = Path("/projects/models") / environment["USER"]
     final_root = require_under(Path(environment.get("CISIA_MODELS_ROOT", str(user_models / "faceforgery"))),
                                (user_models,), "Final models")
-    output_root = require_under(Path(environment.get("CISIA_OUTPUT_ROOT", str(project / "saidas"))),
-                                (project / "saidas",), "Reports")
+    allowed_reports = project / ("research/experimental_extensions/hpc" if args.kind == "evaluate" else "saidas")
+    output_root = require_under(Path(environment.get("CISIA_OUTPUT_ROOT", str(allowed_reports))),
+                                (allowed_reports,), "Reports")
     data = require_under(Path(environment.get("TCC_DATASET_ROOT", "/datasets/Images/MFFI")),
                          (Path("/datasets"),), "Input dataset")
-    if args.kind != "pretrained" and not data.is_dir():
+    if args.kind not in {"pretrained", "evaluate"} and not data.is_dir():
         parser.error(f"Dataset does not exist: {data}")
     cpus = int(environment.get("SLURM_CPUS_PER_TASK", "1"))
     if cpus < 1:
         parser.error("SLURM_CPUS_PER_TASK must be positive")
     command = build_command(args.kind, args.family, args.arguments, cpus)
+    if args.kind == "evaluate":
+        config = require_under(Path(args.family), (project,), "Evaluation config")
+        if not config.is_file():
+            parser.error(f"Evaluation config does not exist: {config}")
+        command[command.index("--config") + 1] = str(config)
     base = require_under(Path(environment.get("TMPDIR", f"/scratch/{environment['USER']}")),
                          (Path("/scratch"), Path("/tmp")), "Job-local scratch")
     base.mkdir(parents=True, exist_ok=True)
@@ -238,19 +249,23 @@ def main(argv: list[str] | None = None) -> int:
                 "partition": environment.get("SLURM_JOB_PARTITION"), "conda_env": environment.get("CONDA_DEFAULT_ENV"),
                 "started_utc": datetime.now(timezone.utc).isoformat(), "command": command,
                 "dataset": str(data), "cpus": cpus, "workspace": str(workspace)}
+    if args.kind == "evaluate":
+        metadata["dataset"] = "Target-specific certified manifest roots; recorded in suite.json"
     try:
         env = cache_environment(workspace, environment)
         env.update(TCC_DATASET_ROOT=str(data), TCC_DATA_ROOT=environment.get("TCC_DATA_ROOT", str(project / "data")),
                    TCC_MODELS_ROOT=str(workspace / "models"), TCC_OUTPUT_ROOT=str(workspace / "outputs"))
         for directory in (workspace / "models", workspace / "outputs"):
             directory.mkdir()
+        if args.kind == "evaluate":
+            command.extend(["--output", str(workspace / "outputs" / "evaluation")])
         shared = Path(environment.get("CISIA_SHARED_PRETRAINED_ROOT", "/datasets/ai_models/faceforgery/pretrained"))
         sources = [shared, Path(environment.get("TCC_PRETRAINED_ROOT", str(user_models / "pretrained")))]
         for source in sources:
             require_under(source, (Path("/datasets/ai_models"), user_models), "Pretrained source")
         env["TCC_PRETRAINED_ROOT"] = str(stage_pretrained(workspace, sources, copy=args.kind == "pretrained"))
         resume = environment.get("CISIA_RESUME_FROM")
-        if resume and args.kind != "pretrained":
+        if resume and args.kind not in {"pretrained", "evaluate"}:
             previous = require_under(Path(resume), (user_models,), "Resume source")
             shutil.copytree(previous, workspace / "models", dirs_exist_ok=True)
             metadata["resume_from"] = str(previous)
@@ -280,8 +295,13 @@ def main(argv: list[str] | None = None) -> int:
         metadata.update(workload_exit_code=status, duration_seconds=round(time.monotonic() - started, 2),
                         finished_utc=datetime.now(timezone.utc).isoformat())
         try:
-            publish_outputs(workspace, final_root / tag, output_root / tag, metadata,
-                            pretrained=args.kind == "pretrained")
+            if args.kind == "evaluate":
+                (workspace / "outputs" / "JOB.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
+                publish_tree(workspace / "outputs", output_root / tag)
+                print(f"Published evaluation reports: {output_root / tag}", flush=True)
+            else:
+                publish_outputs(workspace, final_root / tag, output_root / tag, metadata,
+                                pretrained=args.kind == "pretrained")
             published = True
         except Exception as error:
             status = status or 1

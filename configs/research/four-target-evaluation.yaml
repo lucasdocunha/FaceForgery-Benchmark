@@ -1,0 +1,34 @@
+# Explicit paths must be supplied before the dry run or job submission.
+# TCC_EVAL_MODEL is a legacy best.pth with its run_config.json beside the run.
+# Use model.type stack_b and the run directory for a Stack B pilot.
+model:
+  type: legacy
+  path: ${TCC_EVAL_MODEL}
+calibration: ${TCC_EVAL_CALIBRATION}
+output: ${TCC_OUTPUT_ROOT}/evaluation
+scope: benchmark
+targets:
+  - name: test
+    manifest: ${TCC_EVAL_TEST_MANIFEST}
+    root: ${TCC_EVAL_TEST_ROOT}
+  - name: test_d
+    manifest: ${TCC_EVAL_TEST_D_MANIFEST}
+    root: ${TCC_EVAL_TEST_D_ROOT}
+  - name: df40
+    manifest: ${TCC_EVAL_DF40_MANIFEST}
+    root: ${TCC_EVAL_DF40_ROOT}
+    breakdown: true
+    real_reference_policy: source_matched
+  - name: celeb_df_v2
+    manifest: ${TCC_EVAL_CELEB_MANIFEST}
+    root: ${TCC_EVAL_CELEB_ROOT}
+    primary_unit: video
+inference:
+  device: cpu
+  batch_size: 32
+  workers: 2
+  use_amp: true
+  bootstrap_draws: 1000
+  bootstrap_seed: 42
+  confidence: 0.95
+  plots: true
