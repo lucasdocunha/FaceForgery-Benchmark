@@ -69,6 +69,15 @@ Seed 123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653, -0.175
 
 The one-epoch MobileNet-SRM HF adaptation smoke reached 0.9431 [0.9289, 0.9531] on min-val. Its unadapted verified checkpoint had 0.9457. This is prior-supervised adaptation evidence and does not establish improvement or unseen-forgery performance.
 
+Fixed one-epoch DINO/CLIP adaptation smokes used the same 202 reals, 13 updates, batch 2 with accumulation 16, and learning rates 1e-5/1e-4 for backbone/head. Neither was tuned after scoring. Their clean/degraded AUCs were:
+
+| HF SRM model | Unadapted clean / degraded | SBI-adapted clean / degraded | Adapted-minus-unadapted degraded AUC [95% CI] |
+| --- | --- | --- | --- |
+| DINO | 0.9940 / 0.9614 | 0.9675 / 0.8958 | -0.0656 [-0.0819, -0.0517] |
+| CLIP | 0.9840 / 0.9345 | 0.7855 / 0.7302 | -0.2043 [-0.2360, -0.1735] |
+
+Both completed their only epoch, then hit the RSS guard during best-bundle restoration. Memory-mapped checkpoint loading fixed that finalization cost; resumption performed zero additional updates. Fresh-process clean/degraded suites reproduced the saved clean scores exactly, in 61.53 seconds for DINO and 27.52 seconds for CLIP, below the RSS cap. The records retain initial stops, finalization-only telemetry, complete histories, unadapted controls and all calibrated metrics. These short adaptations show source-discrimination loss, especially for CLIP; they provide no local efficacy support for this recipe. Evidence: [pilot_results/sbi/hf_strong_adaptation_seed42.json](pilot_results/sbi/hf_strong_adaptation_seed42.json).
+
 SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. The 65 updates on 202 real faces are far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP adaptation campaign rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting. Held-out validation self-blend results are pending.
 
 ### Reconstruction
@@ -89,7 +98,7 @@ A separate same-mask SupCon-to-dynamic-GraphSAGE smoke completed with two distin
 
 The two-expert MobileNet SRM/RGB ablation used 494 val_fit and 506 val_select images. Router AUC 0.974508 versus mean 0.972077 has paired gain CI [-0.001534, 0.006956]; no routing advantage is established. It trained 82082 parameters for 96 updates. The mandatory third reconstruction expert has now been fitted on the same 494/506 split. Clean val_select AUCs are router 0.97626, LR 0.97196, mean 0.96198 and geometric 0.96811; single SRM/RGB/reconstruction experts score 0.94893/0.95947/0.65438. Adding a weak expert depresses naive averaging, so router superiority to the three-way mean alone is not evidence that reconstruction helps.
 
-On degraded val_select, AUCs are router 0.79324, LR 0.80925, mean 0.78861, geometric 0.72921; single SRM/RGB/reconstruction score 0.83469/0.65938/0.57213. The router loses 0.18302 from clean validation, paired 95% CI [-0.21947, -0.14703], and does not beat degraded SRM or LR. Final two-expert comparisons and evidence files are pending. See [moe.md](moe.md) and the retained [two-expert record](pilots/moe_mobilenet_twoexpert_seed42.json).
+On degraded val_select, AUCs are router 0.79324, LR 0.80925, mean 0.78861, geometric 0.72921; single SRM/RGB/reconstruction score 0.83469/0.65938/0.57213. The router loses 0.18302 from clean validation, paired 95% CI [-0.21947, -0.14703]. Its degraded difference from SRM is -0.04145 [-0.07425, -0.00906] and from LR is -0.01601 [-0.03649, 0.00464]. The two-expert router/mean/LR score 0.79394/0.81074/0.80940 on the same degraded rows. Three-expert versus two-expert router clean gain is only 0.00175 [-0.00321, 0.00660]; no reconstruction benefit is established. See [moe.md](moe.md), the [three-expert clean record](pilots/moe_mobilenet_reconstruction_seed42.json), its [degraded controls](pilots/moe_mobilenet_reconstruction_degraded_seed42.json), and the retained [two-expert record](pilots/moe_mobilenet_twoexpert_seed42.json).
 
 SmolVLM-256M is a feasibility study with 16 train and 16 val images, four updates and 460800 LoRA parameters. BF16 achieved AUC 0.6640625 versus zero-shot 0.65625; NF4 achieved 0.421875 versus 0.3828125. These tiny observations cannot rank VLMs. The score is `softmax([sum log p(Real tokens), sum log p(Fake tokens)])[Fake]`, with each label teacher-forced after the identical image/prompt prefix. Multi-token labels and answer masking have explicit tests.
 
@@ -121,7 +130,7 @@ The executable command inventory is [experiment_matrix.yaml](experiment_matrix.y
 | ---: | --- | --- | --- |
 | 1 | sbi-hf-dino-srm; sbi-hf-clip-srm | Verified strong SRM backbones, SBI adaptation | Controlled cross-dataset hypothesis, preserving unadapted and simple-fusion baselines |
 | 1 | sbi-generic-sbi; sbi-generic-mffi; sbi-generic-mixed | Generic MobileNet, matched budgets | Establish whether the negative tiny-source result persists with enough genuine faces |
-| 2 | srm-pair-plus-new-expert | DINO-SRM + CLIP-SRM + certified new expert | Advance only if source-held-out complementarity warrants it |
+| 2 | srm-pair-control; srm-pair-plus-new-expert | DINO-SRM + CLIP-SRM, with and without a certified new expert | Advance only if source-held-out complementarity warrants it |
 | 2 | moe-srm-rgb-reconstruction-soft; top2 | Frozen three-role experts | Mandatory routing attribution against all simple controls |
 | 3 | reconstruction-cae; vae; gated | 224 px real-only AE | Test bottleneck/discrepancy hypothesis at full genuine-data scale |
 | 3 | reconstruction-residual-x_only; residual_only; frozen | Identical ResNet initialization | Separate RGB classification from reconstruction contribution |

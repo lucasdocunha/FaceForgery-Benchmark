@@ -121,7 +121,7 @@ REPORT.md and the21-condition experiment_matrix.yaml were drafted in ffadd90, to
 Next: finish reconstruction/fusion proxies and exact VLM reloads; commit frozen candidate hashes for all three generic SBI seed42 arms plus HF DINO-SRM; then execute the single authorized min-test/min-test-degraded-proxy pass. Evaluation owner is preparing source-only DINO calibration and configs; it has no permission to touch test until the freeze record is committed. Final Gate3 report, integrated tests and artifact review follow. No push before Gate4 reply/socket.
 
 
-## 2026-10-03 10:34 -03: director 012 checks and stronger adaptation smokes
+## 2026-10-03 10:32 -03: director 012 checks and stronger adaptation smokes
 
 Director 012 requests held-out self-blend sanity inference, an unadapted MobileNet-SRM degradation control, degraded G/H/fusion comparisons, qualified SBI interpretation and prose spacing repairs. Evaluation owns the first two, the existing Sol VLM/MoE owner owns fusion and fresh-process VLM reloads, and a fresh Astra representations_proxy thread owns G/H degraded inference. Completed Astra threads remain unused under the service-tier policy. No global configuration was changed.
 

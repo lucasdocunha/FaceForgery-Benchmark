@@ -35,6 +35,7 @@ Choose a family and reviewed training YAML. These supplied configs use explicit 
 | `vlm` | `vlm_qwen3_2b_server.yaml` | Pinned local base under `TCC_PRETRAINED_ROOT`; Smol templates retain pilot sample limits |
 | `moe` | `moe_frozen_soft.yaml` or `moe_frozen_top2.yaml` | `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS`, `TCC_RECON_CALIBRATION` |
 | `moe`, strong SRM pair | `moe_srm_pair_new_expert.yaml` | `TCC_FEATURE_DINO_SRM_VAL`, `TCC_FEATURE_CLIP_SRM_VAL`, `TCC_NEW_EXPERT_ROLE`, `TCC_NEW_EXPERT_VAL_PREDICTIONS`, `TCC_NEW_EXPERT_CALIBRATION` |
+| `moe`, original pair control | `moe_srm_pair_control.yaml` | `TCC_FEATURE_DINO_SRM_VAL`, `TCC_FEATURE_CLIP_SRM_VAL` |
 
 ```bash
 family=reconstruction
@@ -127,6 +128,8 @@ sources:
 ```
 
 Both server MoE conditions use `expert_seed_policy: matched`: every expert's recorded seed must equal the router seed. Stage the corresponding HF checkpoints and new-expert run for each canonical seed. The explicit `fixed` policy is reserved for downstream router variation on unchanged experts and records that narrower uncertainty scope. Compare the new expert and router against the original two-expert mean/geometric controls on the identical held-out rows; adding a weak expert can make a three-way mean artificially easy to beat.
+
+Run that original two-expert control with `configs/experimental/moe_srm_pair_control.yaml` in its own `TCC_RUN_DIR`. Use only the first two sources in the calibration options above, and evaluate with `configs/experimental/suites/moe_srm_pair_control.yaml`. It emits individual, mean, geometric, LR and router calibrations and comparisons just like the three-expert condition. Both configurations use `split_seed: 42` and `fit_fraction: 0.5`, so their val_fit/val_select IDs match independently of the expert count.
 
 ## Prepare the four targets
 

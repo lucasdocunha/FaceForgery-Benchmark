@@ -16,7 +16,7 @@ MediaPipe uses a separate Python 3.12 venv with mediapipe==1.0.1, pandas==3.0.2 
 
 Every GPU command uses flock on the task's own GPU lock. Threads are limited to two, workers initially zero. The local watchdog terminates only its own process group at 3,072 MiB RSS, low available RAM, sustained memory pressure, or the specified time cap. Core GPU initialization reached 2.54 GiB transient RSS; the measured training probe stayed below 2.1 GiB. Local diagnostic scripts and full logs remain in the task-local staging area; portable production commands will be documented after implementation.
 
-After the 2026-10-03 reboot the GPU moved to `/sys/class/drm/card0/device/`; read `mem_info_vram_used` and `gpu_busy_percent` there. No monitoring script hardcoded card1. Available RAM was13GiB and swap unused at resume. Keep the same process watchdog in case contention returns. Production SQLite landmark preprocessing detected202/202 source train reals in2.36seconds. Optional NF4/PyG/LPIPS backward probes all passed; small JSON evidence is in preflight/.
+After the 2026-10-03 reboot the GPU moved to `/sys/class/drm/card0/device/`; read `mem_info_vram_used` and `gpu_busy_percent` there. No monitoring script hardcoded card1. Available RAM was 13 GiB and swap unused at resume. Keep the same process watchdog in case contention returns. Production SQLite landmark preprocessing detected 202/202 source train reals in 2.36 seconds. Optional NF4/PyG/LPIPS backward probes all passed; small JSON evidence is in preflight/.
 
 ## Server environment and explicit asset staging
 
@@ -94,6 +94,8 @@ snapshot_download("lucasoc/MFFI-Models", revision="f2dee3c52c665053f06182307841f
                   local_dir=os.environ["TCC_MODELS_ROOT"], allow_patterns=patterns)
 PY
 ```
+
+The legacy registry rebuild used by frozen-cache extraction and `evaluate-legacy` also resolves its original generic backbone before replacing every parameter with the MFFI checkpoint. On CISIA, stage those existing registry dependencies with `sbatch scripts/download_pretrained_cisia.sh`, then use the published pretrained root printed by the job. The existing loader expects `clip/config.json` plus `clip/model.safetensors` for `openai/clip-vit-base-patch16`, and `dino/base.pth` for timm `convnext_base.dinov3_lvd1689m`, under `TCC_PRETRAINED_ROOT`. That staging job validates all six legacy backbones and records `BACKBONES.json`. These constructor assets are distinct from the adapted MFFI checkpoints; their staging must precede an offline legacy extraction/evaluation job.
 
 The compact VLM bases use pinned snapshots: SmolVLM-256M-Instruct at `7e3e67edbbed1bf9888184d9df282b700a323964`, or Qwen3-VL-2B-Instruct at `89644892e4d85e24eaac8bacfd4f463576704203`. Stage the chosen snapshot with `snapshot_download(repo_id, revision=revision, local_dir=Path(TCC_PRETRAINED_ROOT)/model_name)`, including processor/tokenizer files. Set `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` for execution. Artifact loaders verify base files, processor, quantization, adapter targets and scoring policy. An unavailable quantization backend must fail explicitly or use a separately named BF16 config; it never silently changes the requested method.
 

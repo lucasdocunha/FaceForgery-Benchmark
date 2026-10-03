@@ -330,6 +330,59 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: srm-pair-control
+  priority: 2
+  server_reason: Mandatory original strong-pair individual/mean/geometric/LR/router control on identical held-out
+    rows.
+  family: moe
+  architecture: frozen DINO-SRM + CLIP-SRM, small router
+  regime: val_fit router/LR; val_select selection and frozen thresholds
+  input_representation: cached features and certified new-expert probabilities
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: verified matching-seed HF DINO/CLIP SRM
+  config: configs/experimental/moe_srm_pair_control.yaml
+  environment:
+    TCC_FEATURE_DINO_SRM_VAL: certified DINO-SRM val cache
+    TCC_FEATURE_CLIP_SRM_VAL: certified CLIP-SRM val cache
+  run_directory: ${TCC_EXPERIMENT_ROOT}/srm-pair-control/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_srm_pair_control.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe_srm_pair_control.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe_srm_pair_control.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: srm-pair-plus-new-expert
   priority: 2
   server_reason: Advance only if held-out comparison supports complementarity over the strong SRM pair.
