@@ -51,9 +51,11 @@ def labels(values, convention: str) -> np.ndarray:
 
 
 def read_csv(path: str | Path) -> pd.DataFrame:
-    return pd.read_csv(
+    df = pd.read_csv(
         path, dtype={k: "string" for k in STRING_COLUMNS}, keep_default_na=False
     )
+    df.columns = df.columns.str.strip()
+    return df
 
 
 def validate(frame: pd.DataFrame, *, require_both: bool = True) -> pd.DataFrame:
@@ -111,6 +113,34 @@ def save_manifest(frame: pd.DataFrame, output: str | Path, metadata: dict) -> di
 
 def load_manifest(path: str | Path, *, require_both: bool = True):
     path = Path(path)
+    sidecar = Path(str(path) + ".json")
+    if not sidecar.is_file():
+        candidates = [
+            path.parent.parent / "manifests" / path.name,
+            path.parent / "manifests" / path.name,
+            path.parent / (path.stem + ".csv"),
+        ]
+        for cand in candidates:
+            cand_sidecar = Path(str(cand) + ".json")
+            if cand.is_file() and cand_sidecar.is_file():
+                path = cand
+                sidecar = cand_sidecar
+                break
+        if not sidecar.is_file() and path.is_file():
+            raw = read_csv(path)
+            label_col = "target" if "target" in raw.columns else ("label" if "label" in raw.columns else None)
+            if label_col:
+                split_name = "train" if "train" in path.name else ("val" if "val" in path.name else "test")
+                manifest_dir = path.parent.parent / "manifests"
+                manifest_dir.mkdir(parents=True, exist_ok=True)
+                converted_path = manifest_dir / path.name
+                if not converted_path.exists() or not Path(str(converted_path) + ".json").exists():
+                    if converted_path.exists():
+                        converted_path.unlink()
+                    convert_manifest(path, converted_path, dataset="mffi", split=split_name, label_column=label_col, convention="fake-is-1")
+                path = converted_path
+                sidecar = Path(str(path) + ".json")
+
     record = json.loads(Path(str(path) + ".json").read_text(encoding="utf-8"))
     if record.get("schema") != SCHEMA or record.get("label_convention") != "fake-is-1":
         raise ValueError(

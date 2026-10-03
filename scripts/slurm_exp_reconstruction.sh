@@ -54,15 +54,31 @@ trap cleanup EXIT
 # Variáveis do dataset e modelos
 export TCC_DATASET_ROOT="${TCC_DATASET_ROOT:-/datasets/Images/MFFI}"
 export TCC_DATA_ROOT="${TCC_DATA_ROOT:-$ROOT/data}"
-export TCC_TRAIN_MANIFEST="${TCC_DATA_ROOT}/raw/train.csv"
-export TCC_VAL_MANIFEST="${TCC_DATA_ROOT}/raw/val.csv"
+export TCC_TRAIN_MANIFEST="${TCC_DATA_ROOT}/manifests/train.csv"
+export TCC_VAL_MANIFEST="${TCC_DATA_ROOT}/manifests/val.csv"
 export TCC_TRAIN_ROOT="${TCC_DATASET_ROOT}/trainset"
 export TCC_VAL_ROOT="${TCC_DATASET_ROOT}/valset"
 export TCC_OUTPUT_ROOT="${ROOT}/saidas/reconstruction"
-mkdir -p "$TCC_OUTPUT_ROOT"
+mkdir -p "$TCC_OUTPUT_ROOT" "${TCC_DATA_ROOT}/manifests"
 
 USER_MODELS_ROOT="/projects/models/$USER/faceforgery/experimental/reconstruction"
 mkdir -p "$USER_MODELS_ROOT"
+
+# Garante que os manifestos canônicos certificados com checksum sha256 existam
+if [[ ! -f "$TCC_TRAIN_MANIFEST" || ! -f "${TCC_TRAIN_MANIFEST}.json" ]]; then
+    echo "▶️  Gerando manifesto canônico certificado para train..."
+    python research_cli.py convert-manifest \
+        --source "${TCC_DATA_ROOT}/raw/train.csv" \
+        --output "$TCC_TRAIN_MANIFEST" \
+        --dataset mffi --split train --label-column target --convention fake-is-1
+fi
+if [[ ! -f "$TCC_VAL_MANIFEST" || ! -f "${TCC_VAL_MANIFEST}.json" ]]; then
+    echo "▶️  Gerando manifesto canônico certificado para val..."
+    python research_cli.py convert-manifest \
+        --source "${TCC_DATA_ROOT}/raw/val.csv" \
+        --output "$TCC_VAL_MANIFEST" \
+        --dataset mffi --split val --label-column target --convention fake-is-1
+fi
 
 SEEDS=(42 123 2024 7 2025)
 CONFIG_FILE="${ROOT}/configs/experimental/reconstruction/server_cae_standalone.yaml"
