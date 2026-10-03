@@ -1,25 +1,64 @@
 {
-  "purpose": "complete legacy and experimental CPU regression suite after implementation integration",
-  "tested_commit": "109c494",
+  "purpose": "complete existing and experimental CPU regression suite after all final source changes",
+  "tested_commit": "1b7a2fb",
+  "last_source_change_commit": "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
   "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= MPLBACKEND=Agg HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -m pytest -q",
-  "passed": 445,
+  "baseline_passed": 265,
+  "baseline_subtests_passed": 20,
+  "passed": 449,
   "subtests_passed": 20,
-  "pytest_seconds": 67.63,
+  "net_added_test_cases": 184,
+  "pytest_seconds": 70.56,
   "watchdog": {
     "command": [
       ".venv/bin/python",
       "-m",
       "pytest",
       "-q",
-      "--junitxml=/home/lucas/ffb-research/local/logs/final-pytest.xml"
+      "--junitxml=/home/lucas/ffb-research/local/logs/restart-final-pytest-retry1.xml"
     ],
     "exit_code": 0,
     "stop_reason": null,
-    "peak_sampled_rss_kib": 1652852,
-    "seconds": 69.54353884500051
+    "peak_sampled_rss_kib": 1653676,
+    "seconds": 72.04541136499938,
+    "minimum_available_kib": 9169532,
+    "maximum_full_avg10": 0.18,
+    "policy": {
+      "authority": "director/inbox/msg-016.md",
+      "rss_mib": 3072,
+      "minimum_available_gib": 2,
+      "maximum_full_avg10_percent": 10.0
+    }
   },
-  "completed_at": "2026-10-03T10:37:53.098695-03:00",
-  "log_sha256": "ab0a2b92197b1a49adb8e2e39f12748279611f6a947d0ea0f0447cd3766719ba",
-  "junit_sha256": "d9c60b74c1378b7a4b9892ea11c321e7c42f91c461a1ba447bbcbfd7500f5a53",
-  "subsequent_changes_at_record": "14f9ab5 contains only VLM evidence and planning documentation; tested implementation is unchanged"
+  "log_sha256": "2103d812b2b3298224062b25c099fcee3deaa755c07644dc654044331d3981f0",
+  "junit_sha256": "8c0d1c1704e03928e1dab9dce5887b4a59f9b7fed07f0da7e3ce72fffa132cda",
+  "watchdog_script_sha256": "ab3beee484767ceb1d1e996e3efab86078aa38d98bc1c9b6f8a8d98ee7defdfa",
+  "retained_incomplete_attempt": "preflight/final_pytest_stopped.json",
+  "earlier_integration": {
+    "purpose": "complete legacy and experimental CPU regression suite after implementation integration",
+    "tested_commit": "109c494",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= MPLBACKEND=Agg HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -m pytest -q",
+    "passed": 445,
+    "subtests_passed": 20,
+    "pytest_seconds": 67.63,
+    "watchdog": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/home/lucas/ffb-research/local/logs/final-pytest.xml"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 1652852,
+      "seconds": 69.54353884500051
+    },
+    "completed_at": "2026-10-03T10:37:53.098695-03:00",
+    "log_sha256": "ab0a2b92197b1a49adb8e2e39f12748279611f6a947d0ea0f0447cd3766719ba",
+    "junit_sha256": "d9c60b74c1378b7a4b9892ea11c321e7c42f91c461a1ba447bbcbfd7500f5a53",
+    "subsequent_changes_at_record": "14f9ab5 contains only VLM evidence and planning documentation; tested implementation is unchanged"
+  },
+  "limitation": "CPU regression tests with ROCm-built torch; actual GPU pilot evidence is recorded separately. This does not certify CUDA or full benchmark populations.",
+  "completed_at": "2026-10-03T12:39:59.843406-03:00"
 }

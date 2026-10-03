@@ -6,15 +6,15 @@ Run commands from the repository root in the prepared environment. GPU commands 
 
 Set absolute paths for `TCC_TRAIN_MANIFEST`, `TCC_VAL_MANIFEST`, `TCC_TRAIN_ROOT`, `TCC_VAL_ROOT`, `TCC_RUN_DIR`, `TCC_OUTPUT_ROOT` and `TCC_PRETRAINED_ROOT`. `TCC_RUN_DIR` is one fresh model run; `TCC_OUTPUT_ROOT` holds fresh report directories. `TCC_EXPERIMENT_ROOT` below is an operator-chosen parent for seed runs. JSON/YAML expands environment variables, rejects unset variables and resolves relative paths from the config directory. CLI `--output` overrides the run destination, but variables referenced by the config must still be set.
 
-Source CSVs must declare relative `img_name` paths and reviewed binary labels. Convert source train/validation separately, using the same dataset identity and the actual label convention:
+Source CSVs must declare relative `img_name` paths and reviewed binary labels. The examples use the original MFFI `target` column; specify the reviewed column explicitly for another source. Convert source train/validation separately, using the same dataset identity and the actual label convention:
 
 ```bash
 python research_cli.py convert-manifest \
   --source "$TCC_TRAIN_SOURCE_CSV" --output "$TCC_TRAIN_MANIFEST" \
-  --dataset mffi --split train --label-column label --convention fake-is-1
+  --dataset mffi --split train --label-column target --convention fake-is-1
 python research_cli.py convert-manifest \
   --source "$TCC_VAL_SOURCE_CSV" --output "$TCC_VAL_MANIFEST" \
-  --dataset mffi --split val --label-column label --convention fake-is-1
+  --dataset mffi --split val --label-column target --convention fake-is-1
 python research_cli.py audit-images \
   --manifest "$TCC_TRAIN_MANIFEST" --root "$TCC_TRAIN_ROOT" \
   --output "$TCC_SOURCE_AUDIT" --hash-images

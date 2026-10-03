@@ -1,0 +1,28 @@
+{
+  "state": "incomplete_watchdog_stop",
+  "source_commit": "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+  "log": "/home/lucas/ffb-research/local/logs/restart-final-pytest.log",
+  "log_sha256": "31541cebedea900347150f24bc771cf64c9a8709cfd4aa96f0585d6bf665f71f",
+  "watchdog": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=/home/lucas/ffb-research/local/logs/restart-final-pytest.xml"
+    ],
+    "exit_code": -15,
+    "stop_reason": "System memory pressure or available memory below 1 GiB",
+    "peak_sampled_rss_kib": 1466420,
+    "seconds": 46.593211006000274
+  },
+  "watchdog_sha256": "f6f65a4677e9827c366910a6fc72effd9ec5c44ed08784b2928739ac085f6dfb",
+  "watchdog_script_sha256": "999454055d40cf3f5e4f96255963e13446e6912d4590208c28a0c2f88a9e95e6",
+  "old_policy": {
+    "rss_mib": 3072,
+    "minimum_available_gib": 1,
+    "maximum_full_avg10_percent": 1.0
+  },
+  "interpretation": "No assertion failure appeared in the partial log, but this is not a completed test pass. Director message 016 classified the system-pressure stop as a false positive and authorized revised system-level thresholds without changing the process RSS cap.",
+  "retry": "identical full pytest command, fresh log and JUnit output; revised watchdog policy only"
+}

@@ -1,7 +1,7 @@
 {
   "purpose": "portable configuration resolution and CLI argument parsing only; no assets, fitting or target access",
   "software": {
-    "commit": "109c4941cccab73bf4989da3d4e2cd10712e1efd",
+    "commit": "1b7a2fbb48ba8b96b67541ae2f2d0994f1a9279b",
     "code_sha256": {
       "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
       "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
@@ -35,7 +35,7 @@
       "Pillow": "12.2.0"
     }
   },
-  "matrix_sha256": "416a910d6d813c034b996f4c7668b5444b3e48d9e93f3e437784aa12d0498133",
+  "matrix_sha256": "4ce69105f3dbe020867010e6c0a76aa38028c83925741b5fec09131dbd922da5",
   "rows": [
     {
       "name": "sbi-hf-dino-srm",
