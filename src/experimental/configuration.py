@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import re
 
@@ -43,7 +44,8 @@ def resolve_values(value, base, *, key=None, paths=False):
 
 def read_document(path):
     path = Path(path).expanduser().resolve()
-    value = yaml.safe_load(path.read_text())
+    text = path.read_text()
+    value = json.loads(text) if path.suffix.lower() == ".json" else yaml.safe_load(text)
     if not isinstance(value, dict):
         raise ValueError("Config must be a JSON or YAML mapping")
     return resolve_values(value, path.parent)

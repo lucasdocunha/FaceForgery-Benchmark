@@ -19,6 +19,18 @@ from tests.robustness.test_evaluation_suite import BrightnessDetector, four_targ
 from tests.experimental.test_sbi import sbi_source
 
 
+def test_json_configuration_preserves_scientific_numeric_types(tmp_path):
+    path = tmp_path / "training.json"
+    path.write_text(json.dumps({"training": {"lr_backbone": 1e-5, "lr_head": 1e-4,
+                                              "amp": True, "optional": None},
+                                "output_dir": "run"}))
+    config = read_document(path)
+    assert config["training"] == {"lr_backbone": 1e-5, "lr_head": 1e-4,
+                                  "amp": True, "optional": None}
+    assert isinstance(config["training"]["lr_backbone"], float)
+    assert config["output_dir"] == str(tmp_path / "run")
+
+
 def cached_population(cache, manifest, root):
     """Simulated frozen extractor, not a real model or a measured feature result."""
     cache.mkdir()
