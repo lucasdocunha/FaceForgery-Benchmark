@@ -114,4 +114,3 @@ class FrozenLateFusion(nn.Module):
         return {"p_fake": p_fake, "logits": torch.stack((torch.log1p(-p_fake), p_fake.log()), -1),
                 "weights": weights, "router_probabilities": dense,
                 "load_balance": load_balancing_loss(dense, occupancy), "entropy": entropy}
-
