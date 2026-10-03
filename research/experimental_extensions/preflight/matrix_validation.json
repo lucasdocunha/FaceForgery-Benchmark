@@ -1,131 +1,241 @@
 {
-  "purpose": "portable configuration resolution and shared CLI dry preflight; no asset load or training",
+  "purpose": "portable configuration resolution and CLI argument parsing only; no assets, fitting or target access",
+  "software": {
+    "commit": "109c4941cccab73bf4989da3d4e2cd10712e1efd",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "matrix_sha256": "416a910d6d813c034b996f4c7668b5444b3e48d9e93f3e437784aa12d0498133",
   "rows": [
     {
       "name": "sbi-hf-dino-srm",
       "config": "configs/experimental/sbi_hf_adaptation.yaml",
       "family": "sbi",
-      "state": "planned_not_executed"
+      "config_sha256": "d05ba8f2efb84a07dfc58b9aafc9f1d940c5d97d3e1547ad7e605d401218d317",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "sbi-hf-clip-srm",
       "config": "configs/experimental/sbi_hf_adaptation.yaml",
       "family": "sbi",
-      "state": "planned_not_executed"
+      "config_sha256": "d05ba8f2efb84a07dfc58b9aafc9f1d940c5d97d3e1547ad7e605d401218d317",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "sbi-generic-sbi",
       "config": "configs/experimental/sbi_generic.yaml",
       "family": "sbi",
-      "state": "planned_not_executed"
+      "config_sha256": "0ccb0fa3a6d199b5ea3b6e233eb6cac62e24202b9cec8bd80c8d67b7a07733b1",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "sbi-generic-mffi",
       "config": "configs/experimental/sbi_generic.yaml",
       "family": "sbi",
-      "state": "planned_not_executed"
+      "config_sha256": "0ccb0fa3a6d199b5ea3b6e233eb6cac62e24202b9cec8bd80c8d67b7a07733b1",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "sbi-generic-mixed",
       "config": "configs/experimental/sbi_generic.yaml",
       "family": "sbi",
-      "state": "planned_not_executed"
+      "config_sha256": "0ccb0fa3a6d199b5ea3b6e233eb6cac62e24202b9cec8bd80c8d67b7a07733b1",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
+    },
+    {
+      "name": "srm-pair-control",
+      "config": "configs/experimental/moe_srm_pair_control.yaml",
+      "family": "moe",
+      "config_sha256": "4f56cff19495f991b58be6cf9f40fda3a194c49a556d7b55df4c8b882d0208f0",
+      "suite_config_sha256": "30fa27451d49c1644359526f0046a8b07678382fe046d78e0d436e976015e7ad",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "srm-pair-plus-new-expert",
       "config": "configs/experimental/moe_srm_pair_new_expert.yaml",
       "family": "moe",
-      "state": "planned_not_executed"
+      "config_sha256": "31f3e23f5feeecb552e8903027e975ee4e33142fe7fdc54eaf6f3f97dcfe2c7c",
+      "suite_config_sha256": "45284ab91c1cf1290daea98ffe0ae7a8adf721fc142d1c11afeedcedbc98edd1",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "moe-srm-rgb-reconstruction-soft",
       "config": "configs/experimental/moe_frozen_soft.yaml",
       "family": "moe",
-      "state": "planned_not_executed"
+      "config_sha256": "0e2c9c0791f035bb7e71e6e8b1a0091a836a8a35c5c9cbb94fbd6e587c20d815",
+      "suite_config_sha256": "0825a74fd5783eeff209e10f6a61177120c5b24a3c715763c4a0bf3214911a04",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "moe-srm-rgb-reconstruction-top2",
       "config": "configs/experimental/moe_frozen_top2.yaml",
       "family": "moe",
-      "state": "planned_not_executed"
+      "config_sha256": "3fbc0bbfe9f44c39f12736e4136107f31a789d3d56a46ff4cbd88787fffc7d39",
+      "suite_config_sha256": "0825a74fd5783eeff209e10f6a61177120c5b24a3c715763c4a0bf3214911a04",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-cae",
       "config": "configs/experimental/reconstruction/server_cae.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "8cc60277310b73e1d2e728947c6b4e0292677b0fd4ab6a72f9970375907704cf",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-vae",
       "config": "configs/experimental/reconstruction/server_vae.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "25ccd83b0c24d2e58c3da4bc6dea7612daeb5947596d78ec84d65b2bb2ebdd29",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-gated",
       "config": "configs/experimental/reconstruction/server_gated.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "0f6282662c472cda69b616de7a9c2baecd612de05a97460449cc5bec4c223014",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-residual-x_only",
       "config": "configs/experimental/reconstruction/server_residual_x_only.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "7477a375f4129472283fd33cab6425bf8e0d06d5e04286a0a9d453e01d82d7cf",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-residual-residual_only",
       "config": "configs/experimental/reconstruction/server_residual_residual_only.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "1f90f335cc64c9a9b1a56237422a5cc37be3c0ca84ee6a5dc8743a992aaea935",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-residual-frozen",
       "config": "configs/experimental/reconstruction/server_residual_frozen.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "1da043b56ea727603cbb991434ae9be5b474c9a607f37556c259bc0e54e26087",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-residual-recon_finetune",
       "config": "configs/experimental/reconstruction/server_residual_recon_finetune.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "e03a15467948711f297061174b3e656c14db5d49a56e5ccbdacc6a4e4472353d",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-residual-end_to_end",
       "config": "configs/experimental/reconstruction/server_residual_end_to_end.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "eb91acb70fa099bc50d2ec07be3202c498243e19a4f7e0251f4217921f51a765",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-latent",
       "config": "configs/experimental/reconstruction/server_latent_frozen.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "7397ecca354d1bef925ab84ce61ea17ce0878461ac3ec194aa3d5b859855f379",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "reconstruction-spatial-latent-mean",
       "config": "configs/experimental/reconstruction/mean_ensemble.yaml",
       "family": "reconstruction",
-      "state": "planned_not_executed"
+      "config_sha256": "7bb940d9d9aa9fd6cac23ada9a5d02c5b94b1c965474cc408e51e059289dfd15",
+      "suite_config_sha256": "2d6876eefbf0c86c8f281261c08f2526426b5f267ada83d6d15ad6fd7a6a3409",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "vlm-qwen3-2b-nf4",
       "config": "configs/experimental/vlm_qwen3_2b_server.yaml",
       "family": "vlm",
-      "state": "planned_not_executed"
+      "config_sha256": "22abd556ca864df699b1c07b18d4d37dbcd968d38e938fa6ebd10e55bd42de05",
+      "suite_config_sha256": "4eb883b1739a5e0e740b50b07c77161574d2b68e18f9aa9099350e971972d559",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "metric-srm",
       "config": "configs/experimental/metric_srm.yaml",
       "family": "metric",
-      "state": "planned_not_executed"
+      "config_sha256": "359d2350702f0f722349e36aad567ada6c85d356e8b103f9d96189140faf86d4",
+      "suite_config_sha256": "dcf1472c684b775d601a3275cda02a9524ddaefc4220fda52f84dd0f6278a1b6",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     },
     {
       "name": "graph-srm-low-label",
       "config": "configs/experimental/graph_fullscale.yaml",
       "family": "graph",
-      "state": "planned_not_executed"
+      "config_sha256": "94ec2c25c96d0f7a4abccf46341140abcc4d85b25dfc023c81c0297901b0b959",
+      "suite_config_sha256": "5fd877a84fba7c6898cd7b3528f72628c23125a5d8ec9cfbf89ef0fc59f16f0a",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
     }
-  ]
+  ],
+  "configurations": 22,
+  "parsed_commands": 154
 }

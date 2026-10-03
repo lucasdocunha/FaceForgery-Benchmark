@@ -1,0 +1,384 @@
+{
+  "schema": "faceforgery-frozen-pilot-comparison-v1",
+  "state": "frozen_before_comparative_target_access",
+  "frozen_at": "2026-10-03T10:39:35.699274-03:00",
+  "scope": "pilot/min-dataset",
+  "software": {
+    "commit": "14f9ab57049f361a2950cce73049ecc470ac1480",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "prepared_commands_sha256": "49f8c20c78fa67ddca8e3ac7c2a3c7b5afb5c76efa56f9c337d4156e1bbc5dab",
+  "selection": "All three generic seed-42 SBI/MFFI/mixed arms retain the predeclared equal-budget comparison, independent of source ranking. HF DINO-SRM is the fixed reference. No method is promoted as a demonstrated improvement.",
+  "seed_policy": "42 was the first declared realization. Seed 123 checks source-side variation and cannot replace it based on a favorable score.",
+  "budgets": "Three generic candidate checkpoints plus one fixed baseline; one clean/degraded suite pass per checkpoint.",
+  "other_methods": "Reconstruction and fusion have no supported source-proxy benefit; metric/graph lose to stronger controls on degraded validation; VLM remains a four-update feasibility study; strong HF-SBI adaptation loses source discrimination. No additional candidate enters this test comparison.",
+  "source_evidence": [
+    "pilot_results/sbi/seed42.json",
+    "pilot_results/sbi/seed123.json",
+    "pilot_results/sbi/validation_degraded_proxy.json",
+    "pilot_results/sbi/hf_strong_adaptation_seed42.json"
+  ],
+  "sbi_interpretation": "Negative-to-inconclusive source evidence. Held-out self-blend separability is an inference-only diagnostic, not a selection or refitting step.",
+  "target_access_history": "Eight original RGB/SRM checkpoint compatibility checks are the only preceding real min-test accesses; no method development used it afterward.",
+  "target_policy": "Freeze precedes materializing min-test-degraded-proxy or loading either target manifest for this comparison. No threshold, severity, polarity, seed or hyperparameter changes after target scoring. A failed software/resource attempt must be retained and justified before any retry.",
+  "proxy_policy": "Existing RandomizedRobustAugment recipe, fixed seed 42 and 224 px; same recipe as development proxy, with no severity selection. This is not benchmark Test-D.",
+  "candidates": [
+    {
+      "name": "sbi-generic-sbi-seed42",
+      "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+      "config_sha256": "f14024ab4d669b4a46f1074c7373f3cd9b65e69e43efb1648ed6fd5210b14157",
+      "calibration_sha256": "3de5eee185f8f926bbfdfc6ed69d8cacf81b98331b8c3b02df6672a59610742d",
+      "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067",
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+        "--execute"
+      ],
+      "checkpoint_path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi/best.pt",
+      "checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+      "frozen_frame_threshold": 0.2881683111190796,
+      "threshold_policy": "youden",
+      "suite_config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi/calibration.json",
+        "targets": [
+          {
+            "name": "test",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+            "primary_unit": "frame"
+          },
+          {
+            "name": "test_d",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+            "primary_unit": "frame"
+          }
+        ],
+        "scope": "pilot",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42",
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 8,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      }
+    },
+    {
+      "name": "sbi-generic-mffi-seed42",
+      "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+      "config_sha256": "d5e66f1a9707acad4ac90bedc4e5bf8af832b8f1a714d1c0e7f36e09c3effece",
+      "calibration_sha256": "b6433369bc664dec02001d7a1a1d79024b1694974e6d1ad1f12db95507970ee8",
+      "bundle_sha256": "aa41b5b0a423dfab9e88578594a498d97137a56060192eb7d84da94e17c38939",
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-mffi-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+        "--execute"
+      ],
+      "checkpoint_path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mffi/best.pt",
+      "checkpoint_sha256": "f8b27f09c6825840d5d01791515111012bf68ecd0477d775d604a63d5602f450",
+      "frozen_frame_threshold": 0.7631309032440186,
+      "threshold_policy": "youden",
+      "suite_config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mffi"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mffi/calibration.json",
+        "targets": [
+          {
+            "name": "test",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+            "primary_unit": "frame"
+          },
+          {
+            "name": "test_d",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+            "primary_unit": "frame"
+          }
+        ],
+        "scope": "pilot",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mffi-seed42",
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 8,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      }
+    },
+    {
+      "name": "sbi-generic-mixed-seed42",
+      "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+      "config_sha256": "b596bc3bb6b865f99c7b52a41be58b24c3ad01cb245dfa6e5c73efb92fc2431e",
+      "calibration_sha256": "cb36c4f5d0b36ff19e3ad2caa932ce069f162e9c4cd2c7bfb6fd95cfbdd660ce",
+      "bundle_sha256": "e798d3a7f169896571211573f650a9ed87a1016e2b94f9af3acfdcf6daff008d",
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-mixed-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+        "--execute"
+      ],
+      "checkpoint_path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mixed/best.pt",
+      "checkpoint_sha256": "d1eb9f6249fc210fa85cfcf589e1cfe8c4892ded922cb5a19a2feb2994d389d4",
+      "frozen_frame_threshold": 0.3182732164859772,
+      "threshold_policy": "youden",
+      "suite_config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mixed"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mixed/calibration.json",
+        "targets": [
+          {
+            "name": "test",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+            "primary_unit": "frame"
+          },
+          {
+            "name": "test_d",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+            "primary_unit": "frame"
+          }
+        ],
+        "scope": "pilot",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mixed-seed42",
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 8,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      }
+    },
+    {
+      "name": "hf-dino-srm-seed42",
+      "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+      "config_sha256": "771b13eca56e4a5f9c2f2a332babd15411182c4119d37e4bfe29df8fd8f09c03",
+      "calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+      "bundle_sha256": "f4997c8dd36e6415057ab394c0e16722536a148a2b0ca2427fe9afe777e78f19",
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-hf-dino-srm-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+        "--execute"
+      ],
+      "checkpoint_path": "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/dino/srm/finetune_robust/seed_42/weights/best.pth",
+      "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+      "frozen_frame_threshold": 0.1919327825307846,
+      "threshold_policy": "youden",
+      "suite_config": {
+        "model": {
+          "type": "legacy",
+          "path": "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/dino/srm/finetune_robust/seed_42/weights/best.pth"
+        },
+        "calibration": "/home/lucas/ffb-research/local/calibration/dino-srm-seed42-min-val/calibration.json",
+        "targets": [
+          {
+            "name": "test",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+            "primary_unit": "frame"
+          },
+          {
+            "name": "test_d",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+            "primary_unit": "frame"
+          }
+        ],
+        "scope": "pilot",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/hf-dino-srm-seed42",
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 8,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      }
+    }
+  ],
+  "proxy_command": [
+    "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+    "-m",
+    "src.robustness.degraded_proxy",
+    "--manifest",
+    "/home/lucas/ffb-research/local/manifests/min-test.csv",
+    "--root",
+    "/home/lucas/ffb-research/local/data/min_dataset/test",
+    "--output",
+    "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+    "--clean-manifest",
+    "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+    "--degraded-manifest",
+    "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+    "--seed",
+    "42",
+    "--image-size",
+    "224"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "purpose": "complete legacy and experimental CPU regression suite after implementation integration",
+  "tested_commit": "109c494",
+  "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= MPLBACKEND=Agg HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -m pytest -q",
+  "passed": 445,
+  "subtests_passed": 20,
+  "pytest_seconds": 67.63,
+  "watchdog": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=/home/lucas/ffb-research/local/logs/final-pytest.xml"
+    ],
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_sampled_rss_kib": 1652852,
+    "seconds": 69.54353884500051
+  },
+  "completed_at": "2026-10-03T10:37:53.098695-03:00",
+  "log_sha256": "ab0a2b92197b1a49adb8e2e39f12748279611f6a947d0ea0f0447cd3766719ba",
+  "junit_sha256": "d9c60b74c1378b7a4b9892ea11c321e7c42f91c461a1ba447bbcbfd7500f5a53",
+  "subsequent_changes_at_record": "14f9ab5 contains only VLM evidence and planning documentation; tested implementation is unchanged"
+}
