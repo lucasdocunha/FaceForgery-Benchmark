@@ -340,7 +340,54 @@
         "peak_sampled_rss_kib": 3284480,
         "seconds": 33.55333474400004
       },
-      "reload_result": "Failed resource bound in same process after fit; fresh-process reload is not yet certified."
+      "reload_result": "Same-process post-fit reload exceeded the RAM cap and was stopped. Frozen final bundle passed separate fresh-process reload/inference without retraining.",
+      "fresh_process_reload": {
+        "scope": "min-dataset-pretrained-feasibility-reload-only",
+        "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42-final",
+        "bundle_sha256": "d9db0fdace771f5bc81eeb9ee873ac5e94fe7496346ea7c4a4009120b395616a",
+        "validation_manifest_sha256": "2ef4979675983a07c093b6aa5bc6c5726f5d0085842839a9d22e27fa8286e9dc",
+        "rows": 16,
+        "runtime_seconds": 8.51653895599975,
+        "maximum_absolute_score_difference": 0.0,
+        "tolerance": {
+          "absolute": 0.0005,
+          "relative": 0.0005
+        },
+        "probability_range": [
+          0.4532618820667267,
+          0.8080672025680542
+        ],
+        "result": "passed",
+        "training_performed": false,
+        "watchdog": {
+          "command": [
+            "env",
+            "PYTHONPATH=.",
+            "OMP_NUM_THREADS=2",
+            "MKL_NUM_THREADS=2",
+            "OPENBLAS_NUM_THREADS=2",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "/home/lucas/ffb-research/local/scripts/vlm_reload_pilot.py",
+            "--run-dir",
+            "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42-final",
+            "--root",
+            "/home/lucas/ffb-research/local/data/min_dataset/val",
+            "--output",
+            "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42-final/fresh_reload_summary.json"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 2330120,
+          "seconds": 11.008178832999874
+        },
+        "driver_pid": 28420,
+        "log_path": "/home/lucas/ffb-research/local/logs/vlm-bf16-fresh-reload.log",
+        "log_sha256": "7ba7518f95399ba88e3d4a5b6e0a6e3e5f954446cf01d99c06098b78e58e9fa2",
+        "result_sha256": "b0ff92423847162fc7245e19216a363b7f7b51a6f18c92c07e8ab1f93e72c195"
+      }
     },
     "nf4": {
       "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final",
@@ -573,8 +620,55 @@
         "peak_sampled_rss_kib": 3205088,
         "seconds": 38.63871821800012
       },
-      "reload_result": "Failed resource bound in same process after fit; fresh-process reload is not yet certified."
+      "reload_result": "Same-process post-fit reload exceeded the RAM cap and was stopped. Frozen final bundle passed separate fresh-process reload/inference without retraining.",
+      "fresh_process_reload": {
+        "scope": "min-dataset-pretrained-feasibility-reload-only",
+        "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final",
+        "bundle_sha256": "89de6d104119a4c24ce4825d36c9e8ae8a4f69f2b5290dc4313365e400479c5f",
+        "validation_manifest_sha256": "2ef4979675983a07c093b6aa5bc6c5726f5d0085842839a9d22e27fa8286e9dc",
+        "rows": 16,
+        "runtime_seconds": 9.116047479999906,
+        "maximum_absolute_score_difference": 1.1102230246251565e-16,
+        "tolerance": {
+          "absolute": 0.0005,
+          "relative": 0.0005
+        },
+        "probability_range": [
+          0.8267117738723755,
+          0.9603611826896667
+        ],
+        "result": "passed",
+        "training_performed": false,
+        "watchdog": {
+          "command": [
+            "env",
+            "PYTHONPATH=.",
+            "OMP_NUM_THREADS=2",
+            "MKL_NUM_THREADS=2",
+            "OPENBLAS_NUM_THREADS=2",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "/home/lucas/ffb-research/local/scripts/vlm_reload_pilot.py",
+            "--run-dir",
+            "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final",
+            "--root",
+            "/home/lucas/ffb-research/local/data/min_dataset/val",
+            "--output",
+            "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final/fresh_reload_summary.json"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 2345880,
+          "seconds": 11.508089996999843
+        },
+        "driver_pid": 29035,
+        "log_path": "/home/lucas/ffb-research/local/logs/vlm-nf4-fresh-reload.log",
+        "log_sha256": "ebee75873f59beef0759c1ff0dffdad91b28ae506863ab8b1c6fb44736f94dca",
+        "result_sha256": "bf809a83f45e1a06727c8b69f92e626005b76b99521efe9fb7a18db494527e5d"
+      }
     }
   },
-  "interpretation": "Tiny n=16 development feasibility only. BF16 first train/save/reload passed. Final BF16 and corrected NF4 trained and calibrated, but their same-process reload exceeded the RAM cap. NF4 is slower, stores skipped full-precision parameters and shows no local memory or quality advantage. Frozen BF16 is the explicit fallback. No superiority or generalization claim."
+  "interpretation": "Tiny n=16 development feasibility only. First BF16 train/save/reload passed; final BF16 and corrected NF4 completed training/calibration, then passed frozen fresh-process reload within 180 seconds and 3072 MiB with score equivalence. Their same-process post-fit reload cap failures are preserved. NF4 showed no local storage, memory or quality benefit; BF16 is the explicit fallback. No superiority or generalization claim, no min-test access or tuning."
 }
