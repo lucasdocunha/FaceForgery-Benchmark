@@ -404,6 +404,7 @@ def _publish_predictions(p, record, output, calibration, checksum, *, calibratio
         metadata={
             "origin": origin,
             "preprocessing": report["preprocessing"],
+            "input_contract": contract,
             "input_contract_sha256": digest(contract),
         },
     )
@@ -419,7 +420,8 @@ def _publish_predictions(p, record, output, calibration, checksum, *, calibratio
         save_predictions(
             output / "video_predictions.csv", videos, manifest_record=record,
             model_sha256=checksum, checkpoint_class1=calibration.get("checkpoint_class1", "fake"),
-            metadata={"origin": "mean frame p_fake", "unit": "video"},
+            metadata={"origin": "mean frame p_fake", "unit": "video",
+                      "input_contract": contract, "input_contract_sha256": digest(contract)},
         )
         files.extend(["video_predictions.csv", "video_predictions.csv.json"])
     if plots:

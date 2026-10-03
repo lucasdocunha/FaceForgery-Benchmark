@@ -99,6 +99,9 @@ def test_all_four_targets_tensor_and_external_adapter(tmp_path, monkeypatch):
                             calibration_path=calibration_path, image_size=32, input_contract=contract,
                             batch_size=4, bootstrap_draws=50, scope="synthetic")
     assert result["state"] == "complete" and len(result["results"]) == 4
+    frame_certificate = json.loads((tmp_path / "suite" / "test" / "predictions.csv.json").read_text())
+    assert frame_certificate["input_contract"] == contract
+    assert frame_certificate["input_contract_sha256"] == digest(contract)
     assert result["paired_test_d"]["interval"]["estimate"] == 0
     assert result["results"]["df40"]["per_generator"]["macro_auc"] == 1
     assert result["results"]["df40"]["per_paradigm"]["macro_auc"] == 1
