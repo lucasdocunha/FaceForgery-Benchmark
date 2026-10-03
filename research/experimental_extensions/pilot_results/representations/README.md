@@ -8,15 +8,22 @@ adaptation only. These pilots do not establish end-to-end label efficiency.
 
 All 21 scheduled fits completed. Seed 42; 1,000 train and 1,000 validation images;
 at most ten epochs, patience five; two CPU threads; no GPU allocation. Fitting
-took 20.47 seconds in total, excluding feature extraction and later bootstrap
-analysis. Process peak RSS was 976,220 KiB (a shared-process high-water mark,
-not an isolated peak per model). The original fitting implementation was
-`35695e0`; complete code/package/cache identities and all candidate metrics are
+took 20.50 seconds in total, excluding feature extraction and later bootstrap
+analysis. Process peak RSS was 974,596 KiB (a shared-process high-water mark,
+not an isolated peak per model). The final replay used integrated implementation
+`0f7079f`; complete code/package/cache identities and all candidate metrics are
 in [the JSON record](dino_srm_min_val.json). The [CSV](dino_srm_min_val.csv)
 also lists losses, parameters, epochs, optimizer steps, thresholds and runtimes.
-SGD baseline parameter and step counts were derived from saved coefficients and
-the recorded iteration budget, correcting their original nonparametric telemetry
-placeholder. No scores or predictions were changed.
+The original 21 successful fits at `35695e0` remain in
+[the initial summary](dino_srm_min_val_initial.json). A representative original
+bundle correctly [failed the later implementation-hash check](original_bundle_reload_rejection.json).
+All 21 fits were then rerun with identical settings in a fresh source-only output
+directory. AUCs agree within 1.2e-16; there was no new configuration search.
+Final SupCon and GAT bundles [passed reload checks](final_bundle_reload_verification.json)
+against their saved validation CSVs, with maximum absolute score differences
+below 6e-17. The old runs and the rejected reload attempt were retained, not
+overwritten. SGD coefficient counts and iteration budgets are recorded correctly
+in the final telemetry.
 
 The checkpoint's own logits had validation AUC 0.99401, accuracy 0.970 and EER
 0.03186 at its validation-selected Youden threshold. Accuracy and F1 below also
@@ -87,18 +94,19 @@ and hashes are retained in the JSON.
 
 ```bash
 python -m scripts.representation_pilot \
-  --cache-index "$FFB_DINO_SRM_CACHE_INDEX" \
-  --output "$FFB_PILOT_OUTPUT" --epochs 10 --seed 42
+  --cache-index "$TCC_DINO_SRM_CACHE_INDEX" \
+  --output "$TCC_PILOT_OUTPUT" --epochs 10 --seed 42
 python -m scripts.representation_dependency_smoke \
-  --cache-index "$FFB_DINO_SRM_CACHE_INDEX" \
-  --output "$FFB_DEPENDENCY_OUTPUT"
+  --cache-index "$TCC_DINO_SRM_CACHE_INDEX" \
+  --output "$TCC_DEPENDENCY_OUTPUT"
 ```
 
 The cache index must contain exactly `train` and `val` cache paths. Both commands
 require fresh output directories and at most 10,000 rows per split. The original
 arrays, model files, histories and predictions remain outside git. The report
 retains all successful and failed scheduled candidates; this pilot had no failed
-candidate. Optional FAISS 1.15.1 was tested separately, with no dense fallback.
+training candidate. The separate original-bundle reload rejection is recorded
+above. Optional FAISS 1.15.1 was tested separately, with no dense fallback.
 
 Final focused validation: 58 tests passed in 6.06 seconds. Coverage includes
 cache integrity, all scoring/training variants, native and PyG GCN/GAT/SAGE,

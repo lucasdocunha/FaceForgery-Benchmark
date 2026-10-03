@@ -1,13 +1,13 @@
 family: graph
-run_dir: ${FFB_RUN_DIR}
-seed: ${FFB_SEED}
+run_dir: ${TCC_RUN_DIR}
+seed: ${TCC_SEED}
 caches:
-  train: ${FFB_TRAIN_CACHE}
-  val: ${FFB_VAL_CACHE}
+  train: ${TCC_TRAIN_CACHE}
+  val: ${TCC_VAL_CACHE}
 model:
-  kind: ${FFB_GRAPH_KIND}
+  kind: ${TCC_GRAPH_KIND}
   protocol: inductive
-  label_fraction: ${FFB_LABEL_FRACTION}
+  label_fraction: ${TCC_LABEL_FRACTION}
   backend: pyg
   standardize: true
   hidden_dim: 32
@@ -25,7 +25,7 @@ model:
     alpha: 0.8
     iterations: 50
 training:
-  device: ${FFB_DEVICE}
+  device: ${TCC_DEVICE}
   cpu_threads: 2
   epochs: 30
   early_stop_patience: 5

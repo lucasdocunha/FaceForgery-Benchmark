@@ -1,15 +1,15 @@
 family: graph
-run_dir: ${FFB_RUN_DIR}
-seed: ${FFB_SEED}
-projection_run: ${FFB_PROJECTION_RUN}
-label_mask: ${FFB_LABEL_MASK}
+run_dir: ${TCC_RUN_DIR}
+seed: ${TCC_SEED}
+projection_run: ${TCC_PROJECTION_RUN}
+label_mask: ${TCC_LABEL_MASK}
 caches:
-  train: ${FFB_TRAIN_CACHE}
-  val: ${FFB_VAL_CACHE}
+  train: ${TCC_TRAIN_CACHE}
+  val: ${TCC_VAL_CACHE}
 model:
-  kind: ${FFB_GRAPH_KIND}
-  protocol: ${FFB_GRAPH_PROTOCOL}
-  label_fraction: ${FFB_LABEL_FRACTION}
+  kind: ${TCC_GRAPH_KIND}
+  protocol: ${TCC_GRAPH_PROTOCOL}
+  label_fraction: ${TCC_LABEL_FRACTION}
   backend: pyg
   standardize: false
   hidden_dim: 32
@@ -32,7 +32,7 @@ model:
     alpha: 0.8
     iterations: 50
 training:
-  device: ${FFB_DEVICE}
+  device: ${TCC_DEVICE}
   cpu_threads: 2
   epochs: 30
   early_stop_patience: 5

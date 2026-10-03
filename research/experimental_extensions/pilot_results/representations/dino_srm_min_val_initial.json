@@ -6,26 +6,25 @@
     "one seed; no Test, Test-D, DF-40 or Celeb-DF evaluation"
   ],
   "software": {
-    "commit": "0f7079f9a4436c5e197c3e30f0671ff4efa68fa1",
+    "commit": "35695e0884749a9ff96c076ae5e9c1e5942dc16d",
     "code_sha256": {
       "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
       "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
       "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
-      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
       "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
       "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
       "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
       "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
       "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
       "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
-      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
       "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
       "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
       "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
       "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
       "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
-      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
-      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
     },
     "python": "3.12.13",
     "packages": {
@@ -48,7 +47,7 @@
       "family": "metric",
       "kind": "raw_centroid",
       "label_fraction": 1.0,
-      "run_dir": "local/pilots/representations-dino-srm-final/metric-raw_centroid-fraction1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/metric-raw_centroid-fraction1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -95,23 +94,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.022058823529411766,
         "tpr": 0.9594594594594594,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.17890159500029768,
-        "peak_rss_kib": 775816,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.16335952400004317,
+        "peak_rss_kib": 773948,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 1000,
-      "wall_seconds": 0.18080490500005908,
+      "wall_seconds": 0.16526194200014288,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -130,7 +126,7 @@
       "family": "metric",
       "kind": "raw_knn",
       "label_fraction": 1.0,
-      "run_dir": "local/pilots/representations-dino-srm-final/metric-raw_knn-fraction1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/metric-raw_knn-fraction1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -177,23 +173,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.07598039215686274,
         "tpr": 0.9763513513513513,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.1768727100002252,
-        "peak_rss_kib": 793684,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.1677863879999677,
+        "peak_rss_kib": 792084,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 1000,
-      "wall_seconds": 0.17886972599990258,
+      "wall_seconds": 0.16959329600013007,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -212,7 +205,7 @@
       "family": "metric",
       "kind": "linear",
       "label_fraction": 1.0,
-      "run_dir": "local/pilots/representations-dino-srm-final/metric-linear-fraction1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/metric-linear-fraction1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -259,23 +252,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.07107843137254902,
         "tpr": 0.9695945945945946,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.8358928160000687,
-        "peak_rss_kib": 888996,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.8021259919999011,
+        "peak_rss_kib": 886848,
         "peak_vram_bytes": 0,
         "trainable_parameters": 2050,
         "epochs_completed": 6,
         "global_step": 96,
-        "best_epoch": 0,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 1000,
-      "wall_seconds": 0.8369750159999967,
+      "wall_seconds": 0.8031767429999945,
       "selected_training_loss": 0.20011228200793266,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -294,7 +284,7 @@
       "family": "metric",
       "kind": "mlp",
       "label_fraction": 1.0,
-      "run_dir": "local/pilots/representations-dino-srm-final/metric-mlp-fraction1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/metric-mlp-fraction1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -341,23 +331,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0196078431372549,
         "tpr": 0.9375,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.4319237339996107,
-        "peak_rss_kib": 902960,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.4104165749999993,
+        "peak_rss_kib": 900996,
         "peak_vram_bytes": 0,
         "trainable_parameters": 65730,
         "epochs_completed": 8,
         "global_step": 128,
-        "best_epoch": 2,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 1000,
-      "wall_seconds": 0.43299997300027826,
+      "wall_seconds": 0.41165162199990846,
       "selected_training_loss": 0.022792692970484495,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -376,7 +363,7 @@
       "family": "metric",
       "kind": "supcon",
       "label_fraction": 1.0,
-      "run_dir": "local/pilots/representations-dino-srm-final/metric-supcon-fraction1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/metric-supcon-fraction1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -423,23 +410,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.02696078431372549,
         "tpr": 0.9628378378378378,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 2.894015990999833,
-        "peak_rss_kib": 928148,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 3.030677518999937,
+        "peak_rss_kib": 926716,
         "peak_vram_bytes": 0,
         "trainable_parameters": 73920,
         "epochs_completed": 8,
         "global_step": 128,
-        "best_epoch": 2,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 1000,
-      "wall_seconds": 2.895583690999956,
+      "wall_seconds": 3.0319404279998707,
       "selected_training_loss": 3.460701823234558,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -458,7 +442,7 @@
       "family": "graph",
       "kind": "linear",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-linear-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-linear-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -505,23 +489,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.06862745098039216,
         "tpr": 0.9628378378378378,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.30782866599975023,
-        "peak_rss_kib": 956616,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.30373529899998175,
+        "peak_rss_kib": 955304,
         "peak_vram_bytes": 0,
         "trainable_parameters": 1025,
         "epochs_completed": 30,
         "global_step": 30,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 0.309640835999744,
+      "wall_seconds": 0.30531796800005395,
       "selected_training_loss": 0.003738479110156659,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -540,7 +521,7 @@
       "family": "graph",
       "kind": "mlp",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-mlp-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-mlp-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -587,23 +568,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0196078431372549,
         "tpr": 0.9543918918918919,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.4388770270002169,
-        "peak_rss_kib": 959936,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.4450671170000078,
+        "peak_rss_kib": 957420,
         "peak_vram_bytes": 0,
         "trainable_parameters": 32866,
         "epochs_completed": 10,
         "global_step": 20,
-        "best_epoch": 9,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 0.4398177010002655,
+      "wall_seconds": 0.4461580329998469,
       "selected_training_loss": 0.32517193287026647,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -622,7 +600,7 @@
       "family": "graph",
       "kind": "knn",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-knn-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-knn-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -669,23 +647,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.01715686274509804,
         "tpr": 0.9510135135135135,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.3620124560002296,
-        "peak_rss_kib": 964160,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.35387241799980984,
+        "peak_rss_kib": 959424,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 0.36364114099978906,
+      "wall_seconds": 0.35551329600002646,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -704,7 +679,7 @@
       "family": "graph",
       "kind": "lp",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-lp-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-lp-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -751,23 +726,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.00980392156862745,
         "tpr": 0.9459459459459459,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.36309936499992546,
-        "peak_rss_kib": 964160,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.355056599999898,
+        "peak_rss_kib": 959424,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 0.3648477639999328,
+      "wall_seconds": 0.3568226309998863,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -786,7 +758,7 @@
       "family": "graph",
       "kind": "correct_smooth",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-correct_smooth-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-correct_smooth-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -833,23 +805,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0196078431372549,
         "tpr": 0.9527027027027027,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.3656182599997919,
-        "peak_rss_kib": 964260,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.3500013679999938,
+        "peak_rss_kib": 959424,
         "peak_vram_bytes": 0,
         "trainable_parameters": 1025,
         "epochs_completed": 30,
         "global_step": 30,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 0.3672846549998212,
+      "wall_seconds": 0.3515109190000203,
       "selected_training_loss": 0.003738479110156659,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -868,13 +837,13 @@
       "family": "graph",
       "kind": "gcn",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-gcn-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-gcn-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
         "n_real": 408,
         "n_fake": 592,
-        "auc": 0.9831577901430844,
+        "auc": 0.9831577901430842,
         "average_precision": 0.9917528147975514,
         "balanced_accuracy": 0.9665474297827239,
         "eer": 0.038851351351351246,
@@ -884,9 +853,9 @@
         "f1": 0.9690721649484536,
         "f1_policy": "fake is positive; zero division returns zero",
         "accuracy": 0.964,
-        "brier": 0.06418551850122013,
-        "log_loss": 0.2691276454767873,
-        "ece_10_equal_width": 0.17046365450322631,
+        "brier": 0.0641855183142633,
+        "log_loss": 0.2691276450511992,
+        "ece_10_equal_width": 0.17046365383267406,
         "threshold": 0.47787293791770935,
         "tn": 400,
         "fp": 8,
@@ -915,23 +884,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0196078431372549,
         "tpr": 0.9527027027027027,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 2.4287519109998357,
-        "peak_rss_kib": 967352,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 2.3330113170000004,
+        "peak_rss_kib": 970208,
         "peak_vram_bytes": 0,
         "trainable_parameters": 135394,
         "epochs_completed": 10,
         "global_step": 20,
-        "best_epoch": 8,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 2.4297396239999216,
+      "wall_seconds": 2.333859676999964,
       "selected_training_loss": 0.22550425926844278,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -943,14 +909,14 @@
         "other_threshold": 0.47787293791770935,
         "other_correct_given_reference_wrong": 0.23333333333333334,
         "oracle_accuracy_upper_bound_not_deployable": 0.977,
-        "score_pearson": 0.995396220565375
+        "score_pearson": 0.9953962203281331
       }
     },
     {
       "family": "graph",
       "kind": "gat",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-gat-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-gat-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -966,9 +932,9 @@
         "f1": 0.9690721649484536,
         "f1_policy": "fake is positive; zero division returns zero",
         "accuracy": 0.964,
-        "brier": 0.209062197209694,
-        "log_loss": 0.6110144536844652,
-        "ece_10_equal_width": 0.3994465008080006,
+        "brier": 0.2090621970477139,
+        "log_loss": 0.6110144533567188,
+        "ece_10_equal_width": 0.39944650062918663,
         "threshold": 0.46975699067115784,
         "tn": 400,
         "fp": 8,
@@ -997,23 +963,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0196078431372549,
         "tpr": 0.9527027027027027,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 1.7110730520003017,
-        "peak_rss_kib": 970592,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 1.6520004229998904,
+        "peak_rss_kib": 971956,
         "peak_vram_bytes": 0,
         "trainable_parameters": 135462,
         "epochs_completed": 6,
         "global_step": 12,
-        "best_epoch": 0,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 1.712096881999969,
+      "wall_seconds": 1.652826813000047,
       "selected_training_loss": 0.6652823417794471,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1025,14 +988,14 @@
         "other_threshold": 0.46975699067115784,
         "other_correct_given_reference_wrong": 0.23333333333333334,
         "oracle_accuracy_upper_bound_not_deployable": 0.977,
-        "score_pearson": 0.9949223634607531
+        "score_pearson": 0.9949223634587033
       }
     },
     {
       "family": "graph",
       "kind": "sage",
       "label_fraction": 0.05,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-sage-fraction0.05-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-sage-fraction0.05-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1079,23 +1042,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.024509803921568627,
         "tpr": 0.9577702702702703,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 1.7681967359999362,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 1.8028568560000622,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 139554,
         "epochs_completed": 6,
         "global_step": 12,
-        "best_epoch": 0,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 51,
-      "wall_seconds": 1.7692614529996717,
+      "wall_seconds": 1.8041803379999237,
       "selected_training_loss": 0.6756452567437116,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1114,7 +1074,7 @@
       "family": "graph",
       "kind": "linear",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-linear-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-linear-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1161,23 +1121,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.0857843137254902,
         "tpr": 0.9628378378378378,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.32685106600001745,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.3132418200000302,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 1025,
         "epochs_completed": 30,
         "global_step": 30,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 0.32847404999984064,
+      "wall_seconds": 0.3151175080001849,
       "selected_training_loss": 0.007002296075838417,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1196,7 +1153,7 @@
       "family": "graph",
       "kind": "mlp",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-mlp-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-mlp-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1243,23 +1200,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.022058823529411766,
         "tpr": 0.9594594594594594,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.450240329999815,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.4938348080002015,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 32866,
         "epochs_completed": 8,
         "global_step": 32,
-        "best_epoch": 2,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 0.4512214909996146,
+      "wall_seconds": 0.49522912199995517,
       "selected_training_loss": 0.5126177152194599,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1278,7 +1232,7 @@
       "family": "graph",
       "kind": "knn",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-knn-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-knn-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1325,23 +1279,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.031862745098039214,
         "tpr": 0.9527027027027027,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.37737221500037776,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.4109615869999743,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 0.37892538799997055,
+      "wall_seconds": 0.41304563599987887,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1360,7 +1311,7 @@
       "family": "graph",
       "kind": "lp",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-lp-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-lp-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1407,23 +1358,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.00980392156862745,
         "tpr": 0.9459459459459459,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.38277263500003755,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.44056692599997405,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 0,
         "epochs_completed": 0,
         "global_step": 0,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 0.3844069199999467,
+      "wall_seconds": 0.4509642169998642,
       "selected_training_loss": null,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1442,7 +1390,7 @@
       "family": "graph",
       "kind": "correct_smooth",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-correct_smooth-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-correct_smooth-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1489,23 +1437,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.01715686274509804,
         "tpr": 0.9375,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 0.37083415300003253,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 0.38564694599995164,
+        "peak_rss_kib": 972104,
         "peak_vram_bytes": 0,
         "trainable_parameters": 1025,
         "epochs_completed": 30,
         "global_step": 30,
-        "best_epoch": null,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 0.37241171100004067,
+      "wall_seconds": 0.38854476199981036,
       "selected_training_loss": 0.007002296075838417,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1524,7 +1469,7 @@
       "family": "graph",
       "kind": "gcn",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-gcn-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-gcn-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1540,9 +1485,9 @@
         "f1": 0.9709401709401709,
         "f1_policy": "fake is positive; zero division returns zero",
         "accuracy": 0.966,
-        "brier": 0.12188274271584712,
-        "log_loss": 0.421508230032136,
-        "ece_10_equal_width": 0.2945793371796608,
+        "brier": 0.12188274287843791,
+        "log_loss": 0.42150823042173424,
+        "ece_10_equal_width": 0.294579337567091,
         "threshold": 0.5339283347129822,
         "tn": 398,
         "fp": 10,
@@ -1571,23 +1516,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.024509803921568627,
         "tpr": 0.9594594594594594,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 1.9411088469996685,
-        "peak_rss_kib": 971052,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 1.921630131000029,
+        "peak_rss_kib": 972272,
         "peak_vram_bytes": 0,
         "trainable_parameters": 135394,
         "epochs_completed": 7,
         "global_step": 28,
-        "best_epoch": 1,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 1.9420365480000328,
+      "wall_seconds": 1.9228879010001947,
       "selected_training_loss": 0.42809680605878925,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1599,14 +1541,14 @@
         "other_threshold": 0.5339283347129822,
         "other_correct_given_reference_wrong": 0.1,
         "oracle_accuracy_upper_bound_not_deployable": 0.973,
-        "score_pearson": 0.9910583191109665
+        "score_pearson": 0.991058319171557
       }
     },
     {
       "family": "graph",
       "kind": "gat",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-gat-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-gat-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1622,9 +1564,9 @@
         "f1": 0.9689655172413794,
         "f1_policy": "fake is positive; zero division returns zero",
         "accuracy": 0.964,
-        "brier": 0.19947344118641877,
-        "log_loss": 0.5915268540024919,
-        "ece_10_equal_width": 0.4048297079205513,
+        "brier": 0.19947344086473917,
+        "log_loss": 0.5915268533480139,
+        "ece_10_equal_width": 0.4048297076821328,
         "threshold": 0.49106156826019287,
         "tn": 402,
         "fp": 6,
@@ -1653,23 +1595,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.014705882352941176,
         "tpr": 0.9493243243243243,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 1.9439953810001498,
-        "peak_rss_kib": 974480,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 1.9675006490001579,
+        "peak_rss_kib": 976116,
         "peak_vram_bytes": 0,
         "trainable_parameters": 135462,
         "epochs_completed": 6,
         "global_step": 24,
-        "best_epoch": 0,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 1.944968305999737,
+      "wall_seconds": 1.968504201000087,
       "selected_training_loss": 0.646917727324042,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1681,14 +1620,14 @@
         "other_threshold": 0.49106156826019287,
         "other_correct_given_reference_wrong": 0.23333333333333334,
         "oracle_accuracy_upper_bound_not_deployable": 0.977,
-        "score_pearson": 0.9964686887964366
+        "score_pearson": 0.9964686892533745
       }
     },
     {
       "family": "graph",
       "kind": "sage",
       "label_fraction": 0.1,
-      "run_dir": "local/pilots/representations-dino-srm-final/graph-sage-fraction0.1-seed42",
+      "run_dir": "local/pilots/representations-dino-srm/graph-sage-fraction0.1-seed42",
       "status": "complete",
       "metrics": {
         "n": 1000,
@@ -1735,23 +1674,20 @@
         "confusion_axes": "rows true, columns predicted; [real, fake]",
         "fpr": 0.01715686274509804,
         "tpr": 0.9527027027027027,
-        "auc_status": "defined",
-        "threshold_policy": "frozen source-validation youden"
+        "auc_status": "defined"
       },
       "telemetry": {
-        "runtime_seconds": 2.41707823500019,
-        "peak_rss_kib": 974596,
-        "peak_rss_scope": "process lifetime high-water mark",
+        "runtime_seconds": 2.324616601000116,
+        "peak_rss_kib": 976220,
         "peak_vram_bytes": 0,
         "trainable_parameters": 139554,
         "epochs_completed": 9,
         "global_step": 36,
-        "best_epoch": 3,
         "seed": 42,
         "scope": "cached-feature development"
       },
       "label_count": 101,
-      "wall_seconds": 2.4180207930003235,
+      "wall_seconds": 2.326265843999863,
       "selected_training_loss": 0.409566728490414,
       "checkpoint_complementarity": {
         "n": 1000,
@@ -1900,7 +1836,7 @@
         0.05
       ],
       "auc_difference": {
-        "estimate": -0.010623675145733813,
+        "estimate": -0.010623675145733924,
         "lower": -0.017300242149520386,
         "upper": -0.004716027839622997,
         "confidence": 0.95,
@@ -2106,26 +2042,25 @@
     }
   ],
   "analysis_software": {
-    "commit": "0f7079f9a4436c5e197c3e30f0671ff4efa68fa1",
+    "commit": "efc4372b031a8305d864a6d289abd437b3e89d82",
     "code_sha256": {
       "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
       "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
       "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
-      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
       "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
       "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
       "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
       "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
       "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
       "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
-      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
       "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
       "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
       "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
       "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
       "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
-      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
-      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
     },
     "python": "3.12.13",
     "packages": {

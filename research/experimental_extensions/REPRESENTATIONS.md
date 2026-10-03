@@ -21,12 +21,22 @@ The common entry point is `research_cli.py experimental train --config FILE
 following environment variables to portable paths and a declared seed:
 
 ```bash
-export FFB_TRAIN_CACHE=/data/features/source-train-cache
-export FFB_VAL_CACHE=/data/features/source-val-cache
-export FFB_RUN_DIR=/runs/metric-supcon-seed42
-export FFB_SEED=42 FFB_DEVICE=cpu FFB_LABEL_FRACTION=1.0 FFB_METRIC_KIND=supcon
+export TCC_TRAIN_CACHE=/data/features/source-train-cache
+export TCC_VAL_CACHE=/data/features/source-val-cache
+export TCC_RUN_DIR=/runs/metric-supcon-seed42
+export TCC_SEED=42 TCC_DEVICE=cpu TCC_LABEL_FRACTION=1.0 TCC_METRIC_KIND=supcon
 python research_cli.py experimental train --config configs/experimental/metric_srm.yaml --execute
 ```
+
+All three templates require `TCC_RUN_DIR`, `TCC_SEED`, `TCC_DEVICE`,
+`TCC_TRAIN_CACHE`, `TCC_VAL_CACHE` and `TCC_LABEL_FRACTION`. Metric training also
+requires `TCC_METRIC_KIND`; graph training requires `TCC_GRAPH_KIND`. Fractions
+must be in `(0, 1]`; use 0.05 and 0.10 for the declared low-label comparison.
+`graph_fullscale.yaml` additionally requires `TCC_GRAPH_PROTOCOL` (`inductive`
+or `transductive`), `TCC_PROJECTION_RUN` (a fitted SupCon directory) and
+`TCC_LABEL_MASK` (its `label_mask.json`). Paths and variable expansion are checked
+by the shared CLI. The full-scale graph fit checks that the projection and graph
+use the exact same selected training labels and matching requested fraction.
 
 Metric kinds are `linear`, `mlp`, `centroid`, `knn` and `supcon`. The SupCon head
 has a 128- or 256-dimensional L2-normalized output. Its score can be `centroid`,
@@ -48,10 +58,10 @@ Silhouette and a seeded, at-most-1000-row t-SNE plot are diagnostic only.
 For every graph fraction, run all eight kinds under the same seed and label mask:
 
 ```bash
-export FFB_LABEL_FRACTION=0.05
-for FFB_GRAPH_KIND in linear mlp knn lp correct_smooth gcn gat sage; do
-  export FFB_GRAPH_KIND
-  export FFB_RUN_DIR=/runs/graph-${FFB_GRAPH_KIND}-fraction05-seed42
+export TCC_LABEL_FRACTION=0.05
+for TCC_GRAPH_KIND in linear mlp knn lp correct_smooth gcn gat sage; do
+  export TCC_GRAPH_KIND
+  export TCC_RUN_DIR=/runs/graph-${TCC_GRAPH_KIND}-fraction05-seed42
   python research_cli.py experimental train --config configs/experimental/graph_srm.yaml --execute
 done
 ```
@@ -118,10 +128,10 @@ Use a low-label SupCon projection to reduce full-scale graph dimension:
 
 ```bash
 # First fit metric_srm.yaml at the SAME fraction, seed and source cache.
-export FFB_PROJECTION_RUN=/runs/metric-supcon-fraction05-seed42
-export FFB_LABEL_MASK=$FFB_PROJECTION_RUN/label_mask.json
-export FFB_LABEL_FRACTION=0.05 FFB_GRAPH_KIND=sage FFB_GRAPH_PROTOCOL=inductive
-export FFB_RUN_DIR=/runs/graph-sage-fraction05-seed42
+export TCC_PROJECTION_RUN=/runs/metric-supcon-fraction05-seed42
+export TCC_LABEL_MASK=$TCC_PROJECTION_RUN/label_mask.json
+export TCC_LABEL_FRACTION=0.05 TCC_GRAPH_KIND=sage TCC_GRAPH_PROTOCOL=inductive
+export TCC_RUN_DIR=/runs/graph-sage-fraction05-seed42
 python research_cli.py experimental train --config configs/experimental/graph_fullscale.yaml --execute
 ```
 
