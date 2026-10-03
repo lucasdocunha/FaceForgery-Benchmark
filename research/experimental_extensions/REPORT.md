@@ -91,7 +91,21 @@ The first NF4 attempt correctly rejected unexpectedly quantized vision descendan
 
 ### Degraded proxy and frozen test access
 
-Pending: fixed repo-operator min-val-degraded-proxy, inference only with clean frozen thresholds; then at most three frozen candidates plus HF DINO-SRM through the actual audited pilot suite on min-test and min-test-degraded-proxy. The manifest recipe, candidate/checkpoint/calibration hashes and every access will be committed before the final pass. No new min-test access has occurred since the eight required checkpoint compatibility checks at this draft checkpoint.
+A fixed seed42 draw from the repository RandomizedRobustAugment operator creates `min-val-degraded-proxy`:224px, rotation/color/brightness/sharpness/blur/JPEG/noise according to that existing recipe, lossless RGB8 output, no severity selection. Per-image seeds derive from SHA256(seed,sample_id), and all source/degraded bytes are inventoried. It is not the benchmark Test-D distribution. All scoring reuses clean-val thresholds without refitting.
+
+| SBI condition | Clean min-val AUC | Degraded-proxy AUC | Paired delta95%CI |
+| --- | ---: | ---: | --- |
+| Generic SBI42 |0.4409|0.5000|[0.0231,0.0941] |
+| Generic MFFI42 |0.6905|0.6270|[-0.0898,-0.0308] |
+| Generic mixed42 |0.6466|0.5865|[-0.0925,-0.0278] |
+| HF SBI adaptation42 |0.9431|0.8345|[-0.1282,-0.0881] |
+| Generic SBI123 |0.5225|0.4912|[-0.0646,0.0012] |
+| Generic MFFI123 |0.7400|0.6455|[-0.1254,-0.0630] |
+| Generic mixed123 |0.7231|0.6053|[-0.1501,-0.0857] |
+
+An increase from below chance to chance is not useful robustness. The supervised/mixed arms lose discrimination and threshold accuracy under this degradation. The seven clean/degraded audited suites completed in65.04seconds, peak sampled RSS1987628KiB. Evidence: [pilot_results/sbi/validation_degraded_proxy.json](pilot_results/sbi/validation_degraded_proxy.json). Reconstruction and held-out fusion proxy results are pending.
+
+The frozen min-test comparison will use all three generic SBI seed42 arms and HF DINO-SRM. Seed42 was the first predeclared realization; seed123 checks source-side variability and is not used to choose a favorable test realization. This preserves the matched three-arm comparison requested before training. Checkpoint/calibration hashes will be committed before materializing or scoring the test proxy. No new min-test access has occurred since the eight required checkpoint compatibility checks at this draft checkpoint.
 
 ## Server campaign and experiment matrix
 

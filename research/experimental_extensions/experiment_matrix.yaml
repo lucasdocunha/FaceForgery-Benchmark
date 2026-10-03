@@ -25,8 +25,8 @@ common_evaluation_environment:
 - TCC_SUITE_OUTPUT
 - TCC_CALIBRATION_DIR
 instructions:
-- Set TCC_RUN_DIR from each row run_directory and choose one canonical TCC_SEED; export the matching pretrained
-  seed checkpoint.
+- 'Set TCC_RUN_DIR from each row and choose one canonical TCC_SEED. Respect that row seed_scope: metric/graph keep
+  the pretrained extractor fixed, while SBI/reconstruction use matching upstream seed conditions.'
 - Set TCC_EVAL_MODEL=$TCC_RUN_DIR and TCC_EVAL_CALIBRATION=$TCC_CALIBRATION_DIR/calibration.json after calibration.
 - Use the single suite_command for all four targets and paired Test/Test-D uncertainty.
 - Optional separate_suite_commands require the runbook split-config preparation; choose a fresh separate output
@@ -116,6 +116,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: sbi-hf-clip-srm
   priority: 1
   server_reason: Highest-priority conditional cross-dataset study; retain unadapted checkpoint and simple SRM fusion
@@ -169,6 +170,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: sbi-generic-sbi
   priority: 1
   server_reason: Required clean-training-forgery control; local failure must remain visible.
@@ -221,6 +223,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: sbi-generic-mffi
   priority: 1
   server_reason: Required clean-training-forgery control; local failure must remain visible.
@@ -273,6 +276,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: sbi-generic-mixed
   priority: 1
   server_reason: Required clean-training-forgery control; local failure must remain visible.
@@ -325,6 +329,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: srm-pair-plus-new-expert
   priority: 2
   server_reason: Advance only if held-out comparison supports complementarity over the strong SRM pair.
@@ -379,6 +384,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: moe-srm-rgb-reconstruction-soft
   priority: 2
   server_reason: Mandatory router vs individual/mean/geometric/LR comparisons; retain all baseline artifacts.
@@ -430,6 +436,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-residual-frozen
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: moe-srm-rgb-reconstruction-top2
   priority: 2
   server_reason: Mandatory router vs individual/mean/geometric/LR comparisons; retain all baseline artifacts.
@@ -481,6 +488,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-residual-frozen
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-cae
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
@@ -532,6 +540,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-vae
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
@@ -583,6 +592,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-gated
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
@@ -634,6 +644,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-residual-x_only
   priority: 3
   server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
@@ -690,6 +701,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-residual-residual_only
   priority: 3
   server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
@@ -746,6 +758,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-residual-frozen
   priority: 3
   server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
@@ -802,6 +815,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-residual-recon_finetune
   priority: 3
   server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
@@ -858,6 +872,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-residual-end_to_end
   priority: 3
   server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
@@ -914,6 +929,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-latent
   priority: 3
   server_reason: Retain as complementary-score hypothesis, not standalone promotion.
@@ -968,6 +984,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   depends_on:
   - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: reconstruction-spatial-latent-mean
   priority: 3
   server_reason: Cheap controlled test of spatial/latent complementarity.
@@ -1024,6 +1041,7 @@ experiments:
   depends_on:
   - reconstruction-residual-frozen
   - reconstruction-latent
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: vlm-qwen3-2b-nf4
   priority: 4
   server_reason: Exploratory continuous-score expert; no full-dataset performance evidence from tiny Smol feasibility.
@@ -1075,6 +1093,7 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/test_d
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
 - name: metric-srm
   priority: 4
   server_reason: 'Exploratory only: local projection did not beat stronger simple controls.'
@@ -1096,7 +1115,8 @@ experiments:
     - Test-D
     - DF-40
     - Celeb-DF v2
-  checkpoint_source: matching-seed verified HF SRM cache
+  checkpoint_source: fixed verified HF DINO-SRM seed42 cache reused across all downstream seeds; exact cache contract
+    remains bound
   config: configs/experimental/metric_srm.yaml
   environment:
     TCC_METRIC_KIND: supcon
@@ -1136,6 +1156,8 @@ experiments:
     - knn
     TCC_LABEL_FRACTION:
     - 1.0
+  seed_scope: downstream initialization and label selection; fixed HF seed42 extractor, with upstream uncertainty
+    excluded
 - name: graph-srm-low-label
   priority: 4
   server_reason: Exploratory downstream label efficiency only; local GNNs did not beat MLP.
@@ -1157,7 +1179,8 @@ experiments:
     - Test-D
     - DF-40
     - Celeb-DF v2
-  checkpoint_source: same-seed feature cache, projection and exact saved label mask
+  checkpoint_source: fixed verified HF DINO-SRM seed42 cache reused across all downstream seeds; exact cache contract
+    remains bound
   config: configs/experimental/graph_fullscale.yaml
   environment:
     TCC_GRAPH_KIND: sage
@@ -1208,3 +1231,5 @@ experiments:
     TCC_GRAPH_PROTOCOL:
     - inductive
     - transductive
+  seed_scope: downstream initialization and label selection; fixed HF seed42 extractor, with upstream uncertainty
+    excluded
