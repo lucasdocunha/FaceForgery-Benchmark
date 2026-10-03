@@ -1,0 +1,8 @@
+# Both source runs must share seed, input resolution and certified populations.
+task: mean_ensemble
+name: reconstruction-spatial-latent-mean
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+model:
+  spatial_run: ${TCC_SPATIAL_RUN}
+  latent_run: ${TCC_LATENT_RUN}

@@ -110,7 +110,10 @@ def test_all_detector_modes_and_self_contained_spatial_latent_mean(tmp_path, pop
     p = predict(spatial, *population["val"])
     q = predict(latent, *population["val"])
     combined = tmp_path / "combined"
-    combine(spatial, latent, combined)
+    mean_config = {"task": "mean_ensemble", "name": "spatial-latent-mean", "seed": 42,
+                   "output_dir": str(combined), "model": {"spatial_run": spatial, "latent_run": latent}}
+    fit(mean_config)
+    assert fit(mean_config, resume=True)["already_complete"]
     for run in [ae_cfg["output_dir"], *runs.values()]:
         shutil.rmtree(run)
     actual = predict(combined, *population["val"])
@@ -180,6 +183,8 @@ def test_server_configs_preserve_benchmark_resolution_and_explicit_kl_scale():
     assert len(files) >= 10
     for path in files:
         cfg = normalize_config(yaml.safe_load(path.read_text()))
+        if cfg["task"] == "mean_ensemble":
+            continue
         if path.name.startswith("server_"):
             assert cfg["model"]["ae"]["image_size"] == 224
         assert cfg["training"]["loss"]["kl_reduction"] == "mean_per_dim"

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -41,6 +42,14 @@ MODEL_DEFAULTS = {
 
 def normalize_config(config):
     config = copy.deepcopy(config)
+    if config.get("task") == "mean_ensemble":
+        if set(config) != {"task", "name", "seed", "output_dir", "model"} or set(config["model"]) != {"spatial_run", "latent_run"}:
+            raise ValueError("Mean ensemble config requires task, name, seed, output_dir and model spatial_run/latent_run")
+        if not isinstance(config["seed"], int) or isinstance(config["seed"], bool) or config["seed"] < 0:
+            raise ValueError("seed must be a nonnegative integer")
+        if not all(config.get(key) for key in ("name", "output_dir")) or not all(config["model"].values()):
+            raise ValueError("Declare mean ensemble name, output and both source runs")
+        return config
     required = {"task", "name", "seed", "output_dir", "data", "model", "training"}
     if set(config) != required:
         raise ValueError(f"Reconstruction config fields must be exactly {sorted(required)}")
@@ -279,14 +288,43 @@ def _fit_latent_normalizer(model, loader, device):
     model.feature_scale.copy_(scale.to(model.feature_scale))
 
 
+def _state_identity(model):
+    checksum = hashlib.sha256()
+    for name, tensor in model.state_dict().items():
+        checksum.update(name.encode())
+        checksum.update(str((tuple(tensor.shape), tensor.dtype)).encode())
+        checksum.update(tensor.detach().cpu().contiguous().numpy().tobytes())
+    return checksum.hexdigest()
+
+
 def fit(config, *, device="cpu", resume=False):
     from src.experimental.runtime import fit_model
 
     cfg = normalize_config(config)
+    if cfg["task"] == "mean_ensemble":
+        return combine(cfg["model"]["spatial_run"], cfg["model"]["latent_run"], cfg["output_dir"],
+                       device=device, name=cfg["name"], seed=cfg["seed"], resume=resume)
     root, t, m = Path(cfg["output_dir"]), cfg["training"], cfg["model"]
     train, val, tc, vc = _sources(cfg)
     old_record = json.loads((root / "run.json").read_text()) if resume and (root / "run.json").is_file() else None
+    if resume and old_record is None:
+        raise FileNotFoundError("No reconstruction run identity to resume")
     previous_assets = old_record["config"]["provenance"]["initialization_sha256"] if old_record else None
+    seed_all(cfg["seed"])
+    model, size = None, m["ae"]["image_size"]
+    if not resume:
+        model = build_model(m, task=cfg["task"]).to(device)
+        if isinstance(model, LatentDetector):
+            clean = CanonicalDataset(train, cfg["data"]["train_root"], size)
+            _fit_latent_normalizer(model, DataLoader(clean, batch_size=t["batch_size"], num_workers=t["workers"]), device)
+        initial_state = _state_identity(model)
+    else:
+        initial_state = old_record["config"]["provenance"].get("initial_model_state_sha256")
+    ae_gradient_source = "genuine reconstruction only" if cfg["task"] == "ae" else {
+        "frozen": "frozen after genuine pretraining",
+        "recon_finetune": "genuine reconstruction only",
+        "end_to_end": "classification on all training examples plus genuine reconstruction",
+    }[m["ae_mode"]]
     cfg["provenance"] = {
         "train_manifest_sha256": tc["manifest_sha256"], "val_manifest_sha256": vc["manifest_sha256"],
         "training_images_sha256": digest(sorted(zip(train.sample_id, train.sha256))),
@@ -295,11 +333,12 @@ def fit(config, *, device="cpu", resume=False):
         "n_train": len(train), "n_train_real": int(train.label.eq(0).sum()), "n_train_fake": int(train.label.eq(1).sum()),
         "n_val": len(val), "n_val_real": int(val.label.eq(0).sum()),
         "label_convention": "fake-is-1",
-        "ae_gradient_source": ("classification on all training examples plus genuine reconstruction" if m["ae_mode"] == "end_to_end" else "frozen after genuine pretraining") if cfg["task"] != "ae" and m["ae_mode"] != "recon_finetune" else "genuine reconstruction only",
+        "ae_gradient_source": ae_gradient_source,
         "initialization_exposure": "generic_pretrained" if m["backbone_weights"] else "scratch",
         "training_fake_source": "none" if cfg["task"] == "ae" else "source-manifest fakes",
         "score_semantics": "bounded mean raw-RGB L1; larger is faker; not probability calibration" if cfg["task"] == "ae" else "softmax class 1 is fake",
         "initialization_sha256": _asset_identity(cfg, previous=previous_assets),
+        "initial_model_state_sha256": initial_state,
         "reconstruction_code_sha256": {p.name: digest_file(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
         "training_runtime_sha256": digest_file(Path(__file__).parents[1] / "runtime.py"),
         "canonical_imaging_sha256": digest_file(Path(__file__).parents[2] / "robustness" / "imaging.py"),
@@ -314,15 +353,11 @@ def fit(config, *, device="cpu", resume=False):
     if resume and (root / "status.json").is_file() and json.loads((root / "status.json").read_text()).get("state") == "complete":
         _verify_artifacts(root)
         return {"run_dir": str(root), **json.loads((root / "telemetry.json").read_text()), "validation": json.loads((root / "validation_metrics.json").read_text()), "already_complete": True}
-    seed_all(cfg["seed"])
-    model = build_model(m, task=cfg["task"], initialize=not resume).to(device)
+    if model is None:
+        model = build_model(m, task=cfg["task"], initialize=False).to(device)
     criterion = CompositeReconstructionLoss(**t["loss"]).to(device)
-    size = m["ae"]["image_size"]
     dataset = _EpochDataset(train, cfg["data"]["train_root"], size, training=True, recipe=t["recipe"], seed=cfg["seed"])
     loader = DataLoader(dataset, batch_size=t["batch_size"], shuffle=True, generator=torch.Generator().manual_seed(cfg["seed"]), num_workers=t["workers"], persistent_workers=False)
-    if isinstance(model, LatentDetector) and not resume:
-        clean = CanonicalDataset(train, cfg["data"]["train_root"], size)
-        _fit_latent_normalizer(model, DataLoader(clean, batch_size=t["batch_size"], num_workers=t["workers"]), device)
     groups = [{"name": "autoencoder", "params": model.parameters(), "lr": t["lr_ae"]}] if cfg["task"] == "ae" else model.parameter_groups(t["lr_ae"], t["lr_backbone"], t["lr_head"])
     optimizer = torch.optim.AdamW(groups, weight_decay=t["weight_decay"])
 
@@ -397,20 +432,29 @@ def _finalize(model, cfg, val, vc, root, result, device):
     return {**result, "validation": metrics}
 
 
-def combine(spatial_run, latent_run, output_dir, *, device="cpu", name="spatial-latent-mean"):
+def combine(spatial_run, latent_run, output_dir, *, device="cpu", name="spatial-latent-mean", seed=None, resume=False):
     """Export a standalone fixed probability mean and source-val calibration."""
     root = Path(output_dir)
-    if root.exists():
+    if root.exists() and not resume:
         raise FileExistsError("Use a new mean-ensemble output directory")
     spatial_info, latent_info = describe_run(spatial_run), describe_run(latent_run)
     a, b = (info["run_record"]["config"] for info in (spatial_info, latent_info))
     if a["task"] != "residual" or b["task"] != "latent":
         raise ValueError("Combine requires completed residual and latent runs")
+    if a["seed"] != b["seed"] or (seed is not None and seed != a["seed"]):
+        raise ValueError("Mean ensemble source seeds must match the requested realization")
     if a["model"]["ae"]["image_size"] != b["model"]["ae"]["image_size"]:
         raise ValueError("Spatial and latent models must have the same input resolution")
     for key in ("train_manifest_sha256", "val_manifest_sha256"):
         if a["provenance"][key] != b["provenance"][key]:
             raise ValueError("Component source populations differ")
+    if resume:
+        previous = describe_run(root)["run_record"]["config"]
+        expected = {"spatial": spatial_info["bundle_sha256"], "latent": latent_info["bundle_sha256"]}
+        if previous["name"] != name or previous["seed"] != a["seed"] or previous["provenance"]["component_sha256"] != expected:
+            raise ValueError("Mean ensemble resume components or identity changed")
+        return {"run_dir": str(root), "already_complete": True,
+                "validation": json.loads((root / "validation_metrics.json").read_text())}
     model = MeanReconstructionEnsemble(load_model(spatial_run, device), load_model(latent_run, device)).eval()
     cfg = {"task": "mean_ensemble", "name": name, "seed": a["seed"], "output_dir": str(root),
            "data": copy.deepcopy(a["data"]), "training": copy.deepcopy(a["training"]),

@@ -55,7 +55,15 @@ python research_cli.py evaluate-suite \
 
 Use the canonical seed set 42, 123, 2024, 7, 2025, setting a fresh `TCC_RUN_DIR` for each condition and seed. Point `TCC_AE_RUN` at the matching completed pretraining run. The source configs provide CAE, VAE and gated AE, frozen spatial/latent heads and both spatial AE adaptation modes. Copy the spatial config for `x_only`, `residual_only` and `full`, keeping all remaining settings and generic initialization fixed. Evaluation uses the suite's Test, Test-D, DF-40 and Celeb-DF manifests, with the source-val threshold frozen. The suite dry run validates paths/contracts without model inference when `--execute` is omitted.
 
-The fixed combined model needs no fitting:
+The fixed combined model needs no fitting. Set `TCC_SPATIAL_RUN` and `TCC_LATENT_RUN` and use the same public command:
+
+```bash
+python research_cli.py experimental train --family reconstruction \
+  --config configs/experimental/reconstruction/mean_ensemble.yaml \
+  --seed 42 --device cuda:0 --execute
+```
+
+It is also available through Python:
 
 ```python
 from src.experimental.reconstruction import combine
@@ -68,6 +76,6 @@ The resulting run uses the same suite as an individual reconstruction model. Bot
 
 `python -m src.experimental.reconstruction.pilot` accepts explicit source manifest/root paths, output directory and offline weights. `--phase ae` trains CAE/VAE/gated for three epochs on all 202 min-train reals and, if requested, a one-epoch LPIPS/cyclic-beta VAE smoke. `--phase detectors` trains all three frozen ResNet input arms for two epochs each on the full 1,000-image train population, a frozen latent head, one-epoch checks for both AE adaptation modes in spatial and latent heads, and the fixed spatial/latent mean. Default local resolution is 128, AE width 8, latent dimension 32, batch 8 and seed 42. Equal-budget arm settings are mechanically checked by a test.
 
-Run serially under the shared GPU lock and the resource watchdog. Phase limits are at most 1,200 seconds and 3,072 MiB RSS; stop for memory pressure. A short structural GPU smoke is separate from this method comparison. The campaign never accepts a test manifest. `--phase report --reference-root PATH` reads only completed source-validation outputs and HF `predictions_val.csv` files. Historical HF filename IDs are joined explicitly to canonical `img_name`, with exact population and label checks. Summaries report AUC intervals, EER/F1/accuracy, raw-score variation, prediction correlation, repaired/regressed errors and fixed-mean AUC changes. The paired full-fusion versus RGB AUC interval uses the same bootstrap draws.
+Run serially under the shared GPU lock and the resource watchdog. Phase limits are at most 1,200 seconds and 3,072 MiB RSS; stop for memory pressure. A short structural GPU smoke is separate from this method comparison. The campaign never accepts a test manifest. It records and checks equal initial model-state hashes and realized optimizer-update counts across the three spatial input arms. `--phase report --reference-root PATH` reads only completed source-validation outputs and HF `predictions_val.csv` files. Historical HF filename IDs are joined explicitly to canonical `img_name`, with exact population and label checks. Summaries report AUC intervals, EER/F1/accuracy, raw-score variation, prediction correlation, repaired/regressed errors and fixed-mean AUC changes. The paired full-fusion versus RGB AUC interval uses the same bootstrap draws.
 
 These are pilot/min-dataset/development results. A single seed and 202 genuine training faces do not establish full-benchmark improvements. HF checkpoints saw min-train and used a validation population containing min-val for selection. Manifest groups lack identities/videos; the supplied grouping cannot establish identity-independent confidence intervals. Code tests and structural smokes are implementation evidence, not quality results. Pilot results will be recorded separately after the authorized GPU campaign, before any frozen min-test access.

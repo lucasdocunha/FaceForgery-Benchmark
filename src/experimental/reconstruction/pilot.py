@@ -95,11 +95,28 @@ def run_campaign(args):
         if str(args.device).startswith("cuda"):
             torch.cuda.empty_cache()
     if args.phase != "ae":
+        verify_controlled_arms(root)
         combined = root / "spatial-latent-mean"
         if not combined.exists():
             combine(root / "residual-full", root / "latent", combined, device=args.device)
         else:
             describe_run(combined)
+
+
+def verify_controlled_arms(root):
+    root = Path(root)
+    controls = {}
+    for mode in ("x_only", "residual_only", "full"):
+        run = root / ("residual-" + mode)
+        record = describe_run(run)["run_record"]
+        telemetry = json.loads((run / "telemetry.json").read_text())
+        controls[mode] = {"initial_model_state_sha256": record["config"]["provenance"]["initial_model_state_sha256"],
+                          "global_step": telemetry["global_step"], "epochs_completed": telemetry["epochs_completed"],
+                          "seed": record["seed"]}
+    if any(len({values[key] for values in controls.values()}) != 1 for key in next(iter(controls.values()))):
+        raise ValueError("Residual input arms did not preserve initial model state, seed and update budget")
+    write_json(root / "matched_controls.json", {"purpose": "pilot/min-dataset/development", "matched": True, "arms": controls})
+    return controls
 
 
 def summarize(root, *, reference_root=None, draws=200):

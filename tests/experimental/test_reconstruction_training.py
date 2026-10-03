@@ -30,7 +30,7 @@ def source_config(tmp_path):
         rows = []
         for index in range(6):
             identity = f"{split}-{index}"
-            pixels = np.full((32, 32, 3), 60 + index * 20, dtype=np.uint8)
+            pixels = np.full((32, 32, 3), 60 + index * 20 + (3 if split == "val" else 0), dtype=np.uint8)
             pixels[::3, :, 0] += 20
             Image.fromarray(pixels).save(root / f"{identity}.png")
             rows.append({"sample_id": identity, "img_name": f"{identity}.png", "label": index % 2,
