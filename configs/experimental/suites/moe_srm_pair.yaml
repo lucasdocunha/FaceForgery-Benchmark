@@ -1,0 +1,87 @@
+# DF40 pooled reals match legacy tables but remain source-domain confounded.
+model:
+  type: experimental
+  family: moe
+  path: ${TCC_EVAL_MODEL}
+  options:
+    target_caches:
+      test:
+      - name: dino_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_DINO_SRM_CACHE}
+      - name: clip_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_CLIP_SRM_CACHE}
+      - name: new_expert
+        role: ${TCC_NEW_EXPERT_ROLE}
+        kind: predictions
+        path: ${TCC_EVAL_TEST_NEW_EXPERT_PREDICTIONS}
+      test_d:
+      - name: dino_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_D_DINO_SRM_CACHE}
+      - name: clip_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_D_CLIP_SRM_CACHE}
+      - name: new_expert
+        role: ${TCC_NEW_EXPERT_ROLE}
+        kind: predictions
+        path: ${TCC_EVAL_TEST_D_NEW_EXPERT_PREDICTIONS}
+      df40:
+      - name: dino_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_DF40_DINO_SRM_CACHE}
+      - name: clip_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_DF40_CLIP_SRM_CACHE}
+      - name: new_expert
+        role: ${TCC_NEW_EXPERT_ROLE}
+        kind: predictions
+        path: ${TCC_EVAL_DF40_NEW_EXPERT_PREDICTIONS}
+      celeb_df_v2:
+      - name: dino_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_CELEB_DINO_SRM_CACHE}
+      - name: clip_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_CELEB_CLIP_SRM_CACHE}
+      - name: new_expert
+        role: ${TCC_NEW_EXPERT_ROLE}
+        kind: predictions
+        path: ${TCC_EVAL_CELEB_NEW_EXPERT_PREDICTIONS}
+calibration: ${TCC_EVAL_CALIBRATION}
+output: ${TCC_OUTPUT_ROOT}/evaluation
+scope: benchmark
+targets:
+- name: test
+  manifest: ${TCC_EVAL_TEST_MANIFEST}
+  root: ${TCC_EVAL_TEST_ROOT}
+- name: test_d
+  manifest: ${TCC_EVAL_TEST_D_MANIFEST}
+  root: ${TCC_EVAL_TEST_D_ROOT}
+- name: df40
+  manifest: ${TCC_EVAL_DF40_MANIFEST}
+  root: ${TCC_EVAL_DF40_ROOT}
+  breakdown: true
+  real_reference_policy: pooled_all_real
+- name: celeb_df_v2
+  manifest: ${TCC_EVAL_CELEB_MANIFEST}
+  root: ${TCC_EVAL_CELEB_ROOT}
+  primary_unit: video
+inference:
+  device: cpu
+  batch_size: 16
+  workers: 0
+  use_amp: true
+  bootstrap_draws: 1000
+  bootstrap_seed: 42
+  confidence: 0.95
+  plots: true

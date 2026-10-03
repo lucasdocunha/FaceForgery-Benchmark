@@ -2,12 +2,12 @@ task: vlm
 name: qwen3vl2b_nf4_qlora
 scope: full-benchmark-server
 seed: 42
-output_dir: ${TCC_MODELS_ROOT}/experimental/vlm_qwen3_2b/seed_42
+output_dir: ${TCC_RUN_DIR}
 data:
-  train_manifest: ${TCC_DATA_ROOT}/train.csv
-  val_manifest: ${TCC_DATA_ROOT}/val.csv
-  train_root: ${TCC_DATASET_ROOT}/trainset
-  val_root: ${TCC_DATASET_ROOT}/valset
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
 model:
   model_id: Qwen/Qwen3-VL-2B-Instruct
   revision: 89644892e4d85e24eaac8bacfd4f463576704203

@@ -2,12 +2,12 @@ task: vlm
 name: smolvlm256_nf4_qlora_smoke
 scope: min-dataset-smoke
 seed: 42
-output_dir: ${TCC_MODELS_ROOT}/experimental/vlm_smol256_nf4/seed_42
+output_dir: ${TCC_RUN_DIR}
 data:
-  train_manifest: ${TCC_DATA_ROOT}/min-train.csv
-  val_manifest: ${TCC_DATA_ROOT}/min-val.csv
-  train_root: ${TCC_DATASET_ROOT}/train
-  val_root: ${TCC_DATASET_ROOT}/val
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
   train_limit: 16
   val_limit: 16
 model:

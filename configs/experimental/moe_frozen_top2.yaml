@@ -2,7 +2,7 @@ task: moe
 name: frozen_srm_rgb_reconstruction_top2
 scope: server-experimental
 seed: 42
-output_dir: ${TCC_MODELS_ROOT}/experimental/moe_frozen_top2/seed_42
+output_dir: ${TCC_RUN_DIR}
 data:
   experts:
     - {name: srm, role: srm, kind: feature_cache, path: '${TCC_FEATURE_SRM_VAL}'}

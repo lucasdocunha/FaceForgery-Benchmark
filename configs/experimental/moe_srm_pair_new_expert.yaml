@@ -1,26 +1,27 @@
+# Compare router and every simple fusion on the same held-out split.
 task: moe
-name: frozen_srm_rgb_reconstruction_soft
+name: srm_pair_plus_new_expert
 scope: server-experimental
 seed: 42
 output_dir: ${TCC_RUN_DIR}
 data:
-  # Every source is the same complete certified MFFI val population.
-  # Feature directories come from the shared provenance-bound extractor.
   experts:
-    - name: srm
-      role: srm
-      kind: feature_cache
-      path: ${TCC_FEATURE_SRM_VAL}
-    - name: rgb
-      role: rgb
-      kind: feature_cache
-      path: ${TCC_FEATURE_RGB_VAL}
-    - name: reconstruction
-      role: reconstruction
-      kind: predictions
-      path: ${TCC_RECON_VAL_PREDICTIONS}
-      calibration: ${TCC_RECON_CALIBRATION}
-  required_roles: [srm, rgb, reconstruction]
+  - name: dino_srm
+    role: srm
+    kind: feature_cache
+    path: ${TCC_FEATURE_DINO_SRM_VAL}
+  - name: clip_srm
+    role: srm
+    kind: feature_cache
+    path: ${TCC_FEATURE_CLIP_SRM_VAL}
+  - name: new_expert
+    role: ${TCC_NEW_EXPERT_ROLE}
+    kind: predictions
+    path: ${TCC_NEW_EXPERT_VAL_PREDICTIONS}
+    calibration: ${TCC_NEW_EXPERT_CALIBRATION}
+  required_roles:
+  - srm
+  - ${TCC_NEW_EXPERT_ROLE}
   split_seed: 42
   fit_fraction: 0.5
 model:

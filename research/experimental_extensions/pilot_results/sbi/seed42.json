@@ -1,0 +1,564 @@
+{
+  "purpose": "pilot/min-dataset/source-validation development",
+  "software": {
+    "commit": "0f7079f9a4436c5e197c3e30f0671ff4efa68fa1",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "seed": 42,
+  "train_n": 1000,
+  "val_n": 1000,
+  "epochs": 5,
+  "selection": "MFFI validation fakes are used for checkpoint and threshold selection",
+  "test_accesses": 0,
+  "runs": [
+    {
+      "arm": "sbi",
+      "initialization": "imagenet",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi",
+      "config": {
+        "name": "sbi-generic-sbi",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "mobilenet_v3_large",
+          "initialization": "imagenet",
+          "weights": "/home/lucas/ffb-research/local/torch-cache/hub/checkpoints/mobilenet_v3_large-5c1a4163.pth",
+          "image_size": 224,
+          "mode": "srm",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "sbi",
+          "epochs": 5,
+          "batch_size": 8,
+          "workers": 0,
+          "grad_accum_steps": 4,
+          "lr_backbone": 0.0001,
+          "lr_head": 0.001,
+          "early_stop_patience": 6,
+          "cache_images": true,
+          "bootstrap_draws": 300
+        }
+      },
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.4409301304981452,
+        "average_precision": 0.5573542790906993,
+        "balanced_accuracy": 0.505431902490726,
+        "eer": 0.5489864864864866,
+        "eer_threshold": 0.40116024903348974,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.7263157894736842,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.584,
+        "brier": 0.29134187533348677,
+        "log_loss": 0.7808581794431401,
+        "ece_10_equal_width": 0.1880868312418461,
+        "threshold": 0.2881683111190796,
+        "tn": 32,
+        "fp": 376,
+        "fn": 40,
+        "tp": 552,
+        "confusion_matrix": [
+          [
+            32,
+            376
+          ],
+          [
+            40,
+            552
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.0784313725490196,
+            0.9215686274509803
+          ],
+          [
+            0.06756756756756757,
+            0.9324324324324325
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.9215686274509803,
+        "tpr": 0.9324324324324325,
+        "auc_status": "defined",
+        "purpose": "pilot/min-dataset/development",
+        "threshold_policy": "youden",
+        "auc_ci": {
+          "estimate": 0.4409301304981452,
+          "lower": 0.405686344942769,
+          "upper": 0.471158836342752,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "telemetry": {
+        "runtime_seconds": 48.74296142999992,
+        "peak_vram_bytes": 436943872,
+        "peak_rss_kib": 2340564,
+        "trainable_parameters": 4205026,
+        "epochs_completed": 5,
+        "global_step": 65,
+        "best_epoch": 0,
+        "best_metric": 0.4409301304981452
+      },
+      "initial_model_state_sha256": "2cdc0e5bf5af443d0217cd46aaec14977682c631a778a851bad9f2142e6f64e7",
+      "best_checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+      "reload_max_abs_error": 8.326672684688674e-17,
+      "wall_seconds_including_reload": 57.824504442000034
+    },
+    {
+      "arm": "mffi",
+      "initialization": "imagenet",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mffi",
+      "config": {
+        "name": "sbi-generic-mffi",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mffi",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "mobilenet_v3_large",
+          "initialization": "imagenet",
+          "weights": "/home/lucas/ffb-research/local/torch-cache/hub/checkpoints/mobilenet_v3_large-5c1a4163.pth",
+          "image_size": 224,
+          "mode": "srm",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "mffi",
+          "epochs": 5,
+          "batch_size": 8,
+          "workers": 0,
+          "grad_accum_steps": 4,
+          "lr_backbone": 0.0001,
+          "lr_head": 0.001,
+          "early_stop_patience": 6,
+          "cache_images": true,
+          "bootstrap_draws": 300
+        }
+      },
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.6905368143879173,
+        "average_precision": 0.8047067662754942,
+        "balanced_accuracy": 0.6804451510333863,
+        "eer": 0.3530405405405405,
+        "eer_threshold": 0.5414227553316066,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6226012793176973,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.646,
+        "brier": 0.23910753100202947,
+        "log_loss": 0.6922563831747122,
+        "ece_10_equal_width": 0.1479062417782843,
+        "threshold": 0.7631309032440186,
+        "tn": 354,
+        "fp": 54,
+        "fn": 300,
+        "tp": 292,
+        "confusion_matrix": [
+          [
+            354,
+            54
+          ],
+          [
+            300,
+            292
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8676470588235294,
+            0.1323529411764706
+          ],
+          [
+            0.5067567567567568,
+            0.49324324324324326
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.1323529411764706,
+        "tpr": 0.49324324324324326,
+        "auc_status": "defined",
+        "purpose": "pilot/min-dataset/development",
+        "threshold_policy": "youden",
+        "auc_ci": {
+          "estimate": 0.6905368143879173,
+          "lower": 0.6589534859848392,
+          "upper": 0.7207662809534632,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "telemetry": {
+        "runtime_seconds": 37.37202076500034,
+        "peak_vram_bytes": 436943872,
+        "peak_rss_kib": 2515724,
+        "trainable_parameters": 4205026,
+        "epochs_completed": 5,
+        "global_step": 65,
+        "best_epoch": 3,
+        "best_metric": 0.6905368143879173
+      },
+      "initial_model_state_sha256": "2cdc0e5bf5af443d0217cd46aaec14977682c631a778a851bad9f2142e6f64e7",
+      "best_checkpoint_sha256": "f8b27f09c6825840d5d01791515111012bf68ecd0477d775d604a63d5602f450",
+      "reload_max_abs_error": 1.1102230246251565e-16,
+      "wall_seconds_including_reload": 48.3258415119999
+    },
+    {
+      "arm": "mixed",
+      "initialization": "imagenet",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mixed",
+      "config": {
+        "name": "sbi-generic-mixed",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/mixed",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "mobilenet_v3_large",
+          "initialization": "imagenet",
+          "weights": "/home/lucas/ffb-research/local/torch-cache/hub/checkpoints/mobilenet_v3_large-5c1a4163.pth",
+          "image_size": 224,
+          "mode": "srm",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "mixed",
+          "epochs": 5,
+          "batch_size": 8,
+          "workers": 0,
+          "grad_accum_steps": 4,
+          "lr_backbone": 0.0001,
+          "lr_head": 0.001,
+          "early_stop_patience": 6,
+          "cache_images": true,
+          "bootstrap_draws": 300
+        }
+      },
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.6466096151298357,
+        "average_precision": 0.7261810548813492,
+        "balanced_accuracy": 0.6097144939056703,
+        "eer": 0.396356783919598,
+        "eer_threshold": 0.3108143530898358,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6391941391941391,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.606,
+        "brier": 0.2874952543250058,
+        "log_loss": 0.7906903852280465,
+        "ece_10_equal_width": 0.24289674001559616,
+        "threshold": 0.3182732164859772,
+        "tn": 257,
+        "fp": 151,
+        "fn": 243,
+        "tp": 349,
+        "confusion_matrix": [
+          [
+            257,
+            151
+          ],
+          [
+            243,
+            349
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.6299019607843137,
+            0.3700980392156863
+          ],
+          [
+            0.41047297297297297,
+            0.589527027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.3700980392156863,
+        "tpr": 0.589527027027027,
+        "auc_status": "defined",
+        "purpose": "pilot/min-dataset/development",
+        "threshold_policy": "youden",
+        "auc_ci": {
+          "estimate": 0.6466096151298357,
+          "lower": 0.6167219687584471,
+          "upper": 0.6766600508258408,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "telemetry": {
+        "runtime_seconds": 39.23607289199981,
+        "peak_vram_bytes": 436943872,
+        "peak_rss_kib": 2523916,
+        "trainable_parameters": 4205026,
+        "epochs_completed": 5,
+        "global_step": 65,
+        "best_epoch": 4,
+        "best_metric": 0.6466096151298357
+      },
+      "initial_model_state_sha256": "2cdc0e5bf5af443d0217cd46aaec14977682c631a778a851bad9f2142e6f64e7",
+      "best_checkpoint_sha256": "d1eb9f6249fc210fa85cfcf589e1cfe8c4892ded922cb5a19a2feb2994d389d4",
+      "reload_max_abs_error": 1.1102230246251565e-16,
+      "wall_seconds_including_reload": 49.75711348699997
+    },
+    {
+      "arm": "sbi",
+      "initialization": "hf_mffi",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/hf-sbi-smoke",
+      "config": {
+        "name": "sbi-hf-smoke",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/hf-sbi-smoke",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "mobilenet_v3_large",
+          "initialization": "hf_mffi",
+          "weights": "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/mobilenet/srm/finetune_robust/seed_42/weights/best.pth",
+          "image_size": 224,
+          "mode": "srm",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "sbi",
+          "epochs": 1,
+          "batch_size": 8,
+          "workers": 0,
+          "grad_accum_steps": 4,
+          "lr_backbone": 1e-05,
+          "lr_head": 0.0001,
+          "early_stop_patience": 6,
+          "cache_images": true,
+          "bootstrap_draws": 300
+        }
+      },
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9430664580021199,
+        "average_precision": 0.9642139438403475,
+        "balanced_accuracy": 0.869435612082671,
+        "eer": 0.13480392156862744,
+        "eer_threshold": 0.5069692567283034,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.8782222222222222,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.863,
+        "brier": 0.09712273854433348,
+        "log_loss": 0.3080009935206134,
+        "ece_10_equal_width": 0.036865291103458715,
+        "threshold": 0.6295468807220459,
+        "tn": 369,
+        "fp": 39,
+        "fn": 98,
+        "tp": 494,
+        "confusion_matrix": [
+          [
+            369,
+            39
+          ],
+          [
+            98,
+            494
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9044117647058824,
+            0.09558823529411764
+          ],
+          [
+            0.16554054054054054,
+            0.8344594594594594
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.09558823529411764,
+        "tpr": 0.8344594594594594,
+        "auc_status": "defined",
+        "purpose": "pilot/min-dataset/development",
+        "threshold_policy": "youden",
+        "auc_ci": {
+          "estimate": 0.9430664580021199,
+          "lower": 0.928873574998638,
+          "upper": 0.9531157829902964,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "telemetry": {
+        "runtime_seconds": 8.184142448999864,
+        "peak_vram_bytes": 436943872,
+        "peak_rss_kib": 2552576,
+        "trainable_parameters": 4205026,
+        "epochs_completed": 1,
+        "global_step": 13,
+        "best_epoch": 0,
+        "best_metric": 0.9430664580021199
+      },
+      "initial_model_state_sha256": "ce17249f76e0a7c42caeba67e410e739dc09ffbbdd3d7d2eade991478ade77bf",
+      "best_checkpoint_sha256": "9966172388d379d35a2923ce83b1097d881029c72e7000a05d07f9e762757882",
+      "reload_max_abs_error": 1.1102230246251565e-16,
+      "wall_seconds_including_reload": 17.879665768999985
+    }
+  ],
+  "limitations": [
+    "202 independent source real faces in local min-train",
+    "MediaPipe hull differs from original SBI dlib81",
+    "No local DF40 or Celeb-DF data"
+  ],
+  "device_srm_max_abs_difference_from_legacy_cpu": 2.384185791015625e-07,
+  "matched_initial_state_and_updates": true,
+  "paired_auc_delta_vs_mffi": {
+    "sbi": {
+      "estimate": -0.24960668388977203,
+      "lower": -0.297580945742353,
+      "upper": -0.19935061263433893,
+      "confidence": 0.95,
+      "requested_draws": 300,
+      "valid_draws": 300,
+      "groups": 1000,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    },
+    "mixed": {
+      "estimate": -0.04392719925808153,
+      "lower": -0.08037422001715724,
+      "upper": -0.005709938490936938,
+      "confidence": 0.95,
+      "requested_draws": 300,
+      "valid_draws": 300,
+      "groups": 1000,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    }
+  },
+  "watchdog": {
+    "command": [
+      ".venv/bin/python",
+      "scripts/sbi_pilot.py",
+      "--train-manifest",
+      "/home/lucas/ffb-research/local/manifests/min-train.csv",
+      "--val-manifest",
+      "/home/lucas/ffb-research/local/manifests/min-val.csv",
+      "--train-root",
+      "/home/lucas/ffb-research/local/data/min_dataset/train",
+      "--val-root",
+      "/home/lucas/ffb-research/local/data/min_dataset/val",
+      "--landmarks",
+      "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite",
+      "--generic-weights",
+      "/home/lucas/ffb-research/local/torch-cache/hub/checkpoints/mobilenet_v3_large-5c1a4163.pth",
+      "--hf-checkpoint",
+      "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/mobilenet/srm/finetune_robust/seed_42/weights/best.pth",
+      "--output",
+      "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42",
+      "--device",
+      "cuda:0"
+    ],
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_sampled_rss_kib": 2553732,
+    "seconds": 178.61129571999982
+  },
+  "artifact_note": "Small source-validation pilot record; trained checkpoints and predictions remain outside git. Absolute paths describe this local execution only."
+}

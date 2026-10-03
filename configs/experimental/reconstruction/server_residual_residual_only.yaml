@@ -34,7 +34,7 @@ training:
   weight_decay: 0.0001
   reconstruction_weight: 1.0
   recipe: basic_v1
-  early_stop_patience: 5
+  early_stop_patience: 21
   plots: true
   threshold_policy: youden
   loss:

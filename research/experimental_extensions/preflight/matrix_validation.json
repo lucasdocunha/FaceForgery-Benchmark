@@ -1,0 +1,131 @@
+{
+  "purpose": "portable configuration resolution and shared CLI dry preflight; no asset load or training",
+  "rows": [
+    {
+      "name": "sbi-hf-dino-srm",
+      "config": "configs/experimental/sbi_hf_adaptation.yaml",
+      "family": "sbi",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "sbi-hf-clip-srm",
+      "config": "configs/experimental/sbi_hf_adaptation.yaml",
+      "family": "sbi",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "sbi-generic-sbi",
+      "config": "configs/experimental/sbi_generic.yaml",
+      "family": "sbi",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "sbi-generic-mffi",
+      "config": "configs/experimental/sbi_generic.yaml",
+      "family": "sbi",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "sbi-generic-mixed",
+      "config": "configs/experimental/sbi_generic.yaml",
+      "family": "sbi",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "srm-pair-plus-new-expert",
+      "config": "configs/experimental/moe_srm_pair_new_expert.yaml",
+      "family": "moe",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "moe-srm-rgb-reconstruction-soft",
+      "config": "configs/experimental/moe_frozen_soft.yaml",
+      "family": "moe",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "moe-srm-rgb-reconstruction-top2",
+      "config": "configs/experimental/moe_frozen_top2.yaml",
+      "family": "moe",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-cae",
+      "config": "configs/experimental/reconstruction/server_cae.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-vae",
+      "config": "configs/experimental/reconstruction/server_vae.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-gated",
+      "config": "configs/experimental/reconstruction/server_gated.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-residual-x_only",
+      "config": "configs/experimental/reconstruction/server_residual_x_only.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-residual-residual_only",
+      "config": "configs/experimental/reconstruction/server_residual_residual_only.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-residual-frozen",
+      "config": "configs/experimental/reconstruction/server_residual_frozen.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-residual-recon_finetune",
+      "config": "configs/experimental/reconstruction/server_residual_recon_finetune.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-residual-end_to_end",
+      "config": "configs/experimental/reconstruction/server_residual_end_to_end.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-latent",
+      "config": "configs/experimental/reconstruction/server_latent_frozen.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "reconstruction-spatial-latent-mean",
+      "config": "configs/experimental/reconstruction/mean_ensemble.yaml",
+      "family": "reconstruction",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "vlm-qwen3-2b-nf4",
+      "config": "configs/experimental/vlm_qwen3_2b_server.yaml",
+      "family": "vlm",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "metric-srm",
+      "config": "configs/experimental/metric_srm.yaml",
+      "family": "metric",
+      "state": "planned_not_executed"
+    },
+    {
+      "name": "graph-srm-low-label",
+      "config": "configs/experimental/graph_fullscale.yaml",
+      "family": "graph",
+      "state": "planned_not_executed"
+    }
+  ]
+}

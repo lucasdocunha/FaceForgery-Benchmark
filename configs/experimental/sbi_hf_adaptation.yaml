@@ -1,16 +1,16 @@
 # Adaptation after MFFI fake exposure. This is not a clean unseen-forgery proxy.
-name: sbi-hf-mobilenet-srm
+name: sbi-hf-adaptation
 seed: 42
-output_dir: ${TCC_EXPERIMENT_ROOT}/sbi-hf/seed_42
+output_dir: ${TCC_RUN_DIR}
 data:
-  train_manifest: ${TCC_DATA_ROOT}/certified/train.csv
-  val_manifest: ${TCC_DATA_ROOT}/certified/val.csv
-  train_root: ${TCC_DATASET_ROOT}/train
-  val_root: ${TCC_DATASET_ROOT}/val
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
   landmarks: ${TCC_DATA_ROOT}/landmarks/train-real.sqlite
 model:
   initialization: hf_mffi
-  weights: ${TCC_MODELS_ROOT}/mobilenet/srm/finetune_robust/seed_42/weights/best.pth
+  weights: ${TCC_SBI_INIT_CHECKPOINT}
   mode: srm
   image_size: 224
   train_backbone: true
