@@ -1,0 +1,50 @@
+task: moe
+name: frozen_srm_rgb_reconstruction_soft
+scope: server-experimental
+seed: 42
+output_dir: ${TCC_MODELS_ROOT}/experimental/moe_frozen_soft/seed_42
+data:
+  # Every source is the same complete certified MFFI val population.
+  # Feature directories come from the shared provenance-bound extractor.
+  experts:
+    - name: srm
+      role: srm
+      kind: feature_cache
+      path: ${TCC_FEATURE_SRM_VAL}
+    - name: rgb
+      role: rgb
+      kind: feature_cache
+      path: ${TCC_FEATURE_RGB_VAL}
+    - name: reconstruction
+      role: reconstruction
+      kind: predictions
+      path: ${TCC_RECON_VAL_PREDICTIONS}
+      calibration: ${TCC_RECON_CALIBRATION}
+  required_roles: [srm, rgb, reconstruction]
+  split_seed: 42
+  fit_fraction: 0.5
+model:
+  hidden_dim: 64
+  temperature: 1.0
+  train_routing: soft
+  train_top_k: 2
+  inference_routing: soft
+  inference_top_k: 1
+  expert_dropout: 0.1
+training:
+  device: cpu
+  amp: false
+  cpu_threads: 2
+  workers: 0
+  epochs: 10
+  batch_size: 32
+  eval_batch_size: 512
+  grad_accum_steps: 1
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 1.0
+  load_balance_weight: 0.01
+  stacking_c: 1.0
+  stacking_max_iter: 1000
+  threshold_policy: youden
+  early_stop_patience: 4
