@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import tempfile
+import time
 from pathlib import Path
 
 import numpy as np
@@ -13,7 +15,7 @@ from torch.utils.data import DataLoader, Subset
 from src.robustness.provenance import digest_file, write_json
 from src.robustness.statistics import summary
 from .feature_training import (
-    FeatureDataset, classifier, fit_standardizer, label_budget, measured_feature_run, open_training_caches,
+    FeatureDataset, classifier, evaluation_identity, fit_standardizer, label_budget, measured_feature_run, open_training_caches,
     predict_network, read_model_artifact, save_validation, seed_cpu,
     representation_key, standardized_block, train_model, write_model_artifact, write_transformed_features,
 )
@@ -240,7 +242,8 @@ def _prepare_metric_projection(config, train, val, root):
     np.savez(root / "metric_normalizer.npz", mean=standardizer["mean"], std=standardizer["std"])
     spec = {"source_artifact_sha256": digest_file(source / "artifact.json"),
             "input_dim": metric["input_dim"], "model": metric["config"]["model"],
-            "label_mask_sha256": metric["label_mask_sha256"]}
+            "label_mask_sha256": metric["label_mask_sha256"],
+            "condition": evaluation_identity(source, metric)["condition"]}
     return (_metric_transform(root, spec, train.features, root / "training_metric.npy"),
             _metric_transform(root, spec, val.features, root / "validation_metric.npy"), spec)
 
@@ -310,6 +313,7 @@ def fit_graph_run(config):
         ).to(device)
         loader = DataLoader(torch.from_numpy(np.flatnonzero(mask)), batch_size=int(training.get("batch_size", 32)), shuffle=True, num_workers=0)
         state = {"epoch": None, "neighbors": neighbors, "scores": scores, "space": reference}
+        rebuilds = []
         if dynamic and training.get("resume", False) and interval != 1:
             raise ValueError("Resume dynamic graphs with rebuild_interval=1; wider intervals require saved graph-state replay")
 
@@ -317,9 +321,13 @@ def fit_graph_run(config):
             epoch = step["epoch"]
             if state["epoch"] != epoch:
                 if dynamic and (state["epoch"] is None or epoch % interval == 0):
+                    started = time.perf_counter()
                     space = _project_space(current, reference, root / "training_space.npy", device)
                     state["neighbors"], state["scores"] = _graph_arrays(space, graph, ids=train.frame.sample_id, seed=seed + epoch)
                     state["space"] = space
+                    rebuilds.append({"epoch": epoch, "seconds": time.perf_counter() - started,
+                                     "neighbors_sha256": hashlib.sha256(memoryview(np.ascontiguousarray(state["neighbors"]))).hexdigest()})
+                    write_json(root / "graph_rebuilds.json", rebuilds)
                 state["epoch"] = epoch
             current.train()
             selected = batch.numpy()

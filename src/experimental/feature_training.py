@@ -283,7 +283,34 @@ def read_model_artifact(root):
     for name, checksum in record["files"].items():
         if Path(name).name != name or digest_file(root / name) != checksum:
             raise ValueError("Feature-model dependency missing or changed")
+    for name, checksum in record.get("implementation", {}).items():
+        path = Path(__file__).with_name(name)
+        if Path(name).name != name or not path.is_file() or digest_file(path) != checksum:
+            raise ValueError("Feature-model implementation changed; use the recorded code version or refit")
     return record
+
+
+def evaluation_identity(root, record):
+    """Comparable downstream seeds, separate from an exact inference contract."""
+    config = record["config"]
+    training = {key: value for key, value in config.get("training", {}).items()
+                if key not in {"resume", "device", "cpu_threads"}}
+    mask = json.loads((Path(root) / "label_mask.json").read_text())
+    projection = record.get("metric_projection")
+    condition = {
+        "family": record["task"], "model": config.get("model", {}), "training": training,
+        "source_train_manifest_sha256": record["train_manifest"]["manifest_sha256"],
+        "source_val_manifest_sha256": record["validation_manifest"]["manifest_sha256"],
+        "frozen_representation": {key: value for key, value in record["representation_key"].items() if key != "commit"},
+        "label_selection": {"policy": "nested grouped class-stratified SHA256 ordering",
+                            "fraction": mask["fraction"], "group_column": mask["group_column"]},
+        "projection_pretraining": None if projection is None else projection["condition"],
+        "implementation_sha256": record["implementation"],
+        "packages": record["software"]["packages"],
+        "seed_scope": "downstream fit and label selection; fixed pretrained extractor identity",
+    }
+    return {"name": config.get("name", Path(root).name), "seed": int(config.get("seed", 42)),
+            "condition": condition, "condition_sha256": digest(condition)}
 
 
 def describe_run(run_dir, protocol=None):
@@ -298,8 +325,7 @@ def describe_run(run_dir, protocol=None):
         "checkpoint_path": checkpoint,
         "input_contract": {"family": record["task"], "bundle_sha256": digest_file(checkpoint),
                            "representation_key": record["representation_key"], "protocol": protocol},
-        "research_run": {"schema": "faceforgery-feature-model-v1", "config": record["config"],
-                         "software": record["software"], "training_source": record["train_cache"]},
+        "research_run": evaluation_identity(root, record),
         "image_size": record["representation_key"].get("extraction", {}).get("image_size", 224),
     }
 

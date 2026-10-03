@@ -94,6 +94,7 @@ def test_metric_cache_fit_reload_and_certified_prediction(tmp_path, caches, kind
     calibration = json.loads((run / "calibration.json").read_text())
     assert calibration["input_contract"] == description["input_contract"]
     assert calibration["policy"] == "youden"
+    assert set(description["research_run"]) == {"name", "seed", "condition", "condition_sha256"}
     with pytest.raises(ValueError, match="populations"):
         callback(changed.iloc[:-1], caches["val"])
 
@@ -173,6 +174,7 @@ def test_dynamic_graph_selected_projection_round_trip(tmp_path, caches):
                            graph={"k": 3, "backend": "exact", "iterations": 5, "dynamic": True, "rebuild_interval": 1})
     run = fit_graph_run(config)
     assert (run / "graph_space.npy").is_file()
+    assert [row["epoch"] for row in json.loads((run / "graph_rebuilds.json").read_text())] == [0, 1]
     val = open_cache(caches["val"])
     actual = predict_graph_run(run, val.features)
     expected = pd.read_csv(run / "val_predictions.csv").set_index("sample_id").loc[val.frame.sample_id, "p_fake"]
@@ -250,3 +252,18 @@ def test_full_scale_reference_uses_bounded_ego_batches():
     assert x.shape[0] <= 4 * (1 + 5 + 5 * 3)
     assert edges.shape[1] <= 4 * (5 + 5 * 3)
     assert len(roots) == 4
+
+
+def test_evaluation_condition_ignores_run_paths_and_downstream_seed(tmp_path, caches):
+    config = configuration(tmp_path, caches, "metric", "centroid")
+    first = fit_metric_run(config)
+    other = {**config, "run_dir": str(tmp_path / "another-run"), "name": "other-name", "seed": 123}
+    second = fit_metric_run(other)
+    a, b = describe_run(first), describe_run(second)
+    assert a["research_run"]["condition_sha256"] == b["research_run"]["condition_sha256"]
+    assert a["input_contract"]["bundle_sha256"] != b["input_contract"]["bundle_sha256"]
+    metadata = json.loads((second / "artifact.json").read_text())
+    metadata["implementation"]["metric.py"] = "changed"
+    write_json(second / "artifact.json", metadata)
+    with pytest.raises(ValueError, match="implementation changed"):
+        describe_run(second)
