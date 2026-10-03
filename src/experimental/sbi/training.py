@@ -264,9 +264,10 @@ def fit(config, *, device="cpu", resume=False):
     result = fit_model(model, loader, optimizer, loss_step=step, validate=validation, run_dir=root, config=cfg,
                        epochs=t["epochs"], device=device, resume=resume, grad_accum_steps=t["grad_accum_steps"], selection_key="auc", selection_mode="max")
     p, checksum = predictions(model), digest_file(root / "best.pt")
-    save_predictions(root / "validation_predictions.csv", p, manifest_record=vc, model_sha256=checksum,
-                     metadata={"purpose": "source-validation development", "cohort": ds.cohort})
     contract = _contract(root, cfg)
+    save_predictions(root / "validation_predictions.csv", p, manifest_record=vc, model_sha256=checksum,
+                     metadata={"purpose": "source-validation development", "cohort": ds.cohort,
+                               "input_contract": contract, "input_contract_sha256": digest(contract)})
     calibration = calibrate(p, manifest_record=vc, output=root / "calibration.json", model_sha256=checksum,
                             policy="youden", input_contract=contract)
     metrics = summary(p.label, p.p_fake, calibration["frame_threshold"])

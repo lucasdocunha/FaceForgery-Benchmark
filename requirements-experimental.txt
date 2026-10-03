@@ -6,3 +6,4 @@ lpips==0.1.4
 peft==0.21.2
 accelerate==1.15.0
 psutil==7.2.2
+faiss-cpu==1.15.1

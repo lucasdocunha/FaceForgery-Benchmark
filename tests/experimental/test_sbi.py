@@ -148,3 +148,29 @@ def test_source_overlap_and_test_training_rejected(sbi_source):
     cfg["data"]["train_manifest"] = cfg["data"]["val_manifest"]
     with pytest.raises(ValueError, match="source train"):
         fit(cfg)
+
+
+def test_hf_adaptation_preserves_scores_and_reload_needs_no_initial_weights(sbi_source, tmp_path):
+    from dataclasses import asdict
+    from src.pipelines.config import TrainingConfig
+    from src.models.registry import MODEL_REGISTRY
+    from src.experimental.sbi.training import _initialize, normalize_config
+    from src.robustness.legacy_encoding import encode_legacy_tensor
+    parent = tmp_path / "models/mobilenet/srm/scratch/seed_42"
+    (parent/"weights").mkdir(parents=True)
+    (parent/"results").mkdir()
+    source = TrainingConfig(model_family="mobilenet", fourier_mode="srm", regime="scratch",
+                            allow_pretrained=False, variant="small", image_size=32)
+    original = MODEL_REGISTRY["mobilenet"].build(source).eval()
+    torch.save(original.state_dict(), parent/"weights/best.pth")
+    write_json(parent/"results/run_config.json", asdict(source))
+    sbi_source["model"].update(initialization="hf_mffi", weights=str(parent/"weights/best.pth"))
+    adapted, _ = _initialize(normalize_config(sbi_source))
+    raw = torch.rand(2,3,32,32)
+    adapted.eval()
+    torch.testing.assert_close(adapted(raw), original(encode_legacy_tensor(raw,"srm",6)), atol=0, rtol=0)
+    fit(sbi_source)
+    (parent/"weights/best.pth").unlink()
+    descriptor = describe_run(sbi_source["output_dir"])
+    assert descriptor["run_record"]["config"]["provenance"]["prior_mffi_fake_exposure"]
+    assert load_model(sbi_source["output_dir"])(raw).shape == (2,2)
