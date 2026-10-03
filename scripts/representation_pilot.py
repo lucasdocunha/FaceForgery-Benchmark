@@ -14,7 +14,62 @@ from src.experimental.feature_training import fit_metric_run, seed_cpu
 from src.experimental.features import open_cache
 from src.experimental.graph_training import fit_graph_run
 from src.robustness.provenance import source_identity, write_json
-from src.robustness.statistics import choose_threshold, summary
+from src.robustness.statistics import choose_threshold, complementarity, grouped_auc_interval, summary
+
+
+def summarize_pilot(output, *, draws=1000):
+    """Retain all results and add paired, conditional development comparisons."""
+    import pandas as pd
+
+    output = Path(output)
+    pilot = json.loads((output / "pilot.json").read_text())
+    runs = {(row["family"], row["kind"], row["label_fraction"]): row
+            for row in pilot["runs"] if row["status"] == "complete"}
+    predictions = {key: pd.read_csv(Path(row["run_dir"]) / "val_predictions.csv") for key, row in runs.items()}
+    comparisons = []
+    pairs = [(("metric", "mlp", 1.0), ("metric", "supcon", 1.0)),
+             (("metric", "raw_centroid", 1.0), ("metric", "supcon", 1.0))]
+    for fraction in sorted({key[2] for key in runs if key[0] == "graph"}):
+        pairs.extend([(("graph", "mlp", fraction), ("graph", kind, fraction)) for kind in ("gcn", "gat", "sage")])
+    for reference, candidate in pairs:
+        if reference not in runs or candidate not in runs:
+            continue
+        a, b = predictions[reference], predictions[candidate]
+        metrics, _ = complementarity(a, b, reference_threshold=runs[reference]["metrics"]["threshold"],
+                                    other_threshold=runs[candidate]["metrics"]["threshold"])
+        comparisons.append({
+            "reference": list(reference), "candidate": list(candidate),
+            "auc_difference": grouped_auc_interval(a, b, draws=draws, seed=pilot["seed"]),
+            "complementarity": metrics,
+        })
+    enriched = []
+    for key, row in runs.items():
+        root = Path(row["run_dir"])
+        record = json.loads((root / "artifact.json").read_text())
+        telemetry = dict(row["telemetry"])
+        loss = None
+        if (root / "history.json").exists():
+            history = json.loads((root / "history.json").read_text())
+            fit = json.loads((root / "telemetry.json").read_text())
+            loss = history[fit["best_epoch"]]["train_loss"]
+        elif row["family"] == "graph" and row["kind"] in {"linear", "correct_smooth"}:
+            linear = np.load(root / "linear.npz")
+            observed = np.load(root / "observed_labels.npy")
+            selected = observed >= 0
+            reference = np.load(root / "reference.npy", mmap_mode="r")
+            decision = (reference[selected] @ linear["coef"].T + linear["intercept"]).ravel()
+            loss = float(np.logaddexp(0, -(2 * observed[selected] - 1) * decision).mean())
+            # Old pilot telemetry treated sklearn fits as nonparametric; derive
+            # exact fitted coefficient counts and iteration budget from artifacts.
+            telemetry.update(trainable_parameters=int(linear["coef"].size + linear["intercept"].size),
+                             epochs_completed=int(record["config"]["training"].get("baseline_epochs", 30)))
+        enriched.append({**row, "telemetry": telemetry, "selected_training_loss": loss})
+    report = {**pilot, "runs": enriched, "paired_comparisons": comparisons,
+              "analysis_software": source_identity(),
+              "uncertainty_limitations": "Image-only supplied groups; conditional on fitted and validation-selected checkpoints, not independent confirmation or across-seed uncertainty.",
+              "rss_scope": "Process lifetime high-water mark; not an isolated per-model peak."}
+    write_json(output / "pilot_summary.json", report)
+    return report
 
 
 def main(argv=None):
@@ -86,6 +141,7 @@ def main(argv=None):
         record["runs"].append(result)
         write_json(args.output / "pilot.json", record)
         print(json.dumps(result), flush=True)
+    summarize_pilot(args.output)
     return int(failed)
 
 

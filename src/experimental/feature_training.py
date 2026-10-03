@@ -153,14 +153,16 @@ def measured_feature_run(function):
         root = function(config)
         record = read_model_artifact(root)
         telemetry = Path(root) / "telemetry.json"
-        fit = json.loads(telemetry.read_text()) if telemetry.exists() else {}
+        fit = json.loads(telemetry.read_text()) if telemetry.exists() else record.get("fit_statistics", {})
         write_json(Path(root) / "pipeline_telemetry.json", {
             "runtime_seconds": time.perf_counter() - started,
             "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+            "peak_rss_scope": "process lifetime high-water mark",
             "peak_vram_bytes": fit.get("peak_vram_bytes", 0),
             "trainable_parameters": fit.get("trainable_parameters", 0),
             "epochs_completed": fit.get("epochs_completed", 0),
             "global_step": fit.get("global_step", 0),
+            "best_epoch": fit.get("best_epoch"),
             "seed": config.get("seed", 42), "scope": "cached-feature development",
         })
         if not (Path(root) / "run.json").exists():

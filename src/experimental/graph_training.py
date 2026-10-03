@@ -405,6 +405,12 @@ def fit_graph_run(config):
         "inference_protocol": protocol, "dynamic": dynamic,
         "inference_graph_policy": "rebuild from selected projector" if dynamic else "frozen input-feature graph",
         "label_budget_scope": "selected downstream training labels only; supervised backbone exposure is separate",
+        "fit_statistics": {
+            "trainable_parameters": int(coef.size + intercept.size) if kind in {"linear", "correct_smooth"} else 0,
+            "epochs_completed": int(training.get("baseline_epochs", 30)) if kind in {"linear", "correct_smooth"} else 0,
+            "global_step": int(training.get("baseline_epochs", 30)) * int(np.ceil(mask.sum() / 256)) if kind in {"linear", "correct_smooth"} else 0,
+            "description": "SGD logistic base fit; LP and kNN have no learned parameters",
+        },
     }, files)
     p = predict_graph_run(root, val.features, protocol=protocol)
     save_validation(root, val, p, extra={"method": kind, "label_count": int(mask.sum()), "protocol": protocol})

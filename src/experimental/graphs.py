@@ -100,14 +100,17 @@ def cosine_neighbors(reference, queries=None, *, k=10, backend="exact", exact_li
         estimated = graph_memory_estimate(len(reference), reference.shape[1], k, hnsw_m=hnsw_m)["hnsw_estimated_bytes"]
         if estimated > memory_budget_mb * 2**20:
             raise MemoryError("Estimated FAISS index exceeds memory_budget_mb; reduce graph dimension or raise an audited budget")
-        faiss.omp_set_num_threads(2)
+        # HNSW parallel insertion can vary the graph despite a fixed RNG seed.
+        faiss.omp_set_num_threads(1)
         index = faiss.IndexHNSWFlat(reference.shape[1], int(hnsw_m), faiss.METRIC_INNER_PRODUCT)
+        index.hnsw.rng = faiss.RandomGenerator(int(seed))
         index.hnsw.efConstruction = max(80, int(ef_search))
         index.hnsw.efSearch = max(k + 1, int(ef_search))
         # Canonical insertion order makes ID-tie behavior independent of source row ordering.
         insertion = np.argsort(tie_rank)
         for start in range(0, len(reference), reference_block):
             index.add(unit_rows(reference[insertion[start:start + reference_block]]))
+        faiss.omp_set_num_threads(2)
         for start in range(0, len(queries), query_block):
             score, neighbors = index.search(unit_rows(queries[start:start + query_block]), min(len(reference), k + 1))
             for offset in range(len(neighbors)):

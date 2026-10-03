@@ -113,6 +113,8 @@ def test_graph_cache_fit_reload_and_same_mask(tmp_path, caches, kind):
     mask = nested_label_mask(open_cache(caches["train"]).frame.label, open_cache(caches["train"]).frame.sample_id, .25)
     assert np.array_equal(observed >= 0, mask)
     assert set(json.loads((run / "baseline_metrics.json").read_text())["methods"]) == {"linear", "knn", "lp", "correct_smooth"}
+    if kind in {"linear", "correct_smooth"}:
+        assert json.loads((run / "pipeline_telemetry.json").read_text())["trainable_parameters"] == 9
     with pytest.raises(ValueError, match="protocol"):
         predict_graph_run(run, val.features, protocol="transductive")
 
