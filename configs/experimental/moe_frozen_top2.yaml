@@ -9,6 +9,7 @@ data:
     - {name: rgb, role: rgb, kind: feature_cache, path: '${TCC_FEATURE_RGB_VAL}'}
     - {name: reconstruction, role: reconstruction, kind: predictions, path: '${TCC_RECON_VAL_PREDICTIONS}', calibration: '${TCC_RECON_CALIBRATION}'}
   required_roles: [srm, rgb, reconstruction]
+  expert_seed_policy: matched
   split_seed: 42
   fit_fraction: 0.5
 model:

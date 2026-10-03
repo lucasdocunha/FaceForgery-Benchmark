@@ -25,6 +25,7 @@ class FrozenExpert:
     scores: np.ndarray
     identity: str
     contract: dict
+    source_metadata: dict
 
 
 def open_expert(spec):
@@ -49,6 +50,7 @@ def open_expert(spec):
                     "code_sha256": key["code_sha256"], "packages": key["packages"],
                     "feature_dim": cache.features.shape[1], "score": "FP32 softmax of original two logits; class 1 is fake"}
         frame, features, identity = cache.frame, cache.features, cache.identity
+        source_metadata = cache.metadata
     elif kind == "predictions":
         frame, record = load_predictions(path)
         declared = record.get("input_contract")
@@ -68,6 +70,7 @@ def open_expert(spec):
         contract = {"kind": kind, "checkpoint_sha256": checkpoint_hash, "input_contract": declared,
                     "feature_columns": list(columns), "feature_dim": features.shape[1], "score": "certified p_fake"}
         identity = digest({"predictions_sha256": record["predictions_sha256"], "contract": contract})
+        source_metadata = record
     else:
         raise ValueError("Frozen expert kind must be feature_cache or predictions")
     if spec.get("checkpoint_sha256", checkpoint_hash) != checkpoint_hash:
@@ -82,7 +85,7 @@ def open_expert(spec):
     if "image_sha256" not in frame or not frame.image_sha256.astype(str).map(lambda x: bool(re.fullmatch("[0-9a-f]{64}", x))).all():
         raise ValueError("Every frozen expert row needs its verified source image SHA-256")
     contract.update(name=str(spec["name"]), role=str(spec["role"]), checkpoint_class1="fake")
-    return FrozenExpert(frame, features, scores, identity, contract)
+    return FrozenExpert(frame, features, scores, identity, contract, source_metadata)
 
 
 class AlignedExperts:

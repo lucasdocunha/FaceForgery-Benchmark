@@ -58,8 +58,10 @@ def describe_run(run_dir, method="router"):
         calibration = json.loads((checkpoint_path.parent / "calibration.json").read_text())
         if calibration.get("model_sha256") != digest_file(checkpoint_path) or calibration.get("input_contract") != contract:
             raise ValueError("Comparison calibration differs from its method bundle")
-    condition = {"family": "moe", "method": method, "experts": document["experts"],
-                 "expert_source_identities": document["expert_source_identities"],
+    condition = {"family": "moe", "method": method,
+                 "expert_seed_policy": document.get("expert_seed_policy", "fixed"),
+                 "expert_conditions": document.get("expert_conditions", {
+                     "experts": document["experts"], "expert_source_identities": document["expert_source_identities"]}),
                  "validation_split": document["validation_split"],
                  "calibration_manifest_sha256": document["calibration_manifest_sha256"],
                  "scope": document["scope"], "implementation": document["implementation"]}
@@ -73,7 +75,11 @@ def describe_run(run_dir, method="router"):
     return {"checkpoint_path": checkpoint_path, "input_contract": contract,
             "research_run": {"name": f"{document['name']}/{method}", "family": "moe", "seed": document["seed"], "scope": document["scope"],
                              "condition": condition, "condition_sha256": digest(condition),
-                             "artifact_sha256": checksum, "method": method}, "image_size": None,
+                             "artifact_sha256": checksum, "method": method,
+                             "realization": {"experts": document["experts"],
+                                             "expert_source_identities": document["expert_source_identities"],
+                                             "expert_seeds": document.get("expert_seed_realizations"),
+                                             "fusion_seed": document["seed"]}}, "image_size": None,
             "calibration_manifest_sha256": document["calibration_manifest_sha256"],
             "calibration_sample_ids_sha256": document["calibration_sample_ids_sha256"]}
 

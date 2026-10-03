@@ -14,6 +14,8 @@ Every run compares the selected router, each expert alone, arithmetic mean, the 
 
 Feature and prediction files are checked against their certificates, then joined by sample ID. Labels, group IDs, image paths and hashes must agree. Checkpoint, feature dimension, preprocessing, extraction-code/package identities and expert order must match the fitted artifact. Inference also verifies the actual image bytes against each cached row. Missing rows, changed bytes or provenance mismatches fail without inner joins or score-orientation selection. Evaluation labels remain outside router features.
 
+`data.expert_seed_policy` distinguishes scientific conditions from checkpoint realizations. Its default `fixed` binds exact expert checkpoints and source caches in the condition, suitable for repeated router seeds with identical experts. Server soft/top-2 configurations use `matched`: each source expert seed must equal the router seed. Verified legacy checkpoint/run configs and reconstruction bundle descriptions supply seed-independent architecture, training, input, code and population policies for aggregation. Exact checkpoints, cache identities and observed seeds remain in the artifact and realization metadata, with unchanged inference guards. Matched fitting requires those source assets and verified metadata; arbitrary prediction experts use `fixed` until they expose an audited comparable policy. Different source regimes or budgets cannot silently aggregate.
+
 Train with the shared experimental CLI or standalone entry point:
 
 ```bash
@@ -22,6 +24,8 @@ python -m src.experimental.moe configs/experimental/moe_frozen_top2.yaml
 ```
 
 Set all environment variables used by the chosen YAML: `TCC_MODELS_ROOT`, `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS`, `TCC_RECON_CALIBRATION`. The feature variables point at complete cache directories, not indexes. The reconstruction variables point at certified CSV and calibration files. `moe_mobilenet_twoexpert_pilot.yaml` reproduces the cheaper SRM/RGB-only ablation and explicitly removes the reconstruction requirement. Refit with seeds 42, 123, 2024, 7 and 2025 for the server campaign while keeping the split seed fixed across comparisons. CPU fitting uses two threads, no loader workers, and streaming minibatches of memory-mapped expert features. Resume is at completed epochs; completed artifacts and calibrations stay frozen.
+
+`moe_mobilenet_reconstruction_pilot.yaml` adds the mandatory reconstruction expert under the same six-epoch, 32-hidden-unit development budget and fixed source split, with output `TCC_RUN_DIR`. Degraded min-val proxy comparisons use the identical clean `val_select` IDs and frozen per-method thresholds. New caches and reconstruction predictions bind the degraded image bytes; no degraded labels fit the router, stacker, standardizer or threshold.
 
 `inference.describe_run(run_dir, method='router')` is read-only and supplies the shared suite with the artifact checkpoint path, input contract and exact `val_select` calibration identity. `validate_sources(run_dir, sources, frame, root)` verifies target caches without constructing a network. `load_predictor(run_dir, sources, device, method)` supplies the suite's canonical callback. Sources may be an ordered list of cache/CSV paths or full named source specifications. Methods are `router`, `mean`, `geometric`, `geometric_binary`, `logistic` or `expert_<name>`.
 

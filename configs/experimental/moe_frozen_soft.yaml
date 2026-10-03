@@ -21,6 +21,7 @@ data:
       path: ${TCC_RECON_VAL_PREDICTIONS}
       calibration: ${TCC_RECON_CALIBRATION}
   required_roles: [srm, rgb, reconstruction]
+  expert_seed_policy: matched
   split_seed: 42
   fit_fraction: 0.5
 model:

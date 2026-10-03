@@ -25,6 +25,7 @@ from src.robustness.provenance import digest, digest_file, source_identity, writ
 from src.robustness.statistics import summary
 from .data import FusionDataset, fit_standardizer, open_sources, split_validation
 from .models import FrozenLateFusion, simple_fusion
+from .identity import expert_conditions
 
 MODEL_DEFAULTS = {"hidden_dim": 64, "temperature": 1.0, "train_routing": "soft", "train_top_k": 2,
                   "inference_routing": "soft", "inference_top_k": 1, "expert_dropout": 0.1}
@@ -41,8 +42,11 @@ def normalize_config(config):
     if not config.get("name") or not config.get("output_dir"):
         raise ValueError("Declare MoE name and output_dir")
     data = config["data"]
-    if set(data) - {"experts", "split_seed", "fit_fraction", "required_roles"}:
+    if set(data) - {"experts", "split_seed", "fit_fraction", "required_roles", "expert_seed_policy"}:
         raise ValueError("Unknown MoE data field; only certified source-val experts are accepted")
+    data.setdefault("expert_seed_policy", "fixed")
+    if data["expert_seed_policy"] not in {"fixed", "matched"}:
+        raise ValueError("Expert seed policy must be fixed or matched")
     if not isinstance(data.get("experts"), list) or len(data["experts"]) < 2:
         raise ValueError("Declare at least two frozen experts")
     required = set(data.get("required_roles", ["srm", "rgb", "reconstruction"]))
@@ -135,6 +139,8 @@ def _fit(config, root):
     torch.set_num_threads(int(training.get("cpu_threads", 2)))
     seed_all(seed)
     aligned = open_sources(data["experts"])
+    conditions, expert_seeds = expert_conditions(data["experts"], aligned.experts,
+                                               policy=data["expert_seed_policy"], seed=seed)
     fit_indices, select_indices, split = split_validation(aligned.frame,
         seed=int(data.get("split_seed", 42)), fit_fraction=float(data.get("fit_fraction", 0.5)))
     fit_frame, select_frame = aligned.frame.iloc[fit_indices].copy(), aligned.frame.iloc[select_indices].copy()
@@ -194,6 +200,8 @@ def _fit(config, root):
     document = {"schema": SCHEMA, "label_convention": "fake-is-1", "model": model_kwargs,
         "score_policy": SCORE_POLICY, "experts": [expert.contract for expert in aligned.experts],
         "expert_source_identities": source["expert_source_identities"], "validation_split": split,
+        "expert_seed_policy": data["expert_seed_policy"], "expert_conditions": conditions,
+        "expert_seed_realizations": expert_seeds,
         "calibration_manifest_sha256": certificates["val_select"]["manifest_sha256"],
         "calibration_sample_ids_sha256": split["val_select_sample_ids_sha256"],
         "scope": config.get("scope", "development"), "seed": seed, "software": source_identity(),

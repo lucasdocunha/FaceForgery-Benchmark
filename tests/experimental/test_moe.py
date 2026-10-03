@@ -10,6 +10,7 @@ from PIL import Image
 from src.experimental.moe.data import fit_standardizer, open_sources, split_validation
 from src.experimental.moe.inference import describe_run, load_predictor, validate_calibration_population, validate_sources
 from src.experimental.moe.models import FrozenLateFusion, load_balancing_loss, simple_fusion
+from src.experimental.moe.identity import expert_conditions
 from src.experimental.moe.training import fit
 from src.robustness.artifacts import save_predictions
 from src.robustness.inference import calibrate
@@ -213,3 +214,59 @@ def test_completed_epoch_resume_keeps_source_population_identity(tmp_path, monke
     assert [row["epoch"] for row in history] == [0, 1]
     record = json.loads((run / "run.json").read_text())
     assert "resume" not in record["config"]["training"]
+
+
+def test_matched_expert_seed_conditions_preserve_exact_bundle_guards(tmp_path):
+    _, all_specs, _ = fixture_experts(tmp_path)
+    specs = all_specs[:2]
+
+    def source_seed(seed, epochs=3):
+        for spec in specs:
+            mode = "srm" if spec["role"] == "srm" else "none"
+            source = tmp_path / "legacy" / "mobilenet" / mode / "finetune_robust" / f"seed_{seed}"
+            checkpoint = source / "weights" / "best.pth"
+            checkpoint.parent.mkdir(parents=True, exist_ok=True)
+            checkpoint.write_bytes(f"synthetic-{mode}-{seed}".encode())
+            config_path = source / "results" / "run_config.json"
+            write_json(config_path, {"seed": seed, "model_family": "mobilenet", "regime": "finetune_robust",
+                                     "fourier_mode": mode, "epochs": epochs, "image_size": 224})
+            cache_path = Path(spec["path"]) / "cache.json"
+            metadata = json.loads(cache_path.read_text())
+            metadata["key"].update(checkpoint_sha256=digest_file(checkpoint), run_config_sha256=digest_file(config_path))
+            metadata["checkpoint"] = {"path": str(checkpoint), "sha256": digest_file(checkpoint)}
+            metadata["identity"] = digest(metadata["key"])
+            write_json(cache_path, metadata)
+
+    config = {"task": "moe", "name": "matched-experts", "scope": "synthetic-structural", "seed": 42,
+              "output_dir": str(tmp_path / "fit42"),
+              "data": {"experts": specs, "required_roles": ["srm", "rgb"], "expert_seed_policy": "matched"},
+              "model": {"hidden_dim": 8}, "training": {"epochs": 1, "batch_size": 8, "amp": False}}
+    source_seed(42)
+    first_run = fit(config)
+    first = describe_run(first_run)["research_run"]
+    assert first["realization"]["expert_seeds"] == [42, 42]
+    source_seed(123)
+    config.update(seed=123, output_dir=str(tmp_path / "fit123"))
+    second_run = fit(config)
+    second = describe_run(second_run)["research_run"]
+    assert first["condition_sha256"] == second["condition_sha256"]
+    assert first["realization"] != second["realization"]
+    assert first["artifact_sha256"] != second["artifact_sha256"]
+    for method in ("mean", "geometric", "logistic", "expert_srm"):
+        assert (describe_run(first_run, method)["research_run"]["condition_sha256"]
+                == describe_run(second_run, method)["research_run"]["condition_sha256"])
+    with pytest.raises(ValueError, match="differs from fitted router"):
+        validate_sources(first_run, specs)
+    experts = open_sources(specs).experts
+    with pytest.raises(ValueError, match="Matched expert seed differs"):
+        expert_conditions(specs, experts, policy="matched", seed=42)
+    comparable = expert_conditions(specs, experts, policy="matched", seed=123)[0]
+    fixed = expert_conditions(specs, experts, policy="fixed", seed=123)[0]
+    source_seed(123, epochs=4)
+    changed = expert_conditions(specs, open_sources(specs).experts, policy="matched", seed=123)[0]
+    assert digest(comparable) != digest(changed)
+    assert digest(fixed) != digest(expert_conditions(specs, open_sources(specs).experts, policy="fixed", seed=123)[0])
+    origin = Path(json.loads((Path(specs[0]["path"]) / "cache.json").read_text())["checkpoint"]["path"])
+    (origin.parent.parent / "results" / "run_config.json").write_text('{}')
+    with pytest.raises(ValueError, match="differs from cache provenance"):
+        expert_conditions(specs, open_sources(specs).experts, policy="matched", seed=123)
