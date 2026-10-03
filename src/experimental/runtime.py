@@ -98,7 +98,10 @@ def fit_model(model, train_loader, optimizer, *, loss_step, validate, run_dir,
               "trainable_parameters": sum(p.numel() for p in model.parameters() if p.requires_grad),
               "device": str(device), "amp": use_amp, "amp_dtype": str(dtype) if use_amp else None}
     if resume:
-        bundle = torch.load(root / "last.pt", map_location="cpu", weights_only=True)
+        # Keep unused checkpoint tensors file-backed instead of eagerly copying
+        # large optimizer states into host RAM. Restoring an optimizer still
+        # materializes the state it needs on the parameter device.
+        bundle = torch.load(root / "last.pt", map_location="cpu", weights_only=True, mmap=True)
         if bundle.get("config_sha256") != cfg_hash:
             raise ValueError("Resume config differs from frozen training identity")
         load_state(model, bundle["state_dict"])
@@ -109,6 +112,7 @@ def fit_model(model, train_loader, optimizer, *, loss_step, validate, run_dir,
         first_epoch = bundle["epoch"] + 1
         global_step, best, stale = bundle["global_step"], bundle["best"], bundle["stale"]
         history = bundle["history"]
+        del bundle
     else:
         seed_all(seed)
     write_json(root / "run.json", record)
@@ -190,7 +194,8 @@ def fit_model(model, train_loader, optimizer, *, loss_step, validate, run_dir,
             write_json(root / "history.json", history)
             if stale >= int(training.get("early_stop_patience", epochs + 1)):
                 break
-        best_bundle = torch.load(root / "best.pt", map_location="cpu", weights_only=True)
+        # best.pt retains resume metadata, but inference only needs model state.
+        best_bundle = torch.load(root / "best.pt", map_location="cpu", weights_only=True, mmap=True)
         load_state(model, best_bundle["state_dict"])
         telemetry = {"runtime_seconds": time.perf_counter() - started,
                      "peak_vram_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else 0,
