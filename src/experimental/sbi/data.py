@@ -108,12 +108,17 @@ class SBIDataset(Dataset):
         self.root, self.size, self.arm, self.seed = Path(root), image_size, arm, int(seed)
         self.epoch, self.post_augment = 0, bool(post_augment)
         self.images, self.masks, self.mask_config = {}, {}, mask or {}
+        self.image_hashes = {}
         selected = self.real if arm == "sbi" else frame[frame.sample_id.isin(set(self.real.sample_id) | set(self.fake.sample_id))]
         for row in selected.itertuples(index=False):
             path = contained(root, row.img_name)
+            checksum = digest_file(path)
+            if getattr(row, "sha256", "") and row.sha256 != checksum:
+                raise ValueError("Training image differs from its declared manifest hash")
+            self.image_hashes[row.sample_id] = checksum
             if row.label == 0:
                 record = self.records.catalog[row.sample_id]
-                if record["label"] != 0 or record["image_sha256"] != digest_file(path):
+                if record["label"] != 0 or record["image_sha256"] != checksum:
                     raise ValueError("Landmark image or label identity changed")
                 if cache_images:
                     self.masks[row.sample_id] = face_mask(self.records[row.sample_id]["landmarks"], image_size, **self.mask_config)
@@ -125,6 +130,7 @@ class SBIDataset(Dataset):
                        "examples_per_epoch": len(self), "landmark_source": cache["source"],
                        "landmark_sha256": digest_file(landmarks), "failures": self.failures,
                        "failure_policy": failure_policy, "recipe": "sbi_landmark_hull_v1",
+                       "image_inventory_sha256": digest(sorted(self.image_hashes.items())),
                        "fake_exposure": "SBI only" if arm == "sbi" else "MFFI fake training images"}
         self.set_epoch(0)
 
@@ -139,7 +145,10 @@ class SBIDataset(Dataset):
     def _image(self, row):
         if row.sample_id in self.images:
             return self.images[row.sample_id].copy()
-        with Image.open(contained(self.root, row.img_name)) as image:
+        path = contained(self.root, row.img_name)
+        if digest_file(path) != self.image_hashes[row.sample_id]:
+            raise ValueError("Training image bytes changed during this run")
+        with Image.open(path) as image:
             return image.convert("RGB").resize((self.size, self.size),Image.Resampling.BILINEAR)
 
     def __getitem__(self, index):

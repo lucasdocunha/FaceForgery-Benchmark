@@ -27,7 +27,7 @@ def sbi_source(tmp_path):
         rows = []
         for index in range(8):
             name = f"{split}-{index}"
-            rng = np.random.default_rng(index)
+            rng = np.random.default_rng(index + (0 if split == "train" else 100))
             pixels = rng.integers(40, 210, size=(32,32,3), dtype=np.uint8)
             path = root / f"{name}.png"
             Image.fromarray(pixels).save(path)
@@ -148,6 +148,46 @@ def test_source_overlap_and_test_training_rejected(sbi_source):
     cfg["data"]["train_manifest"] = cfg["data"]["val_manifest"]
     with pytest.raises(ValueError, match="source train"):
         fit(cfg)
+    source = Path(sbi_source["data"]["train_root"])/"train-0.png"
+    (Path(sbi_source["data"]["val_root"])/"val-0.png").write_bytes(source.read_bytes())
+    with pytest.raises(ValueError, match="image-byte overlap"):
+        fit(sbi_source)
+
+
+def test_fake_bytes_cannot_change_silently(sbi_source):
+    ds = dataset(sbi_source, arm="mffi")
+    row = ds.fake.iloc[ds.fake_order[0]]
+    path = ds.root / row.img_name
+    Image.new("RGB", (32,32), "red").save(path)
+    with pytest.raises(ValueError, match="bytes changed"):
+        ds[1]
+
+
+def test_batched_srm_matches_legacy_and_stays_float32_inside_amp():
+    from src.experimental.sbi.training import SBIClassifier
+    from src.robustness.legacy_encoding import encode_legacy_tensor
+    raw = torch.rand(4,3,32,32)
+    model = SBIClassifier(torch.nn.Identity(), "srm")
+    with torch.amp.autocast("cpu", dtype=torch.bfloat16):
+        actual = model(raw)
+    assert actual.dtype == torch.float32
+    torch.testing.assert_close(actual, encode_legacy_tensor(raw,"srm",6), atol=2e-6, rtol=2e-6)
+
+
+def test_resume_after_calibration_creation_finishes_same_run(sbi_source, monkeypatch):
+    from src.experimental.sbi import training
+    original = training.write_json
+    def interrupted(path, value):
+        if Path(path).name == "validation_metrics.json":
+            raise RuntimeError("finalization interrupted")
+        original(path, value)
+    with monkeypatch.context() as patch:
+        patch.setattr(training, "write_json", interrupted)
+        with pytest.raises(RuntimeError, match="finalization interrupted"):
+            fit(sbi_source)
+    result = fit(sbi_source, resume=True)
+    assert result["epochs_completed"] == 1
+    assert describe_run(result["run_dir"])["input_contract"]["legacy_helpers_sha256"]
 
 
 def test_hf_adaptation_preserves_scores_and_reload_needs_no_initial_weights(sbi_source, tmp_path):
@@ -168,7 +208,7 @@ def test_hf_adaptation_preserves_scores_and_reload_needs_no_initial_weights(sbi_
     adapted, _ = _initialize(normalize_config(sbi_source))
     raw = torch.rand(2,3,32,32)
     adapted.eval()
-    torch.testing.assert_close(adapted(raw), original(encode_legacy_tensor(raw,"srm",6)), atol=0, rtol=0)
+    torch.testing.assert_close(adapted(raw), original(encode_legacy_tensor(raw,"srm",6)), atol=2e-6, rtol=2e-6)
     fit(sbi_source)
     (parent/"weights/best.pth").unlink()
     descriptor = describe_run(sbi_source["output_dir"])

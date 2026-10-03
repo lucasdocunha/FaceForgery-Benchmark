@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict
+import hashlib
 import json
 from pathlib import Path
 
@@ -15,9 +16,9 @@ from src.experimental.runtime import fit_model
 from src.robustness.artifacts import save_predictions
 from src.robustness.engine import seed_all
 from src.robustness.inference import calibrate, predict, prediction_contract
-from src.robustness.legacy_encoding import encode_legacy_tensor
+from src.robustness.imaging import normalize_rgb
 from src.robustness.manifests import load_manifest
-from src.robustness.provenance import digest, digest_file, write_json
+from src.robustness.provenance import contained, digest, digest_file, write_json
 from src.robustness.statistics import grouped_auc_interval, summary
 from .data import SBIDataset
 
@@ -101,6 +102,8 @@ class SBIClassifier(nn.Module):
     def __init__(self, network, mode, train_backbone=True):
         super().__init__()
         self.network, self.mode, self.train_backbone = network, mode, train_backbone
+        from src.forensics.srm import SRMConv2d
+        self.srm = SRMConv2d(mode="residual_only") if mode == "srm" else None
         for name, param in network.named_parameters():
             param.requires_grad_(train_backbone or name.startswith(("classifier.", "fc.", "head.")))
 
@@ -114,7 +117,11 @@ class SBIClassifier(nn.Module):
         return self
 
     def forward(self, raw):
-        return self.network(encode_legacy_tensor(raw, self.mode, 6 if self.mode == "srm" else 3))
+        # Match normalized-RGB legacy SRM in FP32, batched on the input device.
+        with torch.amp.autocast(raw.device.type, enabled=False):
+            rgb = normalize_rgb(raw.float())
+            encoded = torch.cat([rgb, self.srm(rgb)], 1) if self.srm is not None else rgb
+        return self.network(encoded)
 
     def parameter_groups(self, training):
         groups = {"head": [], "backbone": []}
@@ -164,9 +171,21 @@ def _rebuild(config):
     return SBIClassifier(network, m["mode"], m["train_backbone"])
 
 
+def _state_hash(model):
+    checksum = hashlib.sha256()
+    for name, tensor in model.state_dict().items():
+        checksum.update(name.encode())
+        checksum.update(str((tuple(tensor.shape), tensor.dtype)).encode())
+        checksum.update(tensor.detach().cpu().contiguous().numpy().tobytes())
+    return checksum.hexdigest()
+
+
 def _contract(root, cfg):
-    contract = prediction_contract(cfg["model"]["image_size"])
+    mode = cfg["model"]["mode"]
+    contract = prediction_contract(cfg["model"]["image_size"], mode, 6 if mode == "srm" else 3)
+    contract["legacy_helpers_sha256"]["src/robustness/imaging.py"] = digest_file(Path(__file__).parents[2]/"robustness/imaging.py")
     contract.update(family="sbi", representation=cfg["model"]["mode"],
+                    encoding_location="model-internal, FP32 before backbone AMP", raw_input_channels=3,
                     srm_on_normalized=cfg["model"]["mode"] == "srm",
                     bundle_sha256=digest({"config_sha256": digest(cfg), "best_sha256": digest_file(root / "best.pt")}))
     return contract
@@ -182,6 +201,7 @@ def evaluation_identity(record):
     condition = {"family": "sbi", "model": model, "network": network, "training": cfg["training"],
                  "train_manifest_sha256": provenance["train_manifest"]["manifest_sha256"],
                  "val_manifest_sha256": provenance["val_manifest"]["manifest_sha256"],
+                 "val_image_inventory_sha256": provenance["val_image_inventory_sha256"],
                  "cohort": provenance["cohort"], "code_sha256": provenance["code_sha256"],
                  "packages": record["software"]["packages"]}
     if model["initialization"] != "hf_mffi":
@@ -238,8 +258,14 @@ def fit(config, *, device="cpu", resume=False):
     else:
         model, cfg["network_spec"] = _initialize(cfg)
         weight_hash = digest_file(cfg["model"]["weights"]) if cfg["model"]["weights"] else None
+    initial_hash = old["provenance"]["initial_model_state_sha256"] if resume else _state_hash(model)
+    val_inventory = [[row.sample_id,digest_file(contained(data["val_root"],row.img_name))] for row in val.itertuples(index=False)]
+    if set(ds.image_hashes.values()) & {value for _,value in val_inventory}:
+        raise ValueError("Train/validation image-byte overlap")
     cfg["provenance"] = {"train_manifest": tc, "val_manifest": vc, "cohort": ds.cohort,
                          "initialization_sha256": weight_hash, "label_convention": "fake-is-1",
+                         "initial_model_state_sha256": initial_hash,
+                         "val_image_inventory_sha256": digest(val_inventory),
                          "selection": "MFFI source validation including fakes; never target selection",
                          "prior_mffi_fake_exposure": cfg["model"]["initialization"] == "hf_mffi",
                          "code_sha256": {p.name: digest_file(p) for p in sorted(Path(__file__).parent.glob("*.py"))}}
@@ -268,8 +294,15 @@ def fit(config, *, device="cpu", resume=False):
     save_predictions(root / "validation_predictions.csv", p, manifest_record=vc, model_sha256=checksum,
                      metadata={"purpose": "source-validation development", "cohort": ds.cohort,
                                "input_contract": contract, "input_contract_sha256": digest(contract)})
-    calibration = calibrate(p, manifest_record=vc, output=root / "calibration.json", model_sha256=checksum,
-                            policy="youden", input_contract=contract)
+    calibration_path = root / "calibration.json"
+    if calibration_path.exists():
+        calibration = json.loads(calibration_path.read_text())
+        if (calibration.get("model_sha256") != checksum or calibration.get("input_contract_sha256") != digest(contract)
+                or calibration.get("source_manifest_sha256") != vc["manifest_sha256"]):
+            raise ValueError("Existing calibration is not bound to this run and population")
+    else:
+        calibration = calibrate(p, manifest_record=vc, output=calibration_path, model_sha256=checksum,
+                                policy="youden", input_contract=contract)
     metrics = summary(p.label, p.p_fake, calibration["frame_threshold"])
     metrics.update(purpose="pilot/min-dataset/development" if "min" in tc["dataset"].lower() else "source-validation development", threshold_policy="youden")
     metrics["auc_ci"] = grouped_auc_interval(p, draws=t["bootstrap_draws"], seed=cfg["seed"])
