@@ -153,10 +153,23 @@ def load_base(config, device="cpu", *, training=False):
         if quantization == "nf4":
             raise UnsupportedQuantizationError(f"NF4 base load failed explicitly: {type(error).__name__}: {error}") from error
         raise
-    if quantization == "nf4" and not any(layer.__class__.__name__ == "Linear4bit" for _, layer in model.named_modules()):
-        raise UnsupportedQuantizationError("NF4 requested but no 4-bit decoder layers were constructed")
+    quantized = [name for name, layer in model.named_modules() if layer.__class__.__name__ == "Linear4bit"]
+    if quantization == "nf4":
+        if not any(name.startswith(("model.text_model.", "model.language_model.")) for name in quantized):
+            raise UnsupportedQuantizationError("NF4 requested but no verified 4-bit decoder layers were constructed")
+        if any("vision" in name or "connector" in name or "visual" in name for name in quantized):
+            raise UnsupportedQuantizationError("NF4 unexpectedly quantized the excluded vision tower or connector")
     model.config.use_cache = False
     targets = []
     if training:
         model, targets = adapt_model(model, config)
-    return model, {"stored_parameters": count, "adapter_targets": targets, "dtype": dtype_name}
+    storage = {}
+    for parameter in model.parameters():
+        key = str(parameter.dtype)
+        item = storage.setdefault(key, {"stored_numel": 0, "storage_bytes": 0})
+        item["stored_numel"] += parameter.numel()
+        item["storage_bytes"] += parameter.numel() * parameter.element_size()
+    return model, {"stored_parameters": count, "adapter_targets": targets, "dtype": dtype_name,
+                   "quantization": quantization, "quantized_decoder_modules": quantized,
+                   "parameter_storage_by_dtype": storage,
+                   "storage_count_policy": "actual parameter tensor storage after PEFT preparation; 4-bit packed counts are not original model parameter counts"}
