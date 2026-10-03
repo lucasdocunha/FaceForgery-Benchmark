@@ -9,7 +9,8 @@ from pathlib import Path
 import re
 
 from .artifacts import load_predictions
-from .inference import evaluate, prediction_contract, validate_input_contract, validate_prediction_settings
+from .inference import (evaluate, prediction_contract, validate_calibration,
+                        validate_input_contract, validate_prediction_settings)
 from .manifests import load_manifest
 from .provenance import digest, digest_file, source_identity, write_json
 from .statistics import aggregate_videos, align, grouped_auc_interval
@@ -84,14 +85,18 @@ def evaluate_suite(model, targets, output, *, checkpoint_path, calibration_path,
     Dry runs validate metadata only, without loading a model or decoding images.
     """
     _, records, kinds = validate_targets(targets)
+    if isinstance(predict_fn, dict):
+        if set(predict_fn) != {target.name for target in targets} or not all(callable(fn) for fn in predict_fn.values()):
+            raise ValueError("Prediction callbacks must match the exact suite target names")
+    if image_size is None and model is not None and predict_fn is None:
+        raise ValueError("Tensor inference requires an explicit image size")
     if scope not in {"benchmark", "pilot", "synthetic"}:
         raise ValueError("Declare benchmark, pilot or synthetic suite scope")
     if scope == "benchmark" and any(record["split"] != "test" and record["split"] != "test_d" for record in records.values()):
         raise ValueError("Benchmark scope cannot claim smoke or proxy manifests")
     calibration = json.loads(Path(calibration_path).read_text())
     checksum = digest_file(checkpoint_path)
-    if calibration.get("model_sha256") != checksum or calibration.get("selection_split") != "val":
-        raise ValueError("Suite requires checkpoint-matched frozen source-validation calibration")
+    validate_calibration(calibration, checksum)
     if calibration.get("checkpoint_class1", "fake") != positive_class:
         raise ValueError("Calibration score orientation differs from the suite")
     contract = input_contract or prediction_contract(image_size, mode, in_channels, positive_class)
@@ -128,7 +133,9 @@ def evaluate_suite(model, targets, output, *, checkpoint_path, calibration_path,
             reports[target.name] = evaluate(
                 model, target.manifest, target.root, output / target.name,
                 checkpoint_path=checkpoint_path, calibration_path=calibration_path,
-                image_size=image_size, predict_fn=predict_fn, input_contract=contract,
+                image_size=image_size,
+                predict_fn=predict_fn[target.name] if isinstance(predict_fn, dict) else predict_fn,
+                input_contract=contract,
                 research_run=research_run, mode=mode, in_channels=in_channels,
                 positive_class=positive_class, device=device, batch_size=batch_size,
                 workers=workers, use_amp=use_amp, primary_unit=target.primary_unit,
@@ -191,10 +198,10 @@ def pilot_contract(root, record):
 
 
 def read_suite_config(path):
-    import yaml
+    from src.experimental.configuration import read_document
 
     path = Path(path).resolve()
-    value = yaml.safe_load(path.read_text())
+    value = read_document(path)
     allowed = {"model", "calibration", "targets", "output", "scope", "inference"}
     if not isinstance(value, dict) or set(value) - allowed or not {"model", "calibration", "targets", "output"} <= set(value):
         raise ValueError("Invalid suite config fields")
@@ -208,9 +215,17 @@ def read_suite_config(path):
 
     value["calibration"], value["output"] = location(value["calibration"]), location(value["output"])
     model = value["model"]
-    if not isinstance(model, dict) or model.get("type") not in {"legacy", "stack_b"} or set(model) != {"type", "path"}:
-        raise ValueError("Suite model must declare legacy or stack_b and its path")
+    if not isinstance(model, dict) or model.get("type") not in {"legacy", "stack_b", "experimental"}:
+        raise ValueError("Suite model must declare legacy, stack_b or experimental and its path")
+    allowed_model = {"type", "path", "family", "options"} if model["type"] == "experimental" else {"type", "path"}
+    required_model = {"type", "path", "family"} if model["type"] == "experimental" else {"type", "path"}
+    if set(model) - allowed_model or not required_model <= set(model):
+        raise ValueError("Invalid suite model fields")
+    if "options" in model and not isinstance(model["options"], dict):
+        raise ValueError("Experimental model options must be a mapping")
     model["path"] = location(model["path"])
+    if not isinstance(value["targets"], list) or not value["targets"]:
+        raise ValueError("Suite requires a nonempty list of targets")
     targets = []
     for target in value["targets"]:
         target = dict(target)
@@ -241,7 +256,7 @@ def run_suite_config(path, *, device=None, workers=None, output=None, execute=Fa
     if workers is not None:
         settings["workers"] = workers
     selected = spec["model"]
-    model = None
+    model, predict_fn = None, None
     if selected["type"] == "legacy":
         from src.pipelines.checkpoints import run_from_checkpoint, config_from_run, load_model_from_run
 
@@ -251,9 +266,7 @@ def run_suite_config(path, *, device=None, workers=None, output=None, execute=Fa
         contract = legacy_contract(run, config)
         identity = legacy_identity(run, config)
         image_size, mode, channels = config.image_size, run.fourier_mode, config.in_channels
-        if execute:
-            model = load_model_from_run(run, torch.device(settings["device"]))
-    else:
+    elif selected["type"] == "stack_b":
         from .engine import load_pilot
         from .identity import evaluation_identity
 
@@ -263,14 +276,45 @@ def run_suite_config(path, *, device=None, workers=None, output=None, execute=Fa
         contract = pilot_contract(root, record)
         identity = evaluation_identity(record)
         image_size, mode, channels = record["config"]["training"]["image_size"], None, None
-        if execute:
-            model, _ = load_pilot(root, settings["device"])
+    else:
+        from src.experimental.orchestration import describe_run, load_evaluator, validate_options
+
+        validate_options(selected["family"], selected.get("options"),
+                         target_names=[target.name for target in spec["targets"]])
+        description = describe_run(selected["family"], selected["path"], options=selected.get("options"))
+        checkpoint, contract = description["checkpoint_path"], description["input_contract"]
+        identity = description["research_run"]
+        image_size, mode, channels = description["image_size"], None, None
+        if settings.get("allow_unbound_calibration"):
+            raise ValueError("Experimental suites require input-bound calibration")
     calibration = json.loads(Path(spec["calibration"]).read_text())
     positive_class = calibration.get("checkpoint_class1", "fake")
-    contract["checkpoint_class1"] = positive_class
-    return evaluate_suite(
-        model, spec["targets"], spec["output"], checkpoint_path=checkpoint,
+    if selected["type"] == "experimental" and positive_class != "fake":
+        raise ValueError("Experimental suite calibration must use fake-is-1 scores")
+    if selected["type"] != "experimental":
+        contract["checkpoint_class1"] = positive_class
+    arguments = dict(checkpoint_path=checkpoint,
         calibration_path=spec["calibration"], image_size=image_size, input_contract=contract,
         research_run=identity, mode=mode, in_channels=channels, positive_class=positive_class,
-        dry_run=not execute, scope=spec.get("scope", "benchmark"), **settings,
+        scope=spec.get("scope", "benchmark"), **settings,
     )
+    planned = evaluate_suite(None, spec["targets"], spec["output"], dry_run=True, **arguments)
+    if selected["type"] == "experimental" and selected["family"] in {"metric", "graph", "moe"}:
+        from src.experimental.orchestration import preflight_cached
+
+        populations = {target.name: (load_manifest(target.manifest)[0], target.root) for target in spec["targets"]}
+        predict_fn = preflight_cached(selected["family"], selected["path"], selected.get("options"), populations)
+    if not execute:
+        return planned
+    if selected["type"] == "legacy":
+        model = load_model_from_run(run, torch.device(settings["device"]))
+    elif selected["type"] == "stack_b":
+        model, _ = load_pilot(root, settings["device"])
+    else:
+        if predict_fn is None:
+            model, predict_fn = load_evaluator(
+                selected["family"], selected["path"], device=settings["device"],
+                options=selected.get("options"), target_names=[target.name for target in spec["targets"]],
+            )
+    return evaluate_suite(model, spec["targets"], spec["output"], predict_fn=predict_fn,
+                          dry_run=False, **arguments)

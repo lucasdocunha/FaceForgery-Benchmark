@@ -96,12 +96,18 @@ def main(argv=None):
     iv.add_argument("--models-root", required=True)
     iv.add_argument("--output", required=True)
     from src.robustness.commands import register, run as extra_command
+    from src.experimental.orchestration import register as register_experimental
 
     register(commands)
+    register_experimental(commands)
     args = p.parse_args(argv)
     from src.robustness.provenance import write_json
 
-    if args.command in {
+    if args.command == "experimental":
+        from src.experimental.orchestration import run as run_experimental
+
+        result = run_experimental(args)
+    elif args.command in {
         "import-predictions",
         "calibrate-export",
         "expand-plan",

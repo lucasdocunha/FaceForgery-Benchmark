@@ -1,0 +1,92 @@
+# Set TCC_EVAL_MODEL to a completed moe run directory.
+# Review with research_cli.py evaluate-suite --config this-file.yaml.
+# Append --execute for inference after freezing source-validation calibration.
+model:
+  type: experimental
+  family: moe
+  path: ${TCC_EVAL_MODEL}
+  options:
+    # Expert names/order/contracts must match the training artifact.
+    target_caches:
+      test:
+        - name: srm
+          role: srm
+          kind: feature_cache
+          path: ${TCC_EVAL_TEST_SRM_CACHE}
+        - name: rgb
+          role: rgb
+          kind: feature_cache
+          path: ${TCC_EVAL_TEST_RGB_CACHE}
+        - name: reconstruction
+          role: reconstruction
+          kind: predictions
+          path: ${TCC_EVAL_TEST_RECON_PREDICTIONS}
+      test_d:
+        - name: srm
+          role: srm
+          kind: feature_cache
+          path: ${TCC_EVAL_TEST_D_SRM_CACHE}
+        - name: rgb
+          role: rgb
+          kind: feature_cache
+          path: ${TCC_EVAL_TEST_D_RGB_CACHE}
+        - name: reconstruction
+          role: reconstruction
+          kind: predictions
+          path: ${TCC_EVAL_TEST_D_RECON_PREDICTIONS}
+      df40:
+        - name: srm
+          role: srm
+          kind: feature_cache
+          path: ${TCC_EVAL_DF40_SRM_CACHE}
+        - name: rgb
+          role: rgb
+          kind: feature_cache
+          path: ${TCC_EVAL_DF40_RGB_CACHE}
+        - name: reconstruction
+          role: reconstruction
+          kind: predictions
+          path: ${TCC_EVAL_DF40_RECON_PREDICTIONS}
+      celeb_df_v2:
+        - name: srm
+          role: srm
+          kind: feature_cache
+          path: ${TCC_EVAL_CELEB_SRM_CACHE}
+        - name: rgb
+          role: rgb
+          kind: feature_cache
+          path: ${TCC_EVAL_CELEB_RGB_CACHE}
+        - name: reconstruction
+          role: reconstruction
+          kind: predictions
+          path: ${TCC_EVAL_CELEB_RECON_PREDICTIONS}
+calibration: ${TCC_EVAL_CALIBRATION}
+output: ${TCC_OUTPUT_ROOT}/evaluation
+scope: benchmark
+targets:
+  - name: test
+    manifest: ${TCC_EVAL_TEST_MANIFEST}
+    root: ${TCC_EVAL_TEST_ROOT}
+  - name: test_d
+    manifest: ${TCC_EVAL_TEST_D_MANIFEST}
+    root: ${TCC_EVAL_TEST_D_ROOT}
+  - name: df40
+    manifest: ${TCC_EVAL_DF40_MANIFEST}
+    root: ${TCC_EVAL_DF40_ROOT}
+    breakdown: true
+    # Comparable to legacy pooled-real tables; source domain is a confounder.
+    # Switch to source_matched after certifying source_domain annotations.
+    real_reference_policy: pooled_all_real
+  - name: celeb_df_v2
+    manifest: ${TCC_EVAL_CELEB_MANIFEST}
+    root: ${TCC_EVAL_CELEB_ROOT}
+    primary_unit: video
+inference:
+  device: cpu
+  batch_size: 16
+  workers: 0
+  use_amp: true
+  bootstrap_draws: 1000
+  bootstrap_seed: 42
+  confidence: 0.95
+  plots: true

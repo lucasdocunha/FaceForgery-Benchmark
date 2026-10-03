@@ -16,7 +16,7 @@ from src.robustness.commands import aggregate_seeds
 from src.robustness.df40 import main as prepare_df40_cli
 from src.robustness.inference import calibrate, evaluate_predictions, predict, prediction_contract
 from src.robustness.manifests import load_manifest, save_manifest
-from src.robustness.provenance import digest, digest_file
+from src.robustness.provenance import SCHEMA, digest, digest_file
 from src.robustness.statistics import aggregate_videos
 from src.robustness.suite import TargetSpec, evaluate_suite, legacy_contract, run_suite_config
 
@@ -229,7 +229,8 @@ def test_legacy_cli_config_dry_run_never_loads_network(tmp_path, monkeypatch, ca
     config = checkpoints.config_from_run(run)
     contract = legacy_contract(run, config)
     calibration = tmp_path / "legacy_calibration.json"
-    calibration.write_text(json.dumps({"model_sha256": digest_file(checkpoint), "selection_split": "val",
+    calibration.write_text(json.dumps({"schema": SCHEMA, "frame_threshold": 0.5,
+                                      "model_sha256": digest_file(checkpoint), "selection_split": "val",
                                       "checkpoint_class1": "fake", "input_contract": contract,
                                       "input_contract_sha256": digest(contract)}))
     path = tmp_path / "suite.yaml"

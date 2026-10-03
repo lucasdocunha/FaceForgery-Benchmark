@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import json
+import math
 from contextlib import nullcontext
 from pathlib import Path
 import pandas as pd
@@ -183,14 +184,7 @@ def calibrate(
 def evaluation_report(predictions, calibration, checkpoint_hash, *, primary_unit=None,
                       breakdown=False, real_reference_policy="source_matched",
                       bootstrap_draws=0, bootstrap_seed=42, confidence=0.95):
-    if (
-        calibration.get("schema") != SCHEMA
-        or calibration.get("model_sha256") != checkpoint_hash
-        or calibration.get("selection_split") != "val"
-    ):
-        raise ValueError(
-            "Calibration does not belong to this checkpoint/source-validation protocol"
-        )
+    validate_calibration(calibration, checkpoint_hash)
     p = checked_predictions(predictions)
     result = {
         "frame": summary(p.label, p.p_fake, float(calibration["frame_threshold"])),
@@ -320,9 +314,27 @@ def validate_input_contract(calibration, contract):
             raise ValueError("Calibration belongs to a different input or score contract")
 
 
+def validate_calibration(calibration, checkpoint_hash):
+    if (calibration.get("schema") != SCHEMA or calibration.get("model_sha256") != checkpoint_hash
+            or calibration.get("selection_split") != "val"):
+        raise ValueError("Calibration does not belong to this checkpoint/source-validation protocol")
+    if calibration.get("checkpoint_class1", "fake") not in {"fake", "real"}:
+        raise ValueError("Calibration must declare a valid score orientation")
+    for key in ("frame_threshold", "video_threshold"):
+        if key == "video_threshold" and key not in calibration:
+            continue
+        try:
+            threshold = float(calibration[key])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError("Calibration requires a finite frozen validation threshold") from error
+        if not math.isfinite(threshold) or not 0 <= threshold <= math.nextafter(1.0, math.inf):
+            raise ValueError("Calibration requires a finite frozen validation threshold")
+
+
 def validate_prediction_settings(contract, image_size, mode, in_channels, positive_class):
     """Reject tensor settings that disagree with an explicitly recorded contract."""
-    expected = {"image_size": int(image_size), "checkpoint_class1": positive_class}
+    expected = {"image_size": int(image_size) if image_size is not None else None,
+                "checkpoint_class1": positive_class}
     if mode is not None:
         expected.update(representation=mode, in_channels=in_channels)
     for key, value in expected.items():

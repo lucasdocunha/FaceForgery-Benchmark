@@ -266,7 +266,8 @@ def export_xai(args):
 
 def aggregate_seeds(args):
     expected = set(args.seeds)
-    if len(expected) != len(args.seeds) or not expected:
+    if (len(expected) != len(args.seeds) or not expected or not args.evaluations
+            or any(not isinstance(seed, int) or isinstance(seed, bool) or seed < 0 for seed in args.seeds)):
         raise ValueError("Distinct expected seeds required")
     rows = []
     for name in args.evaluations:
@@ -306,6 +307,7 @@ def aggregate_seeds(args):
                 "model_sha256": report["checkpoint_sha256"],
                 "condition_sha256": identity["condition_sha256"],
                 "manifest_sha256": report["manifest"]["manifest_sha256"],
+                "calibration_source_manifest_sha256": report["calibration"].get("source_manifest_sha256"),
             }
         )
     frame = pd.DataFrame(rows)
@@ -321,6 +323,8 @@ def aggregate_seeds(args):
             )
         if group.threshold_policy.nunique() != 1:
             raise ValueError("Seed runs use different threshold policies")
+        if group.calibration_source_manifest_sha256.nunique(dropna=False) != 1:
+            raise ValueError("Seed runs calibrated on different validation populations")
         if group.auc.isna().any():
             raise ValueError("Undefined AUC in seed table")
         results.append(
