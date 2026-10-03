@@ -1,0 +1,580 @@
+{
+  "scope": "min-dataset-pretrained-feasibility-only",
+  "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+  "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+  "stored_parameters": 256484928,
+  "seed": 42,
+  "population": {
+    "train": 16,
+    "validation": 16,
+    "validation_real": 8,
+    "validation_fake": 8,
+    "optimizer_updates": 4
+  },
+  "policy": {
+    "max_seconds_final": 180,
+    "max_rss_mib": 3072,
+    "workers": 0,
+    "threads": 2,
+    "min_test_accessed": false
+  },
+  "initial_bf16": {
+    "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42",
+    "software": {
+      "commit": "2623b763aed1d74cc4bd149f98b41a5424fe0da0",
+      "code_sha256": {
+        "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+        "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+        "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+        "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+        "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+        "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+        "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+        "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+        "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+        "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+        "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+        "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+        "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+        "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+        "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+        "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+        "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+      },
+      "python": "3.12.13",
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "torchvision": "0.25.0+rocm7.1",
+        "timm": "1.0.27",
+        "numpy": "2.4.4",
+        "pandas": "3.0.2",
+        "scikit-learn": "1.8.0",
+        "Pillow": "12.2.0"
+      }
+    },
+    "bundle_sha256": "49f091df62104213b3b09586196475277ac144d45337468e8adb9963ad3d35e6",
+    "training": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42",
+      "runtime_seconds": 20.140164034999998,
+      "peak_vram_bytes": 915390976,
+      "peak_rss_kib": 2919292,
+      "trainable_parameters": 460800,
+      "epochs_completed": 2,
+      "global_step": 4,
+      "best_epoch": 1,
+      "best_metric": 0.6640625
+    },
+    "zero_shot_auc": 0.65625,
+    "trained_validation_auc": 0.6640625,
+    "reload_maximum_absolute_score_difference": 0.0,
+    "watchdog": {
+      "command": [
+        "env",
+        "PYTHONPATH=.",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/vlm_smol_pilot.py"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 2925640,
+      "seconds": 40.526625346999936
+    }
+  },
+  "initial_nf4": {
+    "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42",
+    "watchdog": {
+      "command": [
+        "env",
+        "PYTHONPATH=.",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/vlm_smol_pilot.py",
+        "--quantization",
+        "nf4"
+      ],
+      "exit_code": 1,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 1509412,
+      "seconds": 5.5035771749999185
+    },
+    "result": "Stopped before training: the initial skip-module policy quantized a vision subtree. This was a module-exclusion defect, not a kernel or memory failure. Fixed in 490e12f with complete subtree matching."
+  },
+  "final_code_attempts": {
+    "bf16": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42-final",
+      "software": {
+        "commit": "490e12f7cc3b380949039666278cec95ebd03ef2",
+        "code_sha256": {
+          "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+          "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+          "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+          "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+          "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+          "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+          "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+          "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+          "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+          "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+          "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+          "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+          "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+          "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+          "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+          "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+        },
+        "python": "3.12.13",
+        "packages": {
+          "torch": "2.10.0+rocm7.1",
+          "torchvision": "0.25.0+rocm7.1",
+          "timm": "1.0.27",
+          "numpy": "2.4.4",
+          "pandas": "3.0.2",
+          "scikit-learn": "1.8.0",
+          "Pillow": "12.2.0"
+        }
+      },
+      "bundle_sha256": "d9db0fdace771f5bc81eeb9ee873ac5e94fe7496346ea7c4a4009120b395616a",
+      "base_files": {
+        "config.json": "b70fb4bfde88df9eeebc9d8ff523733b8bf70d6c9b06c610325960e06ae9db52",
+        "model.safetensors": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e"
+      },
+      "model_config": {
+        "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+        "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+        "model_type": "idefics3",
+        "dtype": "bfloat16",
+        "quantization": "none",
+        "attention": "sdpa",
+        "gradient_checkpointing": true,
+        "max_length": 256,
+        "processor": {
+          "max_image_edge": 512,
+          "do_image_splitting": false
+        },
+        "lora": {
+          "rank": 8,
+          "alpha": 16,
+          "dropout": 0.05,
+          "projections": [
+            "q_proj",
+            "v_proj"
+          ]
+        }
+      },
+      "implementation": {
+        "training.py": "8895bc16facd46ddc054a7a99aeeb128c45720cef147305c720eb91d01eb5dc4",
+        "__init__.py": "ba4fa659b379ffd6a4081eb57ed08fb98414662188576cc15b2dd86192838011",
+        "data.py": "baeab01b15bc2ee46dae23b6071552e14a7d1db3d9463ea6d83d201ef91ba32c",
+        "inference.py": "ef05bd42ef4e662e93fd7bdd2e8b9bb873c7feb7b9d434cf7cd8e2810ebded55",
+        "scoring.py": "3d97139202f2736390e72974b8ace58f858179b366277a67247133fffe4d5edc",
+        "models.py": "2a735482b63d33ff7d3b4cc94fc08f991f0ad6417f9469179619280df76ee29c",
+        "batches.py": "ce6831db61bb17260aafbf6ae9105fb4a8bc559c6ef1eb15c3ae9fe4805143d8",
+        "artifacts.py": "3b4c34417ac58ce05bebe0ccaacd14529623aa712cf96d3ba00eb7c52bd2b19a"
+      },
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "transformers": "5.14.1",
+        "peft": "0.21.2",
+        "accelerate": "1.15.0",
+        "safetensors": "0.8.0"
+      },
+      "training": {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-bf16-s16-u4-seed42-final",
+        "runtime_seconds": 19.86931208399983,
+        "peak_vram_bytes": 915390976,
+        "peak_rss_kib": 2783960,
+        "trainable_parameters": 460800,
+        "epochs_completed": 2,
+        "global_step": 4,
+        "best_epoch": 1,
+        "best_metric": 0.6640625
+      },
+      "model": {
+        "stored_parameters": 256484928,
+        "dtype": "bfloat16",
+        "quantization": "none",
+        "parameter_storage_by_dtype": {
+          "torch.bfloat16": {
+            "stored_numel": 256484928,
+            "storage_bytes": 512969856
+          },
+          "torch.float32": {
+            "stored_numel": 460800,
+            "storage_bytes": 1843200
+          }
+        },
+        "storage_count_policy": "actual parameter tensor storage after PEFT preparation; 4-bit packed counts are not original model parameter counts"
+      },
+      "adapter_target_count": 60,
+      "quantized_module_count": 0,
+      "zero_shot": {
+        "n": 16,
+        "n_real": 8,
+        "n_fake": 8,
+        "auc": 0.65625,
+        "average_precision": 0.7285984848484848,
+        "balanced_accuracy": 0.625,
+        "eer": 0.4583333333333333,
+        "eer_threshold": 0.5570303996404012,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.7,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.625,
+        "brier": 0.23137319875268963,
+        "log_loss": 0.6528014392411046,
+        "ece_10_equal_width": 0.08671232499182224,
+        "threshold": 0.5,
+        "tn": 3,
+        "fp": 5,
+        "fn": 1,
+        "tp": 7,
+        "confusion_matrix": [
+          [
+            3,
+            5
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.375,
+            0.625
+          ],
+          [
+            0.125,
+            0.875
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.625,
+        "tpr": 0.875,
+        "auc_status": "defined"
+      },
+      "trained_validation": {
+        "n": 16,
+        "n_real": 8,
+        "n_fake": 8,
+        "auc": 0.6640625,
+        "average_precision": 0.7233901515151515,
+        "balanced_accuracy": 0.6875,
+        "eer": 0.375,
+        "eer_threshold": 0.5774953961372375,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6153846153846154,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6875,
+        "brier": 0.23680699035752767,
+        "log_loss": 0.6630770574445558,
+        "ece_10_equal_width": 0.15264144726097584,
+        "threshold": 0.665410578250885,
+        "tn": 7,
+        "fp": 1,
+        "fn": 4,
+        "tp": 4,
+        "confusion_matrix": [
+          [
+            7,
+            1
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.875,
+            0.125
+          ],
+          [
+            0.5,
+            0.5
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.125,
+        "tpr": 0.5,
+        "auc_status": "defined"
+      },
+      "validation_prediction_sha256": "1b027d48a7a6a15024c4ed949b3b13d3fcb6edbd17532a0c859f4ac315abb080",
+      "calibration_sha256": "cfc4e6e0ff01323775b3dbce52b77e1c8de01669d32908cbadf36b5a4b8a530b",
+      "validation_probability_range": [
+        0.4532618820667267,
+        0.8080672025680542
+      ],
+      "fit_state": "complete",
+      "watchdog": {
+        "command": [
+          "env",
+          "PYTHONPATH=.",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/vlm_smol_pilot.py",
+          "--run-suffix",
+          "final"
+        ],
+        "exit_code": -15,
+        "stop_reason": "RSS exceeded 3072 MiB",
+        "peak_sampled_rss_kib": 3284480,
+        "seconds": 33.55333474400004
+      },
+      "reload_result": "Failed resource bound in same process after fit; fresh-process reload is not yet certified."
+    },
+    "nf4": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final",
+      "software": {
+        "commit": "490e12f7cc3b380949039666278cec95ebd03ef2",
+        "code_sha256": {
+          "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+          "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+          "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+          "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+          "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+          "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+          "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+          "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+          "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+          "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+          "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+          "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+          "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+          "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+          "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+          "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+        },
+        "python": "3.12.13",
+        "packages": {
+          "torch": "2.10.0+rocm7.1",
+          "torchvision": "0.25.0+rocm7.1",
+          "timm": "1.0.27",
+          "numpy": "2.4.4",
+          "pandas": "3.0.2",
+          "scikit-learn": "1.8.0",
+          "Pillow": "12.2.0"
+        }
+      },
+      "bundle_sha256": "89de6d104119a4c24ce4825d36c9e8ae8a4f69f2b5290dc4313365e400479c5f",
+      "base_files": {
+        "config.json": "b70fb4bfde88df9eeebc9d8ff523733b8bf70d6c9b06c610325960e06ae9db52",
+        "model.safetensors": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e"
+      },
+      "model_config": {
+        "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+        "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+        "model_type": "idefics3",
+        "dtype": "bfloat16",
+        "quantization": "nf4",
+        "attention": "sdpa",
+        "gradient_checkpointing": true,
+        "max_length": 256,
+        "processor": {
+          "max_image_edge": 512,
+          "do_image_splitting": false
+        },
+        "lora": {
+          "rank": 8,
+          "alpha": 16,
+          "dropout": 0.05,
+          "projections": [
+            "q_proj",
+            "v_proj"
+          ]
+        }
+      },
+      "implementation": {
+        "training.py": "8895bc16facd46ddc054a7a99aeeb128c45720cef147305c720eb91d01eb5dc4",
+        "__init__.py": "ba4fa659b379ffd6a4081eb57ed08fb98414662188576cc15b2dd86192838011",
+        "data.py": "baeab01b15bc2ee46dae23b6071552e14a7d1db3d9463ea6d83d201ef91ba32c",
+        "inference.py": "ef05bd42ef4e662e93fd7bdd2e8b9bb873c7feb7b9d434cf7cd8e2810ebded55",
+        "scoring.py": "3d97139202f2736390e72974b8ace58f858179b366277a67247133fffe4d5edc",
+        "models.py": "2a735482b63d33ff7d3b4cc94fc08f991f0ad6417f9469179619280df76ee29c",
+        "batches.py": "ce6831db61bb17260aafbf6ae9105fb4a8bc559c6ef1eb15c3ae9fe4805143d8",
+        "artifacts.py": "3b4c34417ac58ce05bebe0ccaacd14529623aa712cf96d3ba00eb7c52bd2b19a"
+      },
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "transformers": "5.14.1",
+        "peft": "0.21.2",
+        "accelerate": "1.15.0",
+        "safetensors": "0.8.0"
+      },
+      "training": {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/vlm-smol256-nf4-s16-u4-seed42-final",
+        "runtime_seconds": 23.18414910399997,
+        "peak_vram_bytes": 982947328,
+        "peak_rss_kib": 2783632,
+        "trainable_parameters": 460800,
+        "epochs_completed": 2,
+        "global_step": 4,
+        "best_epoch": 1,
+        "best_metric": 0.421875
+      },
+      "model": {
+        "stored_parameters": 256484928,
+        "dtype": "bfloat16",
+        "quantization": "nf4",
+        "parameter_storage_by_dtype": {
+          "torch.float32": {
+            "stored_numel": 122392128,
+            "storage_bytes": 489568512
+          },
+          "torch.uint8": {
+            "stored_numel": 67276800,
+            "storage_bytes": 67276800
+          }
+        },
+        "storage_count_policy": "actual parameter tensor storage after PEFT preparation; 4-bit packed counts are not original model parameter counts"
+      },
+      "adapter_target_count": 60,
+      "quantized_module_count": 211,
+      "zero_shot": {
+        "n": 16,
+        "n_real": 8,
+        "n_fake": 8,
+        "auc": 0.3828125,
+        "average_precision": 0.4667929292929293,
+        "balanced_accuracy": 0.5,
+        "eer": 0.625,
+        "eer_threshold": 0.9262753129005432,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6666666666666666,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.5,
+        "brier": 0.432140885339539,
+        "log_loss": 1.3814504819726288,
+        "ece_10_equal_width": 0.41942576318979263,
+        "threshold": 0.5,
+        "tn": 0,
+        "fp": 8,
+        "fn": 0,
+        "tp": 8,
+        "confusion_matrix": [
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            8
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 1.0,
+        "tpr": 1.0,
+        "auc_status": "defined"
+      },
+      "trained_validation": {
+        "n": 16,
+        "n_real": 8,
+        "n_fake": 8,
+        "auc": 0.421875,
+        "average_precision": 0.49132395382395383,
+        "balanced_accuracy": 0.5625,
+        "eer": 0.625,
+        "eer_threshold": 0.9196425676345825,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.631578947368421,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.5625,
+        "brier": 0.42172154651032634,
+        "log_loss": 1.3098100988812702,
+        "ece_10_equal_width": 0.40665778145194054,
+        "threshold": 0.8991213440895081,
+        "tn": 3,
+        "fp": 5,
+        "fn": 2,
+        "tp": 6,
+        "confusion_matrix": [
+          [
+            3,
+            5
+          ],
+          [
+            2,
+            6
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.375,
+            0.625
+          ],
+          [
+            0.25,
+            0.75
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.625,
+        "tpr": 0.75,
+        "auc_status": "defined"
+      },
+      "validation_prediction_sha256": "cb61e16edaade968e7e7b51ca9a4f308c5c511ac7b351d1468a6cd49f78c25f2",
+      "calibration_sha256": "8b60d9e7f390f9d5639a8c345d7244b530b7e2a0a6d1b60b46fc7d6fc1fd653f",
+      "validation_probability_range": [
+        0.8267117738723755,
+        0.9603611826896667
+      ],
+      "fit_state": "complete",
+      "watchdog": {
+        "command": [
+          "env",
+          "PYTHONPATH=.",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "TCC_PRETRAINED_ROOT=/home/lucas/ffb-research/local/pretrained",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/vlm_smol_pilot.py",
+          "--quantization",
+          "nf4",
+          "--run-suffix",
+          "final"
+        ],
+        "exit_code": -15,
+        "stop_reason": "RSS exceeded 3072 MiB",
+        "peak_sampled_rss_kib": 3205088,
+        "seconds": 38.63871821800012
+      },
+      "reload_result": "Failed resource bound in same process after fit; fresh-process reload is not yet certified."
+    }
+  },
+  "interpretation": "Tiny n=16 development feasibility only. BF16 first train/save/reload passed. Final BF16 and corrected NF4 trained and calibrated, but their same-process reload exceeded the RAM cap. NF4 is slower, stores skipped full-precision parameters and shows no local memory or quality advantage. Frozen BF16 is the explicit fallback. No superiority or generalization claim."
+}
