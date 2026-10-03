@@ -26,6 +26,12 @@ def summarize_pilot(output, *, draws=1000):
     runs = {(row["family"], row["kind"], row["label_fraction"]): row
             for row in pilot["runs"] if row["status"] == "complete"}
     predictions = {key: pd.read_csv(Path(row["run_dir"]) / "val_predictions.csv") for key, row in runs.items()}
+    first_run = next(iter(runs.values()))
+    first_artifact = json.loads((Path(first_run["run_dir"]) / "artifact.json").read_text())
+    cache_path = first_artifact["config"]["caches"]["val"]
+    val = open_cache(cache_path)
+    checkpoint = val.frame.copy()
+    checkpoint["p_fake"] = torch.from_numpy(np.array(val.logits)).softmax(1)[:, 1].numpy()
     comparisons = []
     pairs = [(("metric", "mlp", 1.0), ("metric", "supcon", 1.0)),
              (("metric", "raw_centroid", 1.0), ("metric", "supcon", 1.0))]
@@ -63,7 +69,13 @@ def summarize_pilot(output, *, draws=1000):
             # exact fitted coefficient counts and iteration budget from artifacts.
             telemetry.update(trainable_parameters=int(linear["coef"].size + linear["intercept"].size),
                              epochs_completed=int(record["config"]["training"].get("baseline_epochs", 30)))
-        enriched.append({**row, "telemetry": telemetry, "selected_training_loss": loss})
+        complement, _ = complementarity(checkpoint, predictions[key],
+                                        reference_threshold=pilot["checkpoint_baseline"]["threshold"],
+                                        other_threshold=row["metrics"]["threshold"])
+        aligned = predictions[key].set_index("sample_id").loc[checkpoint.sample_id, "p_fake"].to_numpy()
+        complement["score_pearson"] = float(np.corrcoef(checkpoint.p_fake, aligned)[0, 1])
+        enriched.append({**row, "telemetry": telemetry, "selected_training_loss": loss,
+                         "checkpoint_complementarity": complement})
     report = {**pilot, "runs": enriched, "paired_comparisons": comparisons,
               "analysis_software": source_identity(),
               "uncertainty_limitations": "Image-only supplied groups; conditional on fitted and validation-selected checkpoints, not independent confirmation or across-seed uncertainty.",
