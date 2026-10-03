@@ -23,7 +23,7 @@ python research_cli.py experimental train --family moe --config configs/experime
 python -m src.experimental.moe configs/experimental/moe_frozen_top2.yaml
 ```
 
-Set all environment variables used by the chosen YAML: `TCC_MODELS_ROOT`, `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS`, `TCC_RECON_CALIBRATION`. The feature variables point at complete cache directories, not indexes. The reconstruction variables point at certified CSV and calibration files. `moe_mobilenet_twoexpert_pilot.yaml` reproduces the cheaper SRM/RGB-only ablation and explicitly removes the reconstruction requirement. Refit with seeds 42, 123, 2024, 7 and 2025 for the server campaign while keeping the split seed fixed across comparisons. CPU fitting uses two threads, no loader workers, and streaming minibatches of memory-mapped expert features. Resume is at completed epochs; completed artifacts and calibrations stay frozen.
+Set the output variable used by the chosen YAML (`TCC_RUN_DIR` in the portable campaign) plus `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS` and `TCC_RECON_CALIBRATION`. The feature variables point at complete cache directories, not indexes. The reconstruction variables point at certified CSV and calibration files. `moe_mobilenet_twoexpert_pilot.yaml` reproduces the cheaper SRM/RGB-only ablation and explicitly removes the reconstruction requirement. Refit with seeds 42, 123, 2024, 7 and 2025 for the server campaign while keeping the split seed fixed across comparisons. CPU fitting uses two threads, no loader workers, and streaming minibatches of memory-mapped expert features. Resume is at completed epochs; completed artifacts and calibrations stay frozen.
 
 `moe_mobilenet_reconstruction_pilot.yaml` adds the mandatory reconstruction expert under the same six-epoch, 32-hidden-unit development budget and fixed source split, with output `TCC_RUN_DIR`. Degraded min-val proxy comparisons use the identical clean `val_select` IDs and frozen per-method thresholds. New caches and reconstruction predictions bind the degraded image bytes; no degraded labels fit the router, stacker, standardizer or threshold.
 
@@ -32,3 +32,24 @@ Set all environment variables used by the chosen YAML: `TCC_MODELS_ROOT`, `TCC_F
 The audited four-target suite takes separate source lists for Test, Test-D, DF-40 and Celeb-DF v2. Extract each expert with the same frozen checkpoint and preprocessing on each certified target manifest. Test-D caches must contain the degraded bytes despite sharing logical Test sample IDs. Celeb-DF uses the suite's mean-of-frame `p_fake` aggregation; DF-40 uses its explicit real-reference policy. Calibration requires the exact emitted `val_select.csv`, and neither target labels nor target thresholds are used for fitting. No full external benchmark is available locally.
 
 Tests exercise nonzero classification gradients in soft/top-2 training, blocked top-1 training, finite dropout routing, frozen inputs, hand-computed fusion/balance values, temperature, reorder-stable splits, key alignment, leakage rejection, complete three-expert fit/calibration, all mandatory comparison exports, score-equivalent checkpoint reload, dry metadata/source verification and image/artifact tampering rejection. These fixtures establish implementation behavior, not pretrained detector quality.
+
+## Actual MobileNet plus reconstruction pilot, 2026-10-03
+
+[Clean three-expert evidence](pilots/moe_mobilenet_reconstruction_seed42.json), [degraded three-expert evidence](pilots/moe_mobilenet_reconstruction_degraded_seed42.json), and [the two-expert degraded control](pilots/moe_mobilenet_twoexpert_degraded_seed42.json) record the same 494 `val_fit` and 506 `val_select` images. The source min-val population has 1,000 images. All degraded results use those exact 506 selection IDs and unchanged clean calibrations; degraded labels never train or tune any component. The complete three-expert router trained 82,147 parameters for 96 updates in 0.53 seconds on CPU, with peak RSS 952,480 KiB. Reload score error was 1.11e-16.
+
+| Frozen method | Clean val_select AUC | Degraded val_select AUC |
+| --- | ---: | ---: |
+| SRM alone | 0.9489 | 0.8347 |
+| RGB alone | 0.9595 | 0.6594 |
+| Reconstruction alone | 0.6544 | 0.5721 |
+| Three-expert mean | 0.9620 | 0.7886 |
+| Three-expert scalar geometric | 0.9681 | 0.7292 |
+| Three-expert binary geometric | 0.9666 | 0.7538 |
+| Three-expert logistic stacking | 0.9720 | 0.8093 |
+| Three-expert router | 0.9763 | 0.7932 |
+| Two-expert mean | 0.9721 | 0.8107 |
+| Two-expert router | 0.9745 | 0.7939 |
+
+The clean router-minus-three-expert-mean interval is positive, but the weak reconstruction expert depresses that mean. Clean gain over the two-expert router is 0.00175, with paired 95% interval [-0.00321, 0.00660]; gain over logistic stacking also includes zero. On the degraded proxy, router-minus-SRM is -0.04145, with interval [-0.07425, -0.00906]. The three-expert router loses 0.1830 AUC under degradation. This pilot demonstrates the full frozen fusion path and an unfavorable robustness result; it does not establish added value from reconstruction.
+
+Intervals use 1,000 paired image-group bootstrap draws, conditional on selected checkpoints. HF experts were selected using source validation, and router epoch and thresholds use the reported selection subset. Identity/video dependence is unresolved. Clean validation ceilings and this single deterministic degradation recipe limit interpretation; these are development proxies, not external Test-D or untouched-test evidence. No min-test was accessed.

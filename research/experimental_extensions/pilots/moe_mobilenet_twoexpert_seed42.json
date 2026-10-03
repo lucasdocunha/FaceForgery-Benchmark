@@ -380,10 +380,10 @@
   ],
   "selection_statement": "All method comparisons are development val_select scores; no test target has been accessed.",
   "training": {
-    "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v3-seed42",
-    "runtime_seconds": 0.5099513459999798,
+    "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v4-seed42",
+    "runtime_seconds": 0.5206752109997979,
     "peak_vram_bytes": 0,
-    "peak_rss_kib": 900324,
+    "peak_rss_kib": 900912,
     "trainable_parameters": 82082,
     "epochs_completed": 6,
     "global_step": 96,
@@ -391,7 +391,7 @@
     "best_metric": 0.9745077384328661
   },
   "software": {
-    "commit": "5d72b18a8b39553db6a1311a07bfb959feee9bb5",
+    "commit": "9512f8c75caf29974b7369309266b0a7107f7ca5",
     "code_sha256": {
       "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
       "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
@@ -422,14 +422,14 @@
       "Pillow": "12.2.0"
     }
   },
-  "artifact_sha256": "d6a613f04ec46b3d59fa027661dbb835c0f2d25e2b694df783bb87d7395bf2ad",
-  "calibration_sha256": "78742a9d8193a39436f0b65c8d702a074579f997fecaf45c3a010b5d57ec0c8d",
+  "artifact_sha256": "eeb63e4c867485394390133d2856a5005b4e2a528a15dcf3d5bc4e56fd427e76",
+  "calibration_sha256": "b64800d6a2c697e8d191838fd7380a8e2d04ad18db0e28d4ef4d1aee76adc69e",
   "config": {
     "task": "moe",
     "name": "mobilenet_srm_rgb_soft_twoexpert_ablation",
     "scope": "min-dataset-development-twoexpert-ablation",
     "seed": 42,
-    "output_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v3-seed42",
+    "output_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v4-seed42",
     "data": {
       "experts": [
         {
@@ -476,6 +476,166 @@
     "condition": {
       "family": "moe",
       "method": "router",
+      "expert_seed_policy": "fixed",
+      "expert_conditions": [
+        {
+          "seed_policy": "fixed",
+          "expert_contract": {
+            "kind": "feature_cache",
+            "checkpoint_sha256": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f",
+            "run_config_sha256": "c7021b70d6ab6bc2351ced5c69a1aac59774db5aa91c195aa720b602215bee15",
+            "extraction": {
+              "mode": "srm",
+              "image_size": 224,
+              "channels": 6,
+              "resize": "PIL bilinear square",
+              "normalization": {
+                "mean": [
+                  0.485,
+                  0.456,
+                  0.406
+                ],
+                "std": [
+                  0.229,
+                  0.224,
+                  0.225
+                ]
+              },
+              "srm_on_normalized": true,
+              "feature_point": "input to final root classifier Linear in eval mode",
+              "features_dtype": "float16",
+              "logits_dtype": "float32",
+              "amp_dtype": "torch.bfloat16",
+              "checkpoint_class1": "fake"
+            },
+            "code_sha256": {
+              "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+              "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+              "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+              "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+            },
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            },
+            "feature_dim": 1280,
+            "score": "FP32 softmax of original two logits; class 1 is fake",
+            "name": "srm",
+            "role": "srm",
+            "checkpoint_class1": "fake"
+          },
+          "expert_source_identity": "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b"
+        },
+        {
+          "seed_policy": "fixed",
+          "expert_contract": {
+            "kind": "feature_cache",
+            "checkpoint_sha256": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5",
+            "run_config_sha256": "e641973df4e3df92e514d4e7b3f3085f3488bbd992d8b954729816041f0fac30",
+            "extraction": {
+              "mode": "none",
+              "image_size": 224,
+              "channels": 3,
+              "resize": "PIL bilinear square",
+              "normalization": {
+                "mean": [
+                  0.485,
+                  0.456,
+                  0.406
+                ],
+                "std": [
+                  0.229,
+                  0.224,
+                  0.225
+                ]
+              },
+              "srm_on_normalized": false,
+              "feature_point": "input to final root classifier Linear in eval mode",
+              "features_dtype": "float16",
+              "logits_dtype": "float32",
+              "amp_dtype": "torch.bfloat16",
+              "checkpoint_class1": "fake"
+            },
+            "code_sha256": {
+              "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+              "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+              "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+              "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+            },
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            },
+            "feature_dim": 1280,
+            "score": "FP32 softmax of original two logits; class 1 is fake",
+            "name": "rgb",
+            "role": "rgb",
+            "checkpoint_class1": "fake"
+          },
+          "expert_source_identity": "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+        }
+      ],
+      "validation_split": {
+        "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
+        "seed": 42,
+        "fit_fraction": 0.5,
+        "disjointness": {
+          "sample_id": "disjoint among provided identities",
+          "group_id": "disjoint among provided identities",
+          "source_id": "unavailable; not certified",
+          "image_sha256": "disjoint among provided identities",
+          "sha256": "unavailable; not certified"
+        },
+        "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
+        "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
+      },
+      "calibration_manifest_sha256": "f2e1c915eceb650828d8d1d3d17f884d2b0dac52761f180b2c095060da58aee3",
+      "scope": "min-dataset-development-twoexpert-ablation",
+      "implementation": {
+        "__main__.py": "6e7e8370087566e97a9a1850a578bb68fbdcfc6f8608dcad4043fdf46de2fd5a",
+        "training.py": "37d90b84f7c4b310669a47971c1a572187295e145538f169ec5d95055985a047",
+        "__init__.py": "2dbc01db7b081d2113d01a786de9b6547ae165ad520c963b64c42f4f97480059",
+        "data.py": "945b343b6fbf6f64d5c1e9928b3a5eff38c873a53c35253a70a9c2ca352882ce",
+        "inference.py": "9e8e16d152e73e5f08edfe00d46967092d591835ceca53564851b01015d8757d",
+        "models.py": "99e428697ed9ef4d67076d1ae642c25d5fad41a847d68a8e07679e63784ca9fd",
+        "identity.py": "fa44abe49daf512442ac3205ad934d2f8d4aec6a959fca03d0e95ac69fb7ffb0"
+      },
+      "model": {
+        "input_dim": 2562,
+        "num_experts": 2,
+        "hidden_dim": 32,
+        "temperature": 1.0,
+        "train_routing": "soft",
+        "train_top_k": 2,
+        "inference_routing": "soft",
+        "inference_top_k": 1,
+        "expert_dropout": 0.1
+      },
+      "training_policy": {
+        "amp": false,
+        "epochs": 6,
+        "batch_size": 32,
+        "lr": 0.001,
+        "early_stop_patience": 4
+      },
+      "score_policy": "convex weighted mean of frozen p_fake; FP32 router softmax at fixed temperature"
+    },
+    "condition_sha256": "23bb6b3017ed707feef36f2068565835173f80d3168629de73ddbc6a705d9615",
+    "artifact_sha256": "eeb63e4c867485394390133d2856a5005b4e2a528a15dcf3d5bc4e56fd427e76",
+    "method": "router",
+    "realization": {
       "experts": [
         {
           "kind": "feature_cache",
@@ -582,53 +742,12 @@
         "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b",
         "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
       ],
-      "validation_split": {
-        "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
-        "seed": 42,
-        "fit_fraction": 0.5,
-        "disjointness": {
-          "sample_id": "disjoint among provided identities",
-          "group_id": "disjoint among provided identities",
-          "source_id": "unavailable; not certified",
-          "image_sha256": "disjoint among provided identities",
-          "sha256": "unavailable; not certified"
-        },
-        "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
-        "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
-      },
-      "calibration_manifest_sha256": "f2e1c915eceb650828d8d1d3d17f884d2b0dac52761f180b2c095060da58aee3",
-      "scope": "min-dataset-development-twoexpert-ablation",
-      "implementation": {
-        "__main__.py": "6e7e8370087566e97a9a1850a578bb68fbdcfc6f8608dcad4043fdf46de2fd5a",
-        "training.py": "d62d7766e36720d244edc50717ef789c94a8e7169794bf27b533ce3cd4643a9a",
-        "__init__.py": "2dbc01db7b081d2113d01a786de9b6547ae165ad520c963b64c42f4f97480059",
-        "data.py": "3abe0516807777cc04aabea6db89a0c6dbd670b5355b09d83cbabc560eb06ead",
-        "inference.py": "6200e72f000cadd14fd521b2ed205b69624ec65faa584654814dced65e3906a3",
-        "models.py": "99e428697ed9ef4d67076d1ae642c25d5fad41a847d68a8e07679e63784ca9fd"
-      },
-      "model": {
-        "input_dim": 2562,
-        "num_experts": 2,
-        "hidden_dim": 32,
-        "temperature": 1.0,
-        "train_routing": "soft",
-        "train_top_k": 2,
-        "inference_routing": "soft",
-        "inference_top_k": 1,
-        "expert_dropout": 0.1
-      },
-      "training_policy": {
-        "amp": false,
-        "epochs": 6,
-        "batch_size": 32,
-        "lr": 0.001,
-        "early_stop_patience": 4
-      },
-      "score_policy": "convex weighted mean of frozen p_fake; FP32 router softmax at fixed temperature"
-    },
-    "condition_sha256": "454d4a49918fb708ff8f3d4319f8fa5fdc73453e8933925904c85bdf7b8e5400",
-    "artifact_sha256": "d6a613f04ec46b3d59fa027661dbb835c0f2d25e2b694df783bb87d7395bf2ad",
-    "method": "router"
+      "expert_seeds": [
+        null,
+        null
+      ],
+      "fusion_seed": 42
+    }
   },
   "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
   "interpretation": "Development validation only; router is selected on the reported subset. Conditional group bootstrap does not establish cross-dataset or cross-seed improvement. No min-test was accessed.",
