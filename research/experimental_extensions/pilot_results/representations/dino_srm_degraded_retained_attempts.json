@@ -1,0 +1,269 @@
+{
+  "scope": "All prior files and fits retained; no additional fits or method search after the 21-candidate replay",
+  "artifacts": [
+    {
+      "name": "strict_replay",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay.json",
+      "sha256": "b5fa367b74674c3e5280b4e35f14c3135ac9b8c1ca9605b0419ac16cc33fbb9c",
+      "status": "retained: all 21 fits completed; four score audits rejected at 1e-12 tolerance"
+    },
+    {
+      "name": "first_tolerance_verification",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified.json",
+      "sha256": "c1ad58259378298d4dae3c8fb8de996522065ac1fd07dbc66a24ffe89c18870d",
+      "status": "retained: passed 1e-6 comparison; superseded by exact CSV threshold-tie audit"
+    },
+    {
+      "name": "first_score",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/degraded/summary.json",
+      "sha256": "b18a98c658439e07378d04b7d00e245c301a9957c2e858a29c991edfc9430336",
+      "status": "retained: six clean threshold ties were rounded by default CSV parsing"
+    },
+    {
+      "name": "final_tolerance_verification",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified_roundtrip.json",
+      "sha256": "dc0a8b1b3bbf614550337fa967a9b11e35e730271c9cd20c851a1477e4cc3fdc",
+      "status": "passed: exact original masks, thresholds, confusion counts and selected epochs"
+    },
+    {
+      "name": "final_score",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/degraded_roundtrip/summary.json",
+      "sha256": "68a6c97666b110dc6c6f98b2d72a6c47f5a494f566846646b9d5351b4da8f8b2",
+      "status": "complete: exact round-trip CSV parsing; unchanged degraded predictions"
+    },
+    {
+      "name": "initial_driver",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/driver_initial.py",
+      "sha256": "a56d9f1256de4e06ed993b1c5c5376d04244283d120bb41e1612257bfcc23d89",
+      "status": "retained extraction and strict-replay driver"
+    },
+    {
+      "name": "first_verification_driver",
+      "path": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/driver_before_precision_audit.py",
+      "sha256": "b7205157c604fda52ac2d4902d94650e1545f9e7c24eb90b4cba6bc7344306b0",
+      "status": "retained first verification and scoring driver"
+    }
+  ],
+  "csv_precision_corrections": [
+    {
+      "method": [
+        "metric",
+        "mlp",
+        1.0
+      ],
+      "initial_confusion": [
+        400,
+        8,
+        38,
+        554
+      ],
+      "corrected_confusion": [
+        400,
+        8,
+        37,
+        555
+      ]
+    },
+    {
+      "method": [
+        "graph",
+        "mlp",
+        0.05
+      ],
+      "initial_confusion": [
+        400,
+        8,
+        28,
+        564
+      ],
+      "corrected_confusion": [
+        400,
+        8,
+        27,
+        565
+      ]
+    },
+    {
+      "method": [
+        "graph",
+        "gcn",
+        0.05
+      ],
+      "initial_confusion": [
+        400,
+        8,
+        29,
+        563
+      ],
+      "corrected_confusion": [
+        400,
+        8,
+        28,
+        564
+      ]
+    },
+    {
+      "method": [
+        "graph",
+        "gat",
+        0.05
+      ],
+      "initial_confusion": [
+        400,
+        8,
+        29,
+        563
+      ],
+      "corrected_confusion": [
+        400,
+        8,
+        28,
+        564
+      ]
+    },
+    {
+      "method": [
+        "graph",
+        "sage",
+        0.05
+      ],
+      "initial_confusion": [
+        398,
+        10,
+        26,
+        566
+      ],
+      "corrected_confusion": [
+        398,
+        10,
+        25,
+        567
+      ]
+    },
+    {
+      "method": [
+        "graph",
+        "gat",
+        0.1
+      ],
+      "initial_confusion": [
+        402,
+        6,
+        31,
+        561
+      ],
+      "corrected_confusion": [
+        402,
+        6,
+        30,
+        562
+      ]
+    }
+  ],
+  "bounded_jobs": {
+    "representations-dino-srm-proxy-replay-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "replay",
+        "--previous",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup"
+      ],
+      "exit_code": 1,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 931248,
+      "seconds": 20.51460435199988
+    },
+    "representations-dino-srm-degraded-extraction-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "extract",
+        "--cache-index",
+        "/home/lucas/ffb-research/local/features/dino-srm-index.json",
+        "--manifest",
+        "/home/lucas/ffb-research/local/manifests/min-val-degraded-proxy.csv",
+        "--root",
+        "/home/lucas/ffb-research/local/data/min-val-degraded-proxy",
+        "--cache-root",
+        "/home/lucas/ffb-research/local/features/proxy-val",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-degraded-extraction.json"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 1974220,
+      "seconds": 31.5207126410005
+    },
+    "representations-dino-srm-proxy-verification-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "verify-replay",
+        "--replay",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay.json",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified.json"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 810196,
+      "seconds": 5.0033310619992335
+    },
+    "representations-dino-srm-degraded-score-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "score",
+        "--replay",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified.json",
+        "--extraction",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-degraded-extraction.json",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/degraded",
+        "--draws",
+        "1000"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 855804,
+      "seconds": 38.020074883000234
+    },
+    "representations-dino-srm-proxy-verification-roundtrip-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "verify-replay",
+        "--replay",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay.json",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified_roundtrip.json"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 812760,
+      "seconds": 4.502933015000053
+    },
+    "representations-dino-srm-degraded-score-roundtrip-bounded.json": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "research/experimental_extensions/pilot_results/representations/degraded_proxy_followup.py",
+        "score",
+        "--replay",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay_verified_roundtrip.json",
+        "--extraction",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-degraded-extraction.json",
+        "--output",
+        "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/degraded_roundtrip",
+        "--draws",
+        "1000"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 837348,
+      "seconds": 38.021113241999956
+    }
+  }
+}
