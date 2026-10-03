@@ -1,6 +1,6 @@
 # Experimental extensions: implementation and pilot report
 
-Status: draft during the 2026-10-03 source-validation campaign. The final selection, degraded-proxy evidence, frozen min-test pass and final validation will replace the pending items below. No full-benchmark result is claimed.
+Status: source-validation pilots complete on 2026-10-03; the precommitted min-test comparison and final integration checks are in progress. No full-benchmark result is claimed.
 
 The branch adds a common, provenance-bound execution path for reconstruction, SBI, compact VLM, metric learning, graph learning and frozen-expert fusion. All requested method families have tested training, artifact reload, calibration and four-target synthetic evaluation paths. The local comparisons are weak or inconclusive: reconstruction error is near chance, generic SBI is weaker than matched MFFI training on the available MFFI fakes, and feature methods face a selection-related ceiling on clean min-val. These measurements validate mechanisms and identify limitations; they do not settle the cross-dataset hypotheses.
 
@@ -40,7 +40,7 @@ The shared Stack B evaluator now includes exact SRM and DTCWT reuse, AUC/AP/EER/
 
 ## Local environment and scope
 
-The workstation has a Ryzen 7 5700X (16 CPU threads), 15 GiB RAM and an AMD Radeon RX 9060 XT gfx1200 with 16 GiB VRAM. The local environment is Python 3.12.13, torch 2.10.0+rocm7.1, torchvision 0.25.0+rocm7.1. Exact setup and optional dependencies are in [ENVIRONMENT.md](ENVIRONMENT.md). Existing server CUDA dependency pins were preserved. GPU work is serialized, uses two CPU threads and a 3072 MiB sampled-RSS watchdog; jobs are capped at 20 minutes, with tighter VLM bounds. After reboot there was no memory pressure or swap use. No unrelated team processes or directories were touched.
+The workstation has a Ryzen 7 5700X (16 CPU threads), 15 GiB RAM and an AMD Radeon RX 9060 XT gfx1200 with 16 GiB VRAM. The local environment is Python 3.12.13, torch 2.10.0+rocm7.1, torchvision 0.25.0+rocm7.1. Exact setup and optional dependencies are in [ENVIRONMENT.md](ENVIRONMENT.md). Existing server CUDA dependency pins were preserved. GPU work is serialized, uses two CPU threads and a 3072 MiB sampled-RSS watchdog; jobs are capped at 20 minutes, with tighter VLM bounds. Occasional system memory pressure stopped individual jobs; resource snapshots and retries are retained. No unrelated team processes or directories were touched.
 
 The local dataset contains 1000 images in each original split. Train has 202 real/798 fake, val 408/592 and test 423/577. AE training uses only those 202 source train reals. Images were predecoded for local use; all eight selected HF RGB/SRM checkpoints were rebuilt with the original architecture and exact 224 px ImageNet/SRM preprocessing and checked on min-val/min-test before reuse. Six MobileNet/DINO/CLIP RGB/SRM train+val feature-cache pairs were extracted once. Caches use float16 features, float32 logits, canonical row identities and hashes of images, manifests, checkpoints, preprocessing and implementation.
 
@@ -52,7 +52,7 @@ Every row below is a pilot/min-dataset result. The source-val sample is reused f
 
 ### SBI, generic initialization and equal budget
 
-Each arm uses MobileNetV3-Large with exact SRM, identical seeded initial weights, 404 balanced examples per epoch, five epochs and 65 optimizer updates. The matched supervised control rotates real MFFI fakes; mixed uses both fake sources. Model selection still uses MFFI validation fakes. All 202 source real landmark detections passed; four seed-selected masks were inspected. See [SBI.md](SBI.md) for the recipe and reproduction commands.
+Each arm uses MobileNetV3-Large with exact SRM, identical seeded initial weights, 404 balanced examples per epoch, five epochs and 65 allocated optimizer updates. The matched supervised control rotates real MFFI fakes; mixed uses both fake sources. Model selection still uses MFFI validation fakes. All runs completed their budget, but both pure SBI seeds selected their epoch-0 checkpoint after 13 updates. Selected MFFI/mixed checkpoints were steps 52/65 for seed 42 and 65/52 for seed 123. Thus equal training allocation does not imply equal age of the selected checkpoint. All 202 source real landmark detections passed; four seed-selected masks were inspected. See [SBI.md](SBI.md) for the recipe and reproduction commands.
 
 | Seed | Arm | Min-val AUC [95% bootstrap CI] | EER | Interpretation |
 | ---: | --- | --- | ---: | --- |
@@ -65,7 +65,7 @@ Each arm uses MobileNetV3-Large with exact SRM, identical seeded initial weights
 
 Seed 42 paired AUC differences versus MFFI: SBI -0.2496 [-0.2976, -0.1994], mixed -0.0439 [-0.0804, -0.0057]. Full reload predictions matched within 1e-6. The complete campaign, including an independently labeled HF adaptation smoke, took 178.61 seconds and peaked at 2553732 KiB sampled RSS. The generic model has 4205026 trainable parameters. Full metrics, budgets, loss/history references and provenance are in [pilot_results/sbi/seed42.json](pilot_results/sbi/seed42.json).
 
-Seed 123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653, -0.1750]; mixed-minus-MFFI -0.0170 [-0.0447, 0.0087]. Its three arms completed in 153.59 seconds with exact reload and the same 65 updates. Two seeds expose substantial realization noise but do not establish across-seed uncertainty. The independently implemented recipe on 202 source reals has no demonstrated benefit on these MFFI validation fakes. A held-out self-blend sanity check is required before distinguishing failed transfer from undertraining or a defective generator. Evidence: [pilot_results/sbi/seed123.json](pilot_results/sbi/seed123.json).
+Seed 123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653, -0.1750]; mixed-minus-MFFI -0.0170 [-0.0447, 0.0087]. Its three arms completed in 153.59 seconds with exact reload and the same 65 updates. Two seeds expose substantial realization noise but do not establish across-seed uncertainty. The independently implemented recipe on 202 source reals has no demonstrated benefit on these MFFI validation fakes. Evidence: [pilot_results/sbi/seed123.json](pilot_results/sbi/seed123.json).
 
 The one-epoch MobileNet-SRM HF adaptation smoke reached 0.9431 [0.9289, 0.9531] on min-val. Its unadapted verified checkpoint had 0.9457. This is prior-supervised adaptation evidence and does not establish improvement or unseen-forgery performance.
 
@@ -78,7 +78,16 @@ Fixed one-epoch DINO/CLIP adaptation smokes used the same 202 reals, 13 updates,
 
 Both completed their only epoch, then hit the RSS guard during best-bundle restoration. Memory-mapped checkpoint loading fixed that finalization cost; resumption performed zero additional updates. Fresh-process clean/degraded suites reproduced the saved clean scores exactly, in 61.53 seconds for DINO and 27.52 seconds for CLIP, below the RSS cap. The records retain initial stops, finalization-only telemetry, complete histories, unadapted controls and all calibrated metrics. These short adaptations show source-discrimination loss, especially for CLIP; they provide no local efficacy support for this recipe. Evidence: [pilot_results/sbi/hf_strong_adaptation_seed42.json](pilot_results/sbi/hf_strong_adaptation_seed42.json).
 
-SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. The 65 updates on 202 real faces are far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP adaptation campaign rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting. Held-out validation self-blend results are pending.
+The held-out sanity check uses only the 408 validation real faces and 408 generated self-blends. All landmark detections and generation steps passed; four fixed-seed example pairs were visually inspected. The recipe is unchanged, no fitting occurs, MFFI-val thresholds remain frozen, and the bootstrap resamples each real/SBI pair together.
+
+| Seed | SBI-only held-out AUC [95% CI] | MFFI-control held-out AUC | Mixed held-out AUC |
+| ---: | --- | ---: | ---: |
+| 42 | 0.5878 [0.5653, 0.6113] | 0.5159 | 0.7020 |
+| 123 | 0.6141 [0.5896, 0.6403] | 0.5292 | 0.6836 |
+
+Pure SBI learns some held-out signal, but separation is modest and selected-checkpoint age is only 13 updates. This does not establish strong artifact anti-transfer or a generator defect; the pilots are inconclusive and consistent with undertraining or a mismatch between checkpoint selection and the SBI objective. All six sanity suites finished in 27.02 seconds, peak sampled RSS 1953808 KiB. Full metrics and provenance are in [the held-out SBI and MobileNet control record](pilot_results/heldout_sbi_and_mobilenet_controls.json).
+
+SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. Even the full 65-update allocation on 202 real faces is far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP adaptation campaign rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting.
 
 ### Reconstruction
 
@@ -90,9 +99,22 @@ On the fixed degraded proxy, x-only/residual/full become 0.55725/0.54068/0.56024
 
 ### Metric learning and graph baselines
 
-All 21 DINO-SRM runs completed and were replayed without setting changes under the final implementation; total fit wall time was 20.50 seconds and peak RSS 974596 KiB, with no GPU use. SupCon AUC 0.989799 did not beat the backbone logits 0.994013 or raw centroid 0.993993. At 5% labels (51 selected images), GAT 0.992664 did not beat same-mask MLP 0.993781; at 10% (101 images), GraphSAGE 0.990656 did not beat MLP 0.993678. SupCon-minus-MLP paired AUC CI was [-0.00488, 0.00264]; 5% GAT-minus-MLP was [-0.00248, 0.00005].
+All 21 DINO-SRM source configurations completed. The initial integration replay took 20.50 seconds; the final source-code replay took 18.40 seconds, peak RSS 934312 KiB, with no GPU use and unchanged settings. SupCon AUC 0.989799 did not beat the backbone logits 0.994013 or raw centroid 0.993993. At 5% labels (51 selected images), GAT 0.992664 did not beat same-mask MLP 0.993781; at 10% (101 images), GraphSAGE 0.990656 did not beat MLP 0.993678. SupCon-minus-MLP paired AUC CI was [-0.00488, 0.00264]; 5% GAT-minus-MLP was [-0.00248, 0.00005].
 
-A separate same-mask SupCon-to-dynamic-GraphSAGE smoke completed with two distinct neighbor rebuilds and exact reload. Learned embeddings may be used as a graph input, but these results do not justify promoting them. The HF 0.994 clean-val ceiling is partly explained by min-val belonging to the full validation split that selected the backbone. Failure to exceed that ceiling is weak evidence about generalization; degraded-proxy comparisons are pending and retain the same source thresholds. The original run's rejection after implementation bytes changed was retained, followed by identical final-code replay and passing reload checks. All runs, including weak controls, are in [pilot_results/representations/README.md](pilot_results/representations/README.md).
+A separate same-mask SupCon-to-dynamic-GraphSAGE smoke completed with two distinct neighbor rebuilds and exact reload. The HF 0.994 clean-val ceiling is partly explained by min-val belonging to the full validation split that selected the backbone. Failure to exceed that ceiling is weak evidence about generalization. The fixed degraded proxy provides more room to differ, while keeping every source threshold and label mask unchanged:
+
+| Representation/control | Clean AUC | Degraded AUC |
+| --- | ---: | ---: |
+| Original DINO-SRM logits | 0.99401 | 0.96143 |
+| Raw centroids | 0.99399 | 0.96156 |
+| All-label MLP | 0.99097 | 0.95373 |
+| SupCon | 0.98980 | 0.93921 |
+| 5% MLP | 0.99378 | 0.95839 |
+| 5% GCN / GAT / GraphSAGE | 0.98316 / 0.99266 / 0.99160 | 0.94930 / 0.95449 / 0.95538 |
+| 10% MLP | 0.99368 | 0.95882 |
+| 10% GCN / GAT / GraphSAGE | 0.98574 / 0.98996 / 0.99066 | 0.95178 / 0.95399 / 0.95570 |
+
+Degraded SupCon-minus-MLP AUC is -0.01452 [-0.02495, -0.00405]. All six GNN-minus-same-mask-MLP intervals are below zero; raw centroids remain a strong control. These are conditional development comparisons, not independent or across-seed confirmation. All 22 clean/degraded metric rows and nine paired controls are in [the proxy record](pilot_results/representations/dino_srm_degraded_proxy.json) and [CSV](pilot_results/representations/dino_srm_degraded_proxy.csv). The original bundle rejection, overstrict floating-point audit and CSV parsing audit were retained. Final reloads reproduce predictions exactly, and round-trip CSV parsing preserves threshold ties and confusion counts. See [the complete representation record](pilot_results/representations/README.md). No learned metric or GNN is promoted over the stronger controls.
 
 ### Frozen fusion and VLM feasibility
 
@@ -102,7 +124,7 @@ On degraded val_select, AUCs are router 0.79324, LR 0.80925, mean 0.78861, geome
 
 SmolVLM-256M is a feasibility study with 16 train and 16 val images, four updates and 460800 LoRA parameters. BF16 achieved AUC 0.6640625 versus zero-shot 0.65625; NF4 achieved 0.421875 versus 0.3828125. These tiny observations cannot rank VLMs. The score is `softmax([sum log p(Real tokens), sum log p(Fake tokens)])[Fake]`, with each label teacher-forced after the identical image/prompt prefix. Multi-token labels and answer masking have explicit tests.
 
-The first NF4 attempt correctly rejected unexpectedly quantized vision descendants; a pinned-Transformers exclusion mismatch was fixed and regression-tested. Final BF16/NF4 fits completed, but same-process base reload crossed the 3 GiB RSS guard. Fresh-process inference checks are pending. Detailed attempts and immutable base inventories are retained in [pilots/vlm_smol256_seed42.json](pilots/vlm_smol256_seed42.json). On this backend, NF4 retained 489568512 FP32 bytes plus 67276800 packed bytes, exceeding the BF16 base's 514813056 bytes; there is no demonstrated local memory benefit. Do not extrapolate this small model/backend observation to CUDA servers. Qwen3-VL-2B is the server template; a nominal Qwen2.5-VL-3B was excluded because actual parameter count exceeds the strict cap.
+The first NF4 attempt correctly rejected unexpectedly quantized vision descendants; a pinned-Transformers exclusion mismatch was fixed and regression-tested. Final BF16/NF4 fits completed, but same-process base reload crossed the 3 GiB RSS guard. Fresh-process inference-only reloads then passed in 11.01/11.51 seconds, with maximum score errors 0.0/1.11e-16 and peak sampled RSS 2330120/2345880 KiB. Detailed attempts and immutable base inventories are retained in [pilots/vlm_smol256_seed42.json](pilots/vlm_smol256_seed42.json). On this backend, NF4 retained 489568512 FP32 bytes plus 67276800 packed bytes, exceeding the BF16 base's 514813056 bytes; there is no demonstrated local memory benefit. Do not extrapolate this small model/backend observation to CUDA servers. Qwen3-VL-2B is the server template; a nominal Qwen2.5-VL-3B was excluded because actual parameter count exceeds the strict cap.
 
 ### Degraded proxy and frozen test access
 
@@ -113,14 +135,15 @@ A fixed seed 42 draw from the repository RandomizedRobustAugment operator create
 | Generic SBI 42 | 0.4409 | 0.5000 | [0.0231, 0.0941] |
 | Generic MFFI 42 | 0.6905 | 0.6270 | [-0.0898, -0.0308] |
 | Generic mixed 42 | 0.6466 | 0.5865 | [-0.0925, -0.0278] |
+| Unadapted HF MobileNet-SRM 42 | 0.9457 | 0.8405 | [-0.1272, -0.0834] |
 | HF SBI adaptation 42 | 0.9431 | 0.8345 | [-0.1282, -0.0881] |
 | Generic SBI 123 | 0.5225 | 0.4912 | [-0.0646, 0.0012] |
 | Generic MFFI 123 | 0.7400 | 0.6455 | [-0.1254, -0.0630] |
 | Generic mixed 123 | 0.7231 | 0.6053 | [-0.1501, -0.0857] |
 
-An increase from below chance to chance is not useful robustness. The supervised/mixed arms lose discrimination and threshold accuracy under this degradation. The seven clean/degraded audited suites completed in 65.04 seconds, peak sampled RSS 1987628 KiB. Evidence: [pilot_results/sbi/validation_degraded_proxy.json](pilot_results/sbi/validation_degraded_proxy.json). Reconstruction and held-out fusion proxy results above show no supported robustness gain. An unadapted MobileNet-SRM clean/degraded control is being added beside the HF SBI adaptation before attributing any change to adaptation.
+An increase from below chance to chance is not useful robustness. The supervised/mixed arms lose discrimination and threshold accuracy under this degradation. The seven clean/degraded audited suites completed in 65.04 seconds, peak sampled RSS 1987628 KiB. Evidence: [pilot_results/sbi/validation_degraded_proxy.json](pilot_results/sbi/validation_degraded_proxy.json). The unadapted MobileNet control reuses verified clean predictions and matching original-logit degraded caches. Adaptation-minus-unadapted degraded AUC is -0.0060 [-0.0137, 0.0030], so no robustness improvement is established; [paired evidence](pilot_results/sbi/mobilenet_adaptation_control.json) retains the original thresholds. Reconstruction and held-out fusion proxy results above also show no supported robustness gain.
 
-The frozen min-test comparison will use all three generic SBI seed 42 arms and HF DINO-SRM. Seed 42 was the first predeclared realization; seed 123 checks source-side variability and is not used to choose a favorable test realization. This preserves the matched three-arm comparison requested before training. Checkpoint/calibration hashes will be committed before materializing or scoring the test proxy. No new min-test access has occurred since the eight required checkpoint compatibility checks at this draft checkpoint.
+The frozen min-test comparison uses all three generic SBI seed 42 arms and HF DINO-SRM. Seed 42 was the first predeclared realization; seed 123 checks source-side variability and was not used to choose a favorable test realization. Checkpoint, calibration and software hashes were committed in `8d01770` before proxy materialization or scoring. The first SBI suite stopped after 5.12 seconds because of system memory pressure, with no prediction CSV or quality metric emitted. Its partial image access is unknown. The retry changes only its output directory, preserves the failure evidence and rechecks every frozen input. That amendment was committed in `39e6961` before retry authorization. The complete comparison is in progress; the eight earlier original-checkpoint compatibility checks remain part of the recorded access history.
 
 ## Server campaign and experiment matrix
 
@@ -144,9 +167,24 @@ For each selected trained run, calibration is frozen from certified MFFI val, or
 
 The full-scale graph path uses bounded feature caches, FAISS neighborhood search with sampled recall checks, sparse neighborhoods and ego minibatches. It does not form a dense all-pairs graph. Inductive target queries cannot alter source neighborhoods or one another; transductive runs are separately named, calibrated and reported. Full-scale runtime and memory remain server measurements, not inferred from 1000-image pilots.
 
+## Comparability with published results
+
+Our supervised checkpoints and adaptation campaign use MFFI phase-1, while commonly cited cross-dataset tables train on FaceForensics++ and test on Celeb-DF v2.
+Compression, frame sampling, face crops, source validation and initialization must match the comparator; a shared target name is insufficient.
+[Shiohara and Yamasaki, CVPR 2022](https://openaccess.thecvf.com/content/CVPR2022/papers/Shiohara_Detecting_Deepfakes_With_Self-Blended_Images_CVPR_2022_paper.pdf), report 93.18% Celeb-DF AUC for SBI; the [authors' repository](https://github.com/mapooon/SelfBlendedImages#test) separately reports 92.87% for its released FF++ c23 checkpoint.
+Those results cannot be directly ranked against this repository's MFFI-trained results, and our 24-technique DF-40 subset is not the official full DF-40 protocol.
+A state-of-the-art claim requires a protocol-matched run, including the specified official splits and comparable video aggregation.
+Server TODO: obtain FF++ c23, prepare train/validation crops and certify manifests with the existing converter, preserving source video groups and split independence.
+The experimental CLI, SBI recipe, landmark cache and Celeb-DF video-mean suite already accept certified populations and can be reused.
+FF++ acquisition, official crop/sampling reproduction, its source manifests and the official DF-40 split are not supplied or validated here.
+Strict FF++-only comparisons also require suitable generic DINO/CLIP initialization support; the current HF-adaptation template carries prior MFFI fake exposure and cannot be relabeled FF++-only merely by replacing a manifest.
+Treat that initializer extension and protocol verification as server preparation TODOs, and retain a separately labeled extra-data condition if MFFI-supervised initialization is used.
+Run the priority-1 SBI DINO/CLIP campaign under MFFI for benchmark continuity and, if FF++ is available, under the matched FF++ to Celeb-DF protocol for literature comparability.
+The independent MediaPipe SBI recipe is an experimental variant, so it must be compared against a faithfully reproduced published SBI control rather than described as that method's exact reproduction.
+
 ## Validation, failures and remaining limitations
 
-The unmodified baseline passed 265 tests and 20 subtests. Gate 2 integration passed 432 tests and 20 subtests in 66.84 seconds; focused NF4 regression checks passed afterward. All families have actual fit/calibrate/reload/four-target synthetic fixtures, including absolute DF-40 paths, paired degradation IDs and Celeb video aggregation. Final integrated suite, config audit, protected-path diff, artifact review, frozen min-test evidence and clean branch status are pending before Gate 4.
+The unmodified baseline passed 265 tests and 20 subtests. Integration at `109c494` passed 445 tests and 20 subtests in 67.63 seconds, with peak sampled RSS 1652852 KiB and no watchdog stop. Subsequent named-expert configuration and matched SBI metadata fixes passed their focused tests; the final full-suite run follows their integration. All 22 matrix configurations resolve, and all 154 documented train/calibrate/suite commands pass the real CLI parser. These preflights do not load full-server assets. All families have actual fit/calibrate/reload/four-target synthetic fixtures, including absolute DF-40 paths, paired degradation IDs and Celeb video aggregation. Evidence is in [preflight/final_pytest.json](preflight/final_pytest.json) and [preflight/matrix_validation.json](preflight/matrix_validation.json). Final artifact review, frozen min-test evidence and clean branch status remain pending before Gate 4.
 
 Retained failures include memory-pressure-stopped preflight jobs, the old-code bundle reload rejection, the NF4 subtree guard failure, same-process VLM reload RSS stops and an early two-expert router saturation caused by near-constant feature scaling. Fixes and retries preserve the original evidence. No labels or score polarity were selected by AUC, no target threshold was fitted and no unreadable image was silently replaced.
 

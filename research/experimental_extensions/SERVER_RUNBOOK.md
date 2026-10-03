@@ -116,7 +116,9 @@ sources:
   - {name: reconstruction, role: reconstruction, kind: predictions, path: "${TCC_RECON_VAL_PREDICTIONS}"}
 ```
 
-Use reconstruction calibration's `validation_predictions.csv` and `.csv.json` as the frozen MoE source scores. For a MoE baseline, put `method: mean`, `geometric`, `geometric_binary`, `logistic` or `expert_<name>` in the calibration options and suite `model.options`; each method has its own bound inventory/calibration. Threshold selection is distinct from learned probability calibration. Final artifacts bind the exact run bundle, fake-is-1 score semantics and input contract; experimental evaluation rejects unbound calibration and requires no `allow_unbound_calibration` switch.
+For matched-seed fusion, set `TCC_RECON_VAL_PREDICTIONS` to the native reconstruction run's `validation_predictions.csv`, keep its `.csv.json` beside it, and set `TCC_RECON_CALIBRATION` to that run's `calibration.json`. The metadata reader verifies the source run in the prediction CSV's parent directory, including `run.json` and the trained bundle. A separate common-calibration export directory cannot replace this native source-run location. The same rule applies to `TCC_NEW_EXPERT_VAL_PREDICTIONS` and `TCC_NEW_EXPERT_CALIBRATION` for reconstruction or SBI. Target predictions still come from each expert's target suite and must match the frozen source contract.
+
+For a MoE baseline, put `method: mean`, `geometric`, `geometric_binary`, `logistic` or `expert_<name>` in the calibration options and suite `model.options`; each method has its own bound inventory/calibration. Threshold selection is distinct from learned probability calibration. Final artifacts bind the exact run bundle, fake-is-1 score semantics and input contract; experimental evaluation rejects unbound calibration and requires no `allow_unbound_calibration` switch.
 
 The strong-pair condition keeps DINO-SRM and CLIP-SRM and adds a source-validated new expert. Set `TCC_NEW_EXPERT_ROLE` to its actual saved family, `reconstruction` or `sbi`. Its calibration options use the ordered names `dino_srm`, `clip_srm`, `new_expert`, with roles `srm`, `srm`, and the declared new role:
 

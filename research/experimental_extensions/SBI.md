@@ -57,4 +57,17 @@ Repeat with `clip` and all canonical seeds. Checkpoint loading validates the sou
 
 `scripts/sbi_pilot.py` accepts explicit source manifests, image roots, SQLite landmarks, generic weights and an output directory. It runs the three generic arms for five epochs by default, with batch 8 and accumulation 4, yielding 65 matched optimizer updates for 202 source reals. `--hf-checkpoint` adds a separately labeled one-epoch adaptation smoke; `--seed` changes the realization. Every run verifies full validation prediction reload, stores per-arm bootstrap intervals and compares paired AUC differences against MFFI. Failed runs remain in `pilot.json`. This bounded driver rejects source populations above 10000 rows; use the common training CLI for full scale.
 
+The allocated training budget and selected checkpoint age are different quantities. All six generic runs completed 65 updates. MFFI-val AUC selected the step-13 checkpoint for both pure SBI seeds; selected MFFI/mixed checkpoints were steps 52/65 for seed 42 and 65/52 for seed 123. Both the completed history and selected epoch are retained. This selection rule can favor early SBI checkpoints that transfer slightly better to MFFI without learning held-out self-blends well; it does not establish a failure of the SBI generation mechanism.
+
+For an inference-only sanity check, detect landmarks on certified validation real faces with the same landmark command, using `TCC_VAL_MANIFEST`, `TCC_VAL_ROOT` and a fresh `TCC_VAL_LANDMARK_CACHE`. Then materialize a fixed held-out proxy:
+
+```bash
+python -m src.robustness.heldout_sbi_proxy \
+  --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" \
+  --landmarks "$TCC_VAL_LANDMARK_CACHE" --output "$TCC_SBI_PROXY_ROOT" \
+  --output-manifest "$TCC_SBI_PROXY_MANIFEST" --seed 42 --image-size 224
+```
+
+The helper uses the unchanged epoch-0 training recipe, including label-independent post-augmentation, and emits one real/SBI pair per accepted validation real. Source certificates remain validation-only; an in-memory constructor alias satisfies the training dataset API without any fit call. New view IDs retain the original face ID as their bootstrap group. Landmark and generation failures are counted. Evaluate in `pilot` suite scope with each model's existing MFFI-val calibration; do not tune a threshold on the synthetic proxy. The local 408 real faces yielded all 816 views. Pure SBI separability was modest, so the selected tiny pilots remain undertrained or inconclusive rather than establishing artifact anti-transfer.
+
 Final pilot numbers and decisions are in [REPORT.md](REPORT.md). Calibration and model selection use source validation only. Degraded source-validation predictions reuse the frozen clean threshold. Test access requires a frozen candidate record and is never used to change these recipes.

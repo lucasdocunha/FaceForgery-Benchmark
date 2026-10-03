@@ -1,5 +1,5 @@
 schema: faceforgery-experimental-matrix-v1
-status: draft pending completed pilots and frozen candidate selection
+status: implemented; local pilots complete; full-benchmark server validation pending
 canonical_seeds:
 - 42
 - 123
@@ -60,8 +60,8 @@ evaluation_protocols:
     - TCC_EVAL_CELEB_MANIFEST
     - TCC_EVAL_CELEB_ROOT
     unit: video mean frame p_fake
-    polarity: official1real explicitly converted to internal1fake
-    coverage: official518testvideos
+    polarity: official 1=real explicitly converted to internal 1=fake
+    coverage: official 518 test videos
 experiments:
 - name: sbi-hf-dino-srm
   priority: 1
@@ -70,7 +70,7 @@ experiments:
   family: sbi
   architecture: dino verified pretrained SRM backbone
   regime: SBI adaptation after MFFI fake exposure
-  input_representation: 224px normalized RGB plus exact legacy3SRM filters
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
   seeds:
   - 42
   - 123
@@ -124,7 +124,7 @@ experiments:
   family: sbi
   architecture: clip verified pretrained SRM backbone
   regime: SBI adaptation after MFFI fake exposure
-  input_representation: 224px normalized RGB plus exact legacy3SRM filters
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
   seeds:
   - 42
   - 123
@@ -177,7 +177,7 @@ experiments:
   family: sbi
   architecture: MobileNetV3-Large
   regime: matched generic initialization and update budget
-  input_representation: 224px exact legacy6-channel SRM
+  input_representation: 224 px exact legacy 6-channel SRM
   seeds:
   - 42
   - 123
@@ -230,7 +230,7 @@ experiments:
   family: sbi
   architecture: MobileNetV3-Large
   regime: matched generic initialization and update budget
-  input_representation: 224px exact legacy6-channel SRM
+  input_representation: 224 px exact legacy 6-channel SRM
   seeds:
   - 42
   - 123
@@ -283,7 +283,7 @@ experiments:
   family: sbi
   architecture: MobileNetV3-Large
   regime: matched generic initialization and update budget
-  input_representation: 224px exact legacy6-channel SRM
+  input_representation: 224 px exact legacy 6-channel SRM
   seeds:
   - 42
   - 123
@@ -546,7 +546,7 @@ experiments:
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
   family: reconstruction
-  architecture: cae width32 latent128 224px
+  architecture: cae width 32 latent 128 224 px
   regime: real-only source training; reconstruction validation
   input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
   seeds:
@@ -598,7 +598,7 @@ experiments:
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
   family: reconstruction
-  architecture: vae width32 latent128 224px
+  architecture: vae width 32 latent 128 224 px
   regime: real-only source training; reconstruction validation
   input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
   seeds:
@@ -650,7 +650,7 @@ experiments:
   priority: 3
   server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
   family: reconstruction
-  architecture: gated width32 latent128 224px
+  architecture: gated width 32 latent 128 224 px
   regime: real-only source training; reconstruction validation
   input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
   seeds:
