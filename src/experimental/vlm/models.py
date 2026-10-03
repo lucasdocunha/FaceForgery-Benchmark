@@ -9,6 +9,10 @@ from pathlib import Path
 import torch
 
 MAX_PARAMETERS = 3_000_000_000
+# Transformers 5 matches skip entries as regex prefixes or exact suffixes.
+# A bare parent name does not exclude nested children such as
+# model.vision_model.encoder.layers.0.self_attn.q_proj.
+NF4_EXCLUSIONS = [r"(^|.*\.)(vision_model|connector|visual)(\.|$)"]
 
 
 class UnsupportedQuantizationError(RuntimeError):
@@ -145,7 +149,7 @@ def load_base(config, device="cpu", *, training=False):
             raise UnsupportedQuantizationError("NF4 requested but bitsandbytes is missing") from error
         kwargs["quantization_config"] = bnb_config(
             load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=dtype, llm_int8_skip_modules=["vision_model", "connector", "visual"],
+            bnb_4bit_compute_dtype=dtype, llm_int8_skip_modules=NF4_EXCLUSIONS,
         )
     try:
         model = model_type.from_pretrained(path, **kwargs)

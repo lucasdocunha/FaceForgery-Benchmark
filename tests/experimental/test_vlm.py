@@ -61,6 +61,26 @@ def test_answer_masks_exclude_headers_padding_and_eos_from_score():
         answer_batch(processor, [object()], ["Fake"])
 
 
+def test_nf4_excludes_complete_vision_subtrees_and_preserves_decoder(tiny_vlm):
+    from src.experimental.vlm.models import NF4_EXCLUSIONS
+    from transformers.quantizers.quantizers_utils import should_convert_module
+    from transformers import BitsAndBytesConfig
+
+    for name in ("model.vision_model.encoder.layers.0.self_attn.q_proj", "model.connector.modality_projection.proj",
+                 "model.visual.blocks.0.mlp.fc1", "vision_model.encoder.proj"):
+        assert not should_convert_module(name, NF4_EXCLUSIONS)
+    assert should_convert_module("model.text_model.layers.0.self_attn.q_proj", NF4_EXCLUSIONS)
+    pytest.importorskip("bitsandbytes")
+    from transformers.integrations.bitsandbytes import replace_with_bnb_linear
+
+    base, _, _ = tiny_vlm
+    converted = replace_with_bnb_linear(base, modules_to_not_convert=NF4_EXCLUSIONS,
+        quantization_config=BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4"))
+    quantized = [name for name, layer in converted.named_modules() if layer.__class__.__name__ == "Linear4bit"]
+    assert any(name.startswith("model.text_model.") for name in quantized)
+    assert not any("vision_model" in name or "connector" in name for name in quantized)
+
+
 @pytest.fixture
 def tiny_vlm(tmp_path):
     transformers = pytest.importorskip("transformers")
