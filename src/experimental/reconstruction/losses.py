@@ -92,11 +92,14 @@ class OfflineLPIPS(nn.Module):
 
 
 class CompositeReconstructionLoss(nn.Module):
-    def __init__(self, *, lambda_ssim=0.1, lambda_lpips=0.0, beta=None, lpips_state_path=None, lpips_net="alex"):
+    def __init__(self, *, lambda_ssim=0.1, lambda_lpips=0.0, beta=None, kl_reduction="sum", lpips_state_path=None, lpips_net="alex"):
         super().__init__()
         if any(not math.isfinite(float(v)) or v < 0 for v in (lambda_ssim, lambda_lpips)):
             raise ValueError("Loss weights must be finite and nonnegative")
         self.lambda_ssim, self.lambda_lpips = float(lambda_ssim), float(lambda_lpips)
+        if kl_reduction not in {"sum", "mean_per_dim"}:
+            raise ValueError("kl_reduction must be sum or mean_per_dim")
+        self.kl_reduction = kl_reduction
         self.beta = beta if isinstance(beta, BetaSchedule) else BetaSchedule(**(beta or {}))
         self.perceptual = OfflineLPIPS(lpips_state_path, net=lpips_net) if lambda_lpips else None
 
@@ -112,7 +115,7 @@ class CompositeReconstructionLoss(nn.Module):
         beta = self.beta(global_step)
         if not len(target):
             zero = reconstruction.sum() * 0
-            return {"loss": zero, "l1": zero, "ssim_loss": zero, "lpips": zero, "kl": zero, "beta": zero + beta}
+            return {"loss": zero, "l1": zero, "ssim_loss": zero, "lpips": zero, "kl": zero, "kl_nats_per_sample": zero, "kl_nats_per_dimension": zero, "beta": zero + beta}
         l1 = (reconstruction.float() - target.float()).abs().mean()
         ssim = (1 - structural_similarity(reconstruction, target)).mean() if self.lambda_ssim else l1 * 0
         perceptual = self.perceptual(reconstruction, target).mean() if self.perceptual is not None else l1 * 0
@@ -120,6 +123,8 @@ class CompositeReconstructionLoss(nn.Module):
             raise ValueError("Provide both VAE mu and logvar")
         if beta and mu is None:
             raise ValueError("Nonzero KL beta requires a VAE posterior")
-        kl = analytical_kl(mu, logvar).mean() if logvar is not None else l1 * 0
+        kl_nats = analytical_kl(mu, logvar).mean() if logvar is not None else l1 * 0
+        kl_per_dimension = kl_nats / mu.shape[1] if mu is not None else kl_nats
+        kl = kl_nats if self.kl_reduction == "sum" else kl_per_dimension
         total = l1 + self.lambda_ssim * ssim + self.lambda_lpips * perceptual + beta * kl
-        return {"loss": total, "l1": l1, "ssim_loss": ssim, "lpips": perceptual, "kl": kl, "beta": l1.new_tensor(beta)}
+        return {"loss": total, "l1": l1, "ssim_loss": ssim, "lpips": perceptual, "kl": kl, "kl_nats_per_sample": kl_nats, "kl_nats_per_dimension": kl_per_dimension, "beta": l1.new_tensor(beta)}

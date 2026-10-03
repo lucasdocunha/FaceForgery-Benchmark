@@ -144,3 +144,71 @@ def test_latent_anomaly_and_fixed_mean_scoring():
     assert torch.allclose(anomaly(x).softmax(1)[:, 1], raw, atol=1e-6)
     with pytest.raises(ValueError, match="requires a VAE"):
         LatentDetector(ae())
+
+
+@pytest.mark.parametrize("kind", ["residual", "latent"])
+@pytest.mark.parametrize("mode", ["frozen", "recon_finetune", "end_to_end"])
+def test_explicit_autoencoder_gradient_modes(kind, mode):
+    autoencoder = ae("vae" if kind == "latent" else "cae")
+    detector = ResidualDetector(autoencoder, ae_mode=mode, width=4) if kind == "residual" else LatentDetector(autoencoder, ae_mode=mode)
+    details = detector.forward_details(torch.rand(2, 3, 32, 32))
+    F.cross_entropy(details["logits"], torch.tensor([0, 1])).backward(retain_graph=True)
+    ae_grad = sum(float(p.grad.abs().sum()) for p in autoencoder.parameters() if p.grad is not None)
+    assert (ae_grad > 0) == (mode == "end_to_end")
+    if mode != "frozen":
+        detector.zero_grad(set_to_none=True)
+        details["reconstruction"].retain_grad()
+        CompositeReconstructionLoss(lambda_ssim=0)(details["reconstruction"], torch.zeros(2, 3, 32, 32), real_mask=torch.tensor([True, False]))["loss"].backward()
+        assert details["reconstruction"].grad[0].abs().sum() > 0
+        assert details["reconstruction"].grad[1].count_nonzero() == 0
+        assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in autoencoder.parameters())
+    groups = {g["name"]: g["lr"] for g in detector.parameter_groups(1e-5, 1e-4, 1e-3)}
+    assert groups["head"] == 1e-3
+    assert ("autoencoder" in groups) == (mode != "frozen")
+    if mode != "frozen":
+        assert groups["autoencoder"] == 1e-5
+
+
+def test_input_ablations_preserve_backbone_initialization_and_isolate_signals():
+    models, tensors = {}, {}
+    x = torch.rand(2, 3, 32, 32)
+    for mode in ("x_only", "residual_only", "full"):
+        torch.manual_seed(12)
+        model = ResidualDetector(ae(), input_mode=mode, gradient=True, width=4).eval()
+        models[mode] = model
+        handle = model.backbone.register_forward_pre_hook(lambda module, args, key=mode: tensors.update({key: args[0].detach()}))
+        model(x)
+        handle.remove()
+    for mode in ("x_only", "residual_only"):
+        assert tensors[mode].shape == tensors["full"].shape
+        assert tensors[mode][:, 3:9].count_nonzero() == 0
+        for key, value in models[mode].state_dict().items():
+            assert torch.equal(value, models["full"].state_dict()[key])
+    assert tensors["x_only"][:, 9:].count_nonzero() == 0
+    assert torch.equal(tensors["x_only"][:, :3], tensors["full"][:, :3])
+    assert torch.equal(tensors["residual_only"][:, :3], tensors["full"][:, 6:9])
+    assert torch.equal(tensors["residual_only"][:, 9:], tensors["full"][:, 9:])
+
+
+def test_kl_reduction_logs_dimension_independent_nats():
+    x = torch.rand(2, 3, 32, 32)
+    mu, logvar = torch.ones(2, 8), torch.zeros(2, 8)
+    common = dict(lambda_ssim=0, beta={"kind": "constant", "maximum": 0.1})
+    summed = CompositeReconstructionLoss(**common, kl_reduction="sum")(x, x, mu=mu, logvar=logvar)
+    mean = CompositeReconstructionLoss(**common, kl_reduction="mean_per_dim")(x, x, mu=mu, logvar=logvar)
+    assert summed["kl_nats_per_sample"] == mean["kl_nats_per_sample"] == 4
+    assert summed["kl_nats_per_dimension"] == mean["kl_nats_per_dimension"] == 0.5
+    assert summed["kl"] == 4 and mean["kl"] == 0.5
+    torch.testing.assert_close(summed["loss"], 8 * mean["loss"])
+
+
+def test_resnet_zero_stem_learns_path_before_classification_reaches_autoencoder():
+    model = ResidualDetector(ae(), ae_mode="end_to_end", backbone="resnet18", initialize=False)
+    x, y = torch.rand(2, 3, 32, 32), torch.tensor([0, 1])
+    F.cross_entropy(model(x), y).backward()
+    assert model.autoencoder.to_mu.weight.grad.count_nonzero() == 0
+    assert model.backbone.conv1.weight.grad[:, 3:].abs().sum() > 0
+    torch.optim.SGD(model.parameters(), lr=0.001).step()
+    model.zero_grad(set_to_none=True)
+    F.cross_entropy(model(x), y).backward()
+    assert model.autoencoder.to_mu.weight.grad.abs().sum() > 0

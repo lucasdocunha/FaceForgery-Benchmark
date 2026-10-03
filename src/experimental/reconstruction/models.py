@@ -162,9 +162,16 @@ class ReconstructionAnomaly(nn.Module):
 
 
 class _Detector(nn.Module):
-    def __init__(self, autoencoder, freeze_ae=True):
+    def __init__(self, autoencoder, freeze_ae=None, ae_mode=None):
         super().__init__()
-        self.autoencoder, self.freeze_ae = autoencoder, bool(freeze_ae)
+        if ae_mode is None:
+            ae_mode = "recon_finetune" if freeze_ae is False else "frozen"
+        if ae_mode not in {"frozen", "recon_finetune", "end_to_end"}:
+            raise ValueError("ae_mode must be frozen, recon_finetune, or end_to_end")
+        if freeze_ae is not None and bool(freeze_ae) != (ae_mode == "frozen"):
+            raise ValueError("freeze_ae conflicts with the explicit ae_mode")
+        self.autoencoder, self.ae_mode = autoencoder, ae_mode
+        self.freeze_ae = ae_mode == "frozen"
         self.autoencoder.requires_grad_(not self.freeze_ae)
         if self.freeze_ae:
             self.autoencoder.eval()
@@ -190,8 +197,11 @@ class _Detector(nn.Module):
 
 
 class ResidualDetector(_Detector):
-    def __init__(self, autoencoder, *, freeze_ae=True, gradient=False, backbone="small", backbone_weights=None, width=16, dropout=0.1, initialize=True):
-        super().__init__(autoencoder, freeze_ae)
+    def __init__(self, autoencoder, *, freeze_ae=None, ae_mode=None, input_mode="full", gradient=False, backbone="small", backbone_weights=None, width=16, dropout=0.1, initialize=True):
+        super().__init__(autoencoder, freeze_ae, ae_mode)
+        if input_mode not in {"x_only", "residual_only", "full"}:
+            raise ValueError("input_mode must be x_only, residual_only, or full")
+        self.input_mode = input_mode
         self.fusion = ResidualFusionBlock(gradient)
         channels = self.fusion.out_channels
         if backbone == "small":
@@ -220,19 +230,30 @@ class ResidualDetector(_Detector):
 
     def forward_details(self, x):
         details = self._reconstruct(x)
-        # Classification gradients never update the AE from fake images.
-        fused = self.fusion(x, details["reconstruction"].detach())
+        reconstruction = details["reconstruction"]
+        if self.ae_mode != "end_to_end":
+            reconstruction = reconstruction.detach()
+        fused = self.fusion(x, reconstruction)
         scale = x.new_tensor([0.229, 0.224, 0.225]).reshape(1, 3, 1, 1)
-        encoded = torch.cat((normalize_rgb(fused[:, :3]), normalize_rgb(fused[:, 3:6]), fused[:, 6:9] / scale, fused[:, 9:]), dim=1)
+        rgb, residual = normalize_rgb(x), fused[:, 6:9] / scale
+        zeros = torch.zeros_like(x)
+        # Keep the exact same stem shape and initialization in every ablation.
+        # Its first three channels always receive the active single modality.
+        if self.input_mode == "x_only":
+            encoded = torch.cat((rgb, zeros, zeros, torch.zeros_like(fused[:, 9:])), dim=1)
+        elif self.input_mode == "residual_only":
+            encoded = torch.cat((residual, zeros, zeros, fused[:, 9:]), dim=1)
+        else:
+            encoded = torch.cat((rgb, normalize_rgb(fused[:, 3:6]), residual, fused[:, 9:]), dim=1)
         features = self.backbone(encoded)
         return {**details, "features": features, "logits": self.classifier(features)}
 
 
 class LatentDetector(_Detector):
-    def __init__(self, autoencoder, *, freeze_ae=True, hidden_dim=64, dropout=0.1):
+    def __init__(self, autoencoder, *, freeze_ae=None, ae_mode=None, hidden_dim=64, dropout=0.1):
         if autoencoder.config.kind != "vae":
             raise ValueError("The latent detector requires a VAE")
-        super().__init__(autoencoder, freeze_ae)
+        super().__init__(autoencoder, freeze_ae, ae_mode)
         size = autoencoder.config.latent_dim * 2 + 1
         self.backbone = None
         self.register_buffer("feature_mean", torch.zeros(size))
@@ -245,7 +266,9 @@ class LatentDetector(_Detector):
 
     def forward_details(self, x):
         details = self._reconstruct(x)
-        features = self.latent_features(details).detach()
+        features = self.latent_features(details)
+        if self.ae_mode != "end_to_end":
+            features = features.detach()
         features = (features - self.feature_mean) / self.feature_scale
         return {**details, "features": features, "logits": self.classifier(features)}
 

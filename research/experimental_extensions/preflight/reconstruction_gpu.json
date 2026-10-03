@@ -1,0 +1,32 @@
+{
+  "purpose": "structural min-train genuine-batch smoke; no quality estimate",
+  "date": "2026-10-03",
+  "scope": "Four genuine min-train images at 64 pixels; no validation or test access",
+  "precision": "bfloat16",
+  "backends": "PyTorch 2.10.0 ROCm 7.1, gfx1200",
+  "results": {
+    "cae_pretrained_lpips_backward": "passed",
+    "vae_pretrained_lpips_backward": "passed",
+    "gated_pretrained_lpips_backward": "passed",
+    "lpips_frozen_parameters_with_image_gradients": "passed",
+    "resnet18_end_to_end_reload_logits_equal": true,
+    "initial_autoencoder_classification_gradient_sum": 0.0,
+    "autoencoder_classification_gradient_after_first_stem_update": 7.233802318572998
+  },
+  "runtime_seconds_inside_process": 3.403150245000006,
+  "runtime_seconds_watchdog": 5.504005237999991,
+  "peak_vram_bytes": 326181376,
+  "peak_sampled_rss_kib": 2472512,
+  "first_attempt": {
+    "exit_code": 1,
+    "runtime_seconds_watchdog": 11.508460201999924,
+    "peak_sampled_rss_kib": 2480140,
+    "reason": "Smoke asserted a nonzero CE-to-AE gradient before the initially zero added ResNet stem channels had learned. Corrected the smoke to verify the expected first-step transition; no model or kernel change was required."
+  },
+  "resources": {"watchdog_seconds": 120, "watchdog_rss_mib": 3072, "gpu_lock": true},
+  "evidence_local": [
+    "local/reconstruction-gpu-smoke.json",
+    "local/reconstruction-gpu-smoke-watchdog.json",
+    "local/reconstruction-gpu-smoke-retry-watchdog.json"
+  ]
+}

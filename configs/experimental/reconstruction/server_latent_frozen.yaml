@@ -1,0 +1,44 @@
+# Set TCC_AE_RUN to the matching completed server VAE run.
+task: latent
+name: reconstruction-latent-frozen-server
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
+model:
+  ae_run: ${TCC_AE_RUN}
+  ae_mode: frozen
+  ae:
+    kind: vae
+    image_size: 224
+    width: 32
+    latent_dim: 128
+    skip_divisor: 8
+  hidden_dim: 128
+  dropout: 0.1
+training:
+  epochs: 20
+  batch_size: 32
+  workers: 4
+  grad_accum_steps: 2
+  amp: true
+  lr_ae: 0.00001
+  lr_backbone: 0.0001
+  lr_head: 0.001
+  weight_decay: 0.0001
+  reconstruction_weight: 1.0
+  recipe: basic_v1
+  early_stop_patience: 5
+  plots: true
+  threshold_policy: youden
+  loss:
+    lambda_ssim: 0.1
+    lambda_lpips: 0.0
+    kl_reduction: mean_per_dim
+    beta:
+      kind: linear
+      maximum: 0.001
+      warmup_steps: 5000
