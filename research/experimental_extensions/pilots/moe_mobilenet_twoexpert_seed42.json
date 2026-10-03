@@ -1,0 +1,690 @@
+{
+  "scope": "min-dataset-development-twoexpert-ablation",
+  "validation_split": {
+    "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
+    "seed": 42,
+    "fit_fraction": 0.5,
+    "disjointness": {
+      "sample_id": "disjoint among provided identities",
+      "group_id": "disjoint among provided identities",
+      "source_id": "unavailable; not certified",
+      "image_sha256": "disjoint among provided identities",
+      "sha256": "unavailable; not certified"
+    },
+    "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
+    "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
+  },
+  "counts": {
+    "val_fit": 494,
+    "val_select": 506
+  },
+  "comparisons": {
+    "router": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9745077384328661,
+      "average_precision": 0.984125201939138,
+      "balanced_accuracy": 0.9349647516408719,
+      "eer": 0.0730897009966777,
+      "eer_threshold": 0.3867845970926887,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9423728813559322,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.932806324110672,
+      "brier": 0.06155114409826414,
+      "log_loss": 0.20775902177271077,
+      "ece_10_equal_width": 0.0302376933086419,
+      "threshold": 0.41574034094810486,
+      "tn": 194,
+      "fp": 11,
+      "fn": 23,
+      "tp": 278,
+      "confusion_matrix": [
+        [
+          194,
+          11
+        ],
+        [
+          23,
+          278
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9463414634146341,
+          0.05365853658536585
+        ],
+        [
+          0.07641196013289037,
+          0.9235880398671097
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.05365853658536585,
+      "tpr": 0.9235880398671097,
+      "auc_status": "defined"
+    },
+    "mean": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9720768171136861,
+      "average_precision": 0.9828005007483317,
+      "balanced_accuracy": 0.9307592577586905,
+      "eer": 0.07317073170731707,
+      "eer_threshold": 0.4149882335488389,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9367521367521368,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.9268774703557312,
+      "brier": 0.06646370339388717,
+      "log_loss": 0.21984079698482448,
+      "ece_10_equal_width": 0.045650385361886765,
+      "threshold": 0.4895888864994049,
+      "tn": 195,
+      "fp": 10,
+      "fn": 27,
+      "tp": 274,
+      "confusion_matrix": [
+        [
+          195,
+          10
+        ],
+        [
+          27,
+          274
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9512195121951219,
+          0.04878048780487805
+        ],
+        [
+          0.08970099667774087,
+          0.9102990033222591
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.04878048780487805,
+      "tpr": 0.9102990033222591,
+      "auc_status": "defined"
+    },
+    "geometric": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9706182643221781,
+      "average_precision": 0.98177334110843,
+      "balanced_accuracy": 0.9255651892067094,
+      "eer": 0.08970099667774088,
+      "eer_threshold": 0.20712799759600248,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9265734265734266,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.9169960474308301,
+      "brier": 0.07946889259807051,
+      "log_loss": 0.27276815064724536,
+      "ece_10_equal_width": 0.08126057498088,
+      "threshold": 0.4117147624492645,
+      "tn": 199,
+      "fp": 6,
+      "fn": 36,
+      "tp": 265,
+      "confusion_matrix": [
+        [
+          199,
+          6
+        ],
+        [
+          36,
+          265
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9707317073170731,
+          0.02926829268292683
+        ],
+        [
+          0.11960132890365449,
+          0.8803986710963455
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.02926829268292683,
+      "tpr": 0.8803986710963455,
+      "auc_status": "defined"
+    },
+    "geometric_binary": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9728790211490155,
+      "average_precision": 0.9832690114152294,
+      "balanced_accuracy": 0.9324203873267969,
+      "eer": 0.08292682926829269,
+      "eer_threshold": 0.3192007262532303,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9385665529010239,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.9288537549407114,
+      "brier": 0.06646922485147903,
+      "log_loss": 0.23817608139529994,
+      "ece_10_equal_width": 0.05162551667626219,
+      "threshold": 0.4092208445072174,
+      "tn": 195,
+      "fp": 10,
+      "fn": 26,
+      "tp": 275,
+      "confusion_matrix": [
+        [
+          195,
+          10
+        ],
+        [
+          26,
+          275
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9512195121951219,
+          0.04878048780487805
+        ],
+        [
+          0.08637873754152824,
+          0.9136212624584718
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.04878048780487805,
+      "tpr": 0.9136212624584718,
+      "auc_status": "defined"
+    },
+    "logistic": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9720606109715582,
+      "average_precision": 0.9827768598721074,
+      "balanced_accuracy": 0.9307592577586905,
+      "eer": 0.07317073170731707,
+      "eer_threshold": 0.458088898382341,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9367521367521368,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.9268774703557312,
+      "brier": 0.06307059802807298,
+      "log_loss": 0.22634099655202305,
+      "ece_10_equal_width": 0.04208599629108426,
+      "threshold": 0.5665287590787941,
+      "tn": 195,
+      "fp": 10,
+      "fn": 27,
+      "tp": 274,
+      "confusion_matrix": [
+        [
+          195,
+          10
+        ],
+        [
+          27,
+          274
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9512195121951219,
+          0.04878048780487805
+        ],
+        [
+          0.08970099667774087,
+          0.9102990033222591
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.04878048780487805,
+      "tpr": 0.9102990033222591,
+      "auc_status": "defined"
+    },
+    "expert_srm": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.9489344461550927,
+      "average_precision": 0.9680617398692617,
+      "balanced_accuracy": 0.8904302730734949,
+      "eer": 0.11707317073170732,
+      "eer_threshold": 0.45303575265698326,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.8996539792387543,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.8853754940711462,
+      "brier": 0.08991541800042362,
+      "log_loss": 0.29367786728398526,
+      "ece_10_equal_width": 0.054109314743249044,
+      "threshold": 0.5474640727043152,
+      "tn": 188,
+      "fp": 17,
+      "fn": 41,
+      "tp": 260,
+      "confusion_matrix": [
+        [
+          188,
+          17
+        ],
+        [
+          41,
+          260
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9170731707317074,
+          0.08292682926829269
+        ],
+        [
+          0.1362126245847176,
+          0.8637873754152824
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.08292682926829269,
+      "tpr": 0.8637873754152824,
+      "auc_status": "defined"
+    },
+    "expert_rgb": {
+      "n": 506,
+      "n_real": 205,
+      "n_fake": 301,
+      "auc": 0.959468438538206,
+      "average_precision": 0.9762909690756263,
+      "balanced_accuracy": 0.908386678551171,
+      "eer": 0.09302325581395357,
+      "eer_threshold": 0.1915117942316585,
+      "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+      "eer_status": "defined",
+      "f1": 0.9128919860627178,
+      "f1_policy": "fake is positive; zero division returns zero",
+      "accuracy": 0.9011857707509882,
+      "brier": 0.08557877323312313,
+      "log_loss": 0.40113597456800804,
+      "ece_10_equal_width": 0.07783770677953523,
+      "threshold": 0.4856911301612854,
+      "tn": 194,
+      "fp": 11,
+      "fn": 39,
+      "tp": 262,
+      "confusion_matrix": [
+        [
+          194,
+          11
+        ],
+        [
+          39,
+          262
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9463414634146341,
+          0.05365853658536585
+        ],
+        [
+          0.12956810631229235,
+          0.8704318936877077
+        ]
+      ],
+      "confusion_axes": "rows true, columns predicted; [real, fake]",
+      "fpr": 0.05365853658536585,
+      "tpr": 0.8704318936877077,
+      "auc_status": "defined"
+    }
+  },
+  "routing": {
+    "mean_weight": {
+      "srm": 0.49292412400245667,
+      "rgb": 0.507075846195221
+    },
+    "nonzero_fraction": {
+      "srm": 1.0,
+      "rgb": 1.0
+    },
+    "top1_fraction": {
+      "srm": 0.541501976284585,
+      "rgb": 0.45849802371541504
+    },
+    "mean_entropy": 0.5572975277900696
+  },
+  "expert_names": [
+    "srm",
+    "rgb"
+  ],
+  "expert_prediction_correlation": [
+    [
+      1.0,
+      0.796954230533479
+    ],
+    [
+      0.7969542305334791,
+      0.9999999999999999
+    ]
+  ],
+  "selection_statement": "All method comparisons are development val_select scores; no test target has been accessed.",
+  "training": {
+    "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v3-seed42",
+    "runtime_seconds": 0.5099513459999798,
+    "peak_vram_bytes": 0,
+    "peak_rss_kib": 900324,
+    "trainable_parameters": 82082,
+    "epochs_completed": 6,
+    "global_step": 96,
+    "best_epoch": 3,
+    "best_metric": 0.9745077384328661
+  },
+  "software": {
+    "commit": "5d72b18a8b39553db6a1311a07bfb959feee9bb5",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "artifact_sha256": "d6a613f04ec46b3d59fa027661dbb835c0f2d25e2b694df783bb87d7395bf2ad",
+  "calibration_sha256": "78742a9d8193a39436f0b65c8d702a074579f997fecaf45c3a010b5d57ec0c8d",
+  "config": {
+    "task": "moe",
+    "name": "mobilenet_srm_rgb_soft_twoexpert_ablation",
+    "scope": "min-dataset-development-twoexpert-ablation",
+    "seed": 42,
+    "output_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-v3-seed42",
+    "data": {
+      "experts": [
+        {
+          "name": "srm",
+          "role": "srm",
+          "kind": "feature_cache",
+          "path": "/home/lucas/ffb-research/local/features/10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b"
+        },
+        {
+          "name": "rgb",
+          "role": "rgb",
+          "kind": "feature_cache",
+          "path": "/home/lucas/ffb-research/local/features/ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+        }
+      ],
+      "required_roles": [
+        "srm",
+        "rgb"
+      ],
+      "split_seed": 42,
+      "fit_fraction": 0.5
+    },
+    "model": {
+      "hidden_dim": 32,
+      "train_routing": "soft",
+      "expert_dropout": 0.1
+    },
+    "training": {
+      "device": "cpu",
+      "amp": false,
+      "cpu_threads": 2,
+      "workers": 0,
+      "epochs": 6,
+      "batch_size": 32,
+      "lr": 0.001,
+      "early_stop_patience": 4
+    }
+  },
+  "evaluation_identity": {
+    "name": "mobilenet_srm_rgb_soft_twoexpert_ablation/router",
+    "family": "moe",
+    "seed": 42,
+    "scope": "min-dataset-development-twoexpert-ablation",
+    "condition": {
+      "family": "moe",
+      "method": "router",
+      "experts": [
+        {
+          "kind": "feature_cache",
+          "checkpoint_sha256": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f",
+          "run_config_sha256": "c7021b70d6ab6bc2351ced5c69a1aac59774db5aa91c195aa720b602215bee15",
+          "extraction": {
+            "mode": "srm",
+            "image_size": 224,
+            "channels": 6,
+            "resize": "PIL bilinear square",
+            "normalization": {
+              "mean": [
+                0.485,
+                0.456,
+                0.406
+              ],
+              "std": [
+                0.229,
+                0.224,
+                0.225
+              ]
+            },
+            "srm_on_normalized": true,
+            "feature_point": "input to final root classifier Linear in eval mode",
+            "features_dtype": "float16",
+            "logits_dtype": "float32",
+            "amp_dtype": "torch.bfloat16",
+            "checkpoint_class1": "fake"
+          },
+          "code_sha256": {
+            "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+            "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+            "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+            "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+            "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+          },
+          "packages": {
+            "torch": "2.10.0+rocm7.1",
+            "torchvision": "0.25.0+rocm7.1",
+            "timm": "1.0.27",
+            "numpy": "2.4.4",
+            "pandas": "3.0.2",
+            "scikit-learn": "1.8.0",
+            "Pillow": "12.2.0"
+          },
+          "feature_dim": 1280,
+          "score": "FP32 softmax of original two logits; class 1 is fake",
+          "name": "srm",
+          "role": "srm",
+          "checkpoint_class1": "fake"
+        },
+        {
+          "kind": "feature_cache",
+          "checkpoint_sha256": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5",
+          "run_config_sha256": "e641973df4e3df92e514d4e7b3f3085f3488bbd992d8b954729816041f0fac30",
+          "extraction": {
+            "mode": "none",
+            "image_size": 224,
+            "channels": 3,
+            "resize": "PIL bilinear square",
+            "normalization": {
+              "mean": [
+                0.485,
+                0.456,
+                0.406
+              ],
+              "std": [
+                0.229,
+                0.224,
+                0.225
+              ]
+            },
+            "srm_on_normalized": false,
+            "feature_point": "input to final root classifier Linear in eval mode",
+            "features_dtype": "float16",
+            "logits_dtype": "float32",
+            "amp_dtype": "torch.bfloat16",
+            "checkpoint_class1": "fake"
+          },
+          "code_sha256": {
+            "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+            "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+            "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+            "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+            "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+          },
+          "packages": {
+            "torch": "2.10.0+rocm7.1",
+            "torchvision": "0.25.0+rocm7.1",
+            "timm": "1.0.27",
+            "numpy": "2.4.4",
+            "pandas": "3.0.2",
+            "scikit-learn": "1.8.0",
+            "Pillow": "12.2.0"
+          },
+          "feature_dim": 1280,
+          "score": "FP32 softmax of original two logits; class 1 is fake",
+          "name": "rgb",
+          "role": "rgb",
+          "checkpoint_class1": "fake"
+        }
+      ],
+      "expert_source_identities": [
+        "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b",
+        "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+      ],
+      "validation_split": {
+        "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
+        "seed": 42,
+        "fit_fraction": 0.5,
+        "disjointness": {
+          "sample_id": "disjoint among provided identities",
+          "group_id": "disjoint among provided identities",
+          "source_id": "unavailable; not certified",
+          "image_sha256": "disjoint among provided identities",
+          "sha256": "unavailable; not certified"
+        },
+        "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
+        "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
+      },
+      "calibration_manifest_sha256": "f2e1c915eceb650828d8d1d3d17f884d2b0dac52761f180b2c095060da58aee3",
+      "scope": "min-dataset-development-twoexpert-ablation",
+      "implementation": {
+        "__main__.py": "6e7e8370087566e97a9a1850a578bb68fbdcfc6f8608dcad4043fdf46de2fd5a",
+        "training.py": "d62d7766e36720d244edc50717ef789c94a8e7169794bf27b533ce3cd4643a9a",
+        "__init__.py": "2dbc01db7b081d2113d01a786de9b6547ae165ad520c963b64c42f4f97480059",
+        "data.py": "3abe0516807777cc04aabea6db89a0c6dbd670b5355b09d83cbabc560eb06ead",
+        "inference.py": "6200e72f000cadd14fd521b2ed205b69624ec65faa584654814dced65e3906a3",
+        "models.py": "99e428697ed9ef4d67076d1ae642c25d5fad41a847d68a8e07679e63784ca9fd"
+      },
+      "model": {
+        "input_dim": 2562,
+        "num_experts": 2,
+        "hidden_dim": 32,
+        "temperature": 1.0,
+        "train_routing": "soft",
+        "train_top_k": 2,
+        "inference_routing": "soft",
+        "inference_top_k": 1,
+        "expert_dropout": 0.1
+      },
+      "training_policy": {
+        "amp": false,
+        "epochs": 6,
+        "batch_size": 32,
+        "lr": 0.001,
+        "early_stop_patience": 4
+      },
+      "score_policy": "convex weighted mean of frozen p_fake; FP32 router softmax at fixed temperature"
+    },
+    "condition_sha256": "454d4a49918fb708ff8f3d4319f8fa5fdc73453e8933925904c85bdf7b8e5400",
+    "artifact_sha256": "d6a613f04ec46b3d59fa027661dbb835c0f2d25e2b694df783bb87d7395bf2ad",
+    "method": "router"
+  },
+  "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+  "interpretation": "Development validation only; router is selected on the reported subset. Conditional group bootstrap does not establish cross-dataset or cross-seed improvement. No min-test was accessed.",
+  "initial_implementation": {
+    "commit": "e809ee7",
+    "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-seed42",
+    "auc": {
+      "router": 0.9737298436107285,
+      "mean": 0.9720768171136861,
+      "geometric": 0.9706182643221781,
+      "geometric_binary": 0.9728790211490155,
+      "logistic": 0.9720606109715582,
+      "expert_srm": 0.9489344461550927,
+      "expert_rgb": 0.959468438538206
+    },
+    "routing": {
+      "mean_weight": {
+        "srm": 0.5102006196975708,
+        "rgb": 0.4897993803024292
+      },
+      "nonzero_fraction": {
+        "srm": 0.9644268774703557,
+        "rgb": 0.9426877470355731
+      },
+      "top1_fraction": {
+        "srm": 0.5592885375494071,
+        "rgb": 0.4407114624505929
+      },
+      "mean_entropy": 0.5102826952934265
+    },
+    "reason_for_revision": "Zero-variance val_fit dimensions used an epsilon scale and caused saturated selection routing. Constant dimensions now use unit scale; no held-out-label tuning."
+  },
+  "router_auc_interval": {
+    "estimate": 0.9745077384328661,
+    "lower": 0.9625965235244147,
+    "upper": 0.9846896510170472,
+    "confidence": 0.95,
+    "requested_draws": 1000,
+    "valid_draws": 1000,
+    "groups": 506,
+    "seed": 42,
+    "quantity": "auc",
+    "method": "paired percentile cluster bootstrap",
+    "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+  },
+  "router_minus_mean_auc_interval": {
+    "estimate": 0.0024309213191799905,
+    "lower": -0.001533758119881636,
+    "upper": 0.006955692364855573,
+    "confidence": 0.95,
+    "requested_draws": 1000,
+    "valid_draws": 1000,
+    "groups": 506,
+    "seed": 42,
+    "quantity": "other_minus_reference_auc",
+    "method": "paired percentile cluster bootstrap",
+    "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+  }
+}
