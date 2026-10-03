@@ -20,10 +20,12 @@ class VLMPredictor:
         self.model, self.processor, self.config, self.device = model.eval(), processor, config, torch.device(device)
 
     def __call__(self, frame, root, *, batch_size=1, workers=0, positive_class="fake", hash_images=True,
-                 amp=True, use_amp=None, image_size=None, mode=None, in_channels=None, **kwargs):
+                 amp=True, use_amp=None, device=None, image_size=None, mode=None, in_channels=None, **kwargs):
         del image_size, in_channels
         if use_amp is not None:
             amp = bool(use_amp)
+        if device is not None and torch.device(device) != self.device:
+            raise ValueError("Suite device differs from loaded VLM predictor")
         if kwargs:
             raise TypeError(f"Unsupported VLM inference options: {sorted(kwargs)}")
         if positive_class != "fake" or mode is not None:
@@ -69,3 +71,18 @@ def load_predictor(run_dir, device="cpu"):
     predictor = VLMPredictor(model, processor, document["model_config"], device)
     predictor.bundle_metadata = document
     return predictor
+
+
+def describe_run(run_dir):
+    """Verify bundle metadata without instantiating the VLM for a dry run."""
+    from pathlib import Path
+    from src.robustness.provenance import digest_file
+    from .artifacts import verify_bundle
+    from .training import input_contract
+
+    root = Path(run_dir)
+    document, _ = verify_bundle(root)
+    return {"checkpoint_path": root / "bundle.json", "input_contract": input_contract(document),
+            "research_run": {"family": "vlm", "seed": document["metadata"].get("seed", 42),
+                             "scope": document["metadata"].get("scope", "development"),
+                             "bundle_sha256": digest_file(root / "bundle.json")}, "image_size": None}

@@ -24,7 +24,7 @@ from .scoring import sft_loss_step
 
 
 def input_contract(document):
-    return {"kind": "native-vlm", "checkpoint_class1": "fake", "image_input": "raw-RGB-PIL",
+    return {"kind": "native-vlm", "bundle_sha256": digest(document), "checkpoint_class1": "fake", "image_input": "raw-RGB-PIL",
             "processor_files_sha256": digest(document["processor_files"]),
             "processor_overrides": document["model_config"].get("processor", {}),
             "score_contract": document["score_contract"]}
@@ -51,6 +51,7 @@ def fit(config):
     train = balanced_subset(train, data.get("train_limit"), seed)
     val = balanced_subset(val, data.get("val_limit"), seed)
     resume = bool(training.get("resume", False))
+    config["training"].pop("resume", None)
     root.mkdir(parents=True, exist_ok=True)
     if not resume:
         train_record = save_manifest(train, root / "selected_train.csv", {"source_manifest_sha256": train_record["manifest_sha256"]})
