@@ -1,0 +1,43 @@
+family: graph
+run_dir: ${FFB_RUN_DIR}
+seed: ${FFB_SEED}
+projection_run: ${FFB_PROJECTION_RUN}
+label_mask: ${FFB_LABEL_MASK}
+caches:
+  train: ${FFB_TRAIN_CACHE}
+  val: ${FFB_VAL_CACHE}
+model:
+  kind: ${FFB_GRAPH_KIND}
+  protocol: ${FFB_GRAPH_PROTOCOL}
+  label_fraction: ${FFB_LABEL_FRACTION}
+  backend: pyg
+  standardize: false
+  hidden_dim: 32
+  projection_dim: 128
+  dropout: 0.1
+  fanouts: [10, 5]
+  graph:
+    backend: faiss
+    memory_budget_mb: 1024
+    hnsw_m: 16
+    ef_search: 128
+    audit_queries: 128
+    minimum_recall: 0.95
+    exact_limit: 10000
+    k: 20
+    policy: directed
+    dynamic: false
+    rebuild_interval: 5
+    noise_fraction: 0.0
+    alpha: 0.8
+    iterations: 50
+training:
+  device: ${FFB_DEVICE}
+  cpu_threads: 2
+  epochs: 30
+  early_stop_patience: 5
+  batch_size: 64
+  inference_batch_size: 32
+  baseline_epochs: 30
+  lr: 0.001
+  weight_decay: 0.0001

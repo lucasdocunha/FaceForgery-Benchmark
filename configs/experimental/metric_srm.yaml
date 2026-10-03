@@ -1,0 +1,30 @@
+family: metric
+run_dir: ${FFB_RUN_DIR}
+seed: ${FFB_SEED}
+caches:
+  train: ${FFB_TRAIN_CACHE}
+  val: ${FFB_VAL_CACHE}
+model:
+  kind: ${FFB_METRIC_KIND}
+  label_fraction: ${FFB_LABEL_FRACTION}
+  standardize: true
+  embedding_dim: 128
+  hidden_dim: 256
+  temperature: 0.1
+  hardness: 0.0
+  score: centroid
+  distance: cosine
+  k: 10
+  neighbor_backend: faiss
+  exact_limit: 10000
+  diagnostic_samples: 1000
+  tsne: true
+training:
+  device: ${FFB_DEVICE}
+  cpu_threads: 2
+  epochs: 30
+  early_stop_patience: 5
+  batch_size: 64
+  lr: 0.001
+  weight_decay: 0.0001
+  baseline_epochs: 30

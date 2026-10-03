@@ -115,10 +115,13 @@ def centroid_score(features, centroids, *, distance="cosine"):
     if distance == "cosine":
         score = (z @ centers.T)[:, 1] - (z @ centers.T)[:, 0]
         return np.clip((score + 2) / 4, 0, 1)
-    if distance == "euclidean":
+    if distance in {"euclidean", "squared_euclidean"}:
         d2 = np.maximum(0, 2 - 2 * z @ centers.T)
+        if distance == "euclidean":
+            distances = np.sqrt(d2)
+            return np.clip((distances[:, 0] - distances[:, 1] + 2) / 4, 0, 1)
         return np.clip((d2[:, 0] - d2[:, 1] + 4) / 8, 0, 1)
-    raise ValueError("distance must be cosine or euclidean")
+    raise ValueError("distance must be cosine, euclidean or squared_euclidean")
 
 
 def embedding_diagnostics(features, labels, *, seed=42, max_samples=1000, tsne=False):

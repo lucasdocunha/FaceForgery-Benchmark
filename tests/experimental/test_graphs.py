@@ -3,7 +3,7 @@ import pytest
 import torch
 
 from src.experimental.graphs import (
-    GraphClassifier, correct_and_smooth, cosine_neighbors, label_propagation,
+    GraphClassifier, NativeGraphLayer, audit_neighbor_recall, correct_and_smooth, cosine_neighbors, label_propagation,
     nested_label_mask, noisy_neighbors, transition_matrix,
 )
 
@@ -61,3 +61,29 @@ def test_graph_architectures_forward_backward(backend, kind):
     assert logits.shape == (4, 2)
     torch.nn.functional.cross_entropy(logits, torch.tensor([0, 0, 1, 1])).backward()
     assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())
+
+
+def test_directed_gcn_normalization_hand_computed():
+    layer = NativeGraphLayer(1, 1, "gcn")
+    with torch.no_grad():
+        layer.linear.weight.fill_(1)
+        layer.bias.zero_()
+    x = torch.tensor([[1.], [2.], [4.]])
+    edges = torch.tensor([[1, 2], [0, 1]])
+    expected = torch.tensor([[1.5], [1 + 4 / np.sqrt(2)], [4.]], dtype=torch.float32)
+    torch.testing.assert_close(layer(x, edges), expected)
+
+
+def test_full_scale_exact_search_refuses_quadratic_work():
+    reference = np.broadcast_to(np.ones((1, 2), dtype=np.float32), (524429, 2))
+    with pytest.raises(ValueError, match="exact_limit"):
+        cosine_neighbors(reference, np.ones((1, 2)), k=10)
+
+
+def test_optional_faiss_hnsw_recall_and_memory_guard():
+    pytest.importorskip("faiss")
+    x = np.random.default_rng(42).normal(size=(100, 16)).astype(np.float32)
+    neighbors, _ = cosine_neighbors(x, k=5, backend="faiss", memory_budget_mb=10)
+    assert audit_neighbor_recall(x, neighbors)["recall_at_k"] >= .95
+    with pytest.raises(MemoryError, match="memory_budget_mb"):
+        cosine_neighbors(x, k=5, backend="faiss", memory_budget_mb=.001)

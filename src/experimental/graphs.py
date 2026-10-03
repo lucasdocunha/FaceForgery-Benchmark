@@ -13,6 +13,29 @@ from torch.nn import functional as F
 from .metric import unit_rows
 
 
+def graph_memory_estimate(nodes, dimension, k=10, *, hnsw_m=16, batch_size=32, fanouts=(10, 5)):
+    """Conservative principal-array estimate, not a measured process peak.
+
+    HNSW includes vectors, base links and a per-node overhead reserve, with 30%
+    headroom. Pandas metadata, allocator/library workspace, page cache, concurrent
+    index copies and optimizer state still require a separate machine budget.
+    """
+    if min(nodes, dimension, k, hnsw_m, batch_size, *fanouts) < 1 or len(fanouts) != 2:
+        raise ValueError("Positive graph dimensions and two fanouts required")
+    sampled_nodes = batch_size * (1 + fanouts[0] + fanouts[0] * fanouts[1])
+    return {
+        "hnsw_estimated_bytes": math.ceil(nodes * (4 * dimension + 8 * hnsw_m + 128) * 1.3),
+        "normalized_reference_bytes": nodes * dimension * 4,
+        "neighbor_arrays_bytes": nodes * k * 12,
+        "directed_csr_upper_bytes": nodes * (k + 1) * 16 + (nodes + 1) * 8,
+        "propagation_working_bytes": nodes * 2 * 4 * 8,
+        "sampled_nodes_upper": sampled_nodes,
+        "sampled_input_bytes_upper": sampled_nodes * dimension * 4,
+        "dense_pairwise_bytes_for_comparison": nodes * nodes * 4,
+        "includes_all_process_memory": False,
+    }
+
+
 def cosine_neighbors(reference, queries=None, *, k=10, backend="exact", exact_limit=10000,
                      query_block=128, reference_block=2048, self_indices=None,
                      reference_ids=None, memory_budget_mb=1024, seed=42, hnsw_m=16,
@@ -74,7 +97,7 @@ def cosine_neighbors(reference, queries=None, *, k=10, backend="exact", exact_li
             import faiss
         except ImportError as error:
             raise ImportError("ANN graph construction requires optional dependency faiss-cpu") from error
-        estimated = len(reference) * (4 * reference.shape[1] + 8 * hnsw_m)
+        estimated = graph_memory_estimate(len(reference), reference.shape[1], k, hnsw_m=hnsw_m)["hnsw_estimated_bytes"]
         if estimated > memory_budget_mb * 2**20:
             raise MemoryError("Estimated FAISS index exceeds memory_budget_mb; reduce graph dimension or raise an audited budget")
         faiss.omp_set_num_threads(2)
@@ -114,18 +137,27 @@ def audit_neighbor_recall(reference, indices, *, k=None, max_queries=128, seed=4
     return {"recall_at_k": float(np.mean(recalls)), "k": k, "query_count": len(selected), "seed": seed}
 
 
-def nested_label_mask(labels, sample_ids, fraction, seed=42):
+def nested_label_mask(labels, sample_ids, fraction, seed=42, group_ids=None):
     labels, sample_ids = np.asarray(labels), np.asarray(sample_ids, dtype=str)
     if not 0 < fraction <= 1 or len(labels) != len(sample_ids) or set(np.unique(labels)) != {0, 1}:
         raise ValueError("A fraction in (0,1] and aligned binary source labels required")
     if len(np.unique(sample_ids)) != len(sample_ids):
         raise ValueError("Duplicate sample IDs in label-mask population")
+    groups = sample_ids if group_ids is None else np.asarray(group_ids, dtype=str)
+    if groups.shape != sample_ids.shape or np.isin(groups, ["", "unknown"]).any():
+        raise ValueError("Nonempty aligned source groups required")
+    members = {}
+    for i, group in enumerate(groups):
+        members.setdefault(group, []).append(i)
+    strata = {}
+    for group, indices in members.items():
+        strata.setdefault(tuple(sorted(set(labels[indices]))), []).append(group)
     mask = np.zeros(len(labels), dtype=bool)
-    for c in (0, 1):
-        members = np.flatnonzero(labels == c)
-        ordered = sorted(members, key=lambda i: hashlib.sha256(f"{seed}:{sample_ids[i]}".encode()).digest())
-        count = max(1, math.ceil(fraction * len(members)))
-        mask[ordered[:count]] = True
+    for names in strata.values():
+        ordered = sorted(names, key=lambda name: hashlib.sha256(f"{seed}:{name}".encode()).digest())
+        count = max(1, math.ceil(fraction * len(ordered)))
+        for group in ordered[:count]:
+            mask[members[group]] = True
     return mask
 
 

@@ -13,15 +13,15 @@ from torch.utils.data import DataLoader, Subset
 from src.robustness.provenance import digest_file, write_json
 from src.robustness.statistics import summary
 from .feature_training import (
-    FeatureDataset, classifier, fit_standardizer, open_training_caches,
+    FeatureDataset, classifier, fit_standardizer, label_budget, measured_feature_run, open_training_caches,
     predict_network, read_model_artifact, save_validation, seed_cpu,
-    standardized_block, train_model, write_model_artifact, write_transformed_features,
+    representation_key, standardized_block, train_model, write_model_artifact, write_transformed_features,
 )
 from .graphs import (
     GraphClassifier, audit_neighbor_recall, correct_and_smooth, cosine_neighbors,
-    label_propagation, nested_label_mask, noisy_neighbors, transition_matrix,
+    graph_memory_estimate, label_propagation, noisy_neighbors, transition_matrix,
 )
-from .metric import unit_rows
+from .metric import ProjectionHead, unit_rows
 
 
 def _neighbor_options(graph):
@@ -135,7 +135,7 @@ def _linear_probabilities(features, coef, intercept):
 
 
 def _query_weights(scores):
-    weight = np.maximum((np.asarray(scores) + 1) / 2, 1e-6)
+    weight = np.maximum((np.asarray(scores, dtype=np.float64) + 1) / 2, 1e-6)
     return weight / weight.sum(1, keepdims=True)
 
 
@@ -155,21 +155,103 @@ def _baseline_predictions(reference, query, observed, source_lp, source_cs,
     weight = _query_weights(query_scores)
     base = _linear_probabilities(query, coef, intercept)
     lp = (source_lp[query_neighbors] * weight[:, :, None]).sum(1)
+    lp /= np.maximum(lp.sum(1, keepdims=True), 1e-12)
     alpha = float(graph.get("alpha", .8))
     correction = alpha * (source_cs["correction"][query_neighbors] * weight[:, :, None]).sum(1)
     corrected = np.clip(base + correction, 0, 1)
     corrected /= np.maximum(corrected.sum(1, keepdims=True), 1e-12)
     smooth_neighbors = (source_cs["probabilities"][query_neighbors] * weight[:, :, None]).sum(1)
-    cs = (1 - alpha) * corrected + alpha * smooth_neighbors
+    cs = np.clip((1 - alpha) * corrected + alpha * smooth_neighbors, 0, 1)
+    cs /= np.maximum(cs.sum(1, keepdims=True), 1e-12)
     labeled = np.flatnonzero(observed >= 0)
     nearest, _ = cosine_neighbors(reference[labeled], query, k=min(int(graph.get("k", 10)), len(labeled)), **_neighbor_options(graph))
     knn = observed[labeled][nearest].mean(1)
     return {"linear": base[:, 1], "knn": knn, "lp": lp[:, 1], "correct_smooth": cs[:, 1]}
 
 
+def _transductive_predictions(reference, query, observed, coef, intercept, graph,
+                              *, model=None, dynamic=False, fanouts=(10, 5), device="cpu"):
+    """One source plus one target population; target labels never enter this API."""
+    with tempfile.TemporaryDirectory(prefix="faceforgery-graph-") as temporary:
+        temporary = Path(temporary)
+        joint = np.lib.format.open_memmap(temporary / "joint.npy", mode="w+", dtype="float32",
+                                          shape=(len(reference) + len(query), reference.shape[1]))
+        for start in range(0, len(reference), 1024):
+            block = reference[start:start + 1024]
+            joint[start:start + len(block)] = block
+        joint[len(reference):] = query
+        joint.flush()
+        space = _project_space(model, joint, temporary / "space.npy", device) if dynamic else joint
+        neighbors, scores = _graph_arrays(space, graph)
+        targets = np.arange(len(reference), len(joint))
+        if model is not None:
+            return _predict_gnn(model, joint, query, neighbors, neighbors[targets], source_roots=targets,
+                                fanouts=fanouts, device=device)
+        labels = np.concatenate((observed, np.full(len(query), -1, dtype=np.int64)))
+        lp, cs, _ = _source_baselines(joint, labels, neighbors, scores, coef, intercept, graph)
+        return {"lp": lp[targets, 1], "correct_smooth": cs["probabilities"][targets, 1]}
+
+
+def graph_diagnostics(neighbors, scores, observed, graph):
+    from scipy.sparse.csgraph import connected_components
+
+    transition = transition_matrix(neighbors, scores, policy=graph.get("policy", "directed"))
+    degree = np.diff(transition.indptr)
+    labeled_edges = (observed[:, None] >= 0) & (observed[neighbors] >= 0)
+    return {
+        "nodes": len(neighbors), "directed_neighbor_edges": int(neighbors.size),
+        "transition_nnz": int(transition.nnz), "degree_min": int(degree.min()),
+        "degree_max": int(degree.max()), "degree_mean": float(degree.mean()),
+        "weak_components": int(connected_components(transition, directed=True, connection="weak", return_labels=False)),
+        "mean_neighbor_cosine": float(scores.mean()),
+        "observed_label_edges": int(labeled_edges.sum()),
+        "observed_label_homophily": float((observed[:, None] == observed[neighbors])[labeled_edges].mean()) if labeled_edges.any() else None,
+        "hidden_labels_used": False,
+    }
+
+
+def _metric_transform(root, spec, features, output=None):
+    cfg = spec["model"]
+    model = ProjectionHead(spec["input_dim"], cfg.get("embedding_dim", 128), cfg.get("hidden_dim", 256))
+    model.load_state_dict(torch.load(Path(root) / "metric_projection.pt", map_location="cpu", weights_only=True))
+    normalizer = np.load(Path(root) / "metric_normalizer.npz")
+    if output is not None:
+        return write_transformed_features(output, features, normalizer["mean"], normalizer["std"], model=model)
+    return predict_network(model, features, normalizer["mean"], normalizer["std"])
+
+
+def _prepare_metric_projection(config, train, val, root):
+    source = config.get("projection_run") or config.get("data", {}).get("projection_run")
+    if not source:
+        return train.features, val.features, None
+    source = Path(source)
+    metric = read_model_artifact(source)
+    if metric["task"] != "metric" or metric["kind"] != "supcon":
+        raise ValueError("Graph metric projection requires a fitted SupCon artifact")
+    if metric["train_cache"] != train.identity or metric["representation_key"] != representation_key(train.metadata):
+        raise ValueError("Metric projection was trained on a different source cache")
+    mask = json.loads((root / "label_mask.json").read_text())
+    prior = json.loads((source / "label_mask.json").read_text())
+    if mask["selected_labels"] != prior["selected_labels"]:
+        raise ValueError("Supervised projection must obey the exact same graph label mask")
+    state = torch.load(source / "best.pt", map_location="cpu", weights_only=True)["state_dict"]
+    torch.save(state, root / "metric_projection.pt")
+    standardizer = np.load(source / "normalizer.npz")
+    np.savez(root / "metric_normalizer.npz", mean=standardizer["mean"], std=standardizer["std"])
+    spec = {"source_artifact_sha256": digest_file(source / "artifact.json"),
+            "input_dim": metric["input_dim"], "model": metric["config"]["model"],
+            "label_mask_sha256": metric["label_mask_sha256"]}
+    return (_metric_transform(root, spec, train.features, root / "training_metric.npy"),
+            _metric_transform(root, spec, val.features, root / "validation_metric.npy"), spec)
+
+
+@measured_feature_run
 def fit_graph_run(config):
     training, model_config = config.get("training", {}), config.get("model", {})
     graph = model_config.get("graph", {})
+    protocol = model_config.get("protocol", "inductive")
+    if protocol not in {"inductive", "transductive"}:
+        raise ValueError("Explicit inductive or transductive inference protocol required")
     seed = int(config.get("seed", 42))
     seed_cpu(seed, training.get("cpu_threads", 2))
     kind = model_config.get("kind", "sage")
@@ -184,42 +266,42 @@ def fit_graph_run(config):
     interval = int(graph.get("rebuild_interval", 5))
     if interval < 1:
         raise ValueError("Graph rebuild interval must be positive")
-    root = Path(config["output_dir"])
+    root = Path(config.get("run_dir", config.get("output_dir")))
     if root.exists() and not training.get("resume", False):
         raise FileExistsError("Use a fresh graph experiment directory")
     root.mkdir(parents=True, exist_ok=True)
     train, val = open_training_caches(config)
-    mean, std = fit_standardizer(train.features)
+    mask, observed = label_budget(train, {**config, "family": "graph"}, root)
+    train_features, val_features, metric_projection = _prepare_metric_projection(config, train, val, root)
+    mean, std = fit_standardizer(train_features) if model_config.get("standardize", True) else (
+        np.zeros(train_features.shape[1], dtype=np.float32), np.ones(train_features.shape[1], dtype=np.float32))
     np.savez(root / "normalizer.npz", mean=mean, std=std)
-    reference = write_transformed_features(root / "reference.npy", train.features, mean, std)
-    query = write_transformed_features(root / "validation_features.npy", val.features, mean, std)
-    all_labels = train.frame.label.to_numpy(dtype=np.int64)
-    mask = nested_label_mask(all_labels, train.frame.sample_id, float(model_config.get("label_fraction", .05)), seed)
-    observed = np.where(mask, all_labels, -1)
-    np.save(root / "observed_labels.npy", observed)
-    np.save(root / "label_mask.npy", mask)
-    write_json(root / "label_mask.json", {
-        "seed": seed, "fraction": model_config.get("label_fraction", .05),
-        "selected_ids": train.frame.loc[mask, "sample_id"].tolist(),
-        "selected_class_counts": {str(c): int((observed == c).sum()) for c in (0, 1)},
-        "selected_total": int(mask.sum()), "population": len(mask),
-        "interpretation": "low-label downstream adaptation; checkpoint backbone may already use all MFFI labels",
-    })
-    del all_labels
+    reference = write_transformed_features(root / "reference.npy", train_features, mean, std)
+    query = write_transformed_features(root / "validation_features.npy", val_features, mean, std)
     coef, intercept = _linear_fit(reference, observed, seed, int(training.get("baseline_epochs", 30)))
     np.savez(root / "linear.npz", coef=coef, intercept=intercept)
     neighbors, scores = _graph_arrays(reference, graph, ids=train.frame.sample_id, seed=seed)
+    static_query_neighbors, static_query_scores = cosine_neighbors(
+        reference, query, k=int(graph.get("k", 10)), **_neighbor_options(graph))
     base_lp, base_cs, _ = _source_baselines(reference, observed, neighbors, scores, coef, intercept, graph)
-    baseline_scores = _baseline_predictions(reference, query, observed, base_lp, base_cs, coef, intercept, graph)
+    baseline_scores = _baseline_predictions(reference, query, observed, base_lp, base_cs, coef, intercept, graph,
+                                             query_neighbors=static_query_neighbors, query_scores=static_query_scores)
+    if protocol == "transductive":
+        baseline_scores.update(_transductive_predictions(reference, query, observed, coef, intercept, graph))
     val_labels = val.frame.label.to_numpy(dtype=np.int64)
     write_json(root / "baseline_metrics.json", {
-        "scope": "source-validation development", "protocol": "inductive", "same_label_mask": True,
+        "scope": "source-validation development", "protocol": protocol, "same_label_mask": True,
         "linear_solver": "SGD log-loss with L2 and averaged iterates",
         "methods": {name: summary(val_labels, p) for name, p in baseline_scores.items()},
     })
     device = training.get("device", "cpu")
     files = ["normalizer.npz", "reference.npy", "observed_labels.npy", "label_mask.npy", "label_mask.json", "linear.npz"]
+    if metric_projection:
+        files.extend(["metric_projection.pt", "metric_normalizer.npz"])
     fanouts = tuple(model_config.get("fanouts", [10, 5]))
+    write_json(root / "memory_estimate.json", graph_memory_estimate(
+        len(reference), reference.shape[1], int(graph.get("k", 10)),
+        hnsw_m=int(graph.get("hnsw_m", 16)), batch_size=int(training.get("batch_size", 32)), fanouts=fanouts))
     if neural_graph:
         model = GraphClassifier(
             reference.shape[1], kind=kind, hidden_dim=int(model_config.get("hidden_dim", 32)),
@@ -227,7 +309,7 @@ def fit_graph_run(config):
             backend=model_config.get("backend", "pyg"), dropout=float(model_config.get("dropout", .1)),
         ).to(device)
         loader = DataLoader(torch.from_numpy(np.flatnonzero(mask)), batch_size=int(training.get("batch_size", 32)), shuffle=True, num_workers=0)
-        state = {"epoch": None, "neighbors": neighbors, "scores": scores, "space": reference, "best": -float("inf")}
+        state = {"epoch": None, "neighbors": neighbors, "scores": scores, "space": reference}
         if dynamic and training.get("resume", False) and interval != 1:
             raise ValueError("Resume dynamic graphs with rebuild_interval=1; wider intervals require saved graph-state replay")
 
@@ -259,14 +341,15 @@ def fit_graph_run(config):
             else:
                 space, validation_space = reference, query
                 selection_neighbors, selection_scores = neighbors, scores
-            qn, _ = cosine_neighbors(space, validation_space, k=int(graph.get("k", 10)), **_neighbor_options(graph))
+            qn = (cosine_neighbors(space, validation_space, k=int(graph.get("k", 10)), **_neighbor_options(graph))[0]
+                  if dynamic else static_query_neighbors)
             p = _predict_gnn(current, reference, query, selection_neighbors, qn,
                              fanouts=fanouts, batch_size=int(training.get("inference_batch_size", 32)), device=device)
             metrics = summary(val_labels, p)
-            if metrics["auc"] > state["best"]:
-                state["best"] = metrics["auc"]
-                np.save(root / "neighbors.npy", selection_neighbors)
-                np.save(root / "similarities.npy", selection_scores)
+            if protocol == "transductive":
+                p = _transductive_predictions(reference, query, observed, coef, intercept, graph,
+                                               model=current, dynamic=dynamic, fanouts=fanouts, device=device)
+                metrics = summary(val_labels, p)
             return metrics
 
         model = train_model(model, loader, loss_step, validate, root, config)
@@ -275,8 +358,9 @@ def fit_graph_run(config):
             files.append("graph_space.npy")
         else:
             space = reference
-        neighbors = np.load(root / "neighbors.npy", mmap_mode="r")
-        scores = np.load(root / "similarities.npy", mmap_mode="r")
+        neighbors, scores = _graph_arrays(space, graph, ids=train.frame.sample_id, seed=seed)
+        np.save(root / "neighbors.npy", neighbors)
+        np.save(root / "similarities.npy", scores)
         files.append("best.pt")
     elif kind == "mlp":
         model = classifier(reference.shape[1], "mlp", int(model_config.get("hidden_dim", 32))).to(device)
@@ -305,20 +389,27 @@ def fit_graph_run(config):
     np.savez(root / "propagation.npz", lp=source_lp, cs=source_cs["probabilities"], correction=source_cs["correction"])
     files.append("propagation.npz")
     if graph.get("backend", "exact") == "faiss":
-        recall = audit_neighbor_recall(space, neighbors, seed=seed, max_queries=int(graph.get("audit_queries", 128)))
+        audited = _graph_arrays(space, {**graph, "noise_fraction": 0}, ids=train.frame.sample_id, seed=seed)[0] if graph.get("noise_fraction", 0) else neighbors
+        recall = audit_neighbor_recall(space, audited, seed=seed, max_queries=int(graph.get("audit_queries", 128)))
         write_json(root / "ann_audit.json", recall)
         if recall["recall_at_k"] < float(graph.get("minimum_recall", .95)):
             raise RuntimeError("ANN recall below predeclared acceptance threshold")
+    write_json(root / "graph_diagnostics.json", graph_diagnostics(neighbors, scores, observed, graph))
     write_model_artifact(root, {
         "task": "graph", "kind": kind, "config": config, "input_dim": reference.shape[1],
         "train_cache": train.identity, "val_cache": val.identity,
-        "inference_protocol": "inductive", "dynamic": dynamic,
+        "representation_key": representation_key(train.metadata),
+        "train_manifest": train.metadata["manifest"], "validation_manifest": val.metadata["manifest"],
+        "label_mask_sha256": digest_file(root / "label_mask.json"),
+        "metric_projection": metric_projection,
+        "inference_protocol": protocol, "dynamic": dynamic,
         "inference_graph_policy": "rebuild from selected projector" if dynamic else "frozen input-feature graph",
         "label_budget_scope": "selected downstream training labels only; supervised backbone exposure is separate",
     }, files)
-    p = predict_graph_run(root, val.features, protocol="inductive")
-    save_validation(root, val, p, extra={"method": kind, "label_count": int(mask.sum()), "protocol": "inductive"})
-    for name in ("validation_features.npy", "training_space.npy", "selection_space.npy", "selection_query.npy"):
+    p = predict_graph_run(root, val.features, protocol=protocol)
+    save_validation(root, val, p, extra={"method": kind, "label_count": int(mask.sum()), "protocol": protocol})
+    for name in ("validation_features.npy", "training_space.npy", "selection_space.npy", "selection_query.npy",
+                 "training_metric.npy", "validation_metric.npy"):
         path = root / name
         if path.exists():
             path.unlink()
@@ -337,14 +428,19 @@ def _load_graph_model(record, root):
     return model.eval()
 
 
-def predict_graph_run(run_dir, query_features, protocol="inductive"):
+def predict_graph_run(run_dir, query_features, protocol=None):
     root = Path(run_dir)
     record = read_model_artifact(root)
+    protocol = record["inference_protocol"] if protocol is None else protocol
     if record["task"] != "graph" or protocol not in {"inductive", "transductive"}:
         raise ValueError("Graph artifact and explicit inductive/transductive protocol required")
+    if protocol != record["inference_protocol"]:
+        raise ValueError("Inference protocol differs from validation calibration; fit a separate run")
     cfg, kind = record["config"]["model"], record["kind"]
     graph = cfg.get("graph", {})
     normalizer = np.load(root / "normalizer.npz")
+    if record.get("metric_projection"):
+        query_features = _metric_transform(root, record["metric_projection"], query_features)
     query = unit_rows(standardized_block(query_features, normalizer["mean"], normalizer["std"]))
     reference = np.load(root / "reference.npy", mmap_mode="r")
     observed = np.load(root / "observed_labels.npy", mmap_mode="r")
@@ -357,28 +453,10 @@ def predict_graph_run(run_dir, query_features, protocol="inductive"):
         return torch.from_numpy(logits).softmax(1)[:, 1].numpy()
     neural = kind in {"gcn", "gat", "sage"}
     model = _load_graph_model(record, root) if neural else None
-    if protocol == "transductive":
-        with tempfile.TemporaryDirectory(prefix="faceforgery-graph-") as temporary:
-            temporary = Path(temporary)
-            joint = np.lib.format.open_memmap(temporary / "joint.npy", mode="w+", dtype="float32",
-                                              shape=(len(reference) + len(query), reference.shape[1]))
-            for start in range(0, len(reference), 1024):
-                joint[start:start + 1024] = reference[start:start + 1024]
-            joint[len(reference):] = query
-            joint.flush()
-            space = _project_space(model, joint, temporary / "space.npy") if record["dynamic"] else joint
-            neighbors, scores = _graph_arrays(space, graph, seed=int(record["config"].get("seed", 42)))
-            targets = np.arange(len(reference), len(joint))
-            if neural:
-                return _predict_gnn(model, joint, query, neighbors, neighbors[targets], source_roots=targets,
-                                    fanouts=tuple(cfg.get("fanouts", [10, 5])))
-            labels = np.concatenate((observed, np.full(len(query), -1, dtype=np.int64)))
-            lp, cs, base = _source_baselines(joint, labels, neighbors, scores, linear["coef"], linear["intercept"], graph)
-            if kind == "lp":
-                return lp[targets, 1]
-            if kind == "correct_smooth":
-                return cs["probabilities"][targets, 1]
-            # k-NN always uses the same labeled source subset, even in this protocol.
+    if protocol == "transductive" and (neural or kind in {"lp", "correct_smooth"}):
+        result = _transductive_predictions(reference, query, observed, linear["coef"], linear["intercept"], graph,
+                                           model=model, dynamic=record["dynamic"], fanouts=tuple(cfg.get("fanouts", [10, 5])))
+        return result if neural else result[kind]
     neighbors = np.load(root / "neighbors.npy", mmap_mode="r")
     source_space = np.load(root / "graph_space.npy", mmap_mode="r") if record["dynamic"] else reference
     if record["dynamic"]:
