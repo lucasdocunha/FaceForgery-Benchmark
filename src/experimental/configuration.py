@@ -21,7 +21,10 @@ PATH_CONTAINERS = {"caches", "target_caches", "sources"}
 def resolve_values(value, base, *, key=None, paths=False):
     """Expand declared variables and resolve path fields from the config directory."""
     if isinstance(value, dict):
-        return {name: resolve_values(item, base, key=name, paths=key in PATH_CONTAINERS)
+        # Sources are typed records: only their explicit path fields are paths.
+        # Cache mappings instead allow target names to map directly to paths.
+        return {name: resolve_values(item, base, key=name,
+                                     paths=key in PATH_CONTAINERS and key != "sources")
                 for name, item in value.items()}
     if isinstance(value, list):
         return [resolve_values(item, base, key=key, paths=paths or key in PATH_CONTAINERS) for item in value]

@@ -162,7 +162,11 @@ def test_input_bound_calibration_cli_for_tensor_and_external_scorers(tmp_path, m
     if family in {"metric", "moe"}:
         options = tmp_path / "options.yaml"
         options.write_text(yaml.safe_dump({"cache": "cache"} if family == "metric"
-                                         else {"sources": [{"path": "scores.csv"}]}))
+                                         else {"sources": [
+                                             {"name": "srm", "role": "srm", "kind": "feature_cache", "path": "srm-cache"},
+                                             {"name": "rgb", "role": "rgb", "kind": "feature_cache", "path": "rgb-cache"},
+                                             {"name": "reconstruction", "role": "reconstruction", "kind": "predictions", "path": "scores.csv"},
+                                         ]}))
         arguments += ["--options", str(options)]
     assert main(arguments) == 0 and not output.exists() and not calls["loads"]
     capsys.readouterr()
@@ -182,6 +186,19 @@ def test_calibration_rejects_fusion_fit_population_before_loading(tmp_path, monk
         orchestration.calibrate_experiment("moe", run, manifest, root, tmp_path / "never-written",
                                             options={"sources": ["fixture.csv"]}, execute=True)
     assert not calls["loads"] and not (tmp_path / "never-written").exists()
+
+
+def test_source_metadata_and_cache_path_shorthands_keep_distinct_semantics(tmp_path):
+    path = tmp_path / "options.yaml"
+    path.write_text(yaml.safe_dump({
+        "sources": [{"name": "dino_srm", "role": "srm", "kind": "feature_cache", "path": "dino/val"}],
+        "target_caches": {"test": "test-cache", "test_d": "degraded-cache"},
+    }))
+    resolved = read_document(path)
+    assert resolved["sources"] == [{"name": "dino_srm", "role": "srm", "kind": "feature_cache",
+                                    "path": str(tmp_path / "dino/val")}]
+    assert resolved["target_caches"] == {"test": str(tmp_path / "test-cache"),
+                                          "test_d": str(tmp_path / "degraded-cache")}
 
 
 def test_portable_training_seed_override_and_unset_variable_rejection(tmp_path, monkeypatch, capsys):
