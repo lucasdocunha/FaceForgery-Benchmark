@@ -76,7 +76,7 @@ Metric kinds include `linear`, `mlp`, `centroid`, `knn`, `supcon`; graph kinds i
 
 ## Freeze calibration
 
-Set `TCC_EVAL_MODEL` to the completed run. Existing run calibration is usable when its recorded bundle and input contract still match. To publish a fresh source-validation calibration and certified source scores:
+Set `TCC_EVAL_MODEL` to the completed run. Existing run calibration is usable when its recorded bundle and input contract still match. Native image/VLM example for fresh source-validation calibration and certified source scores:
 
 ```bash
 python research_cli.py experimental calibrate \
@@ -93,7 +93,19 @@ For metric/graph, add `--options "$TCC_CALIBRATION_OPTIONS"` with this YAML; use
 cache: ${TCC_VAL_CACHE}
 ```
 
-For MoE, use the run's emitted `val_select.csv` as `--manifest`; full validation includes fitting rows and is rejected. Its options declare the same ordered frozen experts as training:
+For limited VLM smoke runs, use `--manifest "${TCC_EVAL_MODEL}/selected_val.csv"` with the full validation image root. Full server Qwen uses the full source-validation manifest.
+
+For MoE, use the run's emitted `val_select.csv`; full validation includes fitting rows and is rejected. The exact command retains the full validation root and expert cache sources:
+
+```bash
+python research_cli.py experimental calibrate \
+  --family moe --run "$TCC_EVAL_MODEL" \
+  --manifest "${TCC_EVAL_MODEL}/val_select.csv" --root "$TCC_VAL_ROOT" \
+  --options "$TCC_CALIBRATION_OPTIONS" --output "$TCC_CALIBRATION_DIR" \
+  --device cpu --threshold-policy youden --execute
+```
+
+Its options declare the same ordered frozen experts as training:
 
 ```yaml
 sources:
@@ -131,6 +143,17 @@ python scripts/prepare_celeb_df.py \
 ```
 
 DF-40 `source_matched` is opt-in: declare `--source-domain-column source_domain` during conversion and update the suite policy. DF-40 `cdf/frames` and Celeb-DF share a source domain. Celeb preparation reads the official list, validates label polarity and certifies extraction coverage; limited smoke manifests cannot be benchmark scope. Source-frame thresholds transfer to video means unless source-video calibration is available.
+
+A deterministic local degradation proxy can be built from a reviewed validation population for inference only:
+
+```bash
+python -m src.robustness.degraded_proxy \
+  --manifest "$TCC_PROXY_SOURCE_MANIFEST" --root "$TCC_PROXY_SOURCE_ROOT" \
+  --output "$TCC_PROXY_IMAGE_ROOT" --clean-manifest "$TCC_PROXY_CLEAN_MANIFEST" \
+  --degraded-manifest "$TCC_PROXY_DEGRADED_MANIFEST" --seed 42 --image-size 224
+```
+
+The helper uses the repository robust augmentation operator, one sample-ID-derived draw per image, and lossless PNG bytes with original relative names. Its artifact inventory pins the recipe, code/packages, source certificate and image hashes. Both aliases preserve source dataset/IDs/groups/labels and use split `pilot`; clean images are referenced without copying. Evaluate these aliases in suite `scope: pilot` with frozen source thresholds. They are a degradation proxy, not the original Test-D distribution.
 
 ## Evaluate and retain artifacts
 
