@@ -1,0 +1,143 @@
+{
+  "purpose": "min-dataset frozen feature extraction, not a new training result",
+  "caches": [
+    {
+      "family": "mobilenet",
+      "mode": "srm",
+      "splits": {
+        "train": {
+          "cache_identity": "bb9da69081c41e1363d7ef1a8b3518438fe9b91b26e81b817b375890a16d3661",
+          "rows": 1000,
+          "feature_dim": 1280,
+          "feature_layer": "classifier.3",
+          "checkpoint_sha256": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f"
+        },
+        "val": {
+          "cache_identity": "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b",
+          "rows": 1000,
+          "feature_dim": 1280,
+          "feature_layer": "classifier.3",
+          "checkpoint_sha256": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f"
+        }
+      },
+      "seconds": 16.511343273999955,
+      "peak_sampled_rss_kib": 1937944,
+      "exit_code": 0
+    },
+    {
+      "family": "mobilenet",
+      "mode": "none",
+      "splits": {
+        "train": {
+          "cache_identity": "ac6a70cd2d29ac37df8af1b331f8cf4c2f38f93fe35deaf727c3b5936855d4bd",
+          "rows": 1000,
+          "feature_dim": 1280,
+          "feature_layer": "classifier.3",
+          "checkpoint_sha256": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5"
+        },
+        "val": {
+          "cache_identity": "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b",
+          "rows": 1000,
+          "feature_dim": 1280,
+          "feature_layer": "classifier.3",
+          "checkpoint_sha256": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5"
+        }
+      },
+      "seconds": 13.008904941000083,
+      "peak_sampled_rss_kib": 1920008,
+      "exit_code": 0
+    },
+    {
+      "family": "dino",
+      "mode": "srm",
+      "splits": {
+        "train": {
+          "cache_identity": "fb222e02381d947f066550381202c71ae673620021b8fb22d52c4384e79426cb",
+          "rows": 1000,
+          "feature_dim": 1024,
+          "feature_layer": "classifier.2",
+          "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6"
+        },
+        "val": {
+          "cache_identity": "eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+          "rows": 1000,
+          "feature_dim": 1024,
+          "feature_layer": "classifier.2",
+          "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6"
+        }
+      },
+      "seconds": 62.53950507899981,
+      "peak_sampled_rss_kib": 2239152,
+      "exit_code": 0
+    },
+    {
+      "family": "dino",
+      "mode": "none",
+      "splits": {
+        "train": {
+          "cache_identity": "9b5dea3b37f2ba7a2c451536c5623950634ff38da531316cd0ed310d0922d3cf",
+          "rows": 1000,
+          "feature_dim": 1024,
+          "feature_layer": "classifier.2",
+          "checkpoint_sha256": "de1d1a2669fb15e33a290ccd6cb647873aaeac5c5c07f23c1bb4443874ff9d70"
+        },
+        "val": {
+          "cache_identity": "8d0bc565718d6dbe102c662e3cfea70c2a2afd48d742ac2d42e83acb0de9584e",
+          "rows": 1000,
+          "feature_dim": 1024,
+          "feature_layer": "classifier.2",
+          "checkpoint_sha256": "de1d1a2669fb15e33a290ccd6cb647873aaeac5c5c07f23c1bb4443874ff9d70"
+        }
+      },
+      "seconds": 57.53507472499996,
+      "peak_sampled_rss_kib": 2231812,
+      "exit_code": 0
+    },
+    {
+      "family": "clip",
+      "mode": "srm",
+      "splits": {
+        "train": {
+          "cache_identity": "d30644b1cc0a65c597acd22330e38a8518406256625b6238d0556b9949828e70",
+          "rows": 1000,
+          "feature_dim": 768,
+          "feature_layer": "classifier.1",
+          "checkpoint_sha256": "ac4e747513156c17b4fef4c961e1049f025cb855bcc6638db453de59352adc93"
+        },
+        "val": {
+          "cache_identity": "60adaa6647d799d0a825e6042b04313783f098ebd1650203ffa8f2db988acac3",
+          "rows": 1000,
+          "feature_dim": 768,
+          "feature_layer": "classifier.1",
+          "checkpoint_sha256": "ac4e747513156c17b4fef4c961e1049f025cb855bcc6638db453de59352adc93"
+        }
+      },
+      "seconds": 24.016183844999887,
+      "peak_sampled_rss_kib": 1918160,
+      "exit_code": 0
+    },
+    {
+      "family": "clip",
+      "mode": "none",
+      "splits": {
+        "train": {
+          "cache_identity": "efc6cfcbf15f477000e4bb883952b6bed788457a9efd21a2bda6f1748168bcb0",
+          "rows": 1000,
+          "feature_dim": 768,
+          "feature_layer": "classifier.1",
+          "checkpoint_sha256": "3dcb9760e84edadc8789ec29808e4ff203d3eb5c56f6e4643a19cd7bc25353c0"
+        },
+        "val": {
+          "cache_identity": "b129e73e4ff7ba5ef90d75f9a148d8cc513d8cd8467f0d0208a3fb884eb25bba",
+          "rows": 1000,
+          "feature_dim": 768,
+          "feature_layer": "classifier.1",
+          "checkpoint_sha256": "3dcb9760e84edadc8789ec29808e4ff203d3eb5c56f6e4643a19cd7bc25353c0"
+        }
+      },
+      "seconds": 20.013403067000127,
+      "peak_sampled_rss_kib": 1901380,
+      "exit_code": 0
+    }
+  ]
+}

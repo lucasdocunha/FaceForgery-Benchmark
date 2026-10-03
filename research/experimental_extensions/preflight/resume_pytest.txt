@@ -1,0 +1,3 @@
+2026-10-03 main branch after SBI 0ad82aa and fixture fix05d7b88
+338 passed, 20 subtests passed in 50.43s
+CPU-only, OMP/BLAS/MKL threads2, serialized with cpu-tests.lock.

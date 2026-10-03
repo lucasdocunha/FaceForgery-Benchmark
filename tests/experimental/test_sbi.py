@@ -2,6 +2,7 @@ import copy
 import json
 from pathlib import Path
 import random
+import sqlite3
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,7 @@ import pytest
 import torch
 
 from src.experimental.sbi.data import SBIDataset, blend, face_mask
+from src.experimental.sbi.cache import LandmarkStore
 from src.experimental.sbi.training import describe_run, fit, load_model
 from src.robustness.inference import predict
 from src.robustness.manifests import load_manifest, save_manifest
@@ -100,6 +102,26 @@ def test_landmark_failure_is_explicit_and_exclusion_recorded(sbi_source):
     write_json(path, cache)
     with pytest.raises(ValueError, match="bind"):
         dataset(sbi_source)
+
+
+def test_sqlite_geometry_is_lazy_and_identical(sbi_source, tmp_path):
+    cache = json.loads(Path(sbi_source["data"]["landmarks"]).read_text())
+    records = cache.pop("records")
+    path = tmp_path / "faces.sqlite"
+    with sqlite3.connect(path) as db:
+        db.execute("CREATE TABLE faces (sample_id TEXT PRIMARY KEY,status TEXT,image_sha256 TEXT,label INTEGER,record TEXT)")
+        db.execute("CREATE TABLE metadata (key TEXT PRIMARY KEY,value TEXT)")
+        for row in records:
+            db.execute("INSERT INTO faces VALUES (?,?,?,?,?)", (row["sample_id"],row["status"],row["image_sha256"],0,json.dumps(row)))
+        db.execute("INSERT INTO metadata VALUES (?,?)", ("manifest",json.dumps(cache)))
+    store = LandmarkStore(path)
+    assert store.records is None and "landmarks" not in store.catalog["train-0"]
+    assert store["train-0"] == records[0]
+    original = dataset(sbi_source, post_augment=False)
+    sbi_source["data"]["landmarks"] = str(path)
+    bounded = dataset(sbi_source, post_augment=False)
+    assert not bounded.images and not bounded.masks
+    assert torch.equal(original[1]["image"], bounded[1]["image"])
 
 
 @pytest.mark.parametrize("arm", ["sbi", "mffi", "mixed"])

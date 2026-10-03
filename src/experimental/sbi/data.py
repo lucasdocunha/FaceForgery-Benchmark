@@ -16,6 +16,7 @@ from torch.utils.data import Dataset
 
 from src.robustness.imaging import corrupt, sample_seed, to_tensor
 from src.robustness.provenance import contained, digest, digest_file
+from .cache import LandmarkStore
 
 
 def convex_hull(points):
@@ -88,14 +89,12 @@ class SBIDataset(Dataset):
             raise ValueError("Declare SBI/MFFI/mixed arm and landmark failure policy")
         if set(frame.split) != {"train"} or image_size < 32:
             raise ValueError("SBI fitting requires source train and image_size >=32")
-        cache = json.loads(Path(landmarks).read_text())
+        self.records = LandmarkStore(landmarks)
+        cache = self.records.metadata
         if (cache.get("schema") != "faceforgery-landmarks-v1" or cache.get("coordinates") != "normalized_xy"
                 or cache.get("manifest_sha256") != manifest_sha256):
             raise ValueError("Landmark cache does not bind this source manifest")
-        records = cache["records"]
-        if len({r["sample_id"] for r in records}) != len(records):
-            raise ValueError("Duplicate landmark identity")
-        self.records = {r["sample_id"]: r for r in records}
+        records = self.records.catalog.values()
         real = frame[frame.label.eq(0)].sort_values("sample_id").copy()
         if set(real.sample_id) != set(self.records):
             raise ValueError("Landmark population differs from genuine training population")
@@ -108,16 +107,16 @@ class SBIDataset(Dataset):
             raise ValueError("Empty effective training class")
         self.root, self.size, self.arm, self.seed = Path(root), image_size, arm, int(seed)
         self.epoch, self.post_augment = 0, bool(post_augment)
-        self.images, self.masks = {}, {}
-        selected = self.real if arm == "sbi" else frame
+        self.images, self.masks, self.mask_config = {}, {}, mask or {}
+        selected = self.real if arm == "sbi" else frame[frame.sample_id.isin(set(self.real.sample_id) | set(self.fake.sample_id))]
         for row in selected.itertuples(index=False):
             path = contained(root, row.img_name)
             if row.label == 0:
-                record = self.records[row.sample_id]
+                record = self.records.catalog[row.sample_id]
                 if record["label"] != 0 or record["image_sha256"] != digest_file(path):
                     raise ValueError("Landmark image or label identity changed")
-                if row.sample_id not in self.failures:
-                    self.masks[row.sample_id] = face_mask(record["landmarks"], image_size, **(mask or {}))
+                if cache_images:
+                    self.masks[row.sample_id] = face_mask(self.records[row.sample_id]["landmarks"], image_size, **self.mask_config)
             if cache_images:
                 with Image.open(path) as image:
                     self.images[row.sample_id] = image.convert("RGB").resize((image_size,image_size),Image.Resampling.BILINEAR)
@@ -157,7 +156,10 @@ class SBIDataset(Dataset):
         image = self._image(row)
         rng = random.Random(sample_seed(self.seed, self.epoch, str(row.sample_id), f"sbi-{label}"))
         if label and use_sbi:
-            image, _ = blend(image, self.masks[row.sample_id], rng)
+            mask = self.masks.get(row.sample_id)
+            if mask is None:
+                mask = face_mask(self.records[row.sample_id]["landmarks"], self.size, **self.mask_config)
+            image, _ = blend(image, mask, rng)
             kind = "sbi"
         if rng.random() < .5:
             image = ImageOps.mirror(image)

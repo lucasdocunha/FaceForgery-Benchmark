@@ -1,0 +1,30 @@
+# Same initialization, seed and update budget across sbi, mffi and mixed arms.
+name: sbi-generic-mobilenet
+seed: 42
+output_dir: ${TCC_EXPERIMENT_ROOT}/sbi-generic/seed_42
+data:
+  train_manifest: ${TCC_DATA_ROOT}/certified/train.csv
+  val_manifest: ${TCC_DATA_ROOT}/certified/val.csv
+  train_root: ${TCC_DATASET_ROOT}/train
+  val_root: ${TCC_DATASET_ROOT}/val
+  landmarks: ${TCC_DATA_ROOT}/landmarks/train-real.sqlite
+model:
+  architecture: mobilenet_v3_large
+  initialization: imagenet
+  weights: ${TCC_PRETRAINED_ROOT}/mobilenet_v3_large-5c1a4163.pth
+  mode: srm
+  image_size: 224
+  train_backbone: true
+training:
+  arm: sbi
+  epochs: 10
+  batch_size: 32
+  grad_accum_steps: 2
+  workers: 4
+  lr_backbone: 0.0001
+  lr_head: 0.001
+  amp: true
+  failure_policy: error
+  cache_images: false
+  mask:
+    forehead_extension: 0.0

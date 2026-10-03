@@ -172,6 +172,25 @@ def _contract(root, cfg):
     return contract
 
 
+def evaluation_identity(record):
+    cfg = record["config"]
+    model, network = copy.deepcopy(cfg["model"]), copy.deepcopy(cfg["network_spec"])
+    model.pop("weights", None)
+    if "config" in network:
+        network["config"].pop("seed", None)
+    provenance = cfg["provenance"]
+    condition = {"family": "sbi", "model": model, "network": network, "training": cfg["training"],
+                 "train_manifest_sha256": provenance["train_manifest"]["manifest_sha256"],
+                 "val_manifest_sha256": provenance["val_manifest"]["manifest_sha256"],
+                 "cohort": provenance["cohort"], "code_sha256": provenance["code_sha256"],
+                 "packages": record["software"]["packages"]}
+    if model["initialization"] != "hf_mffi":
+        condition["initialization_sha256"] = provenance["initialization_sha256"]
+    return {"name": cfg["name"], "seed": cfg["seed"], "condition": condition,
+            "condition_sha256": digest(condition), "initialization_sha256": provenance["initialization_sha256"],
+            "note": "HF seed weights may differ across realizations; architecture and adaptation policy remain fixed."}
+
+
 def describe_run(run_dir):
     root = Path(run_dir)
     status = json.loads((root / "status.json").read_text())
@@ -183,12 +202,13 @@ def describe_run(run_dir):
             raise ValueError("SBI artifact changed")
     record = json.loads((root / "run.json").read_text())
     return {"checkpoint_path": root / "best.pt", "input_contract": _contract(root, record["config"]),
-            "research_run": record, "image_size": record["config"]["model"]["image_size"]}
+            "research_run": evaluation_identity(record), "run_record": record,
+            "image_size": record["config"]["model"]["image_size"]}
 
 
 def load_model(run_dir, device="cpu"):
     descriptor = describe_run(run_dir)
-    model = _rebuild(descriptor["research_run"]["config"])
+    model = _rebuild(descriptor["run_record"]["config"])
     state = torch.load(descriptor["checkpoint_path"], map_location="cpu", weights_only=True)
     model.load_state_dict(state["state_dict"], strict=True)
     return model.to(device).eval()

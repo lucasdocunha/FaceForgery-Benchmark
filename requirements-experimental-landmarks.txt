@@ -1,0 +1,5 @@
+# A separate Python 3.12 environment avoids overlapping OpenCV distributions.
+# Run the landmark command from the repository root; it does not import torch.
+mediapipe==1.0.1
+pandas==3.0.2
+pillow==12.2.0
