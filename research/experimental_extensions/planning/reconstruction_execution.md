@@ -53,7 +53,7 @@ python research_cli.py evaluate-suite \
   --config configs/experimental/suites/reconstruction.yaml --execute
 ```
 
-Use the canonical seed set 42, 123, 2024, 7, 2025, setting a fresh `TCC_RUN_DIR` for each condition and seed. Point `TCC_AE_RUN` at the matching completed pretraining run. The source configs provide CAE, VAE and gated AE, frozen spatial/latent heads and both spatial AE adaptation modes. Copy the spatial config for `x_only`, `residual_only` and `full`, keeping all remaining settings and generic initialization fixed. Evaluation uses the suite's Test, Test-D, DF-40 and Celeb-DF manifests, with the source-val threshold frozen. The suite dry run validates paths/contracts without model inference when `--execute` is omitted.
+Use the canonical seed set 42, 123, 2024, 7, 2025, setting a fresh `TCC_RUN_DIR` for each condition and seed. Point `TCC_AE_RUN` at the matching completed pretraining run. The source configs provide CAE, VAE and gated AE, frozen spatial/latent heads and both spatial AE adaptation modes. The matched spatial control files are `server_residual_x_only.yaml`, `server_residual_residual_only.yaml` and `server_residual_frozen.yaml` (full fusion); all remaining settings and generic initialization are equal. Evaluation uses the suite's Test, Test-D, DF-40 and Celeb-DF manifests, with the source-val threshold frozen. The suite dry run validates paths/contracts without model inference when `--execute` is omitted.
 
 The fixed combined model needs no fitting. Set `TCC_SPATIAL_RUN` and `TCC_LATENT_RUN` and use the same public command:
 
