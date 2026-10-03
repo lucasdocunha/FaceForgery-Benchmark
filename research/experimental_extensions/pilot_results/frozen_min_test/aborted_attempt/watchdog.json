@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+    "-u",
+    "research_cli.py",
+    "experimental",
+    "evaluate",
+    "--config",
+    "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+    "--execute"
+  ],
+  "exit_code": -15,
+  "stop_reason": "System memory pressure or available memory below 1 GiB",
+  "peak_sampled_rss_kib": 2103200,
+  "seconds": 5.11700847100019
+}

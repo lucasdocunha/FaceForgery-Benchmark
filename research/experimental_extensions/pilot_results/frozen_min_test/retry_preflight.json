@@ -1,0 +1,230 @@
+{
+  "schema": "faceforgery-frozen-target-retry-v1",
+  "state": "prepared_awaiting_explicit_parent_authorization",
+  "scope": "pilot/min-dataset",
+  "prepared_utc": "2026-10-03T15:16:23.326879+00:00",
+  "freeze_commit": "8d01770",
+  "freeze_sha256": "7acf80330fa8919bc59a60782ee9475ee7949169bb0520a4ee5da74675841997",
+  "execution_main_head": "ad9c096de508f89a1299449517bdfbcd16dac737",
+  "software_hashes_match_freeze": true,
+  "candidate_verification": [
+    {
+      "name": "sbi-generic-sbi-seed42",
+      "config_sha256": "f14024ab4d669b4a46f1074c7373f3cd9b65e69e43efb1648ed6fd5210b14157",
+      "checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+      "calibration_sha256": "3de5eee185f8f926bbfdfc6ed69d8cacf81b98331b8c3b02df6672a59610742d",
+      "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067",
+      "frozen_frame_threshold": 0.2881683111190796,
+      "threshold_policy": "youden",
+      "status": "verified"
+    },
+    {
+      "name": "sbi-generic-mffi-seed42",
+      "config_sha256": "d5e66f1a9707acad4ac90bedc4e5bf8af832b8f1a714d1c0e7f36e09c3effece",
+      "checkpoint_sha256": "f8b27f09c6825840d5d01791515111012bf68ecd0477d775d604a63d5602f450",
+      "calibration_sha256": "b6433369bc664dec02001d7a1a1d79024b1694974e6d1ad1f12db95507970ee8",
+      "bundle_sha256": "aa41b5b0a423dfab9e88578594a498d97137a56060192eb7d84da94e17c38939",
+      "frozen_frame_threshold": 0.7631309032440186,
+      "threshold_policy": "youden",
+      "status": "verified"
+    },
+    {
+      "name": "sbi-generic-mixed-seed42",
+      "config_sha256": "b596bc3bb6b865f99c7b52a41be58b24c3ad01cb245dfa6e5c73efb92fc2431e",
+      "checkpoint_sha256": "d1eb9f6249fc210fa85cfcf589e1cfe8c4892ded922cb5a19a2feb2994d389d4",
+      "calibration_sha256": "cb36c4f5d0b36ff19e3ad2caa932ce069f162e9c4cd2c7bfb6fd95cfbdd660ce",
+      "bundle_sha256": "e798d3a7f169896571211573f650a9ed87a1016e2b94f9af3acfdcf6daff008d",
+      "frozen_frame_threshold": 0.3182732164859772,
+      "threshold_policy": "youden",
+      "status": "verified"
+    },
+    {
+      "name": "hf-dino-srm-seed42",
+      "config_sha256": "771b13eca56e4a5f9c2f2a332babd15411182c4119d37e4bfe29df8fd8f09c03",
+      "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+      "calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+      "bundle_sha256": "f4997c8dd36e6415057ab394c0e16722536a148a2b0ca2427fe9afe777e78f19",
+      "frozen_frame_threshold": 0.1919327825307846,
+      "threshold_policy": "youden",
+      "status": "verified"
+    }
+  ],
+  "proxy": {
+    "recipe": {
+      "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+      "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+      "image_size": 224,
+      "seed": 42,
+      "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+      "random_streams": [
+        "python random",
+        "torch CPU default generator"
+      ],
+      "normalization": "none; operator returns RGB tensor in [0,1]",
+      "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+      "selection": "one draw per sample, no severity or label-based selection"
+    },
+    "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+    "artifact_sha256": "aa28db2ea1147f02800e0c2399f942f2358df74ca33ff91ad80c36a169972f90",
+    "rows": 1000,
+    "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+    "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+    "recipe_matches_development": true,
+    "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+    "degraded_manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281"
+  },
+  "original_failure": {
+    "command": [
+      "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+      "-u",
+      "research_cli.py",
+      "experimental",
+      "evaluate",
+      "--config",
+      "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+      "--execute"
+    ],
+    "exit_code": -15,
+    "stop_reason": "System memory pressure or available memory below 1 GiB",
+    "peak_sampled_rss_kib": 2103200,
+    "seconds": 5.11700847100019
+  },
+  "failure_artifacts": {
+    "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/status.json": {
+      "sha256": "091bffc761a0199e02ea1add45aa9bad9cafc93ee5e05a6e289a8d2250629287",
+      "bytes": 25
+    },
+    "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/suite.json": {
+      "sha256": "0d562fa93b6d8f63653f8aca2bf78bdd4e981428be8c490916e0ebf2bb246f5e",
+      "bytes": 6615
+    },
+    "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/test/status.json": {
+      "sha256": "e4b76f31afd104ba7823801d14af6a57084a5ffeb6687a899a1f09afa96d1318",
+      "bytes": 114
+    },
+    "local/logs/final-sbi-generic-sbi-seed42.log": {
+      "sha256": "a820d2e26f273345bef1423d9c77715e90569aa0e0d92a461573fe2f71a66b4a",
+      "bytes": 468
+    },
+    "local/logs/final-sbi-generic-sbi-seed42-watchdog.json": {
+      "sha256": "02efd53cd354348120981e275d7035129d24f9bf9a6df4883380261c6193aab1",
+      "bytes": 453
+    },
+    "local/evaluation/final-pilot/execution_record.json": {
+      "sha256": "2e3910356750151b2768b49c23e49c7e9109fe84f2ab3f3daa73d3a0dd1a9865",
+      "bytes": 3014
+    }
+  },
+  "aborted_prediction_csv_count": 0,
+  "aborted_quality_metric_artifacts": [],
+  "retry": {
+    "candidate": "sbi-generic-sbi-seed42",
+    "old_config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+    "new_config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+    "old_config_sha256": "f14024ab4d669b4a46f1074c7373f3cd9b65e69e43efb1648ed6fd5210b14157",
+    "new_config_sha256": "c5bf47b9d397135ca6db8b0614bd24b96c6b09cfb03d7ff3dc1d96c4b1ec51b5",
+    "only_semantic_change": "output",
+    "old_output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42",
+    "new_output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+    "text_diff": "--- sbi-generic-sbi-seed42.yaml\n+++ sbi-generic-sbi-seed42-retry1.yaml\n@@ -15,7 +15,7 @@\n   root: /home/lucas/ffb-research/local/data/min-test-degraded-proxy\n   primary_unit: frame\n scope: pilot\n-output: /home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42\n+output: /home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1\n inference:\n   device: cuda:0\n   batch_size: 8\n",
+    "all_other_content_identical": true,
+    "config": {
+      "model": {
+        "type": "experimental",
+        "family": "sbi",
+        "path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi"
+      },
+      "calibration": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi/calibration.json",
+      "targets": [
+        {
+          "name": "test",
+          "kind": "test",
+          "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+          "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+          "primary_unit": "frame"
+        },
+        {
+          "name": "test_d",
+          "kind": "test_d",
+          "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+          "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+          "primary_unit": "frame"
+        }
+      ],
+      "scope": "pilot",
+      "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+      "inference": {
+        "device": "cuda:0",
+        "batch_size": 8,
+        "workers": 0,
+        "use_amp": true,
+        "bootstrap_draws": 300,
+        "bootstrap_seed": 42,
+        "confidence": 0.95,
+        "plots": true
+      }
+    },
+    "command": [
+      "flock",
+      "/home/lucas/ffb-research/locks/gpu.lock",
+      "env",
+      "OMP_NUM_THREADS=2",
+      "MKL_NUM_THREADS=2",
+      "OPENBLAS_NUM_THREADS=2",
+      "HIP_VISIBLE_DEVICES=0",
+      "CUDA_VISIBLE_DEVICES=0",
+      "HF_HUB_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+      "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+      "--rss-mib",
+      "3072",
+      "--seconds",
+      "300",
+      "--record",
+      "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1-watchdog.json",
+      "--",
+      "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+      "-u",
+      "research_cli.py",
+      "experimental",
+      "evaluate",
+      "--config",
+      "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+      "--execute"
+    ],
+    "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+    "log": "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1.log"
+  },
+  "resource_snapshot": {
+    "available_kib": 12358128,
+    "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=646186\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=645665\n"
+  },
+  "target_access_history": [
+    {
+      "access": "eight original RGB/SRM checkpoint compatibility checks",
+      "timing": "before freeze",
+      "purpose": "mandated original checkpoint compatibility"
+    },
+    {
+      "access": "deterministic proxy materialization",
+      "timing": "2026-10-03T13:45:51.626879+00:00",
+      "purpose": "frozen comparison preparation",
+      "rows": 1000
+    },
+    {
+      "access": "first SBI suite opened target metadata and began clean inference",
+      "timing": "2026-10-03T13:46:07.142998+00:00",
+      "purpose": "frozen comparison",
+      "outcome": "resource watchdog terminated; no prediction CSV or quality result; partial image access cannot be inferred from available log"
+    },
+    {
+      "access": "current retry preparation",
+      "timing": "2026-10-03T15:16:23.330333+00:00",
+      "purpose": "metadata and existing artifact hash verification only",
+      "detail": "Read freeze/config/calibration/proxy inventory and failed suite metadata; no target image decoding or new inference"
+    }
+  ],
+  "retry_justification": "Original run was interrupted solely by system memory pressure at 5.117 seconds; no quality result was observed. Retain all failure artifacts. Use a fresh output directory because the audited suite rejects existing outputs.",
+  "prohibitions": "No training, calibration, polarity, severity, seed, hyperparameter or candidate changes. Other three frozen configs remain byte-identical."
+}

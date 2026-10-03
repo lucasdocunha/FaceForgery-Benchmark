@@ -1,0 +1,145 @@
+{
+  "schema": "faceforgery-evaluation-suite-v1",
+  "scope": "pilot",
+  "checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+  "calibration_sha256": "3de5eee185f8f926bbfdfc6ed69d8cacf81b98331b8c3b02df6672a59610742d",
+  "input_contract": {
+    "image_size": 224,
+    "resize": "PIL RGB square bilinear",
+    "representation": "srm",
+    "in_channels": 6,
+    "checkpoint_class1": "fake",
+    "score": "FP32 softmax of two logits; declared fake class",
+    "legacy_helpers_sha256": {
+      "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+      "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+      "src/robustness/imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047"
+    },
+    "family": "sbi",
+    "encoding_location": "model-internal, FP32 before backbone AMP",
+    "raw_input_channels": 3,
+    "srm_on_normalized": true,
+    "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067"
+  },
+  "input_contract_sha256": "2c6e9dc55ec0f32f658d874572728ca171246faf742670a4f0707ec7f380fff4",
+  "targets": {
+    "test": {
+      "name": "test",
+      "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+      "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+      "primary_unit": "frame",
+      "breakdown": false,
+      "real_reference_policy": "source_matched",
+      "kind": "test",
+      "certificate": {
+        "scope": "pilot",
+        "original_manifest": {
+          "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+          "source_label_column": " target",
+          "source_label_convention": "fake-is-1",
+          "group_column": null,
+          "group_unit": "image-only (identity/source dependence unresolved)",
+          "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+          "rows": 1000,
+          "dataset": "mffi-min",
+          "split": "test",
+          "class_counts": {
+            "1": 577,
+            "0": 423
+          }
+        },
+        "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+        "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+        "group_unit": "image-only (identity/source dependence unresolved)",
+        "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+        "proxy_label": "min-test-clean-proxy",
+        "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+        "schema": "faceforgery-research-v1",
+        "label_convention": "fake-is-1",
+        "manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+        "rows": 1000,
+        "dataset": "mffi-min",
+        "split": "pilot",
+        "class_counts": {
+          "1": 577,
+          "0": 423
+        }
+      }
+    },
+    "test_d": {
+      "name": "test_d",
+      "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+      "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+      "primary_unit": "frame",
+      "breakdown": false,
+      "real_reference_policy": "source_matched",
+      "kind": "test_d",
+      "certificate": {
+        "scope": "pilot",
+        "original_manifest": {
+          "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+          "source_label_column": " target",
+          "source_label_convention": "fake-is-1",
+          "group_column": null,
+          "group_unit": "image-only (identity/source dependence unresolved)",
+          "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+          "rows": 1000,
+          "dataset": "mffi-min",
+          "split": "test",
+          "class_counts": {
+            "1": 577,
+            "0": 423
+          }
+        },
+        "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+        "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+        "group_unit": "image-only (identity/source dependence unresolved)",
+        "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+        "proxy_label": "min-test-degraded-proxy",
+        "recipe": {
+          "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+          "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+          "image_size": 224,
+          "seed": 42,
+          "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+          "random_streams": [
+            "python random",
+            "torch CPU default generator"
+          ],
+          "normalization": "none; operator returns RGB tensor in [0,1]",
+          "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+          "selection": "one draw per sample, no severity or label-based selection"
+        },
+        "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+        "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+        "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+        "schema": "faceforgery-research-v1",
+        "label_convention": "fake-is-1",
+        "manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281",
+        "rows": 1000,
+        "dataset": "mffi-min",
+        "split": "pilot",
+        "class_counts": {
+          "1": 577,
+          "0": 423
+        }
+      }
+    }
+  },
+  "settings": {
+    "device": "cuda:0",
+    "batch_size": 8,
+    "workers": 0,
+    "amp": true,
+    "bootstrap_draws": 300,
+    "bootstrap_seed": 42,
+    "confidence": 0.95
+  }
+}
