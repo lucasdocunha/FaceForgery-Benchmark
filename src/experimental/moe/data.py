@@ -113,15 +113,20 @@ class AlignedExperts:
 
     def block(self, indices):
         indices = np.asarray(indices, dtype=np.int64)
-        blocks, probabilities = [], []
+        blocks = []
         for expert, positions in zip(self.experts, self.positions):
             take = positions[indices]
             blocks.append(np.asarray(expert.features[take], dtype=np.float32))
-            probabilities.append(expert.scores[take])
-        scores = np.stack(probabilities, -1).astype(np.float32)
+        scores = self.score_block(indices)
         clipped = np.clip(scores, 1e-6, 1 - 1e-6)
         odds = np.log(clipped) - np.log1p(-clipped)
         return np.concatenate([*blocks, odds], -1), scores
+
+    def score_block(self, indices):
+        """Stack only scalar scores; never read full penultimate matrices for LR."""
+        indices = np.asarray(indices, dtype=np.int64)
+        return np.stack([expert.scores[positions[indices]] for expert, positions in
+                         zip(self.experts, self.positions)], -1).astype(np.float32)
 
 
 def open_sources(specs, frame=None, expected_contracts=None):

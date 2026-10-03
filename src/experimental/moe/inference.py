@@ -138,7 +138,7 @@ class MoEPredictor:
         else:
             scores, weights = [], None
             for start in range(0, len(frame), batch_size):
-                _, p = aligned.block(indices[start:start + batch_size])
+                p = aligned.score_block(indices[start:start + batch_size])
                 p = torch.from_numpy(p)
                 if self.method == "logistic":
                     score = torch.sigmoid(p.double() @ self.stacker["coefficient"] + self.stacker["intercept"])

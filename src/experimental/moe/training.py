@@ -179,8 +179,8 @@ def _fit(config, root):
         run_dir=root, config={**config, "provenance": source}, epochs=int(training.get("epochs", 10)),
         device=device, grad_accum_steps=int(training.get("grad_accum_steps", 1)), selection_key="auc", selection_mode="max",
         resume=resume, max_grad_norm=float(training.get("max_grad_norm", 1.0)))
-    _, fit_scores = aligned.block(fit_indices)
-    _, select_scores = aligned.block(select_indices)
+    fit_scores = aligned.score_block(fit_indices)
+    select_scores = aligned.score_block(select_indices)
     with warnings.catch_warnings():
         warnings.simplefilter("error", ConvergenceWarning)
         stacker = LogisticRegression(C=float(training.get("stacking_c", 1.0)),
