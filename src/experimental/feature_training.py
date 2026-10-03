@@ -52,9 +52,13 @@ def open_training_caches(config):
 
 
 def representation_key(metadata):
-    """Cache dependencies that must agree across different split populations."""
+    """Semantic extractor dependencies, independent of population and Git commit.
+
+    The full cache key retains its commit for provenance. Extractor compatibility
+    instead binds checkpoint, configuration, code, packages and preprocessing.
+    """
     return {key: value for key, value in metadata["key"].items()
-            if key not in {"manifest_sha256", "image_inventory_sha256"}}
+            if key not in {"manifest_sha256", "image_inventory_sha256", "commit"}}
 
 
 def label_budget(train, config, root):

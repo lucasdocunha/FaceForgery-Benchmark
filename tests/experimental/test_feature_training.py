@@ -7,7 +7,8 @@ import pytest
 import torch
 
 from src.experimental.feature_training import (
-    describe_run, feature_cache_predictor, fit_metric_run, predict_metric_run,
+    describe_run, feature_cache_predictor, fit_metric_run, open_training_caches,
+    predict_metric_run,
 )
 from src.experimental.features import open_cache
 from src.experimental.graph_training import (
@@ -45,7 +46,9 @@ def write_cache(root, split, *, labels=None, features=None):
     extraction = {"mode": "srm", "image_size": 32, "srm_on_normalized": True}
     key = {"checkpoint_sha256": "fixture-checkpoint", "run_config_sha256": "fixture-config",
            "manifest_sha256": certificate["manifest_sha256"], "extraction": extraction,
-           "image_inventory_sha256": digest(ids), "commit": "fixture-commit"}
+           "image_inventory_sha256": digest(ids), "commit": "fixture-commit",
+           "code_sha256": {"src/experimental/features.py": "fixture-code"},
+           "packages": {"torch": "fixture-version"}}
     metadata = {
         "schema": "faceforgery-features-v1", "status": "complete", "key": key,
         "identity": digest(key), "sample_ids_sha256": digest(ids),
@@ -73,6 +76,45 @@ def configuration(tmp_path, caches, family, kind, **model):
         "training": {"epochs": 2, "batch_size": 8, "baseline_epochs": 3,
                      "device": "cpu", "lr": .01, "cpu_threads": 2},
     }
+
+
+def test_cache_commit_is_provenance_and_not_extractor_compatibility(tmp_path, caches):
+    metadata_path = Path(caches["val"]) / "cache.json"
+    metadata = json.loads(metadata_path.read_text())
+    old_identity = metadata["identity"]
+    metadata["key"]["commit"] = "later-documentation-commit"
+    metadata["identity"] = digest(metadata["key"])
+    write_json(metadata_path, metadata)
+    config = configuration(tmp_path, caches, "metric", "centroid")
+    run = fit_metric_run(config)
+    val = open_cache(caches["val"])
+    assert val.identity != old_identity
+    assert val.metadata["key"]["commit"] == "later-documentation-commit"
+    assert "commit" not in describe_run(run)["input_contract"]["representation_key"]
+    callback = feature_cache_predictor(run, {"val": caches["val"]})["val"]
+    np.testing.assert_array_equal(callback(val.frame, caches["val"]).p_fake,
+                                  predict_metric_run(run, val.features))
+
+
+@pytest.mark.parametrize("field,value", [
+    ("checkpoint_sha256", "different-checkpoint"),
+    ("run_config_sha256", "different-config"),
+    ("code_sha256", {"src/experimental/features.py": "different-code"}),
+    ("packages", {"torch": "different-version"}),
+    ("extraction", {"mode": "srm", "image_size": 64, "srm_on_normalized": True}),
+])
+def test_cache_semantic_extractor_changes_are_rejected(tmp_path, caches, field, value):
+    config = configuration(tmp_path, caches, "metric", "centroid")
+    run = fit_metric_run(config)
+    metadata_path = Path(caches["val"]) / "cache.json"
+    metadata = json.loads(metadata_path.read_text())
+    metadata["key"][field] = value
+    metadata["identity"] = digest(metadata["key"])
+    write_json(metadata_path, metadata)
+    with pytest.raises(ValueError, match="representation identities differ"):
+        open_training_caches(config)
+    with pytest.raises(ValueError, match="different feature representation"):
+        feature_cache_predictor(run, {"val": caches["val"]})
 
 
 @pytest.mark.parametrize("kind", ["linear", "mlp", "centroid", "knn", "supcon"])

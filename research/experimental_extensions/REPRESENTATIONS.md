@@ -5,6 +5,8 @@ The cache contains the input to the checkpoint's final classification layer,
 float32 logits and certified row identities. Extraction reproduces the original
 six-channel SRM input, including SRM on ImageNet-normalized RGB. A query cache
 must match the fitted checkpoint, extraction settings, code and package identity.
+The extraction commit remains in each immutable cache's provenance, but a Git
+commit alone does not change extractor compatibility when those hashes agree.
 Prediction callbacks also verify current image hashes and join by `sample_id`.
 
 These are development methods, not new benchmark results. The released HF
