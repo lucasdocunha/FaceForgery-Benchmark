@@ -1,0 +1,79 @@
+# TCC_FUSION_METHOD is mean or geometric. Supply the matching frozen
+# common-calibration output as TCC_EVAL_CALIBRATION.
+# Target caches use the exact original checkpoint and mixed adapted run.
+# DF40 pooled reals match legacy tables but remain source-domain confounded.
+model:
+  type: experimental
+  family: moe
+  path: ${TCC_EVAL_MODEL}
+  options:
+    method: ${TCC_FUSION_METHOD}
+    target_caches:
+      test:
+      - name: unadapted_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_SRM_CACHE}
+        checkpoint_sha256: ${TCC_SBI_INIT_CHECKPOINT_SHA256}
+      - name: mixed_sbi
+        role: sbi
+        kind: predictions
+        path: ${TCC_EVAL_TEST_MIXED_SBI_PREDICTIONS}
+      test_d:
+      - name: unadapted_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_TEST_D_SRM_CACHE}
+        checkpoint_sha256: ${TCC_SBI_INIT_CHECKPOINT_SHA256}
+      - name: mixed_sbi
+        role: sbi
+        kind: predictions
+        path: ${TCC_EVAL_TEST_D_MIXED_SBI_PREDICTIONS}
+      df40:
+      - name: unadapted_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_DF40_SRM_CACHE}
+        checkpoint_sha256: ${TCC_SBI_INIT_CHECKPOINT_SHA256}
+      - name: mixed_sbi
+        role: sbi
+        kind: predictions
+        path: ${TCC_EVAL_DF40_MIXED_SBI_PREDICTIONS}
+      celeb_df_v2:
+      - name: unadapted_srm
+        role: srm
+        kind: feature_cache
+        path: ${TCC_EVAL_CELEB_SRM_CACHE}
+        checkpoint_sha256: ${TCC_SBI_INIT_CHECKPOINT_SHA256}
+      - name: mixed_sbi
+        role: sbi
+        kind: predictions
+        path: ${TCC_EVAL_CELEB_MIXED_SBI_PREDICTIONS}
+calibration: ${TCC_EVAL_CALIBRATION}
+output: ${TCC_OUTPUT_ROOT}/evaluation/${TCC_FUSION_METHOD}
+scope: benchmark
+targets:
+- name: test
+  manifest: ${TCC_EVAL_TEST_MANIFEST}
+  root: ${TCC_EVAL_TEST_ROOT}
+- name: test_d
+  manifest: ${TCC_EVAL_TEST_D_MANIFEST}
+  root: ${TCC_EVAL_TEST_D_ROOT}
+- name: df40
+  manifest: ${TCC_EVAL_DF40_MANIFEST}
+  root: ${TCC_EVAL_DF40_ROOT}
+  breakdown: true
+  real_reference_policy: pooled_all_real
+- name: celeb_df_v2
+  manifest: ${TCC_EVAL_CELEB_MANIFEST}
+  root: ${TCC_EVAL_CELEB_ROOT}
+  primary_unit: video
+inference:
+  device: cpu
+  batch_size: 16
+  workers: 0
+  use_amp: false
+  bootstrap_draws: 1000
+  bootstrap_seed: 42
+  confidence: 0.95
+  plots: true
