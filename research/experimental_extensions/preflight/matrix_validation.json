@@ -1,7 +1,7 @@
 {
   "purpose": "portable configuration resolution and CLI argument parsing only; no assets, fitting or target access",
   "software": {
-    "commit": "1b7a2fbb48ba8b96b67541ae2f2d0994f1a9279b",
+    "commit": "0831fe8358628499db8021758a6d91dba43b5e51",
     "code_sha256": {
       "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
       "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
@@ -35,23 +35,50 @@
       "Pillow": "12.2.0"
     }
   },
-  "matrix_sha256": "4ce69105f3dbe020867010e6c0a76aa38028c83925741b5fec09131dbd922da5",
+  "matrix_sha256": "92050fa9ac71e0431434b16c6fdc24af197f379bb0723d32d82cefd93d411611",
   "rows": [
     {
-      "name": "sbi-hf-dino-srm",
+      "name": "sbi-hf-dino-srm-mixed",
       "config": "configs/experimental/sbi_hf_adaptation.yaml",
       "family": "sbi",
-      "config_sha256": "d05ba8f2efb84a07dfc58b9aafc9f1d940c5d97d3e1547ad7e605d401218d317",
+      "config_sha256": "ee3946e57bf5a07311af3014f0aa797d498c9b2519a8d11d3bd86543a756f36b",
       "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
       "state": "planned_not_executed",
       "parsed_commands": 7
     },
     {
-      "name": "sbi-hf-clip-srm",
+      "name": "sbi-hf-clip-srm-mixed",
       "config": "configs/experimental/sbi_hf_adaptation.yaml",
       "family": "sbi",
-      "config_sha256": "d05ba8f2efb84a07dfc58b9aafc9f1d940c5d97d3e1547ad7e605d401218d317",
+      "config_sha256": "ee3946e57bf5a07311af3014f0aa797d498c9b2519a8d11d3bd86543a756f36b",
       "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
+    },
+    {
+      "name": "sbi-hf-dino-srm-sbi-only",
+      "config": "configs/experimental/sbi_hf_sbi_only_ablation.yaml",
+      "family": "sbi",
+      "config_sha256": "dd5af9d3e7a70bf125ee3bd95492a71e76ed0d988d11797f2503dd525bf60a84",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
+    },
+    {
+      "name": "sbi-hf-clip-srm-sbi-only",
+      "config": "configs/experimental/sbi_hf_sbi_only_ablation.yaml",
+      "family": "sbi",
+      "config_sha256": "dd5af9d3e7a70bf125ee3bd95492a71e76ed0d988d11797f2503dd525bf60a84",
+      "suite_config_sha256": "2ef207fe6a332c2f6158211608806ee67549bd4bdeed79e30df3e414399dc089",
+      "state": "planned_not_executed",
+      "parsed_commands": 7
+    },
+    {
+      "name": "srm-original-plus-mixed-sbi",
+      "config": "configs/experimental/moe_srm_mixed_sbi_pair.yaml",
+      "family": "moe",
+      "config_sha256": "6a490d99d2b20813cdad94eb43c072f80f785137646ab54778987737fb3ef1e5",
+      "suite_config_sha256": "bfa43669cfc3f71842a7829c394dd2ddc0ec9f0fc9116358e1473cb2bc497cd3",
       "state": "planned_not_executed",
       "parsed_commands": 7
     },
@@ -236,6 +263,6 @@
       "parsed_commands": 7
     }
   ],
-  "configurations": 22,
-  "parsed_commands": 154
+  "configurations": 25,
+  "parsed_commands": 175
 }

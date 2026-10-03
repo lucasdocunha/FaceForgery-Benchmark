@@ -1,0 +1,1783 @@
+{
+  "purpose": "source-only bounded integration smoke of the new original-plus-mixed server fusion config; no target access or tuning",
+  "software": {
+    "commit": "0831fe8358628499db8021758a6d91dba43b5e51",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "driver_sha256": "3bc2eb04242086c61ad2e61280cfef355c1838a862bac404b76bc4f27d3059e7",
+  "result": {
+    "state": "complete",
+    "family": "moe",
+    "run_dir": "/home/lucas/ffb-research/local/pilots/moe-dino-original-mixed-sbi-seed42",
+    "result": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/moe-dino-original-mixed-sbi-seed42"
+    }
+  },
+  "run_dir": "/home/lucas/ffb-research/local/pilots/moe-dino-original-mixed-sbi-seed42",
+  "run.json": {
+    "schema": "faceforgery-experimental-v1",
+    "config": {
+      "task": "moe",
+      "name": "srm_original_mixed_sbi_pair",
+      "scope": "server-experimental",
+      "seed": 42,
+      "output_dir": "/home/lucas/ffb-research/local/pilots/moe-dino-original-mixed-sbi-seed42",
+      "data": {
+        "expert_seed_policy": "matched",
+        "experts": [
+          {
+            "name": "unadapted_srm",
+            "role": "srm",
+            "kind": "feature_cache",
+            "path": "/home/lucas/ffb-research/local/features/eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+            "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6"
+          },
+          {
+            "name": "mixed_sbi",
+            "role": "sbi",
+            "kind": "predictions",
+            "path": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-mixed-seed42/validation_predictions.csv",
+            "calibration": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-mixed-seed42/calibration.json"
+          }
+        ],
+        "required_roles": [
+          "srm",
+          "sbi"
+        ],
+        "split_seed": 42,
+        "fit_fraction": 0.5
+      },
+      "model": {
+        "hidden_dim": 64,
+        "temperature": 1.0,
+        "train_routing": "soft",
+        "train_top_k": 2,
+        "inference_routing": "soft",
+        "inference_top_k": 1,
+        "expert_dropout": 0.1
+      },
+      "training": {
+        "device": "cpu",
+        "amp": false,
+        "cpu_threads": 2,
+        "workers": 0,
+        "epochs": 10,
+        "batch_size": 32,
+        "eval_batch_size": 512,
+        "grad_accum_steps": 1,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "max_grad_norm": 1.0,
+        "load_balance_weight": 0.01,
+        "stacking_c": 1.0,
+        "stacking_max_iter": 1000,
+        "threshold_policy": "youden",
+        "early_stop_patience": 4
+      },
+      "provenance": {
+        "expert_source_identities": [
+          "eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+          "e595d76486e84d636170405845d0b14d125376031758f6f141ba5371e950ed5f"
+        ],
+        "fusion_split": {
+          "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
+          "seed": 42,
+          "fit_fraction": 0.5,
+          "disjointness": {
+            "sample_id": "disjoint among provided identities",
+            "group_id": "disjoint among provided identities",
+            "source_id": "unavailable; not certified",
+            "image_sha256": "disjoint among provided identities",
+            "sha256": "unavailable; not certified"
+          },
+          "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
+          "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
+        }
+      }
+    },
+    "config_sha256": "7a6152c5bf78e1960306b6fde5e70fde9d6f597f333d042b563b58a7c545cef6",
+    "seed": 42,
+    "software": {
+      "commit": "0831fe8358628499db8021758a6d91dba43b5e51",
+      "code_sha256": {
+        "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+        "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+        "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+        "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+        "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+        "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+        "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+        "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+        "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+        "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+        "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+        "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+        "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+        "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+        "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+        "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+        "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+        "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+        "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+        "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+      },
+      "python": "3.12.13",
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "torchvision": "0.25.0+rocm7.1",
+        "timm": "1.0.27",
+        "numpy": "2.4.4",
+        "pandas": "3.0.2",
+        "scikit-learn": "1.8.0",
+        "Pillow": "12.2.0"
+      }
+    },
+    "selection_key": "auc",
+    "selection_mode": "max",
+    "resume_semantics": "completed epochs; partial epoch restarts",
+    "trainable_parameters": 65858,
+    "device": "cpu",
+    "amp": false,
+    "amp_dtype": null
+  },
+  "telemetry.json": {
+    "runtime_seconds": 0.7473202259989193,
+    "peak_vram_bytes": 0,
+    "peak_rss_kib": 938576,
+    "trainable_parameters": 65858,
+    "epochs_completed": 10,
+    "global_step": 160,
+    "best_epoch": 7,
+    "best_metric": 0.9954622802041975
+  },
+  "history.json": [
+    {
+      "epoch": 0,
+      "global_step": 16,
+      "train_loss": 0.11130895486727417,
+      "components": {
+        "classification": 0.10104237020257031,
+        "load_balance": 1.0266585055633113,
+        "routing_entropy": 0.15707903488082925
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9925451746211815,
+        "average_precision": 0.99519607467109,
+        "balanced_accuracy": 0.9595656753909731,
+        "eer": 0.03654485049833891,
+        "eer_threshold": 0.1853622782765035,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9627118644067797,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9565217391304348,
+        "brier": 0.03490626767435616,
+        "log_loss": 0.1327446766988943,
+        "ece_10_equal_width": 0.03322275432738704,
+        "threshold": 0.5,
+        "tn": 200,
+        "fp": 5,
+        "fn": 17,
+        "tp": 284,
+        "confusion_matrix": [
+          [
+            200,
+            5
+          ],
+          [
+            17,
+            284
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.975609756097561,
+            0.024390243902439025
+          ],
+          [
+            0.05647840531561462,
+            0.9435215946843853
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024390243902439025,
+        "tpr": 0.9435215946843853,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 1,
+      "global_step": 32,
+      "train_loss": 0.09769322424523744,
+      "components": {
+        "classification": 0.08725550619938113,
+        "load_balance": 1.0437717138514344,
+        "routing_entropy": 0.02659426349015371
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9926910299003322,
+        "average_precision": 0.9952822761852753,
+        "balanced_accuracy": 0.9687545579774735,
+        "eer": 0.033222591362126214,
+        "eer_threshold": 0.48491742187164194,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9732441471571907,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9683794466403162,
+        "brier": 0.030058088548559982,
+        "log_loss": 0.12023984993965416,
+        "ece_10_equal_width": 0.031602846344439696,
+        "threshold": 0.5,
+        "tn": 199,
+        "fp": 6,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            199,
+            6
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9707317073170731,
+            0.02926829268292683
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.02926829268292683,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 2,
+      "global_step": 48,
+      "train_loss": 0.09105250310258343,
+      "components": {
+        "classification": 0.08054588303754204,
+        "load_balance": 1.0506620822165176,
+        "routing_entropy": 0.028268590034079936
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9929827404586339,
+        "average_precision": 0.9954662121302775,
+        "balanced_accuracy": 0.9687545579774735,
+        "eer": 0.029900332225913585,
+        "eer_threshold": 0.2729597752078428,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9732441471571907,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9683794466403162,
+        "brier": 0.028896669045685313,
+        "log_loss": 0.11664635105149822,
+        "ece_10_equal_width": 0.024344945569171113,
+        "threshold": 0.5,
+        "tn": 199,
+        "fp": 6,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            199,
+            6
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9707317073170731,
+            0.02926829268292683
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.02926829268292683,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 3,
+      "global_step": 64,
+      "train_loss": 0.08825278749712083,
+      "components": {
+        "classification": 0.07784745086602836,
+        "load_balance": 1.0405336835606378,
+        "routing_entropy": 0.02828190640851795
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9935985738594927,
+        "average_precision": 0.9958327550215433,
+        "balanced_accuracy": 0.9678713232315047,
+        "eer": 0.029900332225913585,
+        "eer_threshold": 0.254115982804188,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9714285714285714,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9664031620553359,
+        "brier": 0.029399093703153484,
+        "log_loss": 0.11405181438655823,
+        "ece_10_equal_width": 0.030977348824286564,
+        "threshold": 0.5,
+        "tn": 200,
+        "fp": 5,
+        "fn": 12,
+        "tp": 289,
+        "confusion_matrix": [
+          [
+            200,
+            5
+          ],
+          [
+            12,
+            289
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.975609756097561,
+            0.024390243902439025
+          ],
+          [
+            0.03986710963455149,
+            0.9601328903654485
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024390243902439025,
+        "tpr": 0.9601328903654485,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 4,
+      "global_step": 80,
+      "train_loss": 0.08178957897098924,
+      "components": {
+        "classification": 0.07118591106673966,
+        "load_balance": 1.0603668868300402,
+        "routing_entropy": 0.04371896553558376
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9950409205088728,
+        "average_precision": 0.9966212872267733,
+        "balanced_accuracy": 0.9728547119358237,
+        "eer": 0.029900332225913585,
+        "eer_threshold": 0.47945324744893086,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9765886287625418,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9723320158102767,
+        "brier": 0.02471144971239781,
+        "log_loss": 0.09667378996767967,
+        "ece_10_equal_width": 0.020677322495462804,
+        "threshold": 0.5,
+        "tn": 200,
+        "fp": 5,
+        "fn": 9,
+        "tp": 292,
+        "confusion_matrix": [
+          [
+            200,
+            5
+          ],
+          [
+            9,
+            292
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.975609756097561,
+            0.024390243902439025
+          ],
+          [
+            0.029900332225913623,
+            0.9700996677740864
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024390243902439025,
+        "tpr": 0.9700996677740864,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 5,
+      "global_step": 96,
+      "train_loss": 0.08131210340058756,
+      "components": {
+        "classification": 0.07031024778299486,
+        "load_balance": 1.1001854676466722,
+        "routing_entropy": 0.08720218981446524
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9943602625395024,
+        "average_precision": 0.996344323619389,
+        "balanced_accuracy": 0.9719714771898549,
+        "eer": 0.02926829268292683,
+        "eer_threshold": 0.269147759821357,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9747899159663865,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9703557312252964,
+        "brier": 0.02697051596800544,
+        "log_loss": 0.10574562059435014,
+        "ece_10_equal_width": 0.03143850166160562,
+        "threshold": 0.5,
+        "tn": 201,
+        "fp": 4,
+        "fn": 11,
+        "tp": 290,
+        "confusion_matrix": [
+          [
+            201,
+            4
+          ],
+          [
+            11,
+            290
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9804878048780488,
+            0.01951219512195122
+          ],
+          [
+            0.036544850498338874,
+            0.9634551495016611
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01951219512195122,
+        "tpr": 0.9634551495016611,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 6,
+      "global_step": 112,
+      "train_loss": 0.07939352633559751,
+      "components": {
+        "classification": 0.06890431270455784,
+        "load_balance": 1.048921352938602,
+        "routing_entropy": 0.10274567892435592
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9947978283769547,
+        "average_precision": 0.9965369750225875,
+        "balanced_accuracy": 0.9728547119358237,
+        "eer": 0.02926829268292683,
+        "eer_threshold": 0.47769629635461996,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9765886287625418,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9723320158102767,
+        "brier": 0.02418657358171685,
+        "log_loss": 0.09687692493533272,
+        "ece_10_equal_width": 0.019410381869646703,
+        "threshold": 0.5,
+        "tn": 200,
+        "fp": 5,
+        "fn": 9,
+        "tp": 292,
+        "confusion_matrix": [
+          [
+            200,
+            5
+          ],
+          [
+            9,
+            292
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.975609756097561,
+            0.024390243902439025
+          ],
+          [
+            0.029900332225913623,
+            0.9700996677740864
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024390243902439025,
+        "tpr": 0.9700996677740864,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 7,
+      "global_step": 128,
+      "train_loss": 0.06762283542740201,
+      "components": {
+        "classification": 0.05706838681268306,
+        "load_balance": 1.0554448988756187,
+        "routing_entropy": 0.22815358801650615
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9954622802041975,
+        "average_precision": 0.99697722349898,
+        "balanced_accuracy": 0.9711935823677174,
+        "eer": 0.02926829268292683,
+        "eer_threshold": 0.44411080348782483,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9748743718592965,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9703557312252964,
+        "brier": 0.024677589908649645,
+        "log_loss": 0.09491271891165957,
+        "ece_10_equal_width": 0.022026877469240997,
+        "threshold": 0.5,
+        "tn": 200,
+        "fp": 5,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            200,
+            5
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.975609756097561,
+            0.024390243902439025
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024390243902439025,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 8,
+      "global_step": 144,
+      "train_loss": 0.06554929266574412,
+      "components": {
+        "classification": 0.054312207739845464,
+        "load_balance": 1.1237084986227244,
+        "routing_entropy": 0.27058053125254056
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9952029819301516,
+        "average_precision": 0.9968002300384964,
+        "balanced_accuracy": 0.9736326067579613,
+        "eer": 0.029900332225913585,
+        "eer_threshold": 0.46075846645919194,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9765100671140939,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9723320158102767,
+        "brier": 0.024093714047422596,
+        "log_loss": 0.09420337375259902,
+        "ece_10_equal_width": 0.019369587284435056,
+        "threshold": 0.5,
+        "tn": 201,
+        "fp": 4,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            201,
+            4
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9804878048780488,
+            0.01951219512195122
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01951219512195122,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined"
+      }
+    },
+    {
+      "epoch": 9,
+      "global_step": 160,
+      "train_loss": 0.06555006125195306,
+      "components": {
+        "classification": 0.05514054317856849,
+        "load_balance": 1.040951848512719,
+        "routing_entropy": 0.26629604586222877
+      },
+      "validation": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9949760959403613,
+        "average_precision": 0.9967834861336696,
+        "balanced_accuracy": 0.9736326067579613,
+        "eer": 0.02926829268292683,
+        "eer_threshold": 0.32706691026687723,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9765100671140939,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9723320158102767,
+        "brier": 0.025685743477653962,
+        "log_loss": 0.10038056827616518,
+        "ece_10_equal_width": 0.027638756429174714,
+        "threshold": 0.5,
+        "tn": 201,
+        "fp": 4,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            201,
+            4
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9804878048780488,
+            0.01951219512195122
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01951219512195122,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined"
+      }
+    }
+  ],
+  "scope": "pilot/min-dataset/source-validation",
+  "comparison.json": {
+    "scope": "server-experimental",
+    "training": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/moe-dino-original-mixed-sbi-seed42",
+      "history": [
+        {
+          "epoch": 0,
+          "global_step": 16,
+          "train_loss": 0.11130895486727417,
+          "components": {
+            "classification": 0.10104237020257031,
+            "load_balance": 1.0266585055633113,
+            "routing_entropy": 0.15707903488082925
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9925451746211815,
+            "average_precision": 0.99519607467109,
+            "balanced_accuracy": 0.9595656753909731,
+            "eer": 0.03654485049833891,
+            "eer_threshold": 0.1853622782765035,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9627118644067797,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9565217391304348,
+            "brier": 0.03490626767435616,
+            "log_loss": 0.1327446766988943,
+            "ece_10_equal_width": 0.03322275432738704,
+            "threshold": 0.5,
+            "tn": 200,
+            "fp": 5,
+            "fn": 17,
+            "tp": 284,
+            "confusion_matrix": [
+              [
+                200,
+                5
+              ],
+              [
+                17,
+                284
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.975609756097561,
+                0.024390243902439025
+              ],
+              [
+                0.05647840531561462,
+                0.9435215946843853
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.024390243902439025,
+            "tpr": 0.9435215946843853,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 1,
+          "global_step": 32,
+          "train_loss": 0.09769322424523744,
+          "components": {
+            "classification": 0.08725550619938113,
+            "load_balance": 1.0437717138514344,
+            "routing_entropy": 0.02659426349015371
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9926910299003322,
+            "average_precision": 0.9952822761852753,
+            "balanced_accuracy": 0.9687545579774735,
+            "eer": 0.033222591362126214,
+            "eer_threshold": 0.48491742187164194,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9732441471571907,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9683794466403162,
+            "brier": 0.030058088548559982,
+            "log_loss": 0.12023984993965416,
+            "ece_10_equal_width": 0.031602846344439696,
+            "threshold": 0.5,
+            "tn": 199,
+            "fp": 6,
+            "fn": 10,
+            "tp": 291,
+            "confusion_matrix": [
+              [
+                199,
+                6
+              ],
+              [
+                10,
+                291
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9707317073170731,
+                0.02926829268292683
+              ],
+              [
+                0.03322259136212625,
+                0.9667774086378738
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.02926829268292683,
+            "tpr": 0.9667774086378738,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 2,
+          "global_step": 48,
+          "train_loss": 0.09105250310258343,
+          "components": {
+            "classification": 0.08054588303754204,
+            "load_balance": 1.0506620822165176,
+            "routing_entropy": 0.028268590034079936
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9929827404586339,
+            "average_precision": 0.9954662121302775,
+            "balanced_accuracy": 0.9687545579774735,
+            "eer": 0.029900332225913585,
+            "eer_threshold": 0.2729597752078428,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9732441471571907,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9683794466403162,
+            "brier": 0.028896669045685313,
+            "log_loss": 0.11664635105149822,
+            "ece_10_equal_width": 0.024344945569171113,
+            "threshold": 0.5,
+            "tn": 199,
+            "fp": 6,
+            "fn": 10,
+            "tp": 291,
+            "confusion_matrix": [
+              [
+                199,
+                6
+              ],
+              [
+                10,
+                291
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9707317073170731,
+                0.02926829268292683
+              ],
+              [
+                0.03322259136212625,
+                0.9667774086378738
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.02926829268292683,
+            "tpr": 0.9667774086378738,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 3,
+          "global_step": 64,
+          "train_loss": 0.08825278749712083,
+          "components": {
+            "classification": 0.07784745086602836,
+            "load_balance": 1.0405336835606378,
+            "routing_entropy": 0.02828190640851795
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9935985738594927,
+            "average_precision": 0.9958327550215433,
+            "balanced_accuracy": 0.9678713232315047,
+            "eer": 0.029900332225913585,
+            "eer_threshold": 0.254115982804188,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9714285714285714,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9664031620553359,
+            "brier": 0.029399093703153484,
+            "log_loss": 0.11405181438655823,
+            "ece_10_equal_width": 0.030977348824286564,
+            "threshold": 0.5,
+            "tn": 200,
+            "fp": 5,
+            "fn": 12,
+            "tp": 289,
+            "confusion_matrix": [
+              [
+                200,
+                5
+              ],
+              [
+                12,
+                289
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.975609756097561,
+                0.024390243902439025
+              ],
+              [
+                0.03986710963455149,
+                0.9601328903654485
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.024390243902439025,
+            "tpr": 0.9601328903654485,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 4,
+          "global_step": 80,
+          "train_loss": 0.08178957897098924,
+          "components": {
+            "classification": 0.07118591106673966,
+            "load_balance": 1.0603668868300402,
+            "routing_entropy": 0.04371896553558376
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9950409205088728,
+            "average_precision": 0.9966212872267733,
+            "balanced_accuracy": 0.9728547119358237,
+            "eer": 0.029900332225913585,
+            "eer_threshold": 0.47945324744893086,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9765886287625418,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9723320158102767,
+            "brier": 0.02471144971239781,
+            "log_loss": 0.09667378996767967,
+            "ece_10_equal_width": 0.020677322495462804,
+            "threshold": 0.5,
+            "tn": 200,
+            "fp": 5,
+            "fn": 9,
+            "tp": 292,
+            "confusion_matrix": [
+              [
+                200,
+                5
+              ],
+              [
+                9,
+                292
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.975609756097561,
+                0.024390243902439025
+              ],
+              [
+                0.029900332225913623,
+                0.9700996677740864
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.024390243902439025,
+            "tpr": 0.9700996677740864,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 5,
+          "global_step": 96,
+          "train_loss": 0.08131210340058756,
+          "components": {
+            "classification": 0.07031024778299486,
+            "load_balance": 1.1001854676466722,
+            "routing_entropy": 0.08720218981446524
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9943602625395024,
+            "average_precision": 0.996344323619389,
+            "balanced_accuracy": 0.9719714771898549,
+            "eer": 0.02926829268292683,
+            "eer_threshold": 0.269147759821357,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9747899159663865,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9703557312252964,
+            "brier": 0.02697051596800544,
+            "log_loss": 0.10574562059435014,
+            "ece_10_equal_width": 0.03143850166160562,
+            "threshold": 0.5,
+            "tn": 201,
+            "fp": 4,
+            "fn": 11,
+            "tp": 290,
+            "confusion_matrix": [
+              [
+                201,
+                4
+              ],
+              [
+                11,
+                290
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9804878048780488,
+                0.01951219512195122
+              ],
+              [
+                0.036544850498338874,
+                0.9634551495016611
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.01951219512195122,
+            "tpr": 0.9634551495016611,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 6,
+          "global_step": 112,
+          "train_loss": 0.07939352633559751,
+          "components": {
+            "classification": 0.06890431270455784,
+            "load_balance": 1.048921352938602,
+            "routing_entropy": 0.10274567892435592
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9947978283769547,
+            "average_precision": 0.9965369750225875,
+            "balanced_accuracy": 0.9728547119358237,
+            "eer": 0.02926829268292683,
+            "eer_threshold": 0.47769629635461996,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9765886287625418,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9723320158102767,
+            "brier": 0.02418657358171685,
+            "log_loss": 0.09687692493533272,
+            "ece_10_equal_width": 0.019410381869646703,
+            "threshold": 0.5,
+            "tn": 200,
+            "fp": 5,
+            "fn": 9,
+            "tp": 292,
+            "confusion_matrix": [
+              [
+                200,
+                5
+              ],
+              [
+                9,
+                292
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.975609756097561,
+                0.024390243902439025
+              ],
+              [
+                0.029900332225913623,
+                0.9700996677740864
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.024390243902439025,
+            "tpr": 0.9700996677740864,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 7,
+          "global_step": 128,
+          "train_loss": 0.06762283542740201,
+          "components": {
+            "classification": 0.05706838681268306,
+            "load_balance": 1.0554448988756187,
+            "routing_entropy": 0.22815358801650615
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9954622802041975,
+            "average_precision": 0.99697722349898,
+            "balanced_accuracy": 0.9711935823677174,
+            "eer": 0.02926829268292683,
+            "eer_threshold": 0.44411080348782483,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9748743718592965,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9703557312252964,
+            "brier": 0.024677589908649645,
+            "log_loss": 0.09491271891165957,
+            "ece_10_equal_width": 0.022026877469240997,
+            "threshold": 0.5,
+            "tn": 200,
+            "fp": 5,
+            "fn": 10,
+            "tp": 291,
+            "confusion_matrix": [
+              [
+                200,
+                5
+              ],
+              [
+                10,
+                291
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.975609756097561,
+                0.024390243902439025
+              ],
+              [
+                0.03322259136212625,
+                0.9667774086378738
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.024390243902439025,
+            "tpr": 0.9667774086378738,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 8,
+          "global_step": 144,
+          "train_loss": 0.06554929266574412,
+          "components": {
+            "classification": 0.054312207739845464,
+            "load_balance": 1.1237084986227244,
+            "routing_entropy": 0.27058053125254056
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9952029819301516,
+            "average_precision": 0.9968002300384964,
+            "balanced_accuracy": 0.9736326067579613,
+            "eer": 0.029900332225913585,
+            "eer_threshold": 0.46075846645919194,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9765100671140939,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9723320158102767,
+            "brier": 0.024093714047422596,
+            "log_loss": 0.09420337375259902,
+            "ece_10_equal_width": 0.019369587284435056,
+            "threshold": 0.5,
+            "tn": 201,
+            "fp": 4,
+            "fn": 10,
+            "tp": 291,
+            "confusion_matrix": [
+              [
+                201,
+                4
+              ],
+              [
+                10,
+                291
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9804878048780488,
+                0.01951219512195122
+              ],
+              [
+                0.03322259136212625,
+                0.9667774086378738
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.01951219512195122,
+            "tpr": 0.9667774086378738,
+            "auc_status": "defined"
+          }
+        },
+        {
+          "epoch": 9,
+          "global_step": 160,
+          "train_loss": 0.06555006125195306,
+          "components": {
+            "classification": 0.05514054317856849,
+            "load_balance": 1.040951848512719,
+            "routing_entropy": 0.26629604586222877
+          },
+          "validation": {
+            "n": 506,
+            "n_real": 205,
+            "n_fake": 301,
+            "auc": 0.9949760959403613,
+            "average_precision": 0.9967834861336696,
+            "balanced_accuracy": 0.9736326067579613,
+            "eer": 0.02926829268292683,
+            "eer_threshold": 0.32706691026687723,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.9765100671140939,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.9723320158102767,
+            "brier": 0.025685743477653962,
+            "log_loss": 0.10038056827616518,
+            "ece_10_equal_width": 0.027638756429174714,
+            "threshold": 0.5,
+            "tn": 201,
+            "fp": 4,
+            "fn": 10,
+            "tp": 291,
+            "confusion_matrix": [
+              [
+                201,
+                4
+              ],
+              [
+                10,
+                291
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9804878048780488,
+                0.01951219512195122
+              ],
+              [
+                0.03322259136212625,
+                0.9667774086378738
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.01951219512195122,
+            "tpr": 0.9667774086378738,
+            "auc_status": "defined"
+          }
+        }
+      ],
+      "runtime_seconds": 0.7473202259989193,
+      "peak_vram_bytes": 0,
+      "peak_rss_kib": 938576,
+      "trainable_parameters": 65858,
+      "epochs_completed": 10,
+      "global_step": 160,
+      "best_epoch": 7,
+      "best_metric": 0.9954622802041975
+    },
+    "validation_split": {
+      "rule": "SHA-256 of seed and sorted source img_name per group; labels excluded",
+      "seed": 42,
+      "fit_fraction": 0.5,
+      "disjointness": {
+        "sample_id": "disjoint among provided identities",
+        "group_id": "disjoint among provided identities",
+        "source_id": "unavailable; not certified",
+        "image_sha256": "disjoint among provided identities",
+        "sha256": "unavailable; not certified"
+      },
+      "val_fit_sample_ids_sha256": "c97fc778ceccb001ad58bcc2b8c7031e9bb9353d8e8c70a1739e3df4601cce25",
+      "val_select_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84"
+    },
+    "counts": {
+      "val_fit": 494,
+      "val_select": 506
+    },
+    "comparisons": {
+      "router": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9954622802041975,
+        "average_precision": 0.99697722349898,
+        "balanced_accuracy": 0.9736326067579613,
+        "eer": 0.02926829268292683,
+        "eer_threshold": 0.44411080348782483,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9765100671140939,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9723320158102767,
+        "brier": 0.024677589908649645,
+        "log_loss": 0.0949127189116596,
+        "ece_10_equal_width": 0.022026877469240997,
+        "threshold": 0.5780067443847656,
+        "tn": 201,
+        "fp": 4,
+        "fn": 10,
+        "tp": 291,
+        "confusion_matrix": [
+          [
+            201,
+            4
+          ],
+          [
+            10,
+            291
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9804878048780488,
+            0.01951219512195122
+          ],
+          [
+            0.03322259136212625,
+            0.9667774086378738
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01951219512195122,
+        "tpr": 0.9667774086378738,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "mean": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9903249331496637,
+        "average_precision": 0.9943342961851915,
+        "balanced_accuracy": 0.965537638765092,
+        "eer": 0.03654485049833891,
+        "eer_threshold": 0.5013746177635319,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9717138103161398,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9664031620553359,
+        "brier": 0.035558906735679144,
+        "log_loss": 0.13530852256270334,
+        "ece_10_equal_width": 0.04799905289084146,
+        "threshold": 0.4858522415161133,
+        "tn": 197,
+        "fp": 8,
+        "fn": 9,
+        "tp": 292,
+        "confusion_matrix": [
+          [
+            197,
+            8
+          ],
+          [
+            9,
+            292
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9609756097560975,
+            0.03902439024390244
+          ],
+          [
+            0.029900332225913623,
+            0.9700996677740864
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.03902439024390244,
+        "tpr": 0.9700996677740864,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "geometric": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9919617535045784,
+        "average_precision": 0.9951158569438404,
+        "balanced_accuracy": 0.9654322988412608,
+        "eer": 0.03902439024390244,
+        "eer_threshold": 0.3727008860285688,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9697986577181208,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9644268774703557,
+        "brier": 0.03209361575815827,
+        "log_loss": 0.11937546471734663,
+        "ece_10_equal_width": 0.03975134096826194,
+        "threshold": 0.4023406207561493,
+        "tn": 199,
+        "fp": 6,
+        "fn": 12,
+        "tp": 289,
+        "confusion_matrix": [
+          [
+            199,
+            6
+          ],
+          [
+            12,
+            289
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9707317073170731,
+            0.02926829268292683
+          ],
+          [
+            0.03986710963455149,
+            0.9601328903654485
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.02926829268292683,
+        "tpr": 0.9601328903654485,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "geometric_binary": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.991734867514788,
+        "average_precision": 0.9949947092328547,
+        "balanced_accuracy": 0.9647597439429544,
+        "eer": 0.03654485049833891,
+        "eer_threshold": 0.5009388214725987,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9718076285240465,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9664031620553359,
+        "brier": 0.029897695573256774,
+        "log_loss": 0.11547566021460352,
+        "ece_10_equal_width": 0.028140633707275233,
+        "threshold": 0.42605292797088623,
+        "tn": 196,
+        "fp": 9,
+        "fn": 8,
+        "tp": 293,
+        "confusion_matrix": [
+          [
+            196,
+            9
+          ],
+          [
+            8,
+            293
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9560975609756097,
+            0.04390243902439024
+          ],
+          [
+            0.026578073089700997,
+            0.973421926910299
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.04390243902439024,
+        "tpr": 0.973421926910299,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "logistic": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9907462928449883,
+        "average_precision": 0.9945740458917952,
+        "balanced_accuracy": 0.9646544040191232,
+        "eer": 0.03654485049833891,
+        "eer_threshold": 0.3168401640254246,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9698996655518395,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9644268774703557,
+        "brier": 0.032311389530093895,
+        "log_loss": 0.12368623096641683,
+        "ece_10_equal_width": 0.017840374195047755,
+        "threshold": 0.32306983799596084,
+        "tn": 198,
+        "fp": 7,
+        "fn": 11,
+        "tp": 290,
+        "confusion_matrix": [
+          [
+            198,
+            7
+          ],
+          [
+            11,
+            290
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9658536585365853,
+            0.03414634146341464
+          ],
+          [
+            0.036544850498338874,
+            0.9634551495016611
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.03414634146341464,
+        "tpr": 0.9634551495016611,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "expert_unadapted_srm": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.993217729519488,
+        "average_precision": 0.9957081800937091,
+        "balanced_accuracy": 0.9646544040191232,
+        "eer": 0.03654485049833891,
+        "eer_threshold": 0.18112703925153328,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9698996655518395,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9644268774703557,
+        "brier": 0.03900721720298708,
+        "log_loss": 0.1414787196353633,
+        "ece_10_equal_width": 0.04966739297631885,
+        "threshold": 0.1919327825307846,
+        "tn": 198,
+        "fp": 7,
+        "fn": 11,
+        "tp": 290,
+        "confusion_matrix": [
+          [
+            198,
+            7
+          ],
+          [
+            11,
+            290
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9658536585365853,
+            0.03414634146341464
+          ],
+          [
+            0.036544850498338874,
+            0.9634551495016611
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.03414634146341464,
+        "tpr": 0.9634551495016611,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "expert_mixed_sbi": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.9881938254598492,
+        "average_precision": 0.9929304577332122,
+        "balanced_accuracy": 0.9571266510007292,
+        "eer": 0.04983388704318932,
+        "eer_threshold": 0.8423089533549213,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.961082910321489,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.9545454545454546,
+        "brier": 0.05700144210240579,
+        "log_loss": 0.19139332640872542,
+        "ece_10_equal_width": 0.07229674047111301,
+        "threshold": 0.8816148638725281,
+        "tn": 199,
+        "fp": 6,
+        "fn": 17,
+        "tp": 284,
+        "confusion_matrix": [
+          [
+            199,
+            6
+          ],
+          [
+            17,
+            284
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9707317073170731,
+            0.02926829268292683
+          ],
+          [
+            0.05647840531561462,
+            0.9435215946843853
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.02926829268292683,
+        "tpr": 0.9435215946843853,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      }
+    },
+    "routing": {
+      "mean_weight": {
+        "unadapted_srm": 0.696993350982666,
+        "mixed_sbi": 0.30300694704055786
+      },
+      "nonzero_fraction": {
+        "unadapted_srm": 1.0,
+        "mixed_sbi": 1.0
+      },
+      "top1_fraction": {
+        "unadapted_srm": 0.741106719367589,
+        "mixed_sbi": 0.25889328063241107
+      },
+      "mean_entropy": 0.3326960504055023
+    },
+    "expert_names": [
+      "unadapted_srm",
+      "mixed_sbi"
+    ],
+    "expert_prediction_correlation": [
+      [
+        1.0,
+        0.908833415058776
+      ],
+      [
+        0.908833415058776,
+        0.9999999999999999
+      ]
+    ],
+    "selection_statement": "All method comparisons are development val_select scores; no test target has been accessed."
+  },
+  "watchdog": {
+    "command": [
+      ".venv/bin/python",
+      "/home/lucas/ffb-research/local/scripts/check_mixed_pair.py"
+    ],
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_sampled_rss_kib": 942780,
+    "seconds": 7.004645023000194,
+    "minimum_available_kib": 9549020,
+    "maximum_full_avg10": 0.0,
+    "policy": {
+      "authority": "director/inbox/msg-016.md",
+      "rss_mib": 3072,
+      "minimum_available_gib": 2,
+      "maximum_full_avg10_percent": 10.0
+    }
+  },
+  "artifact_sha256": "7aabcdb04a28164fae0e9ed21405794677e61536f2fcd42bc428f8efe4231d62",
+  "common_calibration_checks": {
+    "mean": {
+      "state": "complete",
+      "fresh_score_max_abs_difference": 0.0,
+      "source_threshold": 0.4858522415161133,
+      "threshold_identical": true,
+      "calibration_sha256": "665b64d21d1e85e4edcde9028b14fd33d8c12585558d3dec91e68b3479da4c3a"
+    },
+    "geometric": {
+      "state": "complete",
+      "fresh_score_max_abs_difference": 0.0,
+      "source_threshold": 0.4023406207561493,
+      "threshold_identical": true,
+      "calibration_sha256": "a276f9e2d28d5d563c8faee683cb23e0de1d15d7c3552777e551abd6f554b72e"
+    }
+  },
+  "common_calibration_watchdog": {
+    "command": [
+      ".venv/bin/python",
+      "/home/lucas/ffb-research/local/scripts/check_mixed_pair_calibration.py"
+    ],
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_sampled_rss_kib": 771348,
+    "seconds": 2.501692871999694,
+    "minimum_available_kib": 9656356,
+    "maximum_full_avg10": 0.0,
+    "policy": {
+      "authority": "director/inbox/msg-016.md",
+      "rss_mib": 3072,
+      "minimum_available_gib": 2,
+      "maximum_full_avg10_percent": 10.0
+    }
+  },
+  "common_calibration_driver_sha256": "35eaf17384a43498895e7b78ce3bec701b0ffdfdc26ee769a9f3ee065231c65f"
+}

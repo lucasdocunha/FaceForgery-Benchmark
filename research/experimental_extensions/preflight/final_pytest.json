@@ -1,28 +1,28 @@
 {
   "purpose": "complete existing and experimental CPU regression suite after all final source changes",
-  "tested_commit": "1b7a2fb",
-  "last_source_change_commit": "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+  "tested_commit": "0831fe8358628499db8021758a6d91dba43b5e51",
+  "last_source_change_commit": "a2a0f065035436f7a22d20ea8ef234a9f736ec0a",
   "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= MPLBACKEND=Agg HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -m pytest -q",
   "baseline_passed": 265,
   "baseline_subtests_passed": 20,
-  "passed": 449,
+  "passed": 450,
   "subtests_passed": 20,
-  "net_added_test_cases": 184,
-  "pytest_seconds": 70.56,
+  "net_added_test_cases": 185,
+  "pytest_seconds": 71.21,
   "watchdog": {
     "command": [
       ".venv/bin/python",
       "-m",
       "pytest",
       "-q",
-      "--junitxml=/home/lucas/ffb-research/local/logs/restart-final-pytest-retry1.xml"
+      "--junitxml=/home/lucas/ffb-research/local/logs/post017-final-pytest.xml"
     ],
     "exit_code": 0,
     "stop_reason": null,
-    "peak_sampled_rss_kib": 1653676,
-    "seconds": 72.04541136499938,
-    "minimum_available_kib": 9169532,
-    "maximum_full_avg10": 0.18,
+    "peak_sampled_rss_kib": 1648140,
+    "seconds": 73.04622818999997,
+    "minimum_available_kib": 8627688,
+    "maximum_full_avg10": 0.0,
     "policy": {
       "authority": "director/inbox/msg-016.md",
       "rss_mib": 3072,
@@ -30,8 +30,8 @@
       "maximum_full_avg10_percent": 10.0
     }
   },
-  "log_sha256": "2103d812b2b3298224062b25c099fcee3deaa755c07644dc654044331d3981f0",
-  "junit_sha256": "8c0d1c1704e03928e1dab9dce5887b4a59f9b7fed07f0da7e3ce72fffa132cda",
+  "log_sha256": "6f50eda73fc3e2feb6e9cb14021fccd1a944caf72d7245b03c33ad70b28b3842",
+  "junit_sha256": "3a9aafb1c94bf6df8d6464bb72042ced34355e065af679a3c05ee7af365d229e",
   "watchdog_script_sha256": "ab3beee484767ceb1d1e996e3efab86078aa38d98bc1c9b6f8a8d98ee7defdfa",
   "retained_incomplete_attempt": "preflight/final_pytest_stopped.json",
   "earlier_integration": {
@@ -60,5 +60,45 @@
     "subsequent_changes_at_record": "14f9ab5 contains only VLM evidence and planning documentation; tested implementation is unchanged"
   },
   "limitation": "CPU regression tests with ROCm-built torch; actual GPU pilot evidence is recorded separately. This does not certify CUDA or full benchmark populations.",
-  "completed_at": "2026-10-03T12:39:59.843406-03:00"
+  "completed_at": "2026-10-03T13:09:22.116004-03:00",
+  "previous_final_before_director_017": {
+    "purpose": "complete existing and experimental CPU regression suite after all final source changes",
+    "tested_commit": "1b7a2fb",
+    "last_source_change_commit": "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= MPLBACKEND=Agg HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .venv/bin/python -m pytest -q",
+    "baseline_passed": 265,
+    "baseline_subtests_passed": 20,
+    "passed": 449,
+    "subtests_passed": 20,
+    "net_added_test_cases": 184,
+    "pytest_seconds": 70.56,
+    "watchdog": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/home/lucas/ffb-research/local/logs/restart-final-pytest-retry1.xml"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 1653676,
+      "seconds": 72.04541136499938,
+      "minimum_available_kib": 9169532,
+      "maximum_full_avg10": 0.18,
+      "policy": {
+        "authority": "director/inbox/msg-016.md",
+        "rss_mib": 3072,
+        "minimum_available_gib": 2,
+        "maximum_full_avg10_percent": 10.0
+      }
+    },
+    "log_sha256": "2103d812b2b3298224062b25c099fcee3deaa755c07644dc654044331d3981f0",
+    "junit_sha256": "8c0d1c1704e03928e1dab9dce5887b4a59f9b7fed07f0da7e3ce72fffa132cda",
+    "watchdog_script_sha256": "ab3beee484767ceb1d1e996e3efab86078aa38d98bc1c9b6f8a8d98ee7defdfa",
+    "retained_incomplete_attempt": "preflight/final_pytest_stopped.json",
+    "limitation": "CPU regression tests with ROCm-built torch; actual GPU pilot evidence is recorded separately. This does not certify CUDA or full benchmark populations.",
+    "completed_at": "2026-10-03T12:39:59.843406-03:00"
+  },
+  "subsequent_changes_at_record": "Only report and small evidence records follow tested source/config commit 0831fe8."
 }
