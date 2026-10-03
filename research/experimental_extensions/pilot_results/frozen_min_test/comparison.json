@@ -1,0 +1,2938 @@
+{
+  "schema": "faceforgery-frozen-min-test-comparison-v1",
+  "state": "complete",
+  "scope": "pilot/min-dataset",
+  "target_names": [
+    "min-test-clean",
+    "min-test-degraded-proxy"
+  ],
+  "created_utc": "2026-10-03T15:27:21.057295+00:00",
+  "freeze_commit": "8d01770",
+  "freeze_sha256": "7acf80330fa8919bc59a60782ee9475ee7949169bb0520a4ee5da74675841997",
+  "selection": "All three generic seed-42 SBI/MFFI/mixed arms retain the predeclared equal-budget comparison, independent of source ranking. HF DINO-SRM is the fixed reference. No method is promoted as a demonstrated improvement.",
+  "seed_policy": "42 was the first declared realization. Seed 123 checks source-side variation and cannot replace it based on a favorable score.",
+  "proxy_policy": "Existing RandomizedRobustAugment recipe, fixed seed 42 and 224 px; same recipe as development proxy, with no severity selection. This is not benchmark Test-D.",
+  "target_policy": "Freeze precedes materializing min-test-degraded-proxy or loading either target manifest for this comparison. No threshold, severity, polarity, seed or hyperparameter changes after target scoring. A failed software/resource attempt must be retained and justified before any retry.",
+  "target_access_history": [
+    {
+      "access": "eight original RGB/SRM checkpoint compatibility checks",
+      "timing": "before freeze",
+      "purpose": "mandated original checkpoint compatibility"
+    },
+    {
+      "access": "deterministic proxy materialization",
+      "timing": "2026-10-03T13:45:51.626879+00:00",
+      "purpose": "frozen comparison preparation",
+      "rows": 1000
+    },
+    {
+      "access": "first SBI suite opened target metadata and began clean inference",
+      "timing": "2026-10-03T13:46:07.142998+00:00",
+      "purpose": "frozen comparison",
+      "outcome": "resource watchdog terminated; no prediction CSV or quality result; partial image access cannot be inferred from available log"
+    },
+    {
+      "access": "current retry preparation",
+      "timing": "2026-10-03T15:16:23.330333+00:00",
+      "purpose": "metadata and existing artifact hash verification only",
+      "detail": "Read freeze/config/calibration/proxy inventory and failed suite metadata; no target image decoding or new inference"
+    },
+    {
+      "access": "completed frozen clean and degraded suite",
+      "candidate": "sbi-generic-sbi-seed42",
+      "started_utc": "2026-10-03T15:24:50.953620+00:00",
+      "finished_utc": "2026-10-03T15:25:04.490209+00:00",
+      "targets": [
+        "min-test-clean",
+        "min-test-degraded-proxy"
+      ],
+      "rows_each": 1000,
+      "outcome": "predictions and metrics published without fitting"
+    },
+    {
+      "access": "completed frozen clean and degraded suite",
+      "candidate": "sbi-generic-mffi-seed42",
+      "started_utc": "2026-10-03T15:25:04.545663+00:00",
+      "finished_utc": "2026-10-03T15:25:17.080483+00:00",
+      "targets": [
+        "min-test-clean",
+        "min-test-degraded-proxy"
+      ],
+      "rows_each": 1000,
+      "outcome": "predictions and metrics published without fitting"
+    },
+    {
+      "access": "completed frozen clean and degraded suite",
+      "candidate": "sbi-generic-mixed-seed42",
+      "started_utc": "2026-10-03T15:25:17.138179+00:00",
+      "finished_utc": "2026-10-03T15:25:29.673355+00:00",
+      "targets": [
+        "min-test-clean",
+        "min-test-degraded-proxy"
+      ],
+      "rows_each": 1000,
+      "outcome": "predictions and metrics published without fitting"
+    },
+    {
+      "access": "completed frozen clean and degraded suite",
+      "candidate": "hf-dino-srm-seed42",
+      "started_utc": "2026-10-03T15:25:29.877134+00:00",
+      "finished_utc": "2026-10-03T15:26:28.942888+00:00",
+      "targets": [
+        "min-test-clean",
+        "min-test-degraded-proxy"
+      ],
+      "rows_each": 1000,
+      "outcome": "predictions and metrics published without fitting"
+    },
+    {
+      "access": "offline paired statistical summaries from frozen prediction CSVs",
+      "timing": "2026-10-03T15:27:24.443290+00:00",
+      "purpose": "predeclared comparison against matched MFFI control",
+      "detail": "No target image decoding or new inference; paired 300-draw image-group AUC bootstrap, seed 42"
+    },
+    {
+      "access": "label-only offline DINO figure export from certified prediction CSVs",
+      "timing": "2026-10-03T15:31:14.393240+00:00",
+      "purpose": "explicit min-test/proxy pilot display labels",
+      "detail": "No inference, threshold fitting, bootstrap or target image decoding; original suite outputs preserved"
+    }
+  ],
+  "retry": {
+    "schema": "faceforgery-frozen-target-retry-v1",
+    "state": "prepared_awaiting_explicit_parent_authorization",
+    "scope": "pilot/min-dataset",
+    "prepared_utc": "2026-10-03T15:16:23.326879+00:00",
+    "freeze_commit": "8d01770",
+    "freeze_sha256": "7acf80330fa8919bc59a60782ee9475ee7949169bb0520a4ee5da74675841997",
+    "execution_main_head": "ad9c096de508f89a1299449517bdfbcd16dac737",
+    "software_hashes_match_freeze": true,
+    "candidate_verification": [
+      {
+        "name": "sbi-generic-sbi-seed42",
+        "config_sha256": "f14024ab4d669b4a46f1074c7373f3cd9b65e69e43efb1648ed6fd5210b14157",
+        "checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+        "calibration_sha256": "3de5eee185f8f926bbfdfc6ed69d8cacf81b98331b8c3b02df6672a59610742d",
+        "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067",
+        "frozen_frame_threshold": 0.2881683111190796,
+        "threshold_policy": "youden",
+        "status": "verified"
+      },
+      {
+        "name": "sbi-generic-mffi-seed42",
+        "config_sha256": "d5e66f1a9707acad4ac90bedc4e5bf8af832b8f1a714d1c0e7f36e09c3effece",
+        "checkpoint_sha256": "f8b27f09c6825840d5d01791515111012bf68ecd0477d775d604a63d5602f450",
+        "calibration_sha256": "b6433369bc664dec02001d7a1a1d79024b1694974e6d1ad1f12db95507970ee8",
+        "bundle_sha256": "aa41b5b0a423dfab9e88578594a498d97137a56060192eb7d84da94e17c38939",
+        "frozen_frame_threshold": 0.7631309032440186,
+        "threshold_policy": "youden",
+        "status": "verified"
+      },
+      {
+        "name": "sbi-generic-mixed-seed42",
+        "config_sha256": "b596bc3bb6b865f99c7b52a41be58b24c3ad01cb245dfa6e5c73efb92fc2431e",
+        "checkpoint_sha256": "d1eb9f6249fc210fa85cfcf589e1cfe8c4892ded922cb5a19a2feb2994d389d4",
+        "calibration_sha256": "cb36c4f5d0b36ff19e3ad2caa932ce069f162e9c4cd2c7bfb6fd95cfbdd660ce",
+        "bundle_sha256": "e798d3a7f169896571211573f650a9ed87a1016e2b94f9af3acfdcf6daff008d",
+        "frozen_frame_threshold": 0.3182732164859772,
+        "threshold_policy": "youden",
+        "status": "verified"
+      },
+      {
+        "name": "hf-dino-srm-seed42",
+        "config_sha256": "771b13eca56e4a5f9c2f2a332babd15411182c4119d37e4bfe29df8fd8f09c03",
+        "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+        "calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+        "bundle_sha256": "f4997c8dd36e6415057ab394c0e16722536a148a2b0ca2427fe9afe777e78f19",
+        "frozen_frame_threshold": 0.1919327825307846,
+        "threshold_policy": "youden",
+        "status": "verified"
+      }
+    ],
+    "proxy": {
+      "recipe": {
+        "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+        "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+        "image_size": 224,
+        "seed": 42,
+        "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+        "random_streams": [
+          "python random",
+          "torch CPU default generator"
+        ],
+        "normalization": "none; operator returns RGB tensor in [0,1]",
+        "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+        "selection": "one draw per sample, no severity or label-based selection"
+      },
+      "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+      "artifact_sha256": "aa28db2ea1147f02800e0c2399f942f2358df74ca33ff91ad80c36a169972f90",
+      "rows": 1000,
+      "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+      "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+      "recipe_matches_development": true,
+      "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+      "degraded_manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281"
+    },
+    "original_failure": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+        "--execute"
+      ],
+      "exit_code": -15,
+      "stop_reason": "System memory pressure or available memory below 1 GiB",
+      "peak_sampled_rss_kib": 2103200,
+      "seconds": 5.11700847100019
+    },
+    "failure_artifacts": {
+      "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/status.json": {
+        "sha256": "091bffc761a0199e02ea1add45aa9bad9cafc93ee5e05a6e289a8d2250629287",
+        "bytes": 25
+      },
+      "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/suite.json": {
+        "sha256": "0d562fa93b6d8f63653f8aca2bf78bdd4e981428be8c490916e0ebf2bb246f5e",
+        "bytes": 6615
+      },
+      "local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42/test/status.json": {
+        "sha256": "e4b76f31afd104ba7823801d14af6a57084a5ffeb6687a899a1f09afa96d1318",
+        "bytes": 114
+      },
+      "local/logs/final-sbi-generic-sbi-seed42.log": {
+        "sha256": "a820d2e26f273345bef1423d9c77715e90569aa0e0d92a461573fe2f71a66b4a",
+        "bytes": 468
+      },
+      "local/logs/final-sbi-generic-sbi-seed42-watchdog.json": {
+        "sha256": "02efd53cd354348120981e275d7035129d24f9bf9a6df4883380261c6193aab1",
+        "bytes": 453
+      },
+      "local/evaluation/final-pilot/execution_record.json": {
+        "sha256": "2e3910356750151b2768b49c23e49c7e9109fe84f2ab3f3daa73d3a0dd1a9865",
+        "bytes": 3014
+      }
+    },
+    "aborted_prediction_csv_count": 0,
+    "aborted_quality_metric_artifacts": [],
+    "retry": {
+      "candidate": "sbi-generic-sbi-seed42",
+      "old_config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42.yaml",
+      "new_config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+      "old_config_sha256": "f14024ab4d669b4a46f1074c7373f3cd9b65e69e43efb1648ed6fd5210b14157",
+      "new_config_sha256": "c5bf47b9d397135ca6db8b0614bd24b96c6b09cfb03d7ff3dc1d96c4b1ec51b5",
+      "only_semantic_change": "output",
+      "old_output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42",
+      "new_output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+      "text_diff": "--- sbi-generic-sbi-seed42.yaml\n+++ sbi-generic-sbi-seed42-retry1.yaml\n@@ -15,7 +15,7 @@\n   root: /home/lucas/ffb-research/local/data/min-test-degraded-proxy\n   primary_unit: frame\n scope: pilot\n-output: /home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42\n+output: /home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1\n inference:\n   device: cuda:0\n   batch_size: 8\n",
+      "all_other_content_identical": true,
+      "config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-matched-seed42/sbi/calibration.json",
+        "targets": [
+          {
+            "name": "test",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/test",
+            "primary_unit": "frame"
+          },
+          {
+            "name": "test_d",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-test-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-test-degraded-proxy",
+            "primary_unit": "frame"
+          }
+        ],
+        "scope": "pilot",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 8,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      },
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+        "--execute"
+      ],
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "log": "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1.log"
+    },
+    "resource_snapshot": {
+      "available_kib": 12358128,
+      "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=646186\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=645665\n"
+    },
+    "target_access_history": [
+      {
+        "access": "eight original RGB/SRM checkpoint compatibility checks",
+        "timing": "before freeze",
+        "purpose": "mandated original checkpoint compatibility"
+      },
+      {
+        "access": "deterministic proxy materialization",
+        "timing": "2026-10-03T13:45:51.626879+00:00",
+        "purpose": "frozen comparison preparation",
+        "rows": 1000
+      },
+      {
+        "access": "first SBI suite opened target metadata and began clean inference",
+        "timing": "2026-10-03T13:46:07.142998+00:00",
+        "purpose": "frozen comparison",
+        "outcome": "resource watchdog terminated; no prediction CSV or quality result; partial image access cannot be inferred from available log"
+      },
+      {
+        "access": "current retry preparation",
+        "timing": "2026-10-03T15:16:23.330333+00:00",
+        "purpose": "metadata and existing artifact hash verification only",
+        "detail": "Read freeze/config/calibration/proxy inventory and failed suite metadata; no target image decoding or new inference"
+      },
+      {
+        "access": "completed frozen clean and degraded suite",
+        "candidate": "sbi-generic-sbi-seed42",
+        "started_utc": "2026-10-03T15:24:50.953620+00:00",
+        "finished_utc": "2026-10-03T15:25:04.490209+00:00",
+        "targets": [
+          "min-test-clean",
+          "min-test-degraded-proxy"
+        ],
+        "rows_each": 1000,
+        "outcome": "predictions and metrics published without fitting"
+      },
+      {
+        "access": "completed frozen clean and degraded suite",
+        "candidate": "sbi-generic-mffi-seed42",
+        "started_utc": "2026-10-03T15:25:04.545663+00:00",
+        "finished_utc": "2026-10-03T15:25:17.080483+00:00",
+        "targets": [
+          "min-test-clean",
+          "min-test-degraded-proxy"
+        ],
+        "rows_each": 1000,
+        "outcome": "predictions and metrics published without fitting"
+      },
+      {
+        "access": "completed frozen clean and degraded suite",
+        "candidate": "sbi-generic-mixed-seed42",
+        "started_utc": "2026-10-03T15:25:17.138179+00:00",
+        "finished_utc": "2026-10-03T15:25:29.673355+00:00",
+        "targets": [
+          "min-test-clean",
+          "min-test-degraded-proxy"
+        ],
+        "rows_each": 1000,
+        "outcome": "predictions and metrics published without fitting"
+      },
+      {
+        "access": "completed frozen clean and degraded suite",
+        "candidate": "hf-dino-srm-seed42",
+        "started_utc": "2026-10-03T15:25:29.877134+00:00",
+        "finished_utc": "2026-10-03T15:26:28.942888+00:00",
+        "targets": [
+          "min-test-clean",
+          "min-test-degraded-proxy"
+        ],
+        "rows_each": 1000,
+        "outcome": "predictions and metrics published without fitting"
+      },
+      {
+        "access": "offline paired statistical summaries from frozen prediction CSVs",
+        "timing": "2026-10-03T15:27:24.443290+00:00",
+        "purpose": "predeclared comparison against matched MFFI control",
+        "detail": "No target image decoding or new inference; paired 300-draw image-group AUC bootstrap, seed 42"
+      }
+    ],
+    "retry_justification": "Original run was interrupted solely by system memory pressure at 5.117 seconds; no quality result was observed. Retain all failure artifacts. Use a fresh output directory because the audited suite rejects existing outputs.",
+    "prohibitions": "No training, calibration, polarity, severity, seed, hyperparameter or candidate changes. Other three frozen configs remain byte-identical."
+  },
+  "retry_authorization_commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+  "retry_authorization": "Parent explicitly messaged RETRY AUTHORIZED after reviewing the output-only config diff and committed failure records.",
+  "execution_record": {
+    "schema": "faceforgery-frozen-pilot-continuation-v1",
+    "state": "complete",
+    "scope": "pilot/min-dataset",
+    "freeze_commit": "8d01770",
+    "freeze_sha256": "7acf80330fa8919bc59a60782ee9475ee7949169bb0520a4ee5da74675841997",
+    "retry_note_sha256": "67292d719b071c11f23d98d8e1a3e96e68274e01775a47f377eafd16ff7c4047",
+    "script_sha256": "e84475e2a470d0af69583306f681b9ca52fab0b21598e1dd9b6deee6c3657054",
+    "authorization": "Explicit parent retry message received before execution",
+    "started_utc": "2026-10-03T15:24:50.924096+00:00",
+    "policy": "One interrupted SBI continuation with only output directory changed, followed by the remaining three exact frozen suites; no automatic retries or tuning",
+    "attempts": [
+      {
+        "name": "sbi-generic-sbi-seed42",
+        "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+        "config_sha256": "c5bf47b9d397135ca6db8b0614bd24b96c6b09cfb03d7ff3dc1d96c4b1ec51b5",
+        "command": [
+          "flock",
+          "/home/lucas/ffb-research/locks/gpu.lock",
+          "env",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HIP_VISIBLE_DEVICES=0",
+          "CUDA_VISIBLE_DEVICES=0",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+          "--rss-mib",
+          "3072",
+          "--seconds",
+          "300",
+          "--record",
+          "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1-watchdog.json",
+          "--",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "-u",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+          "--execute"
+        ],
+        "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+        "log": "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1.log",
+        "watchdog": "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1-watchdog.json",
+        "main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+        "started_utc": "2026-10-03T15:24:50.953620+00:00",
+        "exit_code": 0,
+        "finished_utc": "2026-10-03T15:25:04.490209+00:00",
+        "log_sha256": "0783032b4b9341fa64e58d3a33dd97ff3e4bfcf0e80d9e6d9379d37d900afe21",
+        "watchdog_record": {
+          "command": [
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "-u",
+            "research_cli.py",
+            "experimental",
+            "evaluate",
+            "--config",
+            "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+            "--execute"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 1912592,
+          "seconds": 13.508553151999877
+        },
+        "watchdog_sha256": "2bf7eb3d3099f82cd0ff630b4ecd01fdd7abb18da996912c91a9a669b8963840",
+        "suite_metrics_sha256": "ef76682acf39a02424a8f4d6f0d841b2fffc1928d7541bdac587e38e90480046",
+        "quality": {
+          "test": {
+            "auc": 0.534053615546296,
+            "auc_interval": {
+              "estimate": 0.534053615546296,
+              "lower": 0.49972809943471247,
+              "upper": 0.5669617175860417,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "test_d": {
+            "auc": 0.5491947015417645,
+            "auc_interval": {
+              "estimate": 0.5491947015417645,
+              "lower": 0.5205473226241961,
+              "upper": 0.5844837023728486,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          }
+        }
+      },
+      {
+        "name": "sbi-generic-mffi-seed42",
+        "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+        "config_sha256": "d5e66f1a9707acad4ac90bedc4e5bf8af832b8f1a714d1c0e7f36e09c3effece",
+        "command": [
+          "flock",
+          "/home/lucas/ffb-research/locks/gpu.lock",
+          "env",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HIP_VISIBLE_DEVICES=0",
+          "CUDA_VISIBLE_DEVICES=0",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+          "--rss-mib",
+          "3072",
+          "--seconds",
+          "300",
+          "--record",
+          "/home/lucas/ffb-research/local/logs/final-sbi-generic-mffi-seed42-watchdog.json",
+          "--",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "-u",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+          "--execute"
+        ],
+        "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mffi-seed42",
+        "log": "/home/lucas/ffb-research/local/logs/final-sbi-generic-mffi-seed42.log",
+        "watchdog": "/home/lucas/ffb-research/local/logs/final-sbi-generic-mffi-seed42-watchdog.json",
+        "main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+        "started_utc": "2026-10-03T15:25:04.545663+00:00",
+        "exit_code": 0,
+        "finished_utc": "2026-10-03T15:25:17.080483+00:00",
+        "log_sha256": "acb27ec932cd6b143c6cd0fb10445e5cf75267b718ff2ae2f6d04d4d9dafbb7e",
+        "watchdog_record": {
+          "command": [
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "-u",
+            "research_cli.py",
+            "experimental",
+            "evaluate",
+            "--config",
+            "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+            "--execute"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 1912296,
+          "seconds": 12.507918287999928
+        },
+        "watchdog_sha256": "f4bac73a936cff8b2eb90989ed713baf24477f27a46892e17faa00afd92dc95b",
+        "suite_metrics_sha256": "fc2668b06fe6a462ce4ad6bdd5e978af5923794fb0764871d7627681b4c1c0c0",
+        "quality": {
+          "test": {
+            "auc": 0.6299580859667884,
+            "auc_interval": {
+              "estimate": 0.6299580859667884,
+              "lower": 0.5968403726784773,
+              "upper": 0.6618174261780939,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "test_d": {
+            "auc": 0.559560537712387,
+            "auc_interval": {
+              "estimate": 0.559560537712387,
+              "lower": 0.5295038274744776,
+              "upper": 0.5992148525948736,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          }
+        }
+      },
+      {
+        "name": "sbi-generic-mixed-seed42",
+        "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+        "config_sha256": "b596bc3bb6b865f99c7b52a41be58b24c3ad01cb245dfa6e5c73efb92fc2431e",
+        "command": [
+          "flock",
+          "/home/lucas/ffb-research/locks/gpu.lock",
+          "env",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HIP_VISIBLE_DEVICES=0",
+          "CUDA_VISIBLE_DEVICES=0",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+          "--rss-mib",
+          "3072",
+          "--seconds",
+          "300",
+          "--record",
+          "/home/lucas/ffb-research/local/logs/final-sbi-generic-mixed-seed42-watchdog.json",
+          "--",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "-u",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+          "--execute"
+        ],
+        "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mixed-seed42",
+        "log": "/home/lucas/ffb-research/local/logs/final-sbi-generic-mixed-seed42.log",
+        "watchdog": "/home/lucas/ffb-research/local/logs/final-sbi-generic-mixed-seed42-watchdog.json",
+        "main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+        "started_utc": "2026-10-03T15:25:17.138179+00:00",
+        "exit_code": 0,
+        "finished_utc": "2026-10-03T15:25:29.673355+00:00",
+        "log_sha256": "2999d50edfaf2755c5dba1802e876ac43e2fd17679b086d15eeea5f26f3f8da3",
+        "watchdog_record": {
+          "command": [
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "-u",
+            "research_cli.py",
+            "experimental",
+            "evaluate",
+            "--config",
+            "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+            "--execute"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 1914520,
+          "seconds": 12.508089400000244
+        },
+        "watchdog_sha256": "ed702af3d12de8f5ac39fdde381b15f6ef181ad79c03a077b2787e3099f79822",
+        "suite_metrics_sha256": "9953e82677b09e0d3dcda9cbb57f004ae71b48ef68ae0459c8cd20cccecc2195",
+        "quality": {
+          "test": {
+            "auc": 0.6359809235837113,
+            "auc_interval": {
+              "estimate": 0.6359809235837113,
+              "lower": 0.6007189862570743,
+              "upper": 0.6727489850521639,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "test_d": {
+            "auc": 0.5337565708338967,
+            "auc_interval": {
+              "estimate": 0.5337565708338967,
+              "lower": 0.4969077004201516,
+              "upper": 0.5703868333637662,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          }
+        }
+      },
+      {
+        "name": "hf-dino-srm-seed42",
+        "config": "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+        "config_sha256": "771b13eca56e4a5f9c2f2a332babd15411182c4119d37e4bfe29df8fd8f09c03",
+        "command": [
+          "flock",
+          "/home/lucas/ffb-research/locks/gpu.lock",
+          "env",
+          "OMP_NUM_THREADS=2",
+          "MKL_NUM_THREADS=2",
+          "OPENBLAS_NUM_THREADS=2",
+          "HIP_VISIBLE_DEVICES=0",
+          "CUDA_VISIBLE_DEVICES=0",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+          "--rss-mib",
+          "3072",
+          "--seconds",
+          "300",
+          "--record",
+          "/home/lucas/ffb-research/local/logs/final-hf-dino-srm-seed42-watchdog.json",
+          "--",
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "-u",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+          "--execute"
+        ],
+        "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+        "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/hf-dino-srm-seed42",
+        "log": "/home/lucas/ffb-research/local/logs/final-hf-dino-srm-seed42.log",
+        "watchdog": "/home/lucas/ffb-research/local/logs/final-hf-dino-srm-seed42-watchdog.json",
+        "main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+        "started_utc": "2026-10-03T15:25:29.877134+00:00",
+        "exit_code": 0,
+        "finished_utc": "2026-10-03T15:26:28.942888+00:00",
+        "log_sha256": "17465decc40c16d0d11dc7243a7bde501f388e594c7441a86157acade1e05c66",
+        "watchdog_record": {
+          "command": [
+            "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+            "-u",
+            "research_cli.py",
+            "experimental",
+            "evaluate",
+            "--config",
+            "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+            "--execute"
+          ],
+          "exit_code": 0,
+          "stop_reason": null,
+          "peak_sampled_rss_kib": 1942360,
+          "seconds": 59.03770966200136
+        },
+        "watchdog_sha256": "94b91eef39d2bc8ba6be854577e70f9d45c4d05c7c109dce8b5dc9238c94eac9",
+        "suite_metrics_sha256": "66aa4b9fbb2c358ff45ac8f61074eb5113c771c4da598bcecc4145110f9d414a",
+        "quality": {
+          "test": {
+            "auc": 0.9191669637113792,
+            "auc_interval": {
+              "estimate": 0.9191669637113792,
+              "lower": 0.9037181214219592,
+              "upper": 0.9362315292239288,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "test_d": {
+            "auc": 0.8273985848380184,
+            "auc_interval": {
+              "estimate": 0.8273985848380184,
+              "lower": 0.8039856237453809,
+              "upper": 0.8524852371339139,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          }
+        }
+      }
+    ],
+    "finished_utc": "2026-10-03T15:26:29.112826+00:00"
+  },
+  "proxy": {
+    "recipe": {
+      "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+      "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+      "image_size": 224,
+      "seed": 42,
+      "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+      "random_streams": [
+        "python random",
+        "torch CPU default generator"
+      ],
+      "normalization": "none; operator returns RGB tensor in [0,1]",
+      "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+      "selection": "one draw per sample, no severity or label-based selection"
+    },
+    "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+    "artifact_sha256": "aa28db2ea1147f02800e0c2399f942f2358df74ca33ff91ad80c36a169972f90",
+    "rows": 1000,
+    "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+    "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+    "recipe_matches_development": true,
+    "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+    "degraded_manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281"
+  },
+  "comparison_summary_script_sha256": "6418fe2c156a186d8410fc3db9a9b6945510ad0fae0ce17bf4e1eb3f3cf49928",
+  "software": {
+    "commit": "14f9ab57049f361a2950cce73049ecc470ac1480",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "runs": [
+    {
+      "name": "sbi-generic-sbi-seed42",
+      "seed": 42,
+      "checkpoint_sha256": "77e0589c659e05e359a4354f327550c7b384d70d3b9c485ece28300606be20c9",
+      "calibration_sha256": "3de5eee185f8f926bbfdfc6ed69d8cacf81b98331b8c3b02df6672a59610742d",
+      "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067",
+      "frozen_frame_threshold": 0.2881683111190796,
+      "threshold_policy": "youden",
+      "config_sha256": "c5bf47b9d397135ca6db8b0614bd24b96c6b09cfb03d7ff3dc1d96c4b1ec51b5",
+      "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-sbi-seed42-retry1",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-sbi-seed42-retry1-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-sbi-seed42-retry1.yaml",
+        "--execute"
+      ],
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "execution_main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+      "runtime_seconds": 13.508553151999877,
+      "peak_sampled_rss_kib": 1912592,
+      "watchdog_stop_reason": null,
+      "input_contract": {
+        "image_size": 224,
+        "resize": "PIL RGB square bilinear",
+        "representation": "srm",
+        "in_channels": 6,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {
+          "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+          "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+          "src/robustness/imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047"
+        },
+        "family": "sbi",
+        "encoding_location": "model-internal, FP32 before backbone AMP",
+        "raw_input_channels": 3,
+        "srm_on_normalized": true,
+        "bundle_sha256": "eca73bd8df01b56373e348a34c5c55e4a44118d7699ec114d45b2fe2a0700067"
+      },
+      "results": {
+        "test": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-clean-proxy",
+            "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.534053615546296,
+            "average_precision": 0.6430933040360798,
+            "balanced_accuracy": 0.49158236742587197,
+            "eer": 0.48936170212765956,
+            "eer_threshold": 0.4102767033779875,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.7028112449799196,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.556,
+            "brier": 0.2712264671856083,
+            "log_loss": 0.7388860163160336,
+            "ece_10_equal_width": 0.16051319760084154,
+            "threshold": 0.2881683111190796,
+            "tn": 31,
+            "fp": 392,
+            "fn": 52,
+            "tp": 525,
+            "confusion_matrix": [
+              [
+                31,
+                392
+              ],
+              [
+                52,
+                525
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.07328605200945626,
+                0.9267139479905437
+              ],
+              [
+                0.09012131715771231,
+                0.9098786828422877
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.9267139479905437,
+            "tpr": 0.9098786828422877,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.534053615546296,
+              "lower": 0.49972809943471247,
+              "upper": 0.5669617175860417,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        },
+        "test_d": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-degraded-proxy",
+            "recipe": {
+              "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+              "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+              "image_size": 224,
+              "seed": 42,
+              "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+              "random_streams": [
+                "python random",
+                "torch CPU default generator"
+              ],
+              "normalization": "none; operator returns RGB tensor in [0,1]",
+              "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+              "selection": "one draw per sample, no severity or label-based selection"
+            },
+            "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.5491947015417645,
+            "average_precision": 0.6220832534537204,
+            "balanced_accuracy": 0.5165525605254209,
+            "eer": 0.46199999999999997,
+            "eer_threshold": 0.4376521093249321,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.7312947299934938,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.587,
+            "brier": 0.2635333747143732,
+            "log_loss": 0.7219899864180843,
+            "ece_10_equal_width": 0.13655282677710057,
+            "threshold": 0.2881683111190796,
+            "tn": 25,
+            "fp": 398,
+            "fn": 15,
+            "tp": 562,
+            "confusion_matrix": [
+              [
+                25,
+                398
+              ],
+              [
+                15,
+                562
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.0591016548463357,
+                0.9408983451536643
+              ],
+              [
+                0.025996533795493933,
+                0.9740034662045061
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.9408983451536643,
+            "tpr": 0.9740034662045061,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.5491947015417645,
+              "lower": 0.5205473226241961,
+              "upper": 0.5844837023728486,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        }
+      },
+      "paired_clean_degraded_auc": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": 0.015141085995468484,
+        "interval": {
+          "estimate": 0.015141085995468484,
+          "lower": -0.014730620539129338,
+          "upper": 0.04711207909730568,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "status.json": {
+          "sha256": "c068f460efaeb333854be715cfa772374ee3bd8fa53eb648c261674006715609",
+          "bytes": 458
+        },
+        "suite.json": {
+          "sha256": "0d562fa93b6d8f63653f8aca2bf78bdd4e981428be8c490916e0ebf2bb246f5e",
+          "bytes": 6615
+        },
+        "suite_metrics.json": {
+          "sha256": "ef76682acf39a02424a8f4d6f0d841b2fffc1928d7541bdac587e38e90480046",
+          "bytes": 37730
+        },
+        "test/frame_confusion.png": {
+          "sha256": "aaca30e972f5a056f6b8b2e0a423ed455988ccf52f39adb26f1b1f5401f3ddf2",
+          "bytes": 21174
+        },
+        "test/frame_roc.csv": {
+          "sha256": "9a29a6634fb7cdcd8d0b33c6940ab9e9a54f325d683fdb47bb9e587ec971eb86",
+          "bytes": 50315
+        },
+        "test/frame_roc.png": {
+          "sha256": "0fd1faf9fcb6185b08d2238a71ff2c2495b620c588243fc7a662fed3cc92c7e7",
+          "bytes": 33328
+        },
+        "test/frame_scores.png": {
+          "sha256": "e5a3cc18e3b4f57b87ea3546cb12eaf2b0d8adebfcf07328ee2aaf9dc7eb5575",
+          "bytes": 22583
+        },
+        "test/metrics.csv": {
+          "sha256": "f0f23741a0a97ef246106f82124411ce30ea5abd042422553cbaf4a111dd22d0",
+          "bytes": 1096
+        },
+        "test/metrics.json": {
+          "sha256": "30e3d4168425672da16dd411b09f116123be71360fca5f00db4776ce52630bbf",
+          "bytes": 13407
+        },
+        "test/predictions.csv": {
+          "sha256": "0f66817f0e0d11191231460b7dfbb73493a109eb5f9e62d2d8099b97381f040f",
+          "bytes": 333327
+        },
+        "test/predictions.csv.json": {
+          "sha256": "4855ee099b8354f7e8201658d735d653dbd5e7ffc49efb364624efcf0d606072",
+          "bytes": 1603
+        },
+        "test/status.json": {
+          "sha256": "be0448921c08eff972ac78174d23b1bc73a7e5a710400e23ea262b317c7b35e1",
+          "bytes": 814
+        },
+        "test_d/frame_confusion.png": {
+          "sha256": "543c5af754a0744b06d6b7f2a463a9e7a3764d050ea6a45cbcfe5a96a3b540b4",
+          "bytes": 21748
+        },
+        "test_d/frame_roc.csv": {
+          "sha256": "d2bf85588b125aa4f134b4c90a4debf1d013182abb20aaf61cf503c3e83c0ca8",
+          "bytes": 50207
+        },
+        "test_d/frame_roc.png": {
+          "sha256": "7b21840506d7f263f01c6b772794e342903ba296bbb88659adae9c3424342af6",
+          "bytes": 34556
+        },
+        "test_d/frame_scores.png": {
+          "sha256": "8331e5fe7636154f9f8ad1e8b9c76a76cc6725823be34d3a1ed5d2ebce5cc861",
+          "bytes": 22922
+        },
+        "test_d/metrics.csv": {
+          "sha256": "488cb6250c29a9df6462e9980f873dd409d3fbe05235d0018b4cb862486be318",
+          "bytes": 1096
+        },
+        "test_d/metrics.json": {
+          "sha256": "133a937fe6213ded24e119775bceedbaad9c83908b721f195357c03e42a73aca",
+          "bytes": 14279
+        },
+        "test_d/predictions.csv": {
+          "sha256": "c00373070205214ade754c08c25ff57da3dc36e3b493a39b8ef79245803d3f9c",
+          "bytes": 333286
+        },
+        "test_d/predictions.csv.json": {
+          "sha256": "775dcf700dfde2319fafb43887ecd4c94bac3d64a44333fe164d85b1fa2ee924",
+          "bytes": 1603
+        },
+        "test_d/status.json": {
+          "sha256": "aa22bb817b9d45ede8a685f4558e9343b51fd9151b923d8ab9fcdb82b7a274c0",
+          "bytes": 814
+        }
+      }
+    },
+    {
+      "name": "sbi-generic-mffi-seed42",
+      "seed": 42,
+      "checkpoint_sha256": "f8b27f09c6825840d5d01791515111012bf68ecd0477d775d604a63d5602f450",
+      "calibration_sha256": "b6433369bc664dec02001d7a1a1d79024b1694974e6d1ad1f12db95507970ee8",
+      "bundle_sha256": "aa41b5b0a423dfab9e88578594a498d97137a56060192eb7d84da94e17c38939",
+      "frozen_frame_threshold": 0.7631309032440186,
+      "threshold_policy": "youden",
+      "config_sha256": "d5e66f1a9707acad4ac90bedc4e5bf8af832b8f1a714d1c0e7f36e09c3effece",
+      "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mffi-seed42",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-mffi-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mffi-seed42.yaml",
+        "--execute"
+      ],
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "execution_main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+      "runtime_seconds": 12.507918287999928,
+      "peak_sampled_rss_kib": 1912296,
+      "watchdog_stop_reason": null,
+      "input_contract": {
+        "image_size": 224,
+        "resize": "PIL RGB square bilinear",
+        "representation": "srm",
+        "in_channels": 6,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {
+          "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+          "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+          "src/robustness/imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047"
+        },
+        "family": "sbi",
+        "encoding_location": "model-internal, FP32 before backbone AMP",
+        "raw_input_channels": 3,
+        "srm_on_normalized": true,
+        "bundle_sha256": "aa41b5b0a423dfab9e88578594a498d97137a56060192eb7d84da94e17c38939"
+      },
+      "results": {
+        "test": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-clean-proxy",
+            "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.6299580859667884,
+            "average_precision": 0.6906935862420791,
+            "balanced_accuracy": 0.584022681924522,
+            "eer": 0.4055459272097054,
+            "eer_threshold": 0.5413315148452745,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.49206349206349204,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.552,
+            "brier": 0.2614002359252688,
+            "log_loss": 0.7596987744322501,
+            "ece_10_equal_width": 0.15387076408043504,
+            "threshold": 0.7631309032440186,
+            "tn": 335,
+            "fp": 88,
+            "fn": 360,
+            "tp": 217,
+            "confusion_matrix": [
+              [
+                335,
+                88
+              ],
+              [
+                360,
+                217
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.7919621749408984,
+                0.20803782505910165
+              ],
+              [
+                0.6239168110918544,
+                0.37608318890814557
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.20803782505910165,
+            "tpr": 0.37608318890814557,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.6299580859667884,
+              "lower": 0.5968403726784773,
+              "upper": 0.6618174261780939,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        },
+        "test_d": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-degraded-proxy",
+            "recipe": {
+              "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+              "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+              "image_size": 224,
+              "seed": 42,
+              "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+              "random_streams": [
+                "python random",
+                "torch CPU default generator"
+              ],
+              "normalization": "none; operator returns RGB tensor in [0,1]",
+              "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+              "selection": "one draw per sample, no severity or label-based selection"
+            },
+            "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.559560537712387,
+            "average_precision": 0.6537300343848897,
+            "balanced_accuracy": 0.560785591078006,
+            "eer": 0.46808510638297873,
+            "eer_threshold": 0.5844162588423871,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.4328180737217598,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.523,
+            "brier": 0.27537755229653205,
+            "log_loss": 0.7743598704893775,
+            "ece_10_equal_width": 0.1692621435560286,
+            "threshold": 0.7631309032440186,
+            "tn": 341,
+            "fp": 82,
+            "fn": 395,
+            "tp": 182,
+            "confusion_matrix": [
+              [
+                341,
+                82
+              ],
+              [
+                395,
+                182
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.806146572104019,
+                0.1938534278959811
+              ],
+              [
+                0.6845753899480069,
+                0.31542461005199307
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.1938534278959811,
+            "tpr": 0.31542461005199307,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.559560537712387,
+              "lower": 0.5295038274744776,
+              "upper": 0.5992148525948736,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        }
+      },
+      "paired_clean_degraded_auc": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.07039754825440137,
+        "interval": {
+          "estimate": -0.07039754825440137,
+          "lower": -0.10266618878417438,
+          "upper": -0.038781651406147644,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "status.json": {
+          "sha256": "f6c07c1b9fef14c7749208e8b34dcc66f6e39bb0d1b0f17573f9b9432e5ce74b",
+          "bytes": 458
+        },
+        "suite.json": {
+          "sha256": "b8fc9b944091b70360bdb47358ccc1d3f9c99d3dd12c4160fb67b08a8829fa00",
+          "bytes": 6615
+        },
+        "suite_metrics.json": {
+          "sha256": "fc2668b06fe6a462ce4ad6bdd5e978af5923794fb0764871d7627681b4c1c0c0",
+          "bytes": 37777
+        },
+        "test/frame_confusion.png": {
+          "sha256": "78cfa009c0d1c8e9267d9b79d32de3412ee8148e864f27b2852b27b8412d92eb",
+          "bytes": 21761
+        },
+        "test/frame_roc.csv": {
+          "sha256": "8e7445bb35ad4e911ad5db81496b8a26fcc0a74d32ea68cc58bdc2de70c0b493",
+          "bytes": 48494
+        },
+        "test/frame_roc.png": {
+          "sha256": "c43b84b320ac8936b0202303cae5e08ab95ff5951363d6e3d966899b5c97adb3",
+          "bytes": 33967
+        },
+        "test/frame_scores.png": {
+          "sha256": "e1b0ef37c7d34f24e44c339ddf2582b3913c41b28a110615334fc5e184fd02c6",
+          "bytes": 22915
+        },
+        "test/metrics.csv": {
+          "sha256": "977612a74b5d4d72dcfa9cc49e1571b3c1197d8eee36f4e49c77fda5e081fc70",
+          "bytes": 1098
+        },
+        "test/metrics.json": {
+          "sha256": "55630e8e9eb77c0c612fc27fca3bba4808de7de2522b218b9df150f34bf7483c",
+          "bytes": 13435
+        },
+        "test/predictions.csv": {
+          "sha256": "70c428f0186ca6edca51d559591eccc8899754e9efd4603f833221d9998f9546",
+          "bytes": 333219
+        },
+        "test/predictions.csv.json": {
+          "sha256": "90eca0ca4736d8555af2422bf97c1788af6b82d04d40144714ef324a20758d6d",
+          "bytes": 1603
+        },
+        "test/status.json": {
+          "sha256": "bb8ff7397ffdc5b687539bf99327d4aadc958c571e24ea821a93c92cd4da54f3",
+          "bytes": 814
+        },
+        "test_d/frame_confusion.png": {
+          "sha256": "88805c4b9208d30e0ba74ce15b8a646e4ba24857e83b1a09b4f5d776332a0937",
+          "bytes": 21984
+        },
+        "test_d/frame_roc.csv": {
+          "sha256": "8b1c79cf12c188f6975c10f78b74550dd6f90ea8b9aebbec94fa4fad16516af1",
+          "bytes": 49875
+        },
+        "test_d/frame_roc.png": {
+          "sha256": "dea0509ff7e957e4b06632ed623cd3e5877bdb73dc24498f0133ab5c525a2845",
+          "bytes": 34278
+        },
+        "test_d/frame_scores.png": {
+          "sha256": "5ee4a25188888ad7c8b7a3a2cb0e01393549ea3ab3d4cbdec1c8c69445af628e",
+          "bytes": 21936
+        },
+        "test_d/metrics.csv": {
+          "sha256": "bc85c000bd0ab6fb2081d92034dabcb4b78f4c6ca9c611eb053f8310f52ff04b",
+          "bytes": 1095
+        },
+        "test_d/metrics.json": {
+          "sha256": "ce9dfb569c4c5469a0aec7556054c50d5ae968c1b54004fc7012328c16519b1a",
+          "bytes": 14297
+        },
+        "test_d/predictions.csv": {
+          "sha256": "ecbb209de5e034f19e5e0e12f273be73c291fd9350c0668a73db35653d42651a",
+          "bytes": 333128
+        },
+        "test_d/predictions.csv.json": {
+          "sha256": "9494e0988034647b9561e9daf1aba5a1c0a297f2521189b4da2bde256c9b4e5c",
+          "bytes": 1603
+        },
+        "test_d/status.json": {
+          "sha256": "a1727aeb4b243fa11ab6216493f7a260518e6f1533e0fc343e6f1d811828ea6f",
+          "bytes": 814
+        }
+      }
+    },
+    {
+      "name": "sbi-generic-mixed-seed42",
+      "seed": 42,
+      "checkpoint_sha256": "d1eb9f6249fc210fa85cfcf589e1cfe8c4892ded922cb5a19a2feb2994d389d4",
+      "calibration_sha256": "cb36c4f5d0b36ff19e3ad2caa932ce069f162e9c4cd2c7bfb6fd95cfbdd660ce",
+      "bundle_sha256": "e798d3a7f169896571211573f650a9ed87a1016e2b94f9af3acfdcf6daff008d",
+      "frozen_frame_threshold": 0.3182732164859772,
+      "threshold_policy": "youden",
+      "config_sha256": "b596bc3bb6b865f99c7b52a41be58b24c3ad01cb245dfa6e5c73efb92fc2431e",
+      "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/sbi-generic-mixed-seed42",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-sbi-generic-mixed-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/sbi-generic-mixed-seed42.yaml",
+        "--execute"
+      ],
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "execution_main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+      "runtime_seconds": 12.508089400000244,
+      "peak_sampled_rss_kib": 1914520,
+      "watchdog_stop_reason": null,
+      "input_contract": {
+        "image_size": 224,
+        "resize": "PIL RGB square bilinear",
+        "representation": "srm",
+        "in_channels": 6,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {
+          "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+          "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+          "src/robustness/imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047"
+        },
+        "family": "sbi",
+        "encoding_location": "model-internal, FP32 before backbone AMP",
+        "raw_input_channels": 3,
+        "srm_on_normalized": true,
+        "bundle_sha256": "e798d3a7f169896571211573f650a9ed87a1016e2b94f9af3acfdcf6daff008d"
+      },
+      "results": {
+        "test": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-clean-proxy",
+            "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.6359809235837113,
+            "average_precision": 0.6845733649967614,
+            "balanced_accuracy": 0.599036755698137,
+            "eer": 0.40425531914893614,
+            "eer_threshold": 0.3256300706812676,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.6389140271493212,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.601,
+            "brier": 0.28508359384739435,
+            "log_loss": 0.7872859950023796,
+            "ece_10_equal_width": 0.22139259626343843,
+            "threshold": 0.3182732164859772,
+            "tn": 248,
+            "fp": 175,
+            "fn": 224,
+            "tp": 353,
+            "confusion_matrix": [
+              [
+                248,
+                175
+              ],
+              [
+                224,
+                353
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.5862884160756501,
+                0.41371158392434987
+              ],
+              [
+                0.3882149046793761,
+                0.6117850953206239
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.41371158392434987,
+            "tpr": 0.6117850953206239,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.6359809235837113,
+              "lower": 0.6007189862570743,
+              "upper": 0.6727489850521639,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        },
+        "test_d": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-degraded-proxy",
+            "recipe": {
+              "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+              "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+              "image_size": 224,
+              "seed": 42,
+              "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+              "random_streams": [
+                "python random",
+                "torch CPU default generator"
+              ],
+              "normalization": "none; operator returns RGB tensor in [0,1]",
+              "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+              "selection": "one draw per sample, no severity or label-based selection"
+            },
+            "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.5337565708338967,
+            "average_precision": 0.6132270191885891,
+            "balanced_accuracy": 0.522802790991146,
+            "eer": 0.488734835355286,
+            "eer_threshold": 0.4887589437812825,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.6855895196506551,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.568,
+            "brier": 0.2755636692535781,
+            "log_loss": 0.756724471140403,
+            "ece_10_equal_width": 0.15194825393706562,
+            "threshold": 0.3182732164859772,
+            "tn": 97,
+            "fp": 326,
+            "fn": 106,
+            "tp": 471,
+            "confusion_matrix": [
+              [
+                97,
+                326
+              ],
+              [
+                106,
+                471
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.2293144208037825,
+                0.7706855791962175
+              ],
+              [
+                0.18370883882149047,
+                0.8162911611785095
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.7706855791962175,
+            "tpr": 0.8162911611785095,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.5337565708338967,
+              "lower": 0.4969077004201516,
+              "upper": 0.5703868333637662,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        }
+      },
+      "paired_clean_degraded_auc": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.10222435274981456,
+        "interval": {
+          "estimate": -0.10222435274981456,
+          "lower": -0.14001567287020142,
+          "upper": -0.0617277766557686,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "status.json": {
+          "sha256": "fef96393020eb0b2c9397683d8775f9b2b1cd04f96ecb51559ef24b6514cda90",
+          "bytes": 458
+        },
+        "suite.json": {
+          "sha256": "40db71dacdd75a45d9ab85f6e6b60aa56950779cae7b5a4b37c2c6b0ed8d329e",
+          "bytes": 6615
+        },
+        "suite_metrics.json": {
+          "sha256": "9953e82677b09e0d3dcda9cbb57f004ae71b48ef68ae0459c8cd20cccecc2195",
+          "bytes": 37781
+        },
+        "test/frame_confusion.png": {
+          "sha256": "8030ad17c2f1fa5daf25b5641816ad58be52c746f07f14844cef3290c39c8481",
+          "bytes": 21641
+        },
+        "test/frame_roc.csv": {
+          "sha256": "b8740782b57a9b8ea08a751e73f25359ee0e3c02f5abbdf23b1839cbf9f49303",
+          "bytes": 46496
+        },
+        "test/frame_roc.png": {
+          "sha256": "0c867d834fc123323c817894775e99b9749d0a75cd0745a2397b09308efda28f",
+          "bytes": 34025
+        },
+        "test/frame_scores.png": {
+          "sha256": "693ae669679fabfb327f5dc03fd2c3688d0f14f0f211217dcc4e2e7caa060f44",
+          "bytes": 23114
+        },
+        "test/metrics.csv": {
+          "sha256": "2801e4801d2c5866fd8aab5af03415ba7a14755c61fc1e98e6cf8cc419ebcddd",
+          "bytes": 1099
+        },
+        "test/metrics.json": {
+          "sha256": "a8c2b55e32e26b2920e268161c0048e75147fea130a2c4f9ce28944d39011fa9",
+          "bytes": 13440
+        },
+        "test/predictions.csv": {
+          "sha256": "814f8caee997878904f6541939a882a86b08b669504e2bbbcef57e2da9981b8b",
+          "bytes": 333436
+        },
+        "test/predictions.csv.json": {
+          "sha256": "7755a18c5aac9ca1e65042434873eaafa3710c7f1539c1d7e64dabeaebd13f3d",
+          "bytes": 1603
+        },
+        "test/status.json": {
+          "sha256": "dca1b3351b47fb1e94f5737c692764b3d441c9d66cd6c9a0c68ce127bb30e1f8",
+          "bytes": 814
+        },
+        "test_d/frame_confusion.png": {
+          "sha256": "26405233d66018aaf03553efb6c5154f740691517b780a42b6568d062915d8b1",
+          "bytes": 21576
+        },
+        "test_d/frame_roc.csv": {
+          "sha256": "26222a12a32d9c3748f6db5069fcec58fa351b999c3140ce066380526f06edb9",
+          "bytes": 50300
+        },
+        "test_d/frame_roc.png": {
+          "sha256": "af9897f8264a87d0c5af21f7a77320d0991f7f299c6e91d769a3ed41f0cdcdc7",
+          "bytes": 34032
+        },
+        "test_d/frame_scores.png": {
+          "sha256": "a3353189def6d80a16f72894879ac27a12bf82793ebcbc83dcb13f29904ada5b",
+          "bytes": 22734
+        },
+        "test_d/metrics.csv": {
+          "sha256": "1bbeeb6e0956ddefbf749be6dfa8b13a574818846a4eec1b12247d7ae3051662",
+          "bytes": 1093
+        },
+        "test_d/metrics.json": {
+          "sha256": "71f473f9b5e7fa158eebb3b7f001994f58db49233cc504f0442cfcdcc53ebbbe",
+          "bytes": 14298
+        },
+        "test_d/predictions.csv": {
+          "sha256": "327b6c8691fb78cdfce9f8bd997d54ef26d8c06e96c5575b5ceaba4be041dbc3",
+          "bytes": 333201
+        },
+        "test_d/predictions.csv.json": {
+          "sha256": "27f11542e3dd82ae8ac70051d040c5c09fdba91ad56e00d0150f9038b2cc9812",
+          "bytes": 1603
+        },
+        "test_d/status.json": {
+          "sha256": "b12b7b02c01d87023d54ff7571fd9b15bdef41cdfab7132be558817d3e00df9b",
+          "bytes": 814
+        }
+      }
+    },
+    {
+      "name": "hf-dino-srm-seed42",
+      "seed": 42,
+      "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+      "calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+      "bundle_sha256": "f4997c8dd36e6415057ab394c0e16722536a148a2b0ca2427fe9afe777e78f19",
+      "frozen_frame_threshold": 0.1919327825307846,
+      "threshold_policy": "youden",
+      "config_sha256": "771b13eca56e4a5f9c2f2a332babd15411182c4119d37e4bfe29df8fd8f09c03",
+      "output": "/home/lucas/ffb-research/local/evaluation/final-pilot/outputs/hf-dino-srm-seed42",
+      "command": [
+        "flock",
+        "/home/lucas/ffb-research/locks/gpu.lock",
+        "env",
+        "OMP_NUM_THREADS=2",
+        "MKL_NUM_THREADS=2",
+        "OPENBLAS_NUM_THREADS=2",
+        "HIP_VISIBLE_DEVICES=0",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/run_bounded.py",
+        "--rss-mib",
+        "3072",
+        "--seconds",
+        "300",
+        "--record",
+        "/home/lucas/ffb-research/local/logs/final-hf-dino-srm-seed42-watchdog.json",
+        "--",
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "research_cli.py",
+        "experimental",
+        "evaluate",
+        "--config",
+        "/home/lucas/ffb-research/local/evaluation/final-pilot/configs/hf-dino-srm-seed42.yaml",
+        "--execute"
+      ],
+      "cwd": "/home/lucas/ffb-research/FaceForgery-Benchmark",
+      "execution_main_head": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+      "runtime_seconds": 59.03770966200136,
+      "peak_sampled_rss_kib": 1942360,
+      "watchdog_stop_reason": null,
+      "input_contract": {
+        "image_size": 224,
+        "resize": "PIL RGB square bilinear",
+        "representation": "srm",
+        "in_channels": 6,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {
+          "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+          "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3"
+        },
+        "run_config_sha256": "0819f9c25c95619c33c08c071911ed7bec4696da65e43283e66367dc74414fa8",
+        "bundle_sha256": "f4997c8dd36e6415057ab394c0e16722536a148a2b0ca2427fe9afe777e78f19"
+      },
+      "results": {
+        "test": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-clean-proxy",
+            "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.9191669637113792,
+            "average_precision": 0.9434486726557626,
+            "balanced_accuracy": 0.8297524081107547,
+            "eer": 0.152,
+            "eer_threshold": 0.04583223152160644,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.81648675171737,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.813,
+            "brier": 0.19974580359396238,
+            "log_loss": 0.7424181482761452,
+            "ece_10_equal_width": 0.23439916907189762,
+            "threshold": 0.1919327825307846,
+            "tn": 397,
+            "fp": 26,
+            "fn": 161,
+            "tp": 416,
+            "confusion_matrix": [
+              [
+                397,
+                26
+              ],
+              [
+                161,
+                416
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.9385342789598109,
+                0.061465721040189124
+              ],
+              [
+                0.27902946273830154,
+                0.7209705372616985
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.061465721040189124,
+            "tpr": 0.7209705372616985,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.9191669637113792,
+              "lower": 0.9037181214219592,
+              "upper": 0.9362315292239288,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        },
+        "test_d": {
+          "population": {
+            "scope": "pilot",
+            "original_manifest": {
+              "source_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+              "source_label_column": " target",
+              "source_label_convention": "fake-is-1",
+              "group_column": null,
+              "group_unit": "image-only (identity/source dependence unresolved)",
+              "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+              "schema": "faceforgery-research-v1",
+              "label_convention": "fake-is-1",
+              "manifest_sha256": "94fc988a11374d0fbcd4c4c7696d611b73fc3f7a6ab2c0dc9aab4223c306d75b",
+              "rows": 1000,
+              "dataset": "mffi-min",
+              "split": "test",
+              "class_counts": {
+                "1": 577,
+                "0": 423
+              }
+            },
+            "original_certificate_sha256": "431370fedb0806b5fc9fee65ddfc976581fe34b355962a1db3089bb34c86926f",
+            "source_image_inventory_sha256": "7c96f4f82c4345282e397798d8d84f9fc189a02e602f2f5fb31167f760bcb550",
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+            "proxy_label": "min-test-degraded-proxy",
+            "recipe": {
+              "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+              "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+              "image_size": 224,
+              "seed": 42,
+              "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+              "random_streams": [
+                "python random",
+                "torch CPU default generator"
+              ],
+              "normalization": "none; operator returns RGB tensor in [0,1]",
+              "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+              "selection": "one draw per sample, no severity or label-based selection"
+            },
+            "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+            "clean_manifest_sha256": "6c9d810b5164d5f8433f8d821a91705dc3ba31c106a817a7909121dedd93055f",
+            "image_inventory_sha256": "191cf37e1c91a0a2afc6bcc6b86bb7424f532e5f05e5ab04c402f68d2aa762e8",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "9e13d5bce1e4b0d92b1f3e3e6be106577c401e6eba44cba2a16243ce721c9281",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "pilot",
+            "class_counts": {
+              "1": 577,
+              "0": 423
+            }
+          },
+          "primary_unit": "frame",
+          "metrics": {
+            "n": 1000,
+            "n_real": 423,
+            "n_fake": 577,
+            "auc": 0.8273985848380184,
+            "average_precision": 0.8788564262247927,
+            "balanced_accuracy": 0.7468707875986905,
+            "eer": 0.2582322357019064,
+            "eer_threshold": 0.07147100898380708,
+            "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+            "eer_status": "defined",
+            "f1": 0.7173689619732785,
+            "f1_policy": "fake is positive; zero division returns zero",
+            "accuracy": 0.725,
+            "brier": 0.27377494118458423,
+            "log_loss": 0.9437012174698441,
+            "ece_10_equal_width": 0.2882567850046617,
+            "threshold": 0.1919327825307846,
+            "tn": 376,
+            "fp": 47,
+            "fn": 228,
+            "tp": 349,
+            "confusion_matrix": [
+              [
+                376,
+                47
+              ],
+              [
+                228,
+                349
+              ]
+            ],
+            "confusion_matrix_normalized": [
+              [
+                0.8888888888888888,
+                0.1111111111111111
+              ],
+              [
+                0.3951473136915078,
+                0.6048526863084922
+              ]
+            ],
+            "confusion_axes": "rows true, columns predicted; [real, fake]",
+            "fpr": 0.1111111111111111,
+            "tpr": 0.6048526863084922,
+            "auc_status": "defined",
+            "threshold_policy": "frozen source-validation youden",
+            "auc_interval": {
+              "estimate": 0.8273985848380184,
+              "lower": 0.8039856237453809,
+              "upper": 0.8524852371339139,
+              "confidence": 0.95,
+              "requested_draws": 300,
+              "valid_draws": 300,
+              "groups": 1000,
+              "seed": 42,
+              "quantity": "auc",
+              "method": "paired percentile cluster bootstrap",
+              "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+            }
+          },
+          "inference_precision": {
+            "device_type": "cuda",
+            "amp_requested": true,
+            "effective": "bfloat16"
+          },
+          "checkpoint_class1": "fake",
+          "software": {
+            "commit": "39e69612b76c00ee7d51eb492d6786f87feac7eb",
+            "code_sha256": {
+              "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+              "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+              "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+              "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+              "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+              "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+              "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+              "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+              "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+              "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+              "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+              "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+              "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+              "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+              "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+              "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+              "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+              "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+              "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+              "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+            },
+            "python": "3.12.13",
+            "packages": {
+              "torch": "2.10.0+rocm7.1",
+              "torchvision": "0.25.0+rocm7.1",
+              "timm": "1.0.27",
+              "numpy": "2.4.4",
+              "pandas": "3.0.2",
+              "scikit-learn": "1.8.0",
+              "Pillow": "12.2.0"
+            }
+          },
+          "input_contract_binding": "verified"
+        }
+      },
+      "paired_clean_degraded_auc": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.09176837887336076,
+        "interval": {
+          "estimate": -0.09176837887336076,
+          "lower": -0.11256238448098606,
+          "upper": -0.07310190656815846,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "status.json": {
+          "sha256": "f8fb05e0c6e5348fa41dcb9aad06b9cd08bb088e84fa0739020d4aa3aaad4ff2",
+          "bytes": 458
+        },
+        "suite.json": {
+          "sha256": "9257e406abd7bbb5a03bfaf367fecf1942910bd8270cacc8764c9382c7bd686a",
+          "bytes": 6455
+        },
+        "suite_metrics.json": {
+          "sha256": "66aa4b9fbb2c358ff45ac8f61074eb5113c771c4da598bcecc4145110f9d414a",
+          "bytes": 39498
+        },
+        "test/frame_confusion.png": {
+          "sha256": "d5357c5696b5bcf28e428610aa7b7eb89922ebfc1a9d34008eb64914abb4ed6e",
+          "bytes": 21359
+        },
+        "test/frame_roc.csv": {
+          "sha256": "ab48f24370e044f177e0c2c6e7843f32f564cdf5ba673fa759411b3f73b83d02",
+          "bytes": 41620
+        },
+        "test/frame_roc.png": {
+          "sha256": "221fe84df2f03d541f3d49d4c4cead2f6648f37be82c84e27a186e633e0d81bf",
+          "bytes": 30603
+        },
+        "test/frame_scores.png": {
+          "sha256": "ff8b29ff2004c96ca22df2b2b03e2c51ad8e742454e3a5f6fe22d584b1cd938e",
+          "bytes": 24970
+        },
+        "test/metrics.csv": {
+          "sha256": "5c9dc86c6fb868f3b25901d7c5fc36d98baf7a76385794e88f4a380dd785a5b7",
+          "bytes": 1085
+        },
+        "test/metrics.json": {
+          "sha256": "e8efd0e4ba51bbcd8eb9e31244d5b6fb97f3f75b18ffd2364a45be89eddb0d2b",
+          "bytes": 14334
+        },
+        "test/predictions.csv": {
+          "sha256": "3f4b51dcb486ec4bdc04ec2afc84d84c95e1559dfcb4ce62d11e701570d89a99",
+          "bytes": 334123
+        },
+        "test/predictions.csv.json": {
+          "sha256": "7da214f98d56fa8f5b6e3be716e7ac8b8cefcdd2dcf9c5556b3f28dfc0ce42a3",
+          "bytes": 1443
+        },
+        "test/status.json": {
+          "sha256": "46507ab64308bb0fa40916fa331c9738ea91e94cec7b538d390a4c83790b13a2",
+          "bytes": 814
+        },
+        "test_d/frame_confusion.png": {
+          "sha256": "2ac42bf57eb6015b0a7add15ebddda4f662f92ccc970cca22e817aadcd430108",
+          "bytes": 21814
+        },
+        "test_d/frame_roc.csv": {
+          "sha256": "1e2f245b960043ee9a991321939e7ddf775f813ec859dc9062d0ffdc8c990f2d",
+          "bytes": 40552
+        },
+        "test_d/frame_roc.png": {
+          "sha256": "175cbca736c64d3dc8dd57c32931ad6dae3584df942cbb41e973fc4dca072e41",
+          "bytes": 32679
+        },
+        "test_d/frame_scores.png": {
+          "sha256": "179c91f67a3e21c160cb235a852fbf6f801f6de844a07834bea66de14d74d413",
+          "bytes": 23451
+        },
+        "test_d/metrics.csv": {
+          "sha256": "7c05d82d654a8e950c02560dee5837eb021df6ab59c2b35202752781b023d1a4",
+          "bytes": 1097
+        },
+        "test_d/metrics.json": {
+          "sha256": "39a32014045884c6d52eae743be5e69a965eae21ef980a5e3e3e902e3ec0ecec",
+          "bytes": 15224
+        },
+        "test_d/predictions.csv": {
+          "sha256": "de687c39dad8207f8a92c9fbeac3504678f69bd777b86bfc34bd354725b1e590",
+          "bytes": 333990
+        },
+        "test_d/predictions.csv.json": {
+          "sha256": "326a80182a05bba76bcb0645c4240f4be35d66bbbfce93fba2e31e4780c714d4",
+          "bytes": 1443
+        },
+        "test_d/status.json": {
+          "sha256": "42828c488058b74f082b20e709fec564ad9bfbc36e07774b14b2695f5006bf55",
+          "bytes": 814
+        }
+      }
+    }
+  ],
+  "matched_mffi_comparisons": [
+    {
+      "reference": "sbi-generic-mffi-seed42",
+      "candidate": "sbi-generic-sbi-seed42",
+      "matched_training_budget": true,
+      "quantity": "candidate_minus_mffi_auc",
+      "results": {
+        "test": {
+          "estimate": -0.09590447042049233,
+          "lower": -0.14217498983246832,
+          "upper": -0.05081756206743182,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "test_d": {
+          "estimate": -0.010365836170622478,
+          "lower": -0.05672755959302918,
+          "upper": 0.0431328638516623,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      }
+    },
+    {
+      "reference": "sbi-generic-mffi-seed42",
+      "candidate": "sbi-generic-mixed-seed42",
+      "matched_training_budget": true,
+      "quantity": "candidate_minus_mffi_auc",
+      "results": {
+        "test": {
+          "estimate": 0.006022837616922905,
+          "lower": -0.026557265578032434,
+          "upper": 0.040390336750829224,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "test_d": {
+          "estimate": -0.025803966878490292,
+          "lower": -0.06315102354984896,
+          "upper": 0.01400169784094814,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      }
+    },
+    {
+      "reference": "sbi-generic-mffi-seed42",
+      "candidate": "hf-dino-srm-seed42",
+      "matched_training_budget": false,
+      "quantity": "candidate_minus_mffi_auc",
+      "results": {
+        "test": {
+          "estimate": 0.2892088777445908,
+          "lower": 0.2523735088564619,
+          "upper": 0.32489500104748487,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "test_d": {
+          "estimate": 0.2678380471256314,
+          "lower": 0.22530017818586137,
+          "upper": 0.3003529084845599,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Pilot population of 1000 MFFI min-test images, 423 real and 577 fake; one seed per frozen candidate.",
+    "Degraded target is a deterministic local proxy and is not benchmark Test-D.",
+    "Image-only sampling groups do not resolve identity/video/source dependence.",
+    "Bootstrap intervals are conditional on these fitted and source-selected checkpoints; they are not across-seed uncertainty.",
+    "Generic SBI arms share initialization, backbone, cohort and training budget. HF DINO-SRM is a fixed stronger reference trained under a different regime.",
+    "No new training, threshold fitting, severity, polarity, seed or candidate selection follows these target scores."
+  ],
+  "offline_statistics": {
+    "watchdog_record": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "/home/lucas/ffb-research/local/scripts/summarize_final_comparison.py"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 155328,
+      "seconds": 4.502841633000571
+    },
+    "watchdog_sha256": "5c264023190cac132607d6baa95f22412fe44984c54f4a7fa81a301caad4e594",
+    "lock": "/home/lucas/ffb-research/locks/cpu-tests.lock",
+    "thread_limits": {
+      "OMP_NUM_THREADS": 2,
+      "MKL_NUM_THREADS": 2,
+      "OPENBLAS_NUM_THREADS": 2
+    },
+    "source": "Certified frozen prediction CSVs only; no target image inference or threshold fitting"
+  },
+  "plot_export": {
+    "record": {
+      "schema": "faceforgery-pilot-plot-export-v1",
+      "scope": "pilot/min-dataset",
+      "created_utc": "2026-10-03T15:31:14.393240+00:00",
+      "candidate": "hf-dino-srm-seed42",
+      "purpose": "Label-only offline figure export; no inference, calibration or bootstrap",
+      "plot_code_sha256": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "script_sha256": "1ead118e5222373e1b142b6d1e5c2ef28399d73a98445846b3a8ab611d90a039",
+      "exports": [
+        {
+          "canonical_target": "test",
+          "display_title": "min-test (pilot)",
+          "n": 1000,
+          "source_predictions_sha256": "3f4b51dcb486ec4bdc04ec2afc84d84c95e1559dfcb4ce62d11e701570d89a99",
+          "source_metrics_sha256": "e8efd0e4ba51bbcd8eb9e31244d5b6fb97f3f75b18ffd2364a45be89eddb0d2b",
+          "source_calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+          "threshold": 0.1919327825307846,
+          "files": {
+            "plots/dino_min_test_clean/frame_roc.csv": {
+              "sha256": "ef486b57b2c630adb8cf62f295d149cea98e507eb60ae7dd42b215d7899e7695",
+              "bytes": 40929
+            },
+            "plots/dino_min_test_clean/frame_roc.png": {
+              "sha256": "d9363e6199c4006101638caa24934c60f1330f17ea09a198062dceb49bf918e0",
+              "bytes": 31062
+            },
+            "plots/dino_min_test_clean/frame_scores.png": {
+              "sha256": "a32962ab2792afb7dc1e07a7ea831c5bc55a4cd8fbd4bae6a7b489eec6b0b97c",
+              "bytes": 25416
+            },
+            "plots/dino_min_test_clean/frame_confusion.png": {
+              "sha256": "20a809471fbdb0bbd8f2b15b79de0267c94f17aaf291717e493810a79371f82f",
+              "bytes": 21808
+            }
+          }
+        },
+        {
+          "canonical_target": "test_d",
+          "display_title": "min-test-degraded-proxy (pilot)",
+          "n": 1000,
+          "source_predictions_sha256": "de687c39dad8207f8a92c9fbeac3504678f69bd777b86bfc34bd354725b1e590",
+          "source_metrics_sha256": "39a32014045884c6d52eae743be5e69a965eae21ef980a5e3e3e902e3ec0ecec",
+          "source_calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+          "threshold": 0.1919327825307846,
+          "files": {
+            "plots/dino_min_test_degraded_proxy/frame_roc.csv": {
+              "sha256": "74c6a19a6ff3779c721c1f57b1961c85cd02c599e64bca262e7f1a6d512c5b07",
+              "bytes": 39891
+            },
+            "plots/dino_min_test_degraded_proxy/frame_roc.png": {
+              "sha256": "e4dee4146d2614c168f1e55d86edec142f0242faedb2279b7dcccbe649bc1837",
+              "bytes": 35891
+            },
+            "plots/dino_min_test_degraded_proxy/frame_scores.png": {
+              "sha256": "2ec5017dae54bc59834ee460dddd9e47e0b16d0174214228c8a118d9652f07ae",
+              "bytes": 26693
+            },
+            "plots/dino_min_test_degraded_proxy/frame_confusion.png": {
+              "sha256": "013bdac4ff06300644aca873032e5aa7557685a0cdae9485c78b3bd5076ec7c9",
+              "bytes": 25172
+            }
+          }
+        }
+      ]
+    },
+    "record_sha256": "655237bc9b6923ba87aeb980280473611fef58e82ce1c211babf38dd0adcdb97",
+    "watchdog_record": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-u",
+        "/home/lucas/ffb-research/local/scripts/export_final_dino_plots.py"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 182084,
+      "seconds": 1.501078746998246
+    },
+    "watchdog_sha256": "eb2c8de3618ff9152fb946ef5c96eab10f2ac03ccd5f82184e24d60fc9ff1ed8",
+    "lock": "/home/lucas/ffb-research/locks/cpu-tests.lock"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "faceforgery-pilot-plot-export-v1",
+  "scope": "pilot/min-dataset",
+  "created_utc": "2026-10-03T15:31:14.393240+00:00",
+  "candidate": "hf-dino-srm-seed42",
+  "purpose": "Label-only offline figure export; no inference, calibration or bootstrap",
+  "plot_code_sha256": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+  "script_sha256": "1ead118e5222373e1b142b6d1e5c2ef28399d73a98445846b3a8ab611d90a039",
+  "exports": [
+    {
+      "canonical_target": "test",
+      "display_title": "min-test (pilot)",
+      "n": 1000,
+      "source_predictions_sha256": "3f4b51dcb486ec4bdc04ec2afc84d84c95e1559dfcb4ce62d11e701570d89a99",
+      "source_metrics_sha256": "e8efd0e4ba51bbcd8eb9e31244d5b6fb97f3f75b18ffd2364a45be89eddb0d2b",
+      "source_calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+      "threshold": 0.1919327825307846,
+      "files": {
+        "plots/dino_min_test_clean/frame_roc.csv": {
+          "sha256": "ef486b57b2c630adb8cf62f295d149cea98e507eb60ae7dd42b215d7899e7695",
+          "bytes": 40929
+        },
+        "plots/dino_min_test_clean/frame_roc.png": {
+          "sha256": "d9363e6199c4006101638caa24934c60f1330f17ea09a198062dceb49bf918e0",
+          "bytes": 31062
+        },
+        "plots/dino_min_test_clean/frame_scores.png": {
+          "sha256": "a32962ab2792afb7dc1e07a7ea831c5bc55a4cd8fbd4bae6a7b489eec6b0b97c",
+          "bytes": 25416
+        },
+        "plots/dino_min_test_clean/frame_confusion.png": {
+          "sha256": "20a809471fbdb0bbd8f2b15b79de0267c94f17aaf291717e493810a79371f82f",
+          "bytes": 21808
+        }
+      }
+    },
+    {
+      "canonical_target": "test_d",
+      "display_title": "min-test-degraded-proxy (pilot)",
+      "n": 1000,
+      "source_predictions_sha256": "de687c39dad8207f8a92c9fbeac3504678f69bd777b86bfc34bd354725b1e590",
+      "source_metrics_sha256": "39a32014045884c6d52eae743be5e69a965eae21ef980a5e3e3e902e3ec0ecec",
+      "source_calibration_sha256": "fd2a211d0178b62db5577039c7d22dde8e77a19fea83fd71c773163e8e696c2b",
+      "threshold": 0.1919327825307846,
+      "files": {
+        "plots/dino_min_test_degraded_proxy/frame_roc.csv": {
+          "sha256": "74c6a19a6ff3779c721c1f57b1961c85cd02c599e64bca262e7f1a6d512c5b07",
+          "bytes": 39891
+        },
+        "plots/dino_min_test_degraded_proxy/frame_roc.png": {
+          "sha256": "e4dee4146d2614c168f1e55d86edec142f0242faedb2279b7dcccbe649bc1837",
+          "bytes": 35891
+        },
+        "plots/dino_min_test_degraded_proxy/frame_scores.png": {
+          "sha256": "2ec5017dae54bc59834ee460dddd9e47e0b16d0174214228c8a118d9652f07ae",
+          "bytes": 26693
+        },
+        "plots/dino_min_test_degraded_proxy/frame_confusion.png": {
+          "sha256": "013bdac4ff06300644aca873032e5aa7557685a0cdae9485c78b3bd5076ec7c9",
+          "bytes": 25172
+        }
+      }
+    }
+  ]
+}
