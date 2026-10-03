@@ -54,6 +54,26 @@ PY
 
 The LPIPS export must contain both AlexNet features and learned linear weights, not only the small LPIPS calibration file. Training strictly validates the full state. The script preserves official tensor values but serializes a new file; record that file's SHA and use the same copy for all compared seeds. Set `TCC_RESNET18_WEIGHTS` to the staged ResNet file. MediaPipe preprocessing uses a separately installed environment and a staged `face_landmarker.task`; the asset SHA used locally is recorded above and in the landmark cache. A changed asset defines a new condition and needs fresh landmark QA.
 
+The [official Face Landmarker guide](https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker) links the following bundle. The staging check pins the exact local asset bytes even if the upstream `latest` alias changes:
+
+```bash
+python - <<'PY'
+import hashlib, os, urllib.request
+from pathlib import Path
+output = Path(os.environ["TCC_PRETRAINED_ROOT"]) / "face_landmarker.task"
+if output.exists():
+    raise FileExistsError(output)
+url = "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
+with urllib.request.urlopen(url, timeout=120) as response:
+    content = response.read()
+expected = "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+if hashlib.sha256(content).hexdigest() != expected:
+    raise ValueError("Upstream landmark asset changed; review a new pinned condition")
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_bytes(content)
+PY
+```
+
 Select only necessary MFFI checkpoint families, regimes and seeds in this staging call:
 
 ```bash
