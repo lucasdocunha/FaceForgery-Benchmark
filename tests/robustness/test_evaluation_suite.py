@@ -240,6 +240,7 @@ def test_legacy_cli_config_dry_run_never_loads_network(tmp_path, monkeypatch, ca
     assert run_suite_config(path)["state"] == "planned_not_executed"
     from research_cli import main
 
+    capsys.readouterr()
     assert main(["evaluate-suite", "--config", str(path), "--output", str(tmp_path / "cli_dry")]) == 0
     output = json.loads(capsys.readouterr().out)
     assert output["state"] == "planned_not_executed" and len(output["targets"]) == 4
