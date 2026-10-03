@@ -7,7 +7,7 @@ import pytest
 import torch
 from PIL import Image
 
-from src.experimental.moe.data import open_sources, split_validation
+from src.experimental.moe.data import fit_standardizer, open_sources, split_validation
 from src.experimental.moe.inference import describe_run, load_predictor, validate_calibration_population, validate_sources
 from src.experimental.moe.models import FrozenLateFusion, load_balancing_loss, simple_fusion
 from src.experimental.moe.training import fit
@@ -136,6 +136,18 @@ def test_key_alignment_hash_split_and_leakage_rejection(tmp_path):
         open_sources(specs, expected_contracts=expected)
 
 
+def test_constant_fit_features_use_unit_scale():
+    class ConstantPopulation:
+        input_dim = 2
+
+        def block(self, indices):
+            return np.stack([np.ones(len(indices)), np.asarray(indices)], -1), None
+
+    mean, std = fit_standardizer(ConstantPopulation(), np.arange(4))
+    assert mean[0] == 1 and std[0] == 1
+    assert std[1] == pytest.approx(np.std(np.arange(4)))
+
+
 def test_three_expert_fit_reload_calibration_and_baselines(tmp_path):
     frame, specs, images = fixture_experts(tmp_path)
     config = {"task": "moe", "name": "synthetic-three-expert", "scope": "synthetic-structural", "seed": 42,
@@ -147,6 +159,7 @@ def test_three_expert_fit_reload_calibration_and_baselines(tmp_path):
     report = json.loads((run / "comparison.json").read_text())
     assert {"router", "mean", "geometric", "logistic", "expert_srm", "expert_rgb", "expert_reconstruction"} <= set(report["comparisons"])
     description = describe_run(run)
+    assert digest(description["research_run"]["condition"]) == description["research_run"]["condition_sha256"]
     selection, certificate = load_manifest(run / "val_select.csv")
     validate_calibration_population(run, selection, certificate)
     with pytest.raises(ValueError, match="val_select"):

@@ -76,13 +76,21 @@ def load_predictor(run_dir, device="cpu"):
 def describe_run(run_dir):
     """Verify bundle metadata without instantiating the VLM for a dry run."""
     from pathlib import Path
-    from src.robustness.provenance import digest_file
+    from src.robustness.provenance import digest, digest_file
     from .artifacts import verify_bundle
     from .training import input_contract
 
     root = Path(run_dir)
     document, _ = verify_bundle(root)
+    metadata = document["metadata"]
+    condition = {"family": "vlm", "model_config": document["model_config"], "base_files": document["base_files"],
+                 "processor_files": document["processor_files"], "score_contract": document["score_contract"],
+                 "implementation": document.get("implementation", {}), "packages": document["packages"],
+                 "training_policy": metadata.get("training_policy", {}),
+                 "train_manifest_sha256": metadata.get("train_manifest_sha256"),
+                 "val_manifest_sha256": metadata.get("val_manifest_sha256"), "scope": metadata.get("scope", "development")}
     return {"checkpoint_path": root / "bundle.json", "input_contract": input_contract(document),
-            "research_run": {"family": "vlm", "seed": document["metadata"].get("seed", 42),
-                             "scope": document["metadata"].get("scope", "development"),
+            "research_run": {"name": metadata.get("name", "vlm"), "family": "vlm", "seed": metadata.get("seed", 42),
+                             "condition": condition, "condition_sha256": digest(condition),
+                             "scope": metadata.get("scope", "development"),
                              "bundle_sha256": digest_file(root / "bundle.json")}, "image_size": None}

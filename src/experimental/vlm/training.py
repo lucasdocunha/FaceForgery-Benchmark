@@ -93,6 +93,8 @@ def fit(config):
         **model_info, "seed": seed, "train_manifest_sha256": train_record["manifest_sha256"],
         "val_manifest_sha256": val_record["manifest_sha256"], "disjointness": disjoint,
         "loss_weight_unit": "image; within-image mean answer-plus-EOS token NLL", "scope": config.get("scope", "development"),
+        "name": config.get("name", "vlm"),
+        "training_policy": {key: value for key, value in training.items() if key not in {"resume", "device", "workers", "cpu_threads"}},
     })
     document = json.loads(bundle_path.read_text())
     contract, checksum = input_contract(document), digest_file(bundle_path)

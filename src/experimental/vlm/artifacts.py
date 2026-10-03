@@ -50,6 +50,7 @@ def save_bundle(run_dir, model, processor, model_config, *, metadata=None):
         "schema": SCHEMA, "base_subdir": base_path.name, "base_files": base_files,
         "model_config": saved_config, "adapter_files": _inventory(adapter_path),
         "processor_files": _inventory(processor_path), "score_contract": score_contract(processor, saved_config),
+        "implementation": {file.name: digest_file(file) for file in Path(__file__).parent.glob("*.py")},
         "packages": {name: version(name) for name in ("torch", "transformers", "peft", "accelerate", "safetensors")},
         "metadata": metadata or {},
     }
@@ -62,6 +63,9 @@ def verify_bundle(run_dir, *, base_root=None):
     document = json.loads((run_dir / "bundle.json").read_text())
     if document.get("schema") != SCHEMA or document.get("score_contract", {}).get("policy") != SCORE_POLICY:
         raise ValueError("Unsupported VLM bundle or scoring contract")
+    for name, checksum in document.get("implementation", {}).items():
+        if digest_file(contained(Path(__file__).parent, name)) != checksum:
+            raise ValueError(f"VLM implementation differs from frozen bundle: {name}")
     base_root = base_root or os.environ.get("TCC_PRETRAINED_ROOT")
     if not base_root:
         raise ValueError("Set TCC_PRETRAINED_ROOT to the staged base snapshots before offline VLM reload")

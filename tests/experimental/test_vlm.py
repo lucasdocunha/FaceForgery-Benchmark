@@ -156,7 +156,7 @@ def test_fit_reuses_runtime_and_exports_bound_calibration(tiny_vlm, tmp_path, mo
     import json
     from src.experimental.vlm import fit, input_contract, load_predictor
     from src.robustness.manifests import load_manifest, save_manifest
-    from src.robustness.provenance import digest_file
+    from src.robustness.provenance import digest, digest_file
 
     _, _, model_config = tiny_vlm
     monkeypatch.setenv("TCC_PRETRAINED_ROOT", str(Path(model_config["pretrained_path"]).parent))
@@ -176,6 +176,9 @@ def test_fit_reuses_runtime_and_exports_bound_calibration(tiny_vlm, tmp_path, mo
                "data": data, "model": model_config, "training": {"device": "cpu", "epochs": 1,
                    "batch_size": 1, "grad_accum_steps": 2, "lr": .01, "amp": False}})
     assert json.loads((run / "status.json").read_text())["state"] == "complete"
+    from src.experimental.vlm.inference import describe_run
+    description = describe_run(run)
+    assert description["research_run"]["condition_sha256"] == digest(description["research_run"]["condition"])
     calibration = json.loads((run / "calibration.json").read_text())
     document = json.loads((run / "bundle.json").read_text())
     assert calibration["model_sha256"] == digest_file(run / "bundle.json")

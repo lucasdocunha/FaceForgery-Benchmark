@@ -71,7 +71,7 @@ def input_contract(document, checksum):
     return {"kind": "frozen-forensic-late-fusion", "bundle_sha256": checksum,
             "checkpoint_class1": "fake", "score": SCORE_POLICY, "model": document["model"],
             "expert_contracts": document["experts"], "feature_input": "expert penultimate features plus clipped log-odds",
-            "normalization": "mean/std fitted on val_fit only; frozen checkpoint buffers",
+            "normalization": "mean/std fitted on val_fit only; constant dimensions use unit scale; frozen checkpoint buffers",
             "split": document["validation_split"]}
 
 
@@ -197,6 +197,8 @@ def _fit(config, root):
         "calibration_manifest_sha256": certificates["val_select"]["manifest_sha256"],
         "calibration_sample_ids_sha256": split["val_select_sample_ids_sha256"],
         "scope": config.get("scope", "development"), "seed": seed, "software": source_identity(),
+        "name": config["name"],
+        "training_policy": {key: value for key, value in training.items() if key not in {"resume", "device", "workers", "cpu_threads"}},
         "expert_selection_warning": "Inherited expert training and full-source-val model selection may overlap fusion data; independent fusion fit is required for full-scale claims.",
         "implementation": {file.name: digest_file(file) for file in Path(__file__).parent.glob("*.py")},
         "files": {name: digest_file(root / name) for name in

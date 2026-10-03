@@ -174,7 +174,8 @@ def fit_standardizer(aligned, indices, block_size=512):
         squares += np.square(values).sum(0)
     mean = total / len(indices)
     std = np.sqrt(np.maximum(squares / len(indices) - mean * mean, 0))
-    return mean.astype(np.float32), np.maximum(std, 1e-6).astype(np.float32)
+    # A feature constant on val_fit must not amplify unseen validation values.
+    return mean.astype(np.float32), np.where(std > 1e-6, std, 1.0).astype(np.float32)
 
 
 class FusionDataset(Dataset):
