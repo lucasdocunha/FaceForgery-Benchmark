@@ -1,0 +1,1136 @@
+{
+  "state": "complete",
+  "scope": "pilot",
+  "test_access": "none",
+  "threshold_policy": "frozen source-validation calibration; no refit",
+  "runs": {
+    "residual-x_only": {
+      "state": "complete",
+      "calibration_sha256": "d908c44a5f2352a2a89dca48fd73bf6ecdef560c07365b7b27ffe0da2fc4dcc4",
+      "clean_auc": 0.6194169813195549,
+      "degraded_auc": 0.5572523350556439,
+      "paired_auc_drop": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.06216464626391105,
+        "interval": {
+          "estimate": -0.06216464626391105,
+          "lower": -0.09084000137932123,
+          "upper": -0.029996707881722356,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded_predictions": "/home/lucas/ffb-research/local/reconstruction-proxy/residual-x_only/min-val-degraded-proxy/predictions.csv"
+    },
+    "residual-residual_only": {
+      "state": "complete",
+      "calibration_sha256": "cfce2f2765716ae91df44de934f74cd77ff5edb14ae6a6aab6a03cd30924785a",
+      "clean_auc": 0.611679004372019,
+      "degraded_auc": 0.5406792362215156,
+      "paired_auc_drop": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.07099976815050346,
+        "interval": {
+          "estimate": -0.07099976815050346,
+          "lower": -0.11180080889930988,
+          "upper": -0.028773787389594553,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded_predictions": "/home/lucas/ffb-research/local/reconstruction-proxy/residual-residual_only/min-val-degraded-proxy/predictions.csv"
+    },
+    "residual-full": {
+      "state": "complete",
+      "calibration_sha256": "a1d4a699f6677b630588dcdf495ec7deaceedab971fcd20fe060b3a8b004bbf1",
+      "clean_auc": 0.6373397754372019,
+      "degraded_auc": 0.5602436075781664,
+      "paired_auc_drop": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": -0.0770961678590355,
+        "interval": {
+          "estimate": -0.0770961678590355,
+          "lower": -0.10568078537340139,
+          "upper": -0.046467351501467864,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded_predictions": "/home/lucas/ffb-research/local/reconstruction-proxy/residual-full/min-val-degraded-proxy/predictions.csv"
+    },
+    "ae-cae": {
+      "state": "complete",
+      "calibration_sha256": "e81fb1573e7141f8636732ca8ba2cc5a71557e564aa058a1824899f4f62b9e67",
+      "clean_auc": 0.47954342209856915,
+      "degraded_auc": 0.5085370296767355,
+      "paired_auc_drop": {
+        "quantity": "test_d_minus_test_auc",
+        "estimate": 0.02899360757816638,
+        "interval": {
+          "estimate": 0.02899360757816638,
+          "lower": -0.009309375556149599,
+          "upper": 0.06730193324884012,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded_predictions": "/home/lucas/ffb-research/local/reconstruction-proxy/ae-cae/min-val-degraded-proxy/predictions.csv"
+    }
+  },
+  "watchdog": {
+    "command": [
+      "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+      "-u",
+      "/home/lucas/ffb-research/local/scripts/reconstruction_proxy.py"
+    ],
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_sampled_rss_kib": 2038152,
+    "seconds": 35.021466234999934
+  },
+  "degraded_full_minus_x_only": {
+    "estimate": 0.0029912725225225145,
+    "lower": -0.01590022659291014,
+    "upper": 0.022913169539240552,
+    "confidence": 0.95,
+    "requested_draws": 200,
+    "valid_draws": 200,
+    "groups": 1000,
+    "seed": 42,
+    "quantity": "other_minus_reference_auc",
+    "method": "paired percentile cluster bootstrap",
+    "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+  },
+  "degradation_artifact_sha256": "934f23d3e908be03ad9505ceeea3bc27e2b72d53c415c4e024301d7a0755c8fc",
+  "degradation_metadata": {
+    "schema": "faceforgery-degraded-proxy-v1",
+    "state": "complete",
+    "scope": "pilot",
+    "label": "min-val-degraded-proxy",
+    "recipe": {
+      "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+      "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+      "image_size": 224,
+      "seed": 42,
+      "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+      "random_streams": [
+        "python random",
+        "torch CPU default generator"
+      ],
+      "normalization": "none; operator returns RGB tensor in [0,1]",
+      "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+      "selection": "one draw per sample, no severity or label-based selection"
+    },
+    "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+    "source_manifest": {
+      "source_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+      "source_label_column": "target",
+      "source_label_convention": "fake-is-1",
+      "group_column": null,
+      "group_unit": "image-only (identity/source dependence unresolved)",
+      "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+      "schema": "faceforgery-research-v1",
+      "label_convention": "fake-is-1",
+      "manifest_sha256": "6f0c10a6b428f1a81586e1863a016a9d1a7716f8fb3316d5b2720207ea4bd107",
+      "rows": 1000,
+      "dataset": "mffi-min",
+      "split": "val",
+      "class_counts": {
+        "1": 592,
+        "0": 408
+      }
+    },
+    "source_certificate_sha256": "301a723c4c3180ad84737dd3caf894ac39e17a8860f36d7a5be2c436e874972a",
+    "source_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+    "root": "/home/lucas/ffb-research/local/data/min-val-degraded-proxy",
+    "clean_manifest": "/home/lucas/ffb-research/local/manifests/min-val-clean-proxy.csv",
+    "degraded_manifest": "/home/lucas/ffb-research/local/manifests/min-val-degraded-proxy.csv",
+    "clean_certificate": {
+      "scope": "pilot",
+      "original_manifest": {
+        "source_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+        "source_label_column": "target",
+        "source_label_convention": "fake-is-1",
+        "group_column": null,
+        "group_unit": "image-only (identity/source dependence unresolved)",
+        "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+        "schema": "faceforgery-research-v1",
+        "label_convention": "fake-is-1",
+        "manifest_sha256": "6f0c10a6b428f1a81586e1863a016a9d1a7716f8fb3316d5b2720207ea4bd107",
+        "rows": 1000,
+        "dataset": "mffi-min",
+        "split": "val",
+        "class_counts": {
+          "1": 592,
+          "0": 408
+        }
+      },
+      "original_certificate_sha256": "301a723c4c3180ad84737dd3caf894ac39e17a8860f36d7a5be2c436e874972a",
+      "source_image_inventory_sha256": "d076dfe28daf44b800c391125a63884a3384c5742436494536ea057fa2eea6f9",
+      "group_unit": "image-only (identity/source dependence unresolved)",
+      "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+      "proxy_label": "min-val-clean-proxy",
+      "paired_degradation_recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+      "schema": "faceforgery-research-v1",
+      "label_convention": "fake-is-1",
+      "manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+      "rows": 1000,
+      "dataset": "mffi-min",
+      "split": "pilot",
+      "class_counts": {
+        "1": 592,
+        "0": 408
+      }
+    },
+    "degraded_certificate": {
+      "scope": "pilot",
+      "original_manifest": {
+        "source_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+        "source_label_column": "target",
+        "source_label_convention": "fake-is-1",
+        "group_column": null,
+        "group_unit": "image-only (identity/source dependence unresolved)",
+        "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+        "schema": "faceforgery-research-v1",
+        "label_convention": "fake-is-1",
+        "manifest_sha256": "6f0c10a6b428f1a81586e1863a016a9d1a7716f8fb3316d5b2720207ea4bd107",
+        "rows": 1000,
+        "dataset": "mffi-min",
+        "split": "val",
+        "class_counts": {
+          "1": 592,
+          "0": 408
+        }
+      },
+      "original_certificate_sha256": "301a723c4c3180ad84737dd3caf894ac39e17a8860f36d7a5be2c436e874972a",
+      "source_image_inventory_sha256": "d076dfe28daf44b800c391125a63884a3384c5742436494536ea057fa2eea6f9",
+      "group_unit": "image-only (identity/source dependence unresolved)",
+      "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation.",
+      "proxy_label": "min-val-degraded-proxy",
+      "recipe": {
+        "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+        "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+        "image_size": 224,
+        "seed": 42,
+        "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+        "random_streams": [
+          "python random",
+          "torch CPU default generator"
+        ],
+        "normalization": "none; operator returns RGB tensor in [0,1]",
+        "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+        "selection": "one draw per sample, no severity or label-based selection"
+      },
+      "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+      "clean_manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+      "image_inventory_sha256": "3a1f181e3afc77820f89d28aafaa1ab3ab1d9bd2d6426fe1852a47e649f03dae",
+      "schema": "faceforgery-research-v1",
+      "label_convention": "fake-is-1",
+      "manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+      "rows": 1000,
+      "dataset": "mffi-min",
+      "split": "pilot",
+      "class_counts": {
+        "1": 592,
+        "0": 408
+      }
+    },
+    "software": {
+      "commit": "1fa6b9ac45d01e952acf8181a5add40c7417de51",
+      "code_sha256": {
+        "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+        "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+        "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+        "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+        "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+        "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+        "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+        "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+        "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+        "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+        "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+        "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+        "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+        "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+        "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+        "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+        "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+        "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+        "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+      },
+      "python": "3.12.13",
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "torchvision": "0.25.0+rocm7.1",
+        "timm": "1.0.27",
+        "numpy": "2.4.4",
+        "pandas": "3.0.2",
+        "scikit-learn": "1.8.0",
+        "Pillow": "12.2.0"
+      }
+    }
+  },
+  "suite_metrics": {
+    "residual-x_only": {
+      "schema": "faceforgery-evaluation-suite-v1",
+      "scope": "pilot",
+      "checkpoint_sha256": "6402690e2025e0c251b361728d5c80e243d4551b0aa82acf97fbe5704dc09a25",
+      "calibration_sha256": "d908c44a5f2352a2a89dca48fd73bf6ecdef560c07365b7b27ffe0da2fc4dcc4",
+      "input_contract": {
+        "image_size": 128,
+        "resize": "PIL RGB square bilinear",
+        "representation": "model-internal",
+        "in_channels": null,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {},
+        "run_config_sha256": "c46f4e70e3a5e630e30d89d7f7574089486f1b7b75aa7ae657d5321075e8b7bb",
+        "bundle_sha256": "9d58de28e6d40048fbb2ecbc03a25ac61a39b610b58f89a5e308a884b4bba176"
+      },
+      "input_contract_sha256": "4d8a3abc29640c75c0da72ee0f1768988bbe12a5d4431c9f008cd03906a007e1",
+      "settings": {
+        "device": "cuda:0",
+        "batch_size": 16,
+        "workers": 0,
+        "amp": true,
+        "bootstrap_draws": 200,
+        "bootstrap_seed": 42,
+        "confidence": 0.95
+      },
+      "clean": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.6194169813195549,
+        "average_precision": 0.7141121405388984,
+        "balanced_accuracy": 0.6107909379968204,
+        "eer": 0.4222972972972973,
+        "eer_threshold": 0.9596267777520257,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6085271317829457,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.596,
+        "brier": 0.3364881744305792,
+        "log_loss": 1.4037069289715751,
+        "ece_10_equal_width": 0.31168119558691976,
+        "threshold": 0.976669192314148,
+        "tn": 282,
+        "fp": 126,
+        "fn": 278,
+        "tp": 314,
+        "confusion_matrix": [
+          [
+            282,
+            126
+          ],
+          [
+            278,
+            314
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.6911764705882353,
+            0.3088235294117647
+          ],
+          [
+            0.46959459459459457,
+            0.5304054054054054
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.3088235294117647,
+        "tpr": 0.5304054054054054,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.6194169813195549,
+          "lower": 0.5806280437067555,
+          "upper": 0.6498280137757113,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.5572523350556439,
+        "average_precision": 0.6487303501448509,
+        "balanced_accuracy": 0.528749337572867,
+        "eer": 0.4527027027027027,
+        "eer_threshold": 0.8124492538941873,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.31876606683804626,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.47,
+        "brier": 0.29616506553067495,
+        "log_loss": 1.0340113274492428,
+        "ece_10_equal_width": 0.21900403773784638,
+        "threshold": 0.976669192314148,
+        "tn": 346,
+        "fp": 62,
+        "fn": 468,
+        "tp": 124,
+        "confusion_matrix": [
+          [
+            346,
+            62
+          ],
+          [
+            468,
+            124
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8480392156862745,
+            0.15196078431372548
+          ],
+          [
+            0.7905405405405406,
+            0.20945945945945946
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.15196078431372548,
+        "tpr": 0.20945945945945946,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.5572523350556439,
+          "lower": 0.5218374229593764,
+          "upper": 0.5954523289716014,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "suite.json": "0ff4dd5e36e190249982f2777221b3122ee0787a2abf1f92d0df7e9d1e2f3fbd",
+        "suite_metrics.json": "986298e25b28da917810aeb6f1ade20daaada5a8c7db7affe3348561fc589aa7",
+        "min-val-clean-proxy/status.json": "7e7aff1da0cfb9d67d8a46269763bd02d4de13a3066d8e583f41b883af0bf165",
+        "min-val-degraded-proxy/status.json": "889d511cb4cdb10181c3ef5840ad2de45206610c15c4dc049589def476d00b4c"
+      },
+      "prediction_certificates": {
+        "min-val-clean-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "c46f4e70e3a5e630e30d89d7f7574089486f1b7b75aa7ae657d5321075e8b7bb",
+            "bundle_sha256": "9d58de28e6d40048fbb2ecbc03a25ac61a39b610b58f89a5e308a884b4bba176"
+          },
+          "input_contract_sha256": "4d8a3abc29640c75c0da72ee0f1768988bbe12a5d4431c9f008cd03906a007e1",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "6402690e2025e0c251b361728d5c80e243d4551b0aa82acf97fbe5704dc09a25",
+          "manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "b3b3fc7f68b3fe6296c4f1afbe19847885dad3bcd48a77f807d1a092f5a02367"
+        },
+        "min-val-degraded-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "c46f4e70e3a5e630e30d89d7f7574089486f1b7b75aa7ae657d5321075e8b7bb",
+            "bundle_sha256": "9d58de28e6d40048fbb2ecbc03a25ac61a39b610b58f89a5e308a884b4bba176"
+          },
+          "input_contract_sha256": "4d8a3abc29640c75c0da72ee0f1768988bbe12a5d4431c9f008cd03906a007e1",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "6402690e2025e0c251b361728d5c80e243d4551b0aa82acf97fbe5704dc09a25",
+          "manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "a5f3b1c9f1dcfbebd84a18279610a5efd12f726e6d19e35735b941815558fb2a"
+        }
+      }
+    },
+    "residual-residual_only": {
+      "schema": "faceforgery-evaluation-suite-v1",
+      "scope": "pilot",
+      "checkpoint_sha256": "e15127fdaa1e78373164f3d1d59f7e79c0b8101869727b9ae037d53d03bd65d7",
+      "calibration_sha256": "cfce2f2765716ae91df44de934f74cd77ff5edb14ae6a6aab6a03cd30924785a",
+      "input_contract": {
+        "image_size": 128,
+        "resize": "PIL RGB square bilinear",
+        "representation": "model-internal",
+        "in_channels": null,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {},
+        "run_config_sha256": "785ed8a7a7f520ffaf2162c987eea8dc2134b19b0d0be4789d241df6f4ead66c",
+        "bundle_sha256": "9a62ced22757d62fe1489dd9f8a40c298a58b3e8d29418bb90fd674b067ae72f"
+      },
+      "input_contract_sha256": "0a600f49f8d8e17ee7e8c6e483aa3d74a5f61fc09bb47c4a4edff83864171e4d",
+      "settings": {
+        "device": "cuda:0",
+        "batch_size": 16,
+        "workers": 0,
+        "amp": true,
+        "bootstrap_draws": 200,
+        "bootstrap_seed": 42,
+        "confidence": 0.95
+      },
+      "clean": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.611679004372019,
+        "average_precision": 0.6955799497238957,
+        "balanced_accuracy": 0.5871091679915209,
+        "eer": 0.4353015075376885,
+        "eer_threshold": 0.9109884296829377,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6813365933170334,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.609,
+        "brier": 0.31457514362598843,
+        "log_loss": 1.095253196414084,
+        "ece_10_equal_width": 0.2808388524875045,
+        "threshold": 0.8553685545921326,
+        "tn": 191,
+        "fp": 217,
+        "fn": 174,
+        "tp": 418,
+        "confusion_matrix": [
+          [
+            191,
+            217
+          ],
+          [
+            174,
+            418
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.4681372549019608,
+            0.5318627450980392
+          ],
+          [
+            0.2939189189189189,
+            0.706081081081081
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.5318627450980392,
+        "tpr": 0.706081081081081,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.611679004372019,
+          "lower": 0.5791123213254029,
+          "upper": 0.6414305275674966,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.5406792362215156,
+        "average_precision": 0.6254297787082661,
+        "balanced_accuracy": 0.5265136459989401,
+        "eer": 0.47058823529411764,
+        "eer_threshold": 0.8021725310998804,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.5206286836935167,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.512,
+        "brier": 0.2976637617649894,
+        "log_loss": 1.003139861206025,
+        "ece_10_equal_width": 0.2130267627835274,
+        "threshold": 0.8553685545921326,
+        "tn": 247,
+        "fp": 161,
+        "fn": 327,
+        "tp": 265,
+        "confusion_matrix": [
+          [
+            247,
+            161
+          ],
+          [
+            327,
+            265
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.6053921568627451,
+            0.3946078431372549
+          ],
+          [
+            0.5523648648648649,
+            0.44763513513513514
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.3946078431372549,
+        "tpr": 0.44763513513513514,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.5406792362215156,
+          "lower": 0.5028228313032161,
+          "upper": 0.5776604954904324,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "suite.json": "2cb5e2dc1945ae6285bc141b57628a994f96618636d1272541fdf58864aac23a",
+        "suite_metrics.json": "7fe0aaeba7d6f03d72dde00e3742b7f419f0a1381ab8348d675a65acf13326d6",
+        "min-val-clean-proxy/status.json": "0100c96751bc655daf77ecd1a308d380bb70b08a3b193c60d2d76906f523d7ac",
+        "min-val-degraded-proxy/status.json": "a8ae744ce3e1232b1eed81b13db6324ececf0eda4d94545acb254551ddf85997"
+      },
+      "prediction_certificates": {
+        "min-val-clean-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "785ed8a7a7f520ffaf2162c987eea8dc2134b19b0d0be4789d241df6f4ead66c",
+            "bundle_sha256": "9a62ced22757d62fe1489dd9f8a40c298a58b3e8d29418bb90fd674b067ae72f"
+          },
+          "input_contract_sha256": "0a600f49f8d8e17ee7e8c6e483aa3d74a5f61fc09bb47c4a4edff83864171e4d",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "e15127fdaa1e78373164f3d1d59f7e79c0b8101869727b9ae037d53d03bd65d7",
+          "manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "a5b352dda79c7d78465a9ccc17ce13f0bd7f19188cd0cd4b115c216dd496ddd1"
+        },
+        "min-val-degraded-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "785ed8a7a7f520ffaf2162c987eea8dc2134b19b0d0be4789d241df6f4ead66c",
+            "bundle_sha256": "9a62ced22757d62fe1489dd9f8a40c298a58b3e8d29418bb90fd674b067ae72f"
+          },
+          "input_contract_sha256": "0a600f49f8d8e17ee7e8c6e483aa3d74a5f61fc09bb47c4a4edff83864171e4d",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "e15127fdaa1e78373164f3d1d59f7e79c0b8101869727b9ae037d53d03bd65d7",
+          "manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "e710a08d40b3986fe919437cf4a788fd85b163519710326726beb12a4670ffd8"
+        }
+      }
+    },
+    "residual-full": {
+      "schema": "faceforgery-evaluation-suite-v1",
+      "scope": "pilot",
+      "checkpoint_sha256": "391dfb334c15a39d4871489e43e2dd082739d7b36cdfcab1e4beb8e38fff3d55",
+      "calibration_sha256": "a1d4a699f6677b630588dcdf495ec7deaceedab971fcd20fe060b3a8b004bbf1",
+      "input_contract": {
+        "image_size": 128,
+        "resize": "PIL RGB square bilinear",
+        "representation": "model-internal",
+        "in_channels": null,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {},
+        "run_config_sha256": "df27e28d1f17d8475652242e3e7c1f4eaa9fccc442115f6702368ea4d709e940",
+        "bundle_sha256": "752a854803f0134b39937ea6bd18fc48c89854580168d231514bee4546ff3bdf"
+      },
+      "input_contract_sha256": "65e44e3eb7a8fa7aabb0c26fe6e6d029c6ff626d3fdb662318311f6f4fc6403e",
+      "settings": {
+        "device": "cuda:0",
+        "batch_size": 16,
+        "workers": 0,
+        "amp": true,
+        "bootstrap_draws": 200,
+        "bootstrap_seed": 42,
+        "confidence": 0.95
+      },
+      "clean": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.6373397754372019,
+        "average_precision": 0.7224241594446021,
+        "balanced_accuracy": 0.6058227344992051,
+        "eer": 0.39701704545454547,
+        "eer_threshold": 0.9485437084328044,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.5743380855397149,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.582,
+        "brier": 0.3323689869920663,
+        "log_loss": 1.2576483643106604,
+        "ece_10_equal_width": 0.3133933942615986,
+        "threshold": 0.9738444089889526,
+        "tn": 300,
+        "fp": 108,
+        "fn": 310,
+        "tp": 282,
+        "confusion_matrix": [
+          [
+            300,
+            108
+          ],
+          [
+            310,
+            282
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.7352941176470589,
+            0.2647058823529412
+          ],
+          [
+            0.5236486486486487,
+            0.47635135135135137
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.2647058823529412,
+        "tpr": 0.47635135135135137,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.6373397754372019,
+          "lower": 0.6031193661423695,
+          "upper": 0.6695615483149838,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.5602436075781664,
+        "average_precision": 0.6561733991678576,
+        "balanced_accuracy": 0.5392653683094859,
+        "eer": 0.44607843137254904,
+        "eer_threshold": 0.8583365363233231,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.3426395939086294,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.482,
+        "brier": 0.30877744840230137,
+        "log_loss": 1.039236670532127,
+        "ece_10_equal_width": 0.2592052347064019,
+        "threshold": 0.9738444089889526,
+        "tn": 347,
+        "fp": 61,
+        "fn": 457,
+        "tp": 135,
+        "confusion_matrix": [
+          [
+            347,
+            61
+          ],
+          [
+            457,
+            135
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8504901960784313,
+            0.14950980392156862
+          ],
+          [
+            0.7719594594594594,
+            0.22804054054054054
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.14950980392156862,
+        "tpr": 0.22804054054054054,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.5602436075781664,
+          "lower": 0.5266192893374478,
+          "upper": 0.5979655304416596,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "suite.json": "be3f5935eaa60c9d3de7dd62fdf17e0ee9c908a9c9cb69bb43f5cb67971f8497",
+        "suite_metrics.json": "fa6b5dd682603aa4d28f8cc63b527b24033a8c638347cebf203eb9cded4a5753",
+        "min-val-clean-proxy/status.json": "6ec647790c36718ec800337d9fad402cd29692c332eefaa6c6d724967b5cf2e0",
+        "min-val-degraded-proxy/status.json": "5ffccb146f047c967d93746c7eddbcd2e136b87838f9836873b90fdc2aeb1609"
+      },
+      "prediction_certificates": {
+        "min-val-clean-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "df27e28d1f17d8475652242e3e7c1f4eaa9fccc442115f6702368ea4d709e940",
+            "bundle_sha256": "752a854803f0134b39937ea6bd18fc48c89854580168d231514bee4546ff3bdf"
+          },
+          "input_contract_sha256": "65e44e3eb7a8fa7aabb0c26fe6e6d029c6ff626d3fdb662318311f6f4fc6403e",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "391dfb334c15a39d4871489e43e2dd082739d7b36cdfcab1e4beb8e38fff3d55",
+          "manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "c00c19d7aa88f735f0c460a2a7103e7a2baac68cf2e9c7f88d015aaed540ac8a"
+        },
+        "min-val-degraded-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "df27e28d1f17d8475652242e3e7c1f4eaa9fccc442115f6702368ea4d709e940",
+            "bundle_sha256": "752a854803f0134b39937ea6bd18fc48c89854580168d231514bee4546ff3bdf"
+          },
+          "input_contract_sha256": "65e44e3eb7a8fa7aabb0c26fe6e6d029c6ff626d3fdb662318311f6f4fc6403e",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "391dfb334c15a39d4871489e43e2dd082739d7b36cdfcab1e4beb8e38fff3d55",
+          "manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "cce861269acfc40a636ba3707b3b41c386992c0f87f092616b47c1a883fd7b71"
+        }
+      }
+    },
+    "ae-cae": {
+      "schema": "faceforgery-evaluation-suite-v1",
+      "scope": "pilot",
+      "checkpoint_sha256": "6d518beb8ba98741efd26100ba9a9f970636a582dfc126ce582e111810bbd871",
+      "calibration_sha256": "e81fb1573e7141f8636732ca8ba2cc5a71557e564aa058a1824899f4f62b9e67",
+      "input_contract": {
+        "image_size": 128,
+        "resize": "PIL RGB square bilinear",
+        "representation": "model-internal",
+        "in_channels": null,
+        "checkpoint_class1": "fake",
+        "score": "FP32 softmax of two logits; declared fake class",
+        "legacy_helpers_sha256": {},
+        "run_config_sha256": "93beb672303074f7bba7367480b0830e18c403e8af70a16f74c7f7c47aef45ea",
+        "bundle_sha256": "fc07422010ddb27ef541fd1ee197d651909e985475ed7dc05b14bd275a556cd2"
+      },
+      "input_contract_sha256": "611294dfd107eeda4e97ddfab2d9f58e2b09ee746212b282a94bd97b8356cb7a",
+      "settings": {
+        "device": "cuda:0",
+        "batch_size": 16,
+        "workers": 0,
+        "amp": true,
+        "bootstrap_draws": 200,
+        "bootstrap_seed": 42,
+        "confidence": 0.95
+      },
+      "clean": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.47954342209856915,
+        "average_precision": 0.5895175054762971,
+        "balanced_accuracy": 0.5066905140434552,
+        "eer": 0.5202702702702703,
+        "eer_threshold": 0.17040153572688232,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.14903129657228018,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.429,
+        "brier": 0.4168720561108992,
+        "log_loss": 1.125443771483769,
+        "ece_10_equal_width": 0.4157484654337168,
+        "threshold": 0.24163079261779785,
+        "tn": 379,
+        "fp": 29,
+        "fn": 542,
+        "tp": 50,
+        "confusion_matrix": [
+          [
+            379,
+            29
+          ],
+          [
+            542,
+            50
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.928921568627451,
+            0.07107843137254902
+          ],
+          [
+            0.9155405405405406,
+            0.08445945945945946
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.07107843137254902,
+        "tpr": 0.08445945945945946,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.47954342209856915,
+          "lower": 0.44019047974942177,
+          "upper": 0.5226728841654091,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "degraded": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.5085370296767355,
+        "average_precision": 0.6011862604571481,
+        "balanced_accuracy": 0.5038586380498145,
+        "eer": 0.5016891891891893,
+        "eer_threshold": 0.1938054495163866,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.3125,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.45,
+        "brier": 0.395755571720102,
+        "log_loss": 1.0576830270865427,
+        "ece_10_equal_width": 0.39012842874974013,
+        "threshold": 0.24163079261779785,
+        "tn": 325,
+        "fp": 83,
+        "fn": 467,
+        "tp": 125,
+        "confusion_matrix": [
+          [
+            325,
+            83
+          ],
+          [
+            467,
+            125
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.7965686274509803,
+            0.2034313725490196
+          ],
+          [
+            0.7888513513513513,
+            0.21114864864864866
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.2034313725490196,
+        "tpr": 0.21114864864864866,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden",
+        "auc_interval": {
+          "estimate": 0.5085370296767355,
+          "lower": 0.4695980711046446,
+          "upper": 0.5439054815668909,
+          "confidence": 0.95,
+          "requested_draws": 200,
+          "valid_draws": 200,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "artifacts": {
+        "suite.json": "aa51c13ae0c0a90e8656071c3485c1a86884dc7892fc3c8667be8693658b21fc",
+        "suite_metrics.json": "3fe6b27b65300316c7a6696e95e0cf2d40bc736e636abd56b24229d8d10ebd58",
+        "min-val-clean-proxy/status.json": "4796c8c707a9a1112deb62fb8eeb9ea7534b34f5ac4c1f05013a046f79db2144",
+        "min-val-degraded-proxy/status.json": "1a424874cdbde8531ec33707d2839d9009dcb784ce81f537dcc5adbb32e30a67"
+      },
+      "prediction_certificates": {
+        "min-val-clean-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "93beb672303074f7bba7367480b0830e18c403e8af70a16f74c7f7c47aef45ea",
+            "bundle_sha256": "fc07422010ddb27ef541fd1ee197d651909e985475ed7dc05b14bd275a556cd2"
+          },
+          "input_contract_sha256": "611294dfd107eeda4e97ddfab2d9f58e2b09ee746212b282a94bd97b8356cb7a",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "6d518beb8ba98741efd26100ba9a9f970636a582dfc126ce582e111810bbd871",
+          "manifest_sha256": "c04e46167396f281c9d4e9bb6edfa77c765c2c7550f0fe93bcc9b62e452dde0b",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "b96913ab171e6d1edb7bda9b6e05cb6d37ac6ffcf3a3602de4aedbf12f36b28d"
+        },
+        "min-val-degraded-proxy": {
+          "origin": "fresh image inference",
+          "preprocessing": "bilinear-square_imagenet_centered-luminance-fft_v1",
+          "input_contract": {
+            "image_size": 128,
+            "resize": "PIL RGB square bilinear",
+            "representation": "model-internal",
+            "in_channels": null,
+            "checkpoint_class1": "fake",
+            "score": "FP32 softmax of two logits; declared fake class",
+            "legacy_helpers_sha256": {},
+            "run_config_sha256": "93beb672303074f7bba7367480b0830e18c403e8af70a16f74c7f7c47aef45ea",
+            "bundle_sha256": "fc07422010ddb27ef541fd1ee197d651909e985475ed7dc05b14bd275a556cd2"
+          },
+          "input_contract_sha256": "611294dfd107eeda4e97ddfab2d9f58e2b09ee746212b282a94bd97b8356cb7a",
+          "schema": "faceforgery-research-v1",
+          "label_convention": "fake-is-1",
+          "score": "p_fake",
+          "checkpoint_class1": "fake",
+          "model_sha256": "6d518beb8ba98741efd26100ba9a9f970636a582dfc126ce582e111810bbd871",
+          "manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+          "dataset": "mffi-min",
+          "split": "pilot",
+          "rows": 1000,
+          "predictions_sha256": "aeb3ecf4e85256a8c618bcf68e61b1322fd2115576fed314da82f44d7238b3b2"
+        }
+      }
+    }
+  },
+  "interpretation": "Frozen spatial AUC declines under this one deterministic validation proxy. Full-minus-x-only AUC difference under degradation is +0.00299 with 95% CI [-0.01590, 0.02291], which includes zero. This proxy is not untouched Test-D evidence."
+}
