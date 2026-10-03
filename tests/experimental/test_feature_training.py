@@ -267,3 +267,13 @@ def test_evaluation_condition_ignores_run_paths_and_downstream_seed(tmp_path, ca
     write_json(second / "artifact.json", metadata)
     with pytest.raises(ValueError, match="implementation changed"):
         describe_run(second)
+
+
+def test_reused_mask_keeps_its_selection_seed_when_fit_seed_changes(tmp_path, caches):
+    config = configuration(tmp_path, caches, "metric", "centroid")
+    first = fit_metric_run(config)
+    second = fit_metric_run({**config, "run_dir": str(tmp_path / "different-fit-seed"),
+                             "seed": 123, "label_mask": str(first / "label_mask.json")})
+    mask = json.loads((second / "label_mask.json").read_text())
+    assert mask["seed"] == 42
+    assert describe_run(second)["research_run"]["seed"] == 123

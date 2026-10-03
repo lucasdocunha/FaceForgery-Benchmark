@@ -68,14 +68,20 @@ def label_budget(train, config, root):
     population = digest(sorted(ids.tolist()))
     source = config.get("data", {}).get("label_mask") or config.get("label_mask")
     group_column = "source_id" if "source_id" in train.frame else "group_id"
+    selection_seed = seed
+    selection_policy = "nested grouped class-stratified SHA256 ordering"
     if source:
         supplied = json.loads(Path(source).read_text())
+        if supplied.get("schema") != "faceforgery-label-mask-v1":
+            raise ValueError("Unsupported supplied label-mask schema")
         if supplied.get("population_sha256") != population:
             raise ValueError("Label-mask population differs from training cache")
         selected_ids = supplied["selected_ids"]
         if len(selected_ids) != len(set(selected_ids)) or not set(selected_ids) <= set(ids):
             raise ValueError("Label mask has duplicate or unknown sample IDs")
         mask = np.isin(ids, selected_ids)
+        selection_seed = int(supplied["seed"])
+        selection_policy = supplied.get("selection_policy", "supplied keyed training mask")
         fraction = float(supplied["fraction"])
         if "label_fraction" in cfg and fraction != float(cfg["label_fraction"]):
             raise ValueError("Requested label fraction differs from supplied mask")
@@ -93,7 +99,8 @@ def label_budget(train, config, root):
         if len(set(mask[rows.index.to_numpy()])) != 1:
             raise ValueError("All views in a source group must share the label mask")
     record = {
-        "schema": "faceforgery-label-mask-v1", "seed": seed, "fraction": fraction,
+        "schema": "faceforgery-label-mask-v1", "seed": selection_seed, "fraction": fraction,
+        "selection_policy": selection_policy,
         "population_sha256": population, "selected_ids": sorted(selected_labels),
         "selected_labels": selected_labels, "group_column": group_column,
         "selected_class_counts": {str(c): int((observed == c).sum()) for c in (0, 1)},
@@ -302,7 +309,7 @@ def evaluation_identity(root, record):
         "source_train_manifest_sha256": record["train_manifest"]["manifest_sha256"],
         "source_val_manifest_sha256": record["validation_manifest"]["manifest_sha256"],
         "frozen_representation": {key: value for key, value in record["representation_key"].items() if key != "commit"},
-        "label_selection": {"policy": "nested grouped class-stratified SHA256 ordering",
+        "label_selection": {"policy": mask.get("selection_policy", "nested grouped class-stratified SHA256 ordering"),
                             "fraction": mask["fraction"], "group_column": mask["group_column"]},
         "projection_pretraining": None if projection is None else projection["condition"],
         "implementation_sha256": record["implementation"],

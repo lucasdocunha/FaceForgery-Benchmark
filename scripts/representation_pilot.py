@@ -25,6 +25,10 @@ def summarize_pilot(output, *, draws=1000):
     pilot = json.loads((output / "pilot.json").read_text())
     runs = {(row["family"], row["kind"], row["label_fraction"]): row
             for row in pilot["runs"] if row["status"] == "complete"}
+    if not runs:
+        report = {**pilot, "paired_comparisons": [], "analysis_software": source_identity()}
+        write_json(output / "pilot_summary.json", report)
+        return report
     predictions = {key: pd.read_csv(Path(row["run_dir"]) / "val_predictions.csv") for key, row in runs.items()}
     first_run = next(iter(runs.values()))
     first_artifact = json.loads((Path(first_run["run_dir"]) / "artifact.json").read_text())
@@ -76,7 +80,9 @@ def summarize_pilot(output, *, draws=1000):
         complement["score_pearson"] = float(np.corrcoef(checkpoint.p_fake, aligned)[0, 1])
         enriched.append({**row, "telemetry": telemetry, "selected_training_loss": loss,
                          "checkpoint_complementarity": complement})
-    report = {**pilot, "runs": enriched, "paired_comparisons": comparisons,
+    enriched_by_key = {(row["family"], row["kind"], row["label_fraction"]): row for row in enriched}
+    report = {**pilot, "runs": [enriched_by_key.get((row["family"], row["kind"], row["label_fraction"]), row)
+                               for row in pilot["runs"]], "paired_comparisons": comparisons,
               "analysis_software": source_identity(),
               "uncertainty_limitations": "Image-only supplied groups; conditional on fitted and validation-selected checkpoints, not independent confirmation or across-seed uncertainty.",
               "rss_scope": "Process lifetime high-water mark; not an isolated per-model peak."}
