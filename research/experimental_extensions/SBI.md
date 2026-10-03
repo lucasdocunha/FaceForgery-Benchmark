@@ -4,7 +4,7 @@ This is an independently implemented SBI-style training recipe. It uses one sour
 
 The local clean proxy compares generic ImageNet initialization across `sbi`, `mffi` and `mixed`. The source real cohort, initial model state, seed, optimizer and number of updates are identical. Every epoch contains two slots per accepted real face: one real and one fake. SBI uses self-blends; MFFI rotates through genuine training fakes; mixed uses both. The pure SBI arm never reads training fake image pixels. Source validation includes MFFI fakes for checkpoint selection and frozen Youden calibration. Consequently this is unseen-forgery *training*, not a completely fake-free model-selection procedure.
 
-HF initialization is a separate adaptation experiment. Those models already saw MFFI training fakes and were selected on full MFFI val, which contains min-val. Never describe this arm as a clean unseen-forgery experiment. Original HF preprocessing is preserved: ImageNet normalization followed by three fixed SRM residual filters, six channels total. Batched GPU preprocessing stays FP32 even inside AMP and is checked against the original implementation.
+HF initialization is a separate adaptation experiment. Those models already saw MFFI training fakes and were selected on full MFFI val, which contains min-val. Never describe these conditions as clean unseen-forgery experiments. The primary DINO/CLIP recipe mixes SBI pseudo-fakes with MFFI fakes; SBI-only adaptation is a secondary forgetting ablation because the local SBI-only smokes reduced source discrimination. Original HF preprocessing is preserved: ImageNet normalization followed by three fixed SRM residual filters, six channels total. Batched GPU preprocessing stays FP32 even inside AMP and is checked against the original implementation.
 
 ## Prepare landmarks once
 
@@ -40,18 +40,20 @@ for TCC_SEED in 42 123 2024 7 2025; do
 done
 ```
 
-For adaptation, choose the exact family and matching seed checkpoint, together with its original `results/run_config.json` layout. DINO-SRM and CLIP-SRM are the full-server priorities; MobileNet-SRM is the inexpensive local check. No robust RGB checkpoint is assumed available.
+For adaptation, choose the exact family and matching seed checkpoint, together with its original `results/run_config.json` layout. Mixed DINO-SRM and CLIP-SRM adaptation is the primary server condition; MobileNet-SRM is the inexpensive local check. The backbone/head learning rates stay at 1e-5/1e-4. No robust RGB checkpoint is assumed available.
 
 ```bash
 export TCC_SEED=42
 export TCC_SBI_INIT_CHECKPOINT="$TCC_MODELS_ROOT/dino/srm/finetune_robust/seed_$TCC_SEED/weights/best.pth"
-export TCC_RUN_DIR="$TCC_EXPERIMENT_ROOT/sbi-hf-dino-srm/seed_$TCC_SEED"
+export TCC_RUN_DIR="$TCC_EXPERIMENT_ROOT/sbi-hf-dino-srm-mixed/seed_$TCC_SEED"
 python research_cli.py experimental train --family sbi \
   --config configs/experimental/sbi_hf_adaptation.yaml \
   --seed "$TCC_SEED" --device cuda --execute
 ```
 
 Repeat with `clip` and all canonical seeds. Checkpoint loading validates the source architecture, original resolution, input channels and encoding; the trained artifact contains the complete classifier state and resolved network specification. Calibrate and evaluate with the common [server runbook](SERVER_RUNBOOK.md) and `configs/experimental/suites/sbi.yaml`.
+
+For the secondary SBI-only ablation, use `configs/experimental/sbi_hf_sbi_only_ablation.yaml` and a distinct `sbi-hf-<family>-srm-sbi-only/seed_<seed>` output directory. The two configs have the same optimizer, allocation and preprocessing; only the fake-source arm and condition name differ. Retain the unadapted checkpoint as a control, and compare mean/geometric fusion of it with its mixed-adapted realization using the runbook's matched pair condition.
 
 ## Local pilot reproduction
 

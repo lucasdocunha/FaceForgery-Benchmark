@@ -1,5 +1,5 @@
-# Primary mixed SBI/MFFI adaptation after prior fake exposure; retain unadapted controls.
-name: sbi-hf-mixed-adaptation
+# Secondary SBI-only forgetting ablation after MFFI fake exposure.
+name: sbi-hf-sbi-only-ablation
 seed: 42
 output_dir: ${TCC_RUN_DIR}
 data:
@@ -15,7 +15,7 @@ model:
   image_size: 224
   train_backbone: true
 training:
-  arm: mixed
+  arm: sbi
   epochs: 5
   batch_size: 16
   grad_accum_steps: 4

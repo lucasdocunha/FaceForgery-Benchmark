@@ -63,7 +63,7 @@ python -m src.experimental.sbi.landmarks \
   --asset "$TCC_LANDMARK_ASSET" --output "$TCC_LANDMARK_CACHE"
 ```
 
-For HF adaptation, explicitly choose the matching seed and DINO/CLIP/MobileNet checkpoint in `TCC_SBI_INIT_CHECKPOINT`. This condition has prior MFFI fake exposure and is recorded separately from generic SBI.
+For HF adaptation, explicitly choose the matching seed and DINO/CLIP/MobileNet checkpoint in `TCC_SBI_INIT_CHECKPOINT`. The primary `sbi_hf_adaptation.yaml` uses `arm: mixed`, combining SBI pseudo-fakes and MFFI fakes with backbone/head LR 1e-5/1e-4. Use `sbi_hf_sbi_only_ablation.yaml` for the secondary SBI-only forgetting control, in a separate condition directory. Both have prior MFFI fake exposure and are recorded separately from generic SBI.
 
 The cache interface extracts frozen features/logits from an existing legacy RGB or SRM checkpoint with its exact preprocessing. Repeat for source train, source validation and each target, using the same selected extractor. The printed `cache` path, rather than its parent directory, is the family input:
 
@@ -132,6 +132,58 @@ sources:
 Both server MoE conditions use `expert_seed_policy: matched`: every expert's recorded seed must equal the router seed. Stage the corresponding HF checkpoints and new-expert run for each canonical seed. The explicit `fixed` policy is reserved for downstream router variation on unchanged experts and records that narrower uncertainty scope. Compare the new expert and router against the original two-expert mean/geometric controls on the identical held-out rows; adding a weak expert can make a three-way mean artificially easy to beat.
 
 Run that original two-expert control with `configs/experimental/moe_srm_pair_control.yaml` in its own `TCC_RUN_DIR`. Use only the first two sources in the calibration options above, and evaluate with `configs/experimental/suites/moe_srm_pair_control.yaml`. It emits individual, mean, geometric, LR and router calibrations and comparisons just like the three-expert condition. Both configurations use `split_seed: 42` and `fit_fraction: 0.5`, so their val_fit/val_select IDs match independently of the expert count.
+
+### Each original checkpoint plus its mixed adaptation
+
+The priority-1 `srm-original-plus-mixed-sbi` row has separate DINO/CLIP and mean/geometric variants. Set `TCC_FUSION_BACKBONE=dino` or `clip`, the matching `TCC_SEED`, `TCC_SBI_MIXED_RUN_DIR` and `TCC_FEATURE_SRM_VAL`. The feature cache must use the exact checkpoint that initialized this mixed run. Export that recorded identity, checking the native arm:
+
+```bash
+export TCC_SBI_INIT_CHECKPOINT_SHA256="$(python - <<'PY'
+import json, os, re
+from pathlib import Path
+cfg = json.loads((Path(os.environ['TCC_SBI_MIXED_RUN_DIR']) / 'run.json').read_text())['config']
+assert cfg['model']['initialization'] == 'hf_mffi'
+assert cfg['training']['arm'] == 'mixed'
+value = cfg['provenance']['initialization_sha256']
+assert isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value)
+print(value)
+PY
+)"
+export TCC_RUN_DIR="$TCC_EXPERIMENT_ROOT/srm-original-plus-mixed-sbi/$TCC_FUSION_BACKBONE/seed_$TCC_SEED"
+python research_cli.py experimental train --family moe \
+  --config configs/experimental/moe_srm_mixed_sbi_pair.yaml \
+  --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+export TCC_EVAL_MODEL="$TCC_RUN_DIR"
+```
+
+The existing fusion artifact API also fits a router and logistic control on `val_fit`; these are incidental, not the primary comparison. Mean is the arithmetic mean of the two fake probabilities; `geometric` is their scalar geometric mean. Each receives its own frozen threshold on `val_select`. Keep the original checkpoint and its `results/run_config.json` for matched-cache verification. Prior HF/adapted source-validation selection overlap is still a limitation; this split does not remove that inherited optimism.
+
+Write `TCC_CALIBRATION_OPTIONS` as a YAML file with these exact ordered source identities:
+
+```yaml
+method: ${TCC_FUSION_METHOD}
+sources:
+  - {name: unadapted_srm, role: srm, kind: feature_cache, path: "${TCC_FEATURE_SRM_VAL}", checkpoint_sha256: "${TCC_SBI_INIT_CHECKPOINT_SHA256}"}
+  - {name: mixed_sbi, role: sbi, kind: predictions, path: "${TCC_SBI_MIXED_RUN_DIR}/validation_predictions.csv"}
+```
+
+Set `TCC_OUTPUT_ROOT` to a fresh report parent specific to this backbone and seed. For all four targets, supply `TCC_EVAL_<TARGET>_SRM_CACHE` from the same original checkpoint and `TCC_EVAL_<TARGET>_MIXED_SBI_PREDICTIONS` from the mixed model's frozen suite, where `TARGET` is `TEST`, `TEST_D`, `DF40` or `CELEB`. Then run both prespecified methods:
+
+```bash
+for TCC_FUSION_METHOD in mean geometric; do
+  export TCC_FUSION_METHOD
+  export TCC_CALIBRATION_DIR="$TCC_OUTPUT_ROOT/$TCC_FUSION_METHOD/calibration"
+  python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" \
+    --manifest "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" \
+    --options "$TCC_CALIBRATION_OPTIONS" --output "$TCC_CALIBRATION_DIR" \
+    --device cpu --threshold-policy youden --execute
+  export TCC_EVAL_CALIBRATION="$TCC_CALIBRATION_DIR/calibration.json"
+  export TCC_SUITE_OUTPUT="$TCC_OUTPUT_ROOT/$TCC_FUSION_METHOD/four-target"
+  python research_cli.py experimental evaluate \
+    --config configs/experimental/suites/moe_srm_mixed_sbi_pair.yaml \
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+done
+```
 
 ## Prepare the four targets
 

@@ -69,14 +69,16 @@ Seed 123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653, -0.175
 
 The one-epoch MobileNet-SRM HF adaptation smoke reached 0.9431 [0.9289, 0.9531] on min-val. Its unadapted verified checkpoint had 0.9457. This is prior-supervised adaptation evidence and does not establish improvement or unseen-forgery performance.
 
-Fixed one-epoch DINO/CLIP adaptation smokes used the same 202 reals, 13 updates, batch 2 with accumulation 16, and learning rates 1e-5/1e-4 for backbone/head. Neither was tuned after scoring. Their clean/degraded AUCs were:
+Fixed one-epoch DINO/CLIP SBI-only adaptation smokes used the same 202 reals, 13 updates, batch 2 with accumulation 16, and learning rates 1e-5/1e-4 for backbone/head. Neither was tuned after scoring. Their clean/degraded AUCs were:
 
-| HF SRM model | Unadapted clean / degraded | SBI-adapted clean / degraded | Adapted-minus-unadapted degraded AUC [95% CI] |
+| HF SRM model | Unadapted clean / degraded | SBI-only-adapted clean / degraded | Adapted-minus-unadapted degraded AUC [95% CI] |
 | --- | --- | --- | --- |
 | DINO | 0.9940 / 0.9614 | 0.9675 / 0.8958 | -0.0656 [-0.0819, -0.0517] |
 | CLIP | 0.9840 / 0.9345 | 0.7855 / 0.7302 | -0.2043 [-0.2360, -0.1735] |
 
 Both completed their only epoch, then hit the RSS guard during best-bundle restoration. Memory-mapped checkpoint loading fixed that finalization cost; resumption performed zero additional updates. Fresh-process clean/degraded suites reproduced the saved clean scores exactly, in 61.53 seconds for DINO and 27.52 seconds for CLIP, below the RSS cap. The records retain initial stops, finalization-only telemetry, complete histories, unadapted controls and all calibrated metrics. These short adaptations show source-discrimination loss, especially for CLIP; they provide no local efficacy support for this recipe. Evidence: [pilot_results/sbi/hf_strong_adaptation_seed42.json](pilot_results/sbi/hf_strong_adaptation_seed42.json).
+
+Director message 017 prescribed one source-only DINO mixed-adaptation follow-up with the same initializer, data, 13-update budget and learning rates. Clean/degraded AUC was 0.98823/0.93483, compared with SBI-only 0.96751/0.89580 and unadapted 0.99401/0.96143. Mixed-minus-SBI-only degraded AUC is +0.03902 [0.02554, 0.05214]; mixed-minus-unadapted is -0.02660 [-0.03643, -0.01880]. Mixing reduces the observed loss but does not remove it, and supplies no cross-dataset efficacy claim. The fit and fresh-process source suites took 118.58/61.03 seconds, peak RSS 2775896/2282920 KiB; reload error was zero. Including two retained setup rejections, total attempt time was 183.61 seconds, below the ten-minute allowance. This later source-only follow-up did not reopen the frozen min-test comparison. [The mixed-pilot record](pilot_results/sbi/hf_dino_mixed_adaptation_seed42.json) retains exact inputs, failures and paired controls.
 
 The held-out sanity check uses only the 408 validation real faces and 408 generated self-blends. All landmark detections and generation steps passed; four fixed-seed example pairs were visually inspected. The recipe is unchanged, no fitting occurs, MFFI-val thresholds remain frozen, and the bootstrap resamples each real/SBI pair together.
 
@@ -87,7 +89,7 @@ The held-out sanity check uses only the 408 validation real faces and 408 genera
 
 Pure SBI learns some held-out signal, but separation is modest and selected-checkpoint age is only 13 updates. This does not establish strong artifact anti-transfer or a generator defect; the pilots are inconclusive and consistent with undertraining or a mismatch between checkpoint selection and the SBI objective. All six sanity suites finished in 27.02 seconds, peak sampled RSS 1953808 KiB. Full metrics and provenance are in [the held-out SBI and MobileNet control record](pilot_results/heldout_sbi_and_mobilenet_controls.json).
 
-SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. Even the full 65-update allocation on 202 real faces is far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP adaptation campaign rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting.
+SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. Even the full 65-update allocation on 202 real faces is far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP campaign therefore uses mixed SBI/MFFI adaptation as primary, with SBI-only as a secondary forgetting ablation. It rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting and unadapted controls.
 
 ### Reconstruction
 
@@ -154,7 +156,7 @@ The frozen min-test comparison used all three generic SBI seed 42 arms and HF DI
 | Generic mixed | 0.6360 [0.6007, 0.6727] | 0.5338 [0.4969, 0.5704] | 0.3183 |
 | Original HF DINO-SRM | 0.9192 [0.9037, 0.9362] | 0.8274 [0.8040, 0.8525] | 0.1919 |
 
-SBI-minus-MFFI clean AUC is -0.0959 [-0.1422, -0.0508]; mixed-minus-MFFI is +0.0060 [-0.0266, 0.0404]. Both degraded differences include zero. This frozen one-seed comparison supports no SBI or mixed-training benefit. The SBI source threshold misclassifies 92.7% of clean test reals as fake, illustrating poor threshold transfer; the threshold remains unchanged. DINO's clean AUC exactly reproduces the original compatibility check, but its larger prior training budget makes it a reference, not a matched attribution control. The four successful suites took 97.56 seconds combined, with maximum sampled RSS 1942360 KiB. [Comparison evidence](pilot_results/frozen_min_test/comparison.json), [all calibrated metrics](pilot_results/frozen_min_test/metrics.csv) and [labeled diagnostic plots](pilot_results/frozen_min_test/README.md) retain the uncertainty, artifacts, failure and retry history. No training, calibration, candidate or recipe changed after these target scores.
+SBI-minus-MFFI clean AUC is -0.0959 [-0.1422, -0.0508]; mixed-minus-MFFI is +0.0060 [-0.0266, 0.0404]. Both degraded differences include zero. This frozen one-seed comparison supports no SBI or mixed-training benefit. The SBI source threshold misclassifies 92.7% of clean test reals as fake, illustrating poor threshold transfer; the threshold remains unchanged. DINO's clean AUC exactly reproduces the original compatibility check, but its larger prior training budget makes it a reference, not a matched attribution control. The four successful suites took 97.56 seconds combined, with maximum sampled RSS 1942360 KiB. [Comparison evidence](pilot_results/frozen_min_test/comparison.json), [all calibrated metrics](pilot_results/frozen_min_test/metrics.csv) and [labeled diagnostic plots](pilot_results/frozen_min_test/README.md) retain the uncertainty, artifacts, failure and retry history. None of these frozen candidates or calibrations changed afterward. The separately prescribed mixed-HF follow-up above used only source validation and was not added to this closed test comparison.
 
 ## Server campaign and experiment matrix
 
@@ -162,7 +164,9 @@ The executable command inventory is [experiment_matrix.yaml](experiment_matrix.y
 
 | Priority | Matrix rows | Architecture / regime | Why run it |
 | ---: | --- | --- | --- |
-| 1 | sbi-hf-dino-srm; sbi-hf-clip-srm | Verified strong SRM backbones, SBI adaptation | Controlled cross-dataset hypothesis, preserving unadapted and simple-fusion baselines |
+| 1, primary | sbi-hf-dino-srm-mixed; sbi-hf-clip-srm-mixed | Strong SRM backbones, mixed SBI/MFFI adaptation | Test the cross-dataset hypothesis while retaining MFFI fake supervision and low backbone LR |
+| 1, secondary | sbi-hf-dino-srm-sbi-only; sbi-hf-clip-srm-sbi-only | Same initialization and allocation, SBI-only adaptation | Measure forgetting relative to mixed and unadapted controls |
+| 1, fusion | srm-original-plus-mixed-sbi | Each original SRM checkpoint plus its own mixed-adapted realization, mean/geometric | Test complementarity with separate source-validation calibrations |
 | 1 | sbi-generic-sbi; sbi-generic-mffi; sbi-generic-mixed | Generic MobileNet, matched budgets | Establish whether the negative tiny-source result persists with enough genuine faces |
 | 2 | srm-pair-control; srm-pair-plus-new-expert | DINO-SRM + CLIP-SRM, with and without a certified new expert | Advance only if source-held-out complementarity warrants it |
 | 2 | moe-srm-rgb-reconstruction-soft; top2 | Frozen three-role experts | Mandatory routing attribution against all simple controls |
@@ -190,7 +194,7 @@ The experimental CLI, SBI recipe, landmark cache and Celeb-DF video-mean suite a
 FF++ acquisition, official crop/sampling reproduction, its source manifests and the official DF-40 split are not supplied or validated here.
 Strict FF++-only comparisons also require suitable generic DINO/CLIP initialization support; the current HF-adaptation template carries prior MFFI fake exposure and cannot be relabeled FF++-only merely by replacing a manifest.
 Treat that initializer extension and protocol verification as server preparation TODOs, and retain a separately labeled extra-data condition if MFFI-supervised initialization is used.
-Run the priority-1 SBI DINO/CLIP campaign under MFFI for benchmark continuity and, if FF++ is available, under the matched FF++ to Celeb-DF protocol for literature comparability.
+Run the priority-1 mixed SBI/MFFI DINO/CLIP campaign under MFFI for benchmark continuity and, if FF++ is available, under the matched FF++ to Celeb-DF protocol for literature comparability.
 The independent MediaPipe SBI recipe is an experimental variant, so it must be compared against a faithfully reproduced published SBI control rather than described as that method's exact reproduction.
 
 ## Validation, failures and remaining limitations

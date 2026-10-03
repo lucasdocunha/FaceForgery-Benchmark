@@ -63,13 +63,13 @@ evaluation_protocols:
     polarity: official 1=real explicitly converted to internal 1=fake
     coverage: official 518 test videos
 experiments:
-- name: sbi-hf-dino-srm
+- name: sbi-hf-dino-srm-mixed
   priority: 1
-  server_reason: Highest-priority conditional cross-dataset study; retain unadapted checkpoint and simple SRM fusion
-    as controls.
+  server_reason: Primary cross-dataset hypothesis while retaining MFFI fake discrimination; compare unadapted, secondary
+    SBI-only and original/adapted simple fusion.
   family: sbi
   architecture: dino verified pretrained SRM backbone
-  regime: SBI adaptation after MFFI fake exposure
+  regime: mixed SBI pseudo-fakes and MFFI fakes after prior MFFI exposure
   input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
   seeds:
   - 42
@@ -89,7 +89,7 @@ experiments:
   config: configs/experimental/sbi_hf_adaptation.yaml
   environment:
     TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/dino/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
-  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-dino-srm/seed_${TCC_SEED}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-dino-srm-mixed/seed_${TCC_SEED}
   train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_adaptation.yaml
     --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
   calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
@@ -117,13 +117,14 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
-- name: sbi-hf-clip-srm
+  campaign_role: primary mixed SBI/MFFI adaptation
+- name: sbi-hf-clip-srm-mixed
   priority: 1
-  server_reason: Highest-priority conditional cross-dataset study; retain unadapted checkpoint and simple SRM fusion
-    as controls.
+  server_reason: Primary cross-dataset hypothesis while retaining MFFI fake discrimination; compare unadapted, secondary
+    SBI-only and original/adapted simple fusion.
   family: sbi
   architecture: clip verified pretrained SRM backbone
-  regime: SBI adaptation after MFFI fake exposure
+  regime: mixed SBI pseudo-fakes and MFFI fakes after prior MFFI exposure
   input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
   seeds:
   - 42
@@ -143,7 +144,7 @@ experiments:
   config: configs/experimental/sbi_hf_adaptation.yaml
   environment:
     TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/clip/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
-  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-clip-srm/seed_${TCC_SEED}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-clip-srm-mixed/seed_${TCC_SEED}
   train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_adaptation.yaml
     --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
   calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
@@ -171,6 +172,185 @@ experiments:
     - ${TCC_SUITE_OUTPUT}/df40
     - ${TCC_SUITE_OUTPUT}/celeb_df_v2
   seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: primary mixed SBI/MFFI adaptation
+- name: sbi-hf-dino-srm-sbi-only
+  priority: 1
+  server_reason: Secondary forgetting control against the mixed primary and unadapted checkpoint; local SBI-only
+    adaptation reduced degraded discrimination.
+  family: sbi
+  architecture: dino verified pretrained SRM backbone
+  regime: SBI-only adaptation after MFFI fake exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models dino/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_sbi_only_ablation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/dino/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-dino-srm-sbi-only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_sbi_only_ablation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: secondary SBI-only forgetting ablation; run after the mixed primary
+- name: sbi-hf-clip-srm-sbi-only
+  priority: 1
+  server_reason: Secondary forgetting control against the mixed primary and unadapted checkpoint; local SBI-only
+    adaptation reduced degraded discrimination.
+  family: sbi
+  architecture: clip verified pretrained SRM backbone
+  regime: SBI-only adaptation after MFFI fake exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models clip/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_sbi_only_ablation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/clip/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-clip-srm-sbi-only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_sbi_only_ablation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: secondary SBI-only forgetting ablation; run after the mixed primary
+- name: srm-original-plus-mixed-sbi
+  priority: 1
+  server_reason: Pair each original DINO/CLIP SRM checkpoint with its own mixed-adapted realization to test an SBI
+    specialist without replacing the original score.
+  family: moe
+  architecture: 'two frozen experts: original SRM and its exact-initializer mixed SBI adaptation'
+  regime: fixed mean/geometric probabilities; source val_select calibration; incidental router/LR fits on val_fit
+  input_representation: cached features and certified new-expert probabilities
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: original matching-seed DINO/CLIP SRM checkpoint, SHA-256 bound to mixed SBI run initialization_sha256
+  config: configs/experimental/moe_srm_mixed_sbi_pair.yaml
+  environment:
+    TCC_FEATURE_SRM_VAL: certified cache from the exact unadapted initializer checkpoint
+    TCC_SBI_MIXED_RUN_DIR: ${TCC_EXPERIMENT_ROOT}/sbi-hf-${TCC_FUSION_BACKBONE}-srm-mixed/seed_${TCC_SEED}
+    TCC_SBI_INIT_CHECKPOINT_SHA256: read config.provenance.initialization_sha256 from the immutable mixed run.json
+    TCC_FUSION_METHOD: mean or geometric; separate calibration and suite output for each
+  run_directory: ${TCC_EXPERIMENT_ROOT}/srm-original-plus-mixed-sbi/${TCC_FUSION_BACKBONE}/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_srm_mixed_sbi_pair.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe_srm_mixed_sbi_pair.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe_srm_mixed_sbi_pair.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json, distinct per TCC_FUSION_METHOD
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: primary complementarity control with fixed mean and geometric scores
+  variants:
+    backbone:
+    - dino
+    - clip
+    fusion_method:
+    - mean
+    - geometric
+  variant_environment:
+    backbone: TCC_FUSION_BACKBONE
+    fusion_method: TCC_FUSION_METHOD
+  operator_note: Run the artifact fit once per backbone/seed, then both source calibrations and both frozen four-target
+    suites. Existing HF/adapted validation-selection overlap remains a limitation.
 - name: sbi-generic-sbi
   priority: 1
   server_reason: Required clean-training-forgery control; local failure must remain visible.
