@@ -16,3 +16,4 @@ opencv-python-headless==4.13.0.92
 seaborn==0.13.2
 pytest==9.1.1
 tabulate==0.10.0
+peft>=0.10.0

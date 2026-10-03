@@ -114,7 +114,7 @@ for SEED in "${SEEDS[@]}"; do
         --execute || true
 
     CALIB_DIR="${TCC_RUN_DIR}/calibration"
-    mkdir -p "$CALIB_DIR"
+    rm -rf "$CALIB_DIR"
     if [[ -f "${TCC_RUN_DIR}/val_select.csv" ]]; then
         python research_cli.py experimental calibrate \
             --family moe \

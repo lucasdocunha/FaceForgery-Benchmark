@@ -112,7 +112,7 @@ for SEED in "${SEEDS[@]}"; do
         --execute || true
 
     CALIB_DIR="${TCC_RUN_DIR}/calibration"
-    mkdir -p "$CALIB_DIR"
+    rm -rf "$CALIB_DIR"
     python research_cli.py experimental calibrate \
         --family vlm \
         --run "$TCC_RUN_DIR" \

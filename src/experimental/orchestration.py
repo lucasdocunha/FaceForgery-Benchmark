@@ -201,7 +201,9 @@ def calibrate_experiment(family, run_dir, manifest, root, output, *, options=Non
     if certificate["split"] != "val":
         raise ValueError("Experimental calibration accepts source validation only")
     output = Path(output)
-    if output.exists():
+    if output.is_dir() and not any(output.iterdir()):
+        pass
+    elif output.exists():
         raise FileExistsError("Use a fresh experimental calibration directory")
     if not Path(root).is_dir():
         raise FileNotFoundError(f"Source image root does not exist: {root}")
