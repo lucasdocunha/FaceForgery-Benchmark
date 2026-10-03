@@ -15,7 +15,7 @@ from src.experimental.sbi.cache import LandmarkStore
 from src.experimental.sbi.training import describe_run, fit, load_model
 from src.robustness.inference import predict
 from src.robustness.manifests import load_manifest, save_manifest
-from src.robustness.provenance import digest_file, write_json
+from src.robustness.provenance import digest, digest_file, write_json
 
 
 @pytest.fixture
@@ -214,3 +214,119 @@ def test_hf_adaptation_preserves_scores_and_reload_needs_no_initial_weights(sbi_
     descriptor = describe_run(sbi_source["output_dir"])
     assert descriptor["run_record"]["config"]["provenance"]["prior_mffi_fake_exposure"]
     assert load_model(sbi_source["output_dir"])(raw).shape == (2,2)
+
+
+def native_sbi_moe_expert(config):
+    from src.experimental.moe.data import open_expert
+
+    fit(config)
+    root = Path(config["output_dir"])
+    spec = {"name": "new_expert", "role": "sbi", "kind": "predictions",
+            "path": str(root / "validation_predictions.csv"), "calibration": str(root / "calibration.json")}
+    return spec, open_expert(spec)
+
+
+def test_matched_moe_sbi_native_bundle_guards(sbi_source, monkeypatch):
+    from dataclasses import replace
+    import src.experimental.sbi as reader
+    from src.experimental.moe.data import open_expert
+    from src.experimental.moe.identity import expert_conditions
+
+    spec, expert = native_sbi_moe_expert(sbi_source)
+    description = describe_run(sbi_source["output_dir"])
+    conditions, seeds = expert_conditions([spec], [expert], policy="matched", seed=42)
+    assert seeds == [42]
+    assert conditions[0]["source_condition"] == {
+        "family": "sbi", "condition": description["research_run"]["condition"],
+        "feature_columns": [], "score": "certified p_fake"}
+    with pytest.raises(ValueError, match="Matched expert seed differs"):
+        expert_conditions([spec], [expert], policy="matched", seed=123)
+    wrong_role = {**spec, "role": "rgb"}
+    with pytest.raises(ValueError, match="verified comparable training policy"):
+        expert_conditions([wrong_role], [open_expert(wrong_role)], policy="matched", seed=42)
+    wrong_family = copy.deepcopy(expert.contract)
+    wrong_family["input_contract"]["family"] = "reconstruction"
+    with pytest.raises(ValueError, match="SBI input contract"):
+        expert_conditions([spec], [replace(expert, contract=wrong_family)], policy="matched", seed=42)
+    for key in ("checkpoint_sha256", "input_contract"):
+        changed = copy.deepcopy(expert.contract)
+        if key == "checkpoint_sha256":
+            changed[key] = digest("different checkpoint")
+        else:
+            changed[key]["image_size"] = 64
+        with pytest.raises(ValueError, match="SBI source bundle differs"):
+            expert_conditions([spec], [replace(expert, contract=changed)], policy="matched", seed=42)
+    stale_metadata = {**expert.source_metadata, "predictions_sha256": digest("different predictions")}
+    with pytest.raises(ValueError, match="SBI source bundle differs"):
+        expert_conditions([spec], [replace(expert, source_metadata=stale_metadata)], policy="matched", seed=42)
+    path = Path(spec["path"])
+    exported = path.with_name("exported.csv")
+    exported.write_bytes(path.read_bytes())
+    Path(str(exported) + ".json").write_bytes(Path(str(path) + ".json").read_bytes())
+    export_spec = {**spec, "path": str(exported)}
+    with pytest.raises(ValueError, match="native run/validation_predictions.csv"):
+        expert_conditions([export_spec], [open_expert(export_spec)], policy="matched", seed=42)
+    changed = copy.deepcopy(description)
+    changed["research_run"]["condition_sha256"] = digest("different condition")
+    with monkeypatch.context() as patch:
+        patch.setattr(reader, "describe_run", lambda root: changed)
+        with pytest.raises(ValueError, match="controlled condition hash mismatch"):
+            expert_conditions([spec], [expert], policy="matched", seed=42)
+    changed = copy.deepcopy(description)
+    changed["research_run"]["condition"]["family"] = "reconstruction"
+    changed["research_run"]["condition_sha256"] = digest(changed["research_run"]["condition"])
+    with monkeypatch.context() as patch:
+        patch.setattr(reader, "describe_run", lambda root: changed)
+        with pytest.raises(ValueError, match="different forensic role"):
+            expert_conditions([spec], [expert], policy="matched", seed=42)
+
+
+def test_matched_moe_sbi_rejects_changed_native_artifacts(sbi_source):
+    from src.experimental.moe.identity import expert_conditions
+
+    spec, expert = native_sbi_moe_expert(sbi_source)
+    root = Path(sbi_source["output_dir"])
+    for name in ("best.pt", "run.json", "calibration.json", "validation_predictions.csv",
+                 "validation_predictions.csv.json"):
+        path = root / name
+        size, checksum = path.stat().st_size, digest_file(path)
+        with path.open("ab") as stream:
+            stream.write(b"changed")
+        try:
+            with pytest.raises(ValueError, match="SBI artifact changed"):
+                expert_conditions([spec], [expert], policy="matched", seed=42)
+        finally:
+            with path.open("r+b") as stream:
+                stream.truncate(size)
+        assert digest_file(path) == checksum
+    assert expert_conditions([spec], [expert], policy="matched", seed=42)[1] == [42]
+
+
+def test_matched_moe_sbi_conditions_match_canonical_hf_seeds(sbi_source, tmp_path):
+    from dataclasses import asdict
+    from src.models.registry import MODEL_REGISTRY
+    from src.pipelines.config import TrainingConfig
+    from src.experimental.moe.identity import expert_conditions
+
+    conditions, realizations = [], []
+    for seed in (42, 123, 2024, 7, 2025):
+        source = tmp_path / "models/mobilenet/srm/scratch" / f"seed_{seed}"
+        checkpoint = source / "weights/best.pth"
+        checkpoint.parent.mkdir(parents=True)
+        training = TrainingConfig(model_family="mobilenet", fourier_mode="srm", regime="scratch",
+                                  allow_pretrained=False, variant="small", image_size=32, seed=seed)
+        torch.manual_seed(seed)
+        network = MODEL_REGISTRY["mobilenet"].build(training)
+        torch.save(network.state_dict(), checkpoint)
+        del network
+        write_json(source / "results/run_config.json", asdict(training))
+        cfg = copy.deepcopy(sbi_source)
+        cfg.update(seed=seed, output_dir=str(tmp_path / f"sbi-seed-{seed}"))
+        cfg["model"].update(initialization="hf_mffi", weights=str(checkpoint))
+        spec, expert = native_sbi_moe_expert(cfg)
+        condition, observed = expert_conditions([spec], [expert], policy="matched", seed=seed)
+        assert observed == [seed]
+        conditions.append(condition)
+        realizations.append(expert.contract["checkpoint_sha256"])
+    assert len({digest(condition) for condition in conditions}) == 1
+    assert len(set(realizations)) == 5

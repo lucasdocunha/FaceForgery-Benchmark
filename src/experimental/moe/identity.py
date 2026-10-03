@@ -58,6 +58,27 @@ def expert_conditions(specs, experts, *, policy="fixed", seed=42):
             observed_seed = int(research["seed"])
             source_condition = {"family": "reconstruction", "condition": research["condition"],
                                 "feature_columns": contract["feature_columns"], "score": contract["score"]}
+        elif contract["kind"] == "predictions" and contract["role"] == "sbi":
+            path = Path(spec["path"])
+            if path.name != "validation_predictions.csv" or contract["input_contract"].get("family") != "sbi":
+                raise ValueError("Matched SBI expert requires its native run/validation_predictions.csv and SBI input contract")
+            try:
+                from src.experimental.sbi import describe_run
+            except ImportError as error:
+                raise ValueError("Matched SBI expert requires the verified SBI metadata reader") from error
+            description = describe_run(path.parent)
+            if (digest_file(description["checkpoint_path"]) != contract["checkpoint_sha256"]
+                    or description["input_contract"] != contract["input_contract"]
+                    or digest_file(path) != expert.source_metadata["predictions_sha256"]):
+                raise ValueError("SBI source bundle differs from the certified expert scores")
+            research = description["research_run"]
+            if digest(research["condition"]) != research["condition_sha256"]:
+                raise ValueError("SBI controlled condition hash mismatch")
+            if research["condition"].get("family") != "sbi":
+                raise ValueError("SBI source training condition has a different forensic role")
+            observed_seed = int(research["seed"])
+            source_condition = {"family": "sbi", "condition": research["condition"],
+                                "feature_columns": contract["feature_columns"], "score": contract["score"]}
         else:
             raise ValueError("Matched expert seeds require a verified comparable training policy; use fixed for other experts")
         if observed_seed != int(seed):
