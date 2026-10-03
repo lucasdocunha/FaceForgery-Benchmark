@@ -78,6 +78,8 @@ cannot update source states or connect to other queries. The implementation
 tests query batch invariance for native and PyG GCN, GAT and GraphSAGE, and checks
 directed GCN normalization against a hand calculation. GNN graph policy is
 explicitly directed; LP/C&S additionally support union and mutual edges.
+GNNs use unweighted adjacency, with learned attention for GAT. LP/C&S use
+nonnegative `(1 + cosine) / 2` edge weights and explicit self loops.
 
 `model.protocol: transductive` fits the classifier on source training data but
 uses a source-plus-one-query-population graph at validation and inference.
@@ -151,6 +153,12 @@ neighbor arrays, projection and propagation state by SHA-256. `run.json`,
 diagnostics record provenance and runtime. Feature arrays and checkpoints stay
 outside git. Completed-run `resume` is idempotent; changed configs or cache
 identities fail instead of replacing a frozen calibration.
+Inference also checks the recorded implementation hashes. A changed predictor
+requires its recorded code version or a new fit/calibration. The evaluation
+condition separates downstream seed and run paths from fixed extractor and
+method identity; aggregation across seeds therefore uses the same frozen
+backbone. Imported masks keep their original selection seed even when the
+downstream initialization seed changes.
 
 Optional dependencies are `torch-geometric` for `backend: pyg` and `faiss-cpu`
 for `graph.backend: faiss`. Explicit `backend: native` uses ordinary torch sparse

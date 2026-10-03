@@ -73,6 +73,7 @@ def summarize_pilot(output, *, draws=1000):
             # exact fitted coefficient counts and iteration budget from artifacts.
             telemetry.update(trainable_parameters=int(linear["coef"].size + linear["intercept"].size),
                              epochs_completed=int(record["config"]["training"].get("baseline_epochs", 30)))
+            telemetry["global_step"] = telemetry["epochs_completed"] * int(np.ceil(selected.sum() / 256))
         complement, _ = complementarity(checkpoint, predictions[key],
                                         reference_threshold=pilot["checkpoint_baseline"]["threshold"],
                                         other_threshold=row["metrics"]["threshold"])
