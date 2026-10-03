@@ -1,29 +1,48 @@
 #!/bin/bash
 #SBATCH --job-name=tcc-test-min
 #SBATCH --partition=gpu
-#SBATCH --output=%x_%j.out
-#SBATCH --error=%x_%j.err
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 #SBATCH --mail-user=lucas.ocunha@ppgia.pucpr.br
 #SBATCH --mail-type=ALL
 #SBATCH --time=01:00:00
 
-source /opt/conda/etc/profile.d/conda.sh
-conda activate tcc
+set -euo pipefail
 
 # ==========================================
 # 1. Configurações de Ambiente (Paths CISIA)
 # ==========================================
-export TCC_DATASET_ROOT=/datasets/Images/MFFI
-export TCC_DATA_ROOT=/users/home/lucas.ocunha/research/TCC/data
-# Salva os resultados do teste no /tmp local do nó para evitar estouro de cota em /projects
-export TCC_MODELS_ROOT=/tmp/models_test_min
-export TCC_OUTPUT_ROOT=/users/home/lucas.ocunha/research/TCC
+PROJECT_DIR="${TCC_PROJECT_ROOT:-${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}}"
+cd "$PROJECT_DIR"
+mkdir -p "$PROJECT_DIR/logs"
+
+if [[ -f /opt/conda/etc/profile.d/conda.sh ]]; then
+    source /opt/conda/etc/profile.d/conda.sh
+elif [[ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]]; then
+    source "$HOME/miniconda3/etc/profile.d/conda.sh"
+elif [[ -f "$HOME/.conda/etc/profile.d/conda.sh" ]]; then
+    source "$HOME/.conda/etc/profile.d/conda.sh"
+fi
+
+CONDA_ENV_NAME="${CISIA_CONDA_ENV:-tcc}"
+if conda info --envs | grep -q "^${CONDA_ENV_NAME}[[:space:]]"; then
+    conda activate "$CONDA_ENV_NAME"
+elif conda info --envs | grep -q "^tcc-hpc[[:space:]]"; then
+    conda activate tcc-hpc
+elif conda info --envs | grep -q "^cae[[:space:]]"; then
+    conda activate cae
+fi
+
+export TCC_DATASET_ROOT="${TCC_DATASET_ROOT:-/datasets/Images/MFFI}"
+export TCC_DATA_ROOT="${TCC_DATA_ROOT:-$PROJECT_DIR/data}"
+# Salva os resultados do teste no scratch/tmp local do nó para evitar estouro de cota
+export TCC_MODELS_ROOT="${TCC_MODELS_ROOT:-/tmp/models_test_min}"
+export TCC_OUTPUT_ROOT="${TCC_OUTPUT_ROOT:-$PROJECT_DIR}"
 
 mkdir -p "$TCC_MODELS_ROOT"
-cd /users/home/lucas.ocunha/research/TCC
 
 # ==========================================
 # 2. Parâmetros do Teste de Sanidade
