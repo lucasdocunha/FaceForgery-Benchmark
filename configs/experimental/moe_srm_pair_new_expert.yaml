@@ -5,6 +5,7 @@ scope: server-experimental
 seed: 42
 output_dir: ${TCC_RUN_DIR}
 data:
+  expert_seed_policy: matched
   experts:
   - name: dino_srm
     role: srm

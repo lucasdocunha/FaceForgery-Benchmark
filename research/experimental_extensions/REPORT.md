@@ -2,7 +2,7 @@
 
 Status: draft during the 2026-10-03 source-validation campaign. The final selection, degraded-proxy evidence, frozen min-test pass and final validation will replace the pending items below. No full-benchmark result is claimed.
 
-The branch adds a common, provenance-bound execution path for reconstruction, SBI, compact VLM, metric learning, graph learning and frozen-expert fusion. All requested method families have tested training, artifact reload, calibration and four-target synthetic evaluation paths. The initial local evidence is mostly negative: the learned feature and graph methods did not beat strong shallow controls, reconstruction error alone is near chance, and the first generic SBI realization is weaker than matched MFFI training. These results constrain the server campaign rather than justify accuracy claims.
+The branch adds a common, provenance-bound execution path for reconstruction, SBI, compact VLM, metric learning, graph learning and frozen-expert fusion. All requested method families have tested training, artifact reload, calibration and four-target synthetic evaluation paths. The local comparisons are weak or inconclusive: reconstruction error is near chance, generic SBI is weaker than matched MFFI training on the available MFFI fakes, and feature methods face a selection-related ceiling on clean min-val. These measurements validate mechanisms and identify limitations; they do not settle the cross-dataset hypotheses.
 
 ## Existing evidence and comparison targets
 
@@ -14,11 +14,11 @@ The historical values below come from computed repository CSVs, audited in [plan
 | Test | DINO RGB | 0.935800 +/- 0.006169 | Canonical five-seed sample SD |
 | Test-D | Robust CLIP+DINO geometric | 0.878055 +/- 0.010988 | Member-seed identities not fully recorded in the summary row |
 | Test-D | SRM CLIP+DINO geometric | 0.872449 +/- 0.004939 | Canonical five-seed sample SD |
-| DF-40 | Robust CLIP self-ensemble | 0.843199 | One five-checkpoint ensemble; includes seed987 instead of2025 |
+| DF-40 | Robust CLIP self-ensemble | 0.843199 | One five-checkpoint ensemble; includes seed 987 instead of 2025 |
 | DF-40 | SRM CLIP+DINO geometric | 0.835343 +/- 0.017354 | Canonical five-seed sample SD |
 | Celeb-DF v2 video | SRM DINO+MobileNet mean | 0.773913 +/- 0.035340 | Weakest target and primary cross-dataset motivation |
 
-The audited weak-technique examples are specific to the SRM CLIP+DINO mean ensemble: HeyGen0.566, StarGAN v2 0.574, DDIM0.588 and CollabDiff0.641. They are not universal rankings across models. For that ensemble, commercial avatars are weaker than the aggregated diffusion paradigm. New subgroup reports retain the exact model, technique counts and real-reference policy.
+The audited weak-technique examples are specific to the SRM CLIP+DINO mean ensemble: HeyGen 0.566, StarGAN v2 0.574, DDIM 0.588 and CollabDiff 0.641. They are not universal rankings across models. For that ensemble, commercial avatars are weaker than the aggregated diffusion paradigm. New subgroup reports retain the exact model, technique counts and real-reference policy.
 
 ## What was implemented
 
@@ -30,7 +30,7 @@ The audited weak-technique examples are specific to the SRM CLIP+DINO mean ensem
 | D | FP32 L1/SSIM/KL, frozen offline pretrained LPIPS with pixel gradients, linear/cyclic beta, exact stochastic resume; explicit sum or mean-per-dimension KL and nats/sample logging |
 | E | Landmark-bound SBI/MFFI/mixed training with matched cohorts and budgets; generic and HF adaptation separated; exact legacy SRM; audited shared forensic evaluation |
 | F | <=3B compact VLM, BF16 LoRA and NF4 decoder QLoRA, frozen vision, teacher-forced multi-token Real/Fake scoring, strict base/adapter/processor inventory |
-| G | Cached SRM features, normalized128/256 embeddings, supervised contrastive/hard-negative weighting, centroid/kNN/linear/MLP controls, silhouette and t-SNE diagnostics |
+| G | Cached SRM features, normalized 128/256 embeddings, supervised contrastive/hard-negative weighting, centroid/kNN/linear/MLP controls, silhouette and t-SNE diagnostics |
 | H | GCN/GAT/GraphSAGE, shared label masks, linear/MLP/kNN/label-propagation/Correct-and-Smooth controls, bounded ANN neighborhoods, dynamic graphs, inductive/transductive contracts and edge-noise studies |
 | I | Frozen pretrained experts, soft/top-k router, temperature, load balancing, dropout, individual/mean/geometric/LR comparisons on deterministic val_fit/val_select |
 
@@ -40,9 +40,9 @@ The shared Stack B evaluator now includes exact SRM and DTCWT reuse, AUC/AP/EER/
 
 ## Local environment and scope
 
-The workstation has a Ryzen7 5700X (16 CPU threads),15GiB RAM and an AMD Radeon RX9060XT gfx1200 with16GiB VRAM. The local environment is Python3.12.13, torch2.10.0+rocm7.1, torchvision0.25.0+rocm7.1. Exact setup and optional dependencies are in [ENVIRONMENT.md](ENVIRONMENT.md). Existing server CUDA dependency pins were preserved. GPU work is serialized, uses two CPU threads and a3072MiB sampled-RSS watchdog; jobs are capped at20minutes, with tighter VLM bounds. After reboot there was no memory pressure or swap use. No unrelated team processes or directories were touched.
+The workstation has a Ryzen 7 5700X (16 CPU threads), 15 GiB RAM and an AMD Radeon RX 9060 XT gfx1200 with 16 GiB VRAM. The local environment is Python 3.12.13, torch 2.10.0+rocm7.1, torchvision 0.25.0+rocm7.1. Exact setup and optional dependencies are in [ENVIRONMENT.md](ENVIRONMENT.md). Existing server CUDA dependency pins were preserved. GPU work is serialized, uses two CPU threads and a 3072 MiB sampled-RSS watchdog; jobs are capped at 20 minutes, with tighter VLM bounds. After reboot there was no memory pressure or swap use. No unrelated team processes or directories were touched.
 
-The local dataset contains1000 images in each original split. Train has202 real/798 fake, val408/592 and test423/577. AE training uses only those202 source train reals. Images were predecoded for local use; all eight selected HF RGB/SRM checkpoints were rebuilt with the original architecture and exact224px ImageNet/SRM preprocessing and checked on min-val/min-test before reuse. Six MobileNet/DINO/CLIP RGB/SRM train+val feature-cache pairs were extracted once. Caches use float16 features, float32 logits, canonical row identities and hashes of images, manifests, checkpoints, preprocessing and implementation.
+The local dataset contains 1000 images in each original split. Train has 202 real/798 fake, val 408/592 and test 423/577. AE training uses only those 202 source train reals. Images were predecoded for local use; all eight selected HF RGB/SRM checkpoints were rebuilt with the original architecture and exact 224 px ImageNet/SRM preprocessing and checked on min-val/min-test before reuse. Six MobileNet/DINO/CLIP RGB/SRM train+val feature-cache pairs were extracted once. Caches use float16 features, float32 logits, canonical row identities and hashes of images, manifests, checkpoints, preprocessing and implementation.
 
 HF checkpoints already trained on min-train and selected on full MFFI val, which contains min-val. Thus their source feature pilots are optimistic and their low-label experiments measure downstream adaptation, not end-to-end label efficiency. There are no local DF-40 or Celeb-DF benchmark images. Synthetic four-target tests establish execution contracts, not model quality. Min-val and degraded min-val are development populations. The final min-test access policy is recorded separately below.
 
@@ -52,86 +52,92 @@ Every row below is a pilot/min-dataset result. The source-val sample is reused f
 
 ### SBI, generic initialization and equal budget
 
-Each arm uses MobileNetV3-Large with exact SRM, identical seeded initial weights,404 balanced examples per epoch, five epochs and65 optimizer updates. The matched supervised control rotates real MFFI fakes; mixed uses both fake sources. Model selection still uses MFFI validation fakes. All202 source real landmark detections passed; four seed-selected masks were inspected. See [SBI.md](SBI.md) for the recipe and reproduction commands.
+Each arm uses MobileNetV3-Large with exact SRM, identical seeded initial weights, 404 balanced examples per epoch, five epochs and 65 optimizer updates. The matched supervised control rotates real MFFI fakes; mixed uses both fake sources. Model selection still uses MFFI validation fakes. All 202 source real landmark detections passed; four seed-selected masks were inspected. See [SBI.md](SBI.md) for the recipe and reproduction commands.
 
 | Seed | Arm | Min-val AUC [95% bootstrap CI] | EER | Interpretation |
 | ---: | --- | --- | ---: | --- |
-|42| SBI |0.4409 [0.4057,0.4712]|0.5490|Poor transfer to MFFI fakes; polarity was not flipped |
-|42| MFFI |0.6905 [0.6590,0.7208]|0.3530|Matched supervised control |
-|42| Mixed |0.6466 [0.6167,0.6767]|0.3964|Below the supervised control |
-|123| SBI |0.5225 [0.4864,0.5621]|0.4899|Same settings; near-chance transfer |
-|123| MFFI |0.7400 [0.7124,0.7663]|0.3260|Matched supervised control |
-|123| Mixed |0.7231 [0.6909,0.7511]|0.3431|No clear gain over MFFI |
+| 42 | SBI | 0.4409 [0.4057, 0.4712] | 0.5490 | Poor transfer to MFFI fakes; polarity was not flipped |
+| 42 | MFFI | 0.6905 [0.6590, 0.7208] | 0.3530 | Matched supervised control |
+| 42 | Mixed | 0.6466 [0.6167, 0.6767] | 0.3964 | Below the supervised control |
+| 123 | SBI | 0.5225 [0.4864, 0.5621] | 0.4899 | Same settings; near-chance transfer |
+| 123 | MFFI | 0.7400 [0.7124, 0.7663] | 0.3260 | Matched supervised control |
+| 123 | Mixed | 0.7231 [0.6909, 0.7511] | 0.3431 | No clear gain over MFFI |
 
-Seed42 paired AUC differences versus MFFI: SBI -0.2496 [-0.2976,-0.1994], mixed -0.0439 [-0.0804,-0.0057]. Full reload predictions matched within1e-6. The complete campaign, including an independently labeled HF adaptation smoke, took178.61seconds and peaked at2553732KiB sampled RSS. The generic model has4205026 trainable parameters. Full metrics, budgets, loss/history references and provenance are in [pilot_results/sbi/seed42.json](pilot_results/sbi/seed42.json).
+Seed 42 paired AUC differences versus MFFI: SBI -0.2496 [-0.2976, -0.1994], mixed -0.0439 [-0.0804, -0.0057]. Full reload predictions matched within 1e-6. The complete campaign, including an independently labeled HF adaptation smoke, took 178.61 seconds and peaked at 2553732 KiB sampled RSS. The generic model has 4205026 trainable parameters. Full metrics, budgets, loss/history references and provenance are in [pilot_results/sbi/seed42.json](pilot_results/sbi/seed42.json).
 
-Seed123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653,-0.1750]; mixed-minus-MFFI -0.0170 [-0.0447,0.0087]. Its three arms completed in153.59seconds with exact reload and the same65 updates. Two seeds expose substantial realization noise but do not establish across-seed uncertainty. The independently implemented recipe on202 source reals has no demonstrated benefit here. Evidence: [pilot_results/sbi/seed123.json](pilot_results/sbi/seed123.json).
+Seed 123 repeats the qualitative result: SBI-minus-MFFI -0.2176 [-0.2653, -0.1750]; mixed-minus-MFFI -0.0170 [-0.0447, 0.0087]. Its three arms completed in 153.59 seconds with exact reload and the same 65 updates. Two seeds expose substantial realization noise but do not establish across-seed uncertainty. The independently implemented recipe on 202 source reals has no demonstrated benefit on these MFFI validation fakes. A held-out self-blend sanity check is required before distinguishing failed transfer from undertraining or a defective generator. Evidence: [pilot_results/sbi/seed123.json](pilot_results/sbi/seed123.json).
 
-The one-epoch MobileNet-SRM HF adaptation smoke reached0.9431 [0.9289,0.9531] on min-val. Its unadapted verified checkpoint had0.9457. This is prior-supervised adaptation evidence and does not establish improvement or unseen-forgery performance.
+The one-epoch MobileNet-SRM HF adaptation smoke reached 0.9431 [0.9289, 0.9531] on min-val. Its unadapted verified checkpoint had 0.9457. This is prior-supervised adaptation evidence and does not establish improvement or unseen-forgery performance.
+
+SBI targets blending-boundary artifacts associated with face swaps and reenactment. MFFI includes generation families that need not have such a boundary, and the local manifests lack manipulation-family labels. MFFI-val is therefore a weak proxy for the intended Celeb-DF v2 face-swap and DF-40 swap/reenactment hypotheses. The 65 updates on 202 real faces are far below the published SBI regime. Local evidence is negative-to-inconclusive and does not test those cross-dataset hypotheses. The priority 1 DINO/CLIP adaptation campaign rests on the literature and Celeb-DF being the weakest benchmark column, with separate DF-40 swap/reenactment reporting. Held-out validation self-blend results are pending.
 
 ### Reconstruction
 
-Three-epoch128px width8 latent32 real-only models completed78 updates each. Error-only AUCs were CAE0.47954, VAE0.48253 and gated0.50922; all intervals include0.5. A separate one-epoch LPIPS/cyclic-beta VAE smoke had0.49561. The four-run AE phase took48.53seconds, with sampled RSS2410.5MiB. Across32 comparisons to the eight HF checkpoints, Pearson correlations ranged -0.02446 to0.06030. Low correlation did not make the scores useful: every naive fixed mean reduced the corresponding HF AUC, by0.00485 to0.03379. Evidence: [pilots/reconstruction_ae.json](pilots/reconstruction_ae.json).
+Three-epoch 128 px width 8 latent 32 real-only models completed 78 updates each. Error-only AUCs were CAE 0.47954, VAE 0.48253 and gated 0.50922; all intervals include 0.5. A separate one-epoch LPIPS/cyclic-beta VAE smoke had 0.49561. The four-run AE phase took 48.53 seconds, with sampled RSS 2410.5 MiB. Across 32 comparisons to the eight HF checkpoints, Pearson correlations ranged -0.02446 to 0.06030. Low correlation did not make the scores useful: every naive fixed mean reduced the corresponding HF AUC, by 0.00485 to 0.03379. Evidence: [pilots/reconstruction_ae.json](pilots/reconstruction_ae.json).
 
-Matched x-only/residual-only/full controls, latent detector, adaptation-mode smokes, spatial/latent mean and degraded-proxy comparisons are pending completion. These local spatial pilots use128px CAE; server starters deliberately use224px VAE. They are different recorded architectural conditions, so a local winner is not an exact validation of the server architecture.
+All 13 reconstruction runs completed. Matched x-only/residual-only/full detectors share the exact initial state and 250 updates over two epochs. Clean AUCs are 0.61942/0.61168/0.63734; full-minus-x is 0.01792 with paired 95% CI [-0.00129, 0.03924]. Latent AUC is 0.50725 and spatial/latent mean is 0.60216, below spatial alone. Adaptation modes are one-epoch gradient/fit smokes and cannot be compared as equal-budget efficacy trials.
+
+On the fixed degraded proxy, x-only/residual/full become 0.55725/0.54068/0.56024. Full-minus-x is 0.00299 with CI [-0.01590, 0.02291]. All three discriminative controls lose AUC under degradation; full drops 0.07710 with CI [-0.10568, -0.04647]. Across 104 clean HF comparisons, every naive fixed mean lowers HF AUC, by 0.00447 to 0.04245. Thus there is no supported reconstruction contribution at this scale. The detector phase took 160.10 seconds and the four proxy suites 35.02 seconds, both under the watchdog. Full source and proxy evidence is in [pilots/reconstruction_pilot.json](pilots/reconstruction_pilot.json) and [pilots/reconstruction_proxy.json](pilots/reconstruction_proxy.json). These local spatial pilots use 128 px CAE; server starters deliberately use 224 px VAE. They are different recorded architectural conditions, so a local winner is not an exact validation of the server architecture.
 
 ### Metric learning and graph baselines
 
-All21 DINO-SRM runs completed and were replayed without setting changes under the final implementation; total fit wall time was20.50seconds and peak RSS974596KiB, with no GPU use. SupCon AUC0.989799 did not beat the backbone logits0.994013 or raw centroid0.993993. At5% labels (51 selected images), GAT0.992664 did not beat same-mask MLP0.993781; at10% (101 images), GraphSAGE0.990656 did not beat MLP0.993678. SupCon-minus-MLP paired AUC CI was [-0.00488,0.00264];5% GAT-minus-MLP was [-0.00248,0.00005].
+All 21 DINO-SRM runs completed and were replayed without setting changes under the final implementation; total fit wall time was 20.50 seconds and peak RSS 974596 KiB, with no GPU use. SupCon AUC 0.989799 did not beat the backbone logits 0.994013 or raw centroid 0.993993. At 5% labels (51 selected images), GAT 0.992664 did not beat same-mask MLP 0.993781; at 10% (101 images), GraphSAGE 0.990656 did not beat MLP 0.993678. SupCon-minus-MLP paired AUC CI was [-0.00488, 0.00264]; 5% GAT-minus-MLP was [-0.00248, 0.00005].
 
-A separate same-mask SupCon-to-dynamic-GraphSAGE smoke completed with two distinct neighbor rebuilds and exact reload. Learned embeddings may be used as a graph input, but these results do not justify promoting them. The original run's rejection after implementation bytes changed was retained, followed by identical final-code replay and passing reload checks. All runs, including weak controls, are in [pilot_results/representations/README.md](pilot_results/representations/README.md).
+A separate same-mask SupCon-to-dynamic-GraphSAGE smoke completed with two distinct neighbor rebuilds and exact reload. Learned embeddings may be used as a graph input, but these results do not justify promoting them. The HF 0.994 clean-val ceiling is partly explained by min-val belonging to the full validation split that selected the backbone. Failure to exceed that ceiling is weak evidence about generalization; degraded-proxy comparisons are pending and retain the same source thresholds. The original run's rejection after implementation bytes changed was retained, followed by identical final-code replay and passing reload checks. All runs, including weak controls, are in [pilot_results/representations/README.md](pilot_results/representations/README.md).
 
 ### Frozen fusion and VLM feasibility
 
-The two-expert MobileNet SRM/RGB ablation used494 val_fit and506 val_select images. Router AUC0.974508 versus mean0.972077 has paired gain CI[-0.001534,0.006956]; no routing advantage is established. It trained82082 parameters for96 updates. The mandatory third reconstruction expert and degraded inference are pending. See [moe.md](moe.md) and the retained [two-expert record](pilots/moe_mobilenet_twoexpert_seed42.json).
+The two-expert MobileNet SRM/RGB ablation used 494 val_fit and 506 val_select images. Router AUC 0.974508 versus mean 0.972077 has paired gain CI [-0.001534, 0.006956]; no routing advantage is established. It trained 82082 parameters for 96 updates. The mandatory third reconstruction expert has now been fitted on the same 494/506 split. Clean val_select AUCs are router 0.97626, LR 0.97196, mean 0.96198 and geometric 0.96811; single SRM/RGB/reconstruction experts score 0.94893/0.95947/0.65438. Adding a weak expert depresses naive averaging, so router superiority to the three-way mean alone is not evidence that reconstruction helps.
 
-SmolVLM-256M is a feasibility study with16 train and16 val images, four updates and460800 LoRA parameters. BF16 achieved AUC0.6640625 versus zero-shot0.65625; NF4 achieved0.421875 versus0.3828125. These tiny observations cannot rank VLMs. The score is `softmax([sum log p(Real tokens), sum log p(Fake tokens)])[Fake]`, with each label teacher-forced after the identical image/prompt prefix. Multi-token labels and answer masking have explicit tests.
+On degraded val_select, AUCs are router 0.79324, LR 0.80925, mean 0.78861, geometric 0.72921; single SRM/RGB/reconstruction score 0.83469/0.65938/0.57213. The router loses 0.18302 from clean validation, paired 95% CI [-0.21947, -0.14703], and does not beat degraded SRM or LR. Final two-expert comparisons and evidence files are pending. See [moe.md](moe.md) and the retained [two-expert record](pilots/moe_mobilenet_twoexpert_seed42.json).
 
-The first NF4 attempt correctly rejected unexpectedly quantized vision descendants; a pinned-Transformers exclusion mismatch was fixed and regression-tested. Final BF16/NF4 fits completed, but same-process base reload crossed the3GiB RSS guard. Fresh-process inference checks are pending. Detailed attempts and immutable base inventories are retained in [pilots/vlm_smol256_seed42.json](pilots/vlm_smol256_seed42.json). On this backend, NF4 retained489568512 FP32 bytes plus67276800 packed bytes, exceeding the BF16 base's514813056 bytes; there is no demonstrated local memory benefit. Do not extrapolate this small model/backend observation to CUDA servers. Qwen3-VL-2B is the server template; a nominal Qwen2.5-VL-3B was excluded because actual parameter count exceeds the strict cap.
+SmolVLM-256M is a feasibility study with 16 train and 16 val images, four updates and 460800 LoRA parameters. BF16 achieved AUC 0.6640625 versus zero-shot 0.65625; NF4 achieved 0.421875 versus 0.3828125. These tiny observations cannot rank VLMs. The score is `softmax([sum log p(Real tokens), sum log p(Fake tokens)])[Fake]`, with each label teacher-forced after the identical image/prompt prefix. Multi-token labels and answer masking have explicit tests.
+
+The first NF4 attempt correctly rejected unexpectedly quantized vision descendants; a pinned-Transformers exclusion mismatch was fixed and regression-tested. Final BF16/NF4 fits completed, but same-process base reload crossed the 3 GiB RSS guard. Fresh-process inference checks are pending. Detailed attempts and immutable base inventories are retained in [pilots/vlm_smol256_seed42.json](pilots/vlm_smol256_seed42.json). On this backend, NF4 retained 489568512 FP32 bytes plus 67276800 packed bytes, exceeding the BF16 base's 514813056 bytes; there is no demonstrated local memory benefit. Do not extrapolate this small model/backend observation to CUDA servers. Qwen3-VL-2B is the server template; a nominal Qwen2.5-VL-3B was excluded because actual parameter count exceeds the strict cap.
 
 ### Degraded proxy and frozen test access
 
-A fixed seed42 draw from the repository RandomizedRobustAugment operator creates `min-val-degraded-proxy`:224px, rotation/color/brightness/sharpness/blur/JPEG/noise according to that existing recipe, lossless RGB8 output, no severity selection. Per-image seeds derive from SHA256(seed,sample_id), and all source/degraded bytes are inventoried. It is not the benchmark Test-D distribution. All scoring reuses clean-val thresholds without refitting.
+A fixed seed 42 draw from the repository RandomizedRobustAugment operator creates `min-val-degraded-proxy`: 224 px, rotation/color/brightness/sharpness/blur/JPEG/noise according to that existing recipe, lossless RGB8 output, no severity selection. Per-image seeds derive from SHA256(seed, sample_id), and all source/degraded bytes are inventoried. It is not the benchmark Test-D distribution. All scoring reuses clean-val thresholds without refitting.
 
-| SBI condition | Clean min-val AUC | Degraded-proxy AUC | Paired delta95%CI |
+| SBI condition | Clean min-val AUC | Degraded-proxy AUC | Paired delta 95% CI |
 | --- | ---: | ---: | --- |
-| Generic SBI42 |0.4409|0.5000|[0.0231,0.0941] |
-| Generic MFFI42 |0.6905|0.6270|[-0.0898,-0.0308] |
-| Generic mixed42 |0.6466|0.5865|[-0.0925,-0.0278] |
-| HF SBI adaptation42 |0.9431|0.8345|[-0.1282,-0.0881] |
-| Generic SBI123 |0.5225|0.4912|[-0.0646,0.0012] |
-| Generic MFFI123 |0.7400|0.6455|[-0.1254,-0.0630] |
-| Generic mixed123 |0.7231|0.6053|[-0.1501,-0.0857] |
+| Generic SBI 42 | 0.4409 | 0.5000 | [0.0231, 0.0941] |
+| Generic MFFI 42 | 0.6905 | 0.6270 | [-0.0898, -0.0308] |
+| Generic mixed 42 | 0.6466 | 0.5865 | [-0.0925, -0.0278] |
+| HF SBI adaptation 42 | 0.9431 | 0.8345 | [-0.1282, -0.0881] |
+| Generic SBI 123 | 0.5225 | 0.4912 | [-0.0646, 0.0012] |
+| Generic MFFI 123 | 0.7400 | 0.6455 | [-0.1254, -0.0630] |
+| Generic mixed 123 | 0.7231 | 0.6053 | [-0.1501, -0.0857] |
 
-An increase from below chance to chance is not useful robustness. The supervised/mixed arms lose discrimination and threshold accuracy under this degradation. The seven clean/degraded audited suites completed in65.04seconds, peak sampled RSS1987628KiB. Evidence: [pilot_results/sbi/validation_degraded_proxy.json](pilot_results/sbi/validation_degraded_proxy.json). Reconstruction and held-out fusion proxy results are pending.
+An increase from below chance to chance is not useful robustness. The supervised/mixed arms lose discrimination and threshold accuracy under this degradation. The seven clean/degraded audited suites completed in 65.04 seconds, peak sampled RSS 1987628 KiB. Evidence: [pilot_results/sbi/validation_degraded_proxy.json](pilot_results/sbi/validation_degraded_proxy.json). Reconstruction and held-out fusion proxy results above show no supported robustness gain. An unadapted MobileNet-SRM clean/degraded control is being added beside the HF SBI adaptation before attributing any change to adaptation.
 
-The frozen min-test comparison will use all three generic SBI seed42 arms and HF DINO-SRM. Seed42 was the first predeclared realization; seed123 checks source-side variability and is not used to choose a favorable test realization. This preserves the matched three-arm comparison requested before training. Checkpoint/calibration hashes will be committed before materializing or scoring the test proxy. No new min-test access has occurred since the eight required checkpoint compatibility checks at this draft checkpoint.
+The frozen min-test comparison will use all three generic SBI seed 42 arms and HF DINO-SRM. Seed 42 was the first predeclared realization; seed 123 checks source-side variability and is not used to choose a favorable test realization. This preserves the matched three-arm comparison requested before training. Checkpoint/calibration hashes will be committed before materializing or scoring the test proxy. No new min-test access has occurred since the eight required checkpoint compatibility checks at this draft checkpoint.
 
 ## Server campaign and experiment matrix
 
-The executable command inventory is [experiment_matrix.yaml](experiment_matrix.yaml); setup, certified manifests, cache preparation, calibration and four-target commands are in [SERVER_RUNBOOK.md](SERVER_RUNBOOK.md). Every condition supports canonical seeds42,123,2024,7,2025 and distinct outputs. Priorities are conditional on the completed source-val pilots, not claims of superiority.
+The executable command inventory is [experiment_matrix.yaml](experiment_matrix.yaml); setup, certified manifests, cache preparation, calibration and four-target commands are in [SERVER_RUNBOOK.md](SERVER_RUNBOOK.md). Every condition supports canonical seeds 42, 123, 2024, 7, 2025 and distinct outputs. Priorities are conditional on the completed source-val pilots, not claims of superiority.
 
 | Priority | Matrix rows | Architecture / regime | Why run it |
 | ---: | --- | --- | --- |
-|1| sbi-hf-dino-srm; sbi-hf-clip-srm | Verified strong SRM backbones, SBI adaptation | Controlled cross-dataset hypothesis, preserving unadapted and simple-fusion baselines |
-|1| sbi-generic-sbi; sbi-generic-mffi; sbi-generic-mixed | Generic MobileNet, matched budgets | Establish whether the negative tiny-source result persists with enough genuine faces |
-|2| srm-pair-plus-new-expert | DINO-SRM + CLIP-SRM + certified new expert | Advance only if source-held-out complementarity warrants it |
-|2| moe-srm-rgb-reconstruction-soft; top2 | Frozen three-role experts | Mandatory routing attribution against all simple controls |
-|3| reconstruction-cae; vae; gated |224px real-only AE | Test bottleneck/discrepancy hypothesis at full genuine-data scale |
-|3| reconstruction-residual-x_only; residual_only; frozen | Identical ResNet initialization | Separate RGB classification from reconstruction contribution |
-|3| reconstruction-residual-recon_finetune; end_to_end | Explicit AE gradient semantics | Distinguish reconstruction adaptation from CE gradient training |
-|3| reconstruction-latent; spatial-latent-mean | Latent MLP and fixed fusion | Complementarity test with a cheap control |
-|4| vlm-qwen3-2b-nf4 | Frozen vision, text QLoRA | Exploratory independent expert; validate hardware fit first |
-|4| metric-srm | SupCon and linear/MLP/centroid/kNN | Exploratory only after stronger controls |
-|4| graph-srm-low-label | GNN and five same-mask controls | Downstream label-efficiency study; no local GNN promotion |
+| 1 | sbi-hf-dino-srm; sbi-hf-clip-srm | Verified strong SRM backbones, SBI adaptation | Controlled cross-dataset hypothesis, preserving unadapted and simple-fusion baselines |
+| 1 | sbi-generic-sbi; sbi-generic-mffi; sbi-generic-mixed | Generic MobileNet, matched budgets | Establish whether the negative tiny-source result persists with enough genuine faces |
+| 2 | srm-pair-plus-new-expert | DINO-SRM + CLIP-SRM + certified new expert | Advance only if source-held-out complementarity warrants it |
+| 2 | moe-srm-rgb-reconstruction-soft; top2 | Frozen three-role experts | Mandatory routing attribution against all simple controls |
+| 3 | reconstruction-cae; vae; gated | 224 px real-only AE | Test bottleneck/discrepancy hypothesis at full genuine-data scale |
+| 3 | reconstruction-residual-x_only; residual_only; frozen | Identical ResNet initialization | Separate RGB classification from reconstruction contribution |
+| 3 | reconstruction-residual-recon_finetune; end_to_end | Explicit AE gradient semantics | Distinguish reconstruction adaptation from CE gradient training |
+| 3 | reconstruction-latent; spatial-latent-mean | Latent MLP and fixed fusion | Complementarity test with a cheap control |
+| 4 | vlm-qwen3-2b-nf4 | Frozen vision, text QLoRA | Exploratory independent expert; validate hardware fit first |
+| 4 | metric-srm | SupCon and linear/MLP/centroid/kNN | Exploratory only after stronger controls |
+| 4 | graph-srm-low-label | GNN and five same-mask controls | Downstream label-efficiency study; no local GNN promotion |
 
-For each selected trained run, calibration is frozen from certified MFFI val, or val_select for learned fusion. One suite config then executes Test, paired Test-D, DF-40 and Celeb-DF v2; the matrix also lists four separate commands after the runbook's split-config preparation. The combined suite is preferred because it produces the paired Test/Test-D interval. DF-40 defaults to `pooled_all_real`, matching historical tables but confounding source domain. Switch to `source_matched` only after certifying annotations. DF-40 `cdf/frames` fakes overlap the Celeb-DF source domain. Celeb-DF's official1=real labels are explicitly converted to internal1=fake, and its primary score is mean frame `p_fake` per video across the official518-video list.
+For each selected trained run, calibration is frozen from certified MFFI val, or val_select for learned fusion. One suite config then executes Test, paired Test-D, DF-40 and Celeb-DF v2; the matrix also lists four separate commands after the runbook's split-config preparation. The combined suite is preferred because it produces the paired Test/Test-D interval. DF-40 defaults to `pooled_all_real`, matching historical tables but confounding source domain. Switch to `source_matched` only after certifying annotations. DF-40 `cdf/frames` fakes overlap the Celeb-DF source domain. Celeb-DF's official 1=real labels are explicitly converted to internal 1=fake, and its primary score is mean frame `p_fake` per video across the official 518-video list.
 
-The full-scale graph path uses bounded feature caches, FAISS neighborhood search with sampled recall checks, sparse neighborhoods and ego minibatches. It does not form a dense all-pairs graph. Inductive target queries cannot alter source neighborhoods or one another; transductive runs are separately named, calibrated and reported. Full-scale runtime and memory remain server measurements, not inferred from1000-image pilots.
+The full-scale graph path uses bounded feature caches, FAISS neighborhood search with sampled recall checks, sparse neighborhoods and ego minibatches. It does not form a dense all-pairs graph. Inductive target queries cannot alter source neighborhoods or one another; transductive runs are separately named, calibrated and reported. Full-scale runtime and memory remain server measurements, not inferred from 1000-image pilots.
 
 ## Validation, failures and remaining limitations
 
-The unmodified baseline passed265 tests and20 subtests. Gate2 integration passed432 tests and20 subtests in66.84seconds; focused NF4 regression checks passed afterward. All families have actual fit/calibrate/reload/four-target synthetic fixtures, including absolute DF-40 paths, paired degradation IDs and Celeb video aggregation. Final integrated suite, config audit, protected-path diff, artifact review, frozen min-test evidence and clean branch status are pending before Gate4.
+The unmodified baseline passed 265 tests and 20 subtests. Gate 2 integration passed 432 tests and 20 subtests in 66.84 seconds; focused NF4 regression checks passed afterward. All families have actual fit/calibrate/reload/four-target synthetic fixtures, including absolute DF-40 paths, paired degradation IDs and Celeb video aggregation. Final integrated suite, config audit, protected-path diff, artifact review, frozen min-test evidence and clean branch status are pending before Gate 4.
 
 Retained failures include memory-pressure-stopped preflight jobs, the old-code bundle reload rejection, the NF4 subtree guard failure, same-process VLM reload RSS stops and an early two-expert router saturation caused by near-constant feature scaling. Fixes and retries preserve the original evidence. No labels or score polarity were selected by AUC, no target threshold was fitted and no unreadable image was silently replaced.
 

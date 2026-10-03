@@ -1,6 +1,6 @@
 # SBI training and controlled comparisons
 
-This is an independently implemented SBI-style training recipe. It uses one source real face, a perturbed view of that face, a landmark hull and a soft blending mask. It is not an exact reproduction of the original dlib81 implementation. Scientific motivation and primary references are in [the planning review](planning/reconstruction_sbi.md).
+This is an independently implemented SBI-style training recipe. It uses one source real face, a perturbed view of that face, a landmark hull and a soft blending mask. It is not an exact reproduction of the original dlib 81 implementation. Scientific motivation and primary references are in [the planning review](planning/reconstruction_sbi.md).
 
 The local clean proxy compares generic ImageNet initialization across `sbi`, `mffi` and `mixed`. The source real cohort, initial model state, seed, optimizer and number of updates are identical. Every epoch contains two slots per accepted real face: one real and one fake. SBI uses self-blends; MFFI rotates through genuine training fakes; mixed uses both. The pure SBI arm never reads training fake image pixels. Source validation includes MFFI fakes for checkpoint selection and frozen Youden calibration. Consequently this is unseen-forgery *training*, not a completely fake-free model-selection procedure.
 
@@ -21,7 +21,7 @@ python3.12 -m venv .venv-landmarks
 
 The certified source manifest is required. Only real source images are detected. The SQLite file binds each record to image bytes, manifest and landmark asset hashes; it stores explicit failures for no face, multiple faces, invalid geometry and decoding errors. The default training policy fails on a missing/failed landmark. An explicit exclusion policy records the removed IDs and uses the same accepted cohort for every arm. SQLite geometry and masks are loaded on demand, with process-local connections. `cache_images: false` in server configs prevents full decoded-image RAM caches.
 
-Inspect masks before full training. `preflight/sbi-mask-qa.png` shows four seed-selected local examples; all 202 local train reals were detected. MediaPipe landmarks cover less forehead than dlib81. Hull indices and `forehead_extension` are configurable, but any change is a new recorded training condition, not an inference-time adjustment.
+Inspect masks before full training. `preflight/sbi-mask-qa.png` shows four seed-selected local examples; all 202 local train reals were detected. MediaPipe landmarks cover less forehead than dlib 81. Hull indices and `forehead_extension` are configurable, but any change is a new recorded training condition, not an inference-time adjustment.
 
 ## Server commands
 
@@ -55,6 +55,6 @@ Repeat with `clip` and all canonical seeds. Checkpoint loading validates the sou
 
 ## Local pilot reproduction
 
-`scripts/sbi_pilot.py` accepts explicit source manifests, image roots, SQLite landmarks, generic weights and an output directory. It runs the three generic arms for five epochs by default, with batch8 and accumulation4, yielding65 matched optimizer updates for202 source reals. `--hf-checkpoint` adds a separately labeled one-epoch adaptation smoke; `--seed` changes the realization. Every run verifies full validation prediction reload, stores per-arm bootstrap intervals and compares paired AUC differences against MFFI. Failed runs remain in `pilot.json`. This bounded driver rejects source populations above10000 rows; use the common training CLI for full scale.
+`scripts/sbi_pilot.py` accepts explicit source manifests, image roots, SQLite landmarks, generic weights and an output directory. It runs the three generic arms for five epochs by default, with batch 8 and accumulation 4, yielding 65 matched optimizer updates for 202 source reals. `--hf-checkpoint` adds a separately labeled one-epoch adaptation smoke; `--seed` changes the realization. Every run verifies full validation prediction reload, stores per-arm bootstrap intervals and compares paired AUC differences against MFFI. Failed runs remain in `pilot.json`. This bounded driver rejects source populations above 10000 rows; use the common training CLI for full scale.
 
 Final pilot numbers and decisions are in [REPORT.md](REPORT.md). Calibration and model selection use source validation only. Degraded source-validation predictions reuse the frozen clean threshold. Test access requires a frozen candidate record and is never used to change these recipes.

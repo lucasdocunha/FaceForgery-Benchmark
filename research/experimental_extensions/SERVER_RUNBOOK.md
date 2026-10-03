@@ -34,6 +34,7 @@ Choose a family and reviewed training YAML. These supplied configs use explicit 
 | `graph` | `graph_srm.yaml` or `graph_fullscale.yaml` | Same cache/seed/device/fraction variables, `TCC_GRAPH_KIND`; fullscale also `TCC_PROJECTION_RUN`, `TCC_LABEL_MASK`, `TCC_GRAPH_PROTOCOL` |
 | `vlm` | `vlm_qwen3_2b_server.yaml` | Pinned local base under `TCC_PRETRAINED_ROOT`; Smol templates retain pilot sample limits |
 | `moe` | `moe_frozen_soft.yaml` or `moe_frozen_top2.yaml` | `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS`, `TCC_RECON_CALIBRATION` |
+| `moe`, strong SRM pair | `moe_srm_pair_new_expert.yaml` | `TCC_FEATURE_DINO_SRM_VAL`, `TCC_FEATURE_CLIP_SRM_VAL`, `TCC_NEW_EXPERT_ROLE`, `TCC_NEW_EXPERT_VAL_PREDICTIONS`, `TCC_NEW_EXPERT_CALIBRATION` |
 
 ```bash
 family=reconstruction
@@ -116,6 +117,17 @@ sources:
 
 Use reconstruction calibration's `validation_predictions.csv` and `.csv.json` as the frozen MoE source scores. For a MoE baseline, put `method: mean`, `geometric`, `geometric_binary`, `logistic` or `expert_<name>` in the calibration options and suite `model.options`; each method has its own bound inventory/calibration. Threshold selection is distinct from learned probability calibration. Final artifacts bind the exact run bundle, fake-is-1 score semantics and input contract; experimental evaluation rejects unbound calibration and requires no `allow_unbound_calibration` switch.
 
+The strong-pair condition keeps DINO-SRM and CLIP-SRM and adds a source-validated new expert. Set `TCC_NEW_EXPERT_ROLE` to its actual saved family, `reconstruction` or `sbi`. Its calibration options use the ordered names `dino_srm`, `clip_srm`, `new_expert`, with roles `srm`, `srm`, and the declared new role:
+
+```yaml
+sources:
+  - {name: dino_srm, role: srm, kind: feature_cache, path: "${TCC_FEATURE_DINO_SRM_VAL}"}
+  - {name: clip_srm, role: srm, kind: feature_cache, path: "${TCC_FEATURE_CLIP_SRM_VAL}"}
+  - {name: new_expert, role: "${TCC_NEW_EXPERT_ROLE}", kind: predictions, path: "${TCC_NEW_EXPERT_VAL_PREDICTIONS}"}
+```
+
+Both server MoE conditions use `expert_seed_policy: matched`: every expert's recorded seed must equal the router seed. Stage the corresponding HF checkpoints and new-expert run for each canonical seed. The explicit `fixed` policy is reserved for downstream router variation on unchanged experts and records that narrower uncertainty scope. Compare the new expert and router against the original two-expert mean/geometric controls on the identical held-out rows; adding a weak expert can make a three-way mean artificially easy to beat.
+
 ## Prepare the four targets
 
 Set `TCC_EVAL_<TARGET>_MANIFEST` and `TCC_EVAL_<TARGET>_ROOT` for `TARGET=TEST,TEST_D,DF40,CELEB`.
@@ -158,6 +170,8 @@ The helper uses the repository robust augmentation operator, one sample-ID-deriv
 ## Evaluate and retain artifacts
 
 The six templates are `configs/experimental/suites/{reconstruction,sbi,metric,graph,vlm,moe}.yaml`. All require the four target path pairs, `TCC_EVAL_MODEL`, `TCC_EVAL_CALIBRATION` and `TCC_OUTPUT_ROOT`. Metric/graph additionally require `TCC_EVAL_<TARGET>_FEATURE_CACHE`; MoE requires `TCC_EVAL_<TARGET>_SRM_CACHE`, `TCC_EVAL_<TARGET>_RGB_CACHE` and `TCC_EVAL_<TARGET>_RECON_PREDICTIONS`, with expert order/names/contracts matching training. VLM requires its original staged base model and processor.
+
+The additional `moe_srm_pair.yaml` suite matches the strong-pair condition. For each `TARGET=TEST,TEST_D,DF40,CELEB`, provide `TCC_EVAL_<TARGET>_DINO_SRM_CACHE`, `TCC_EVAL_<TARGET>_CLIP_SRM_CACHE` and `TCC_EVAL_<TARGET>_NEW_EXPERT_PREDICTIONS`; keep `TCC_NEW_EXPERT_ROLE` fixed. Produce each target's new-expert predictions through its own frozen suite first. All source/target caches must come from the same selected checkpoint realization and preprocessing. Neither source calibration nor router fitting reads target scores.
 
 ```bash
 python research_cli.py experimental evaluate \
