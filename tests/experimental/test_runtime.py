@@ -24,7 +24,7 @@ def execute(root, initial, batch_size, accumulation, epochs, resume=False):
         return {"loss": float((m(x) - y).square().mean())}
 
     result = fit_model(model, loader, optimizer, loss_step=step, validate=validation,
-                       run_dir=root, config={"seed": 42}, epochs=epochs,
+                       run_dir=root, config={"seed": 42, "training": {"resume": resume}}, epochs=epochs,
                        grad_accum_steps=accumulation, max_grad_norm=None, resume=resume)
     return model.state_dict(), result
 

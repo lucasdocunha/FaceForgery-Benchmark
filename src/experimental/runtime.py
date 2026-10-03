@@ -64,6 +64,10 @@ def fit_model(model, train_loader, optimizer, *, loss_step, validate, run_dir,
     if not len(train_loader):
         raise ValueError("Empty training loader")
     config = _plain(config)
+    # Resume requests are execution controls, not a change to the experiment.
+    config.pop("resume", None)
+    if isinstance(config.get("training"), dict):
+        config["training"].pop("resume", None)
     device = torch.device(device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("Requested GPU is unavailable")
