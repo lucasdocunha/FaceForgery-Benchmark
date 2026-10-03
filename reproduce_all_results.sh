@@ -44,12 +44,18 @@ export PYTHONDONTWRITEBYTECODE=1
 
 # 2. Resolução do Interpretador Python
 PYTHON_BIN=""
-if [[ -f "/home/lucas.ocunha/.conda/envs/cae/bin/python" ]]; then
-    PYTHON_BIN="/home/lucas.ocunha/.conda/envs/cae/bin/python"
-elif [[ -f "/home/lucas.ocunha/.conda/envs/tcc/bin/python" ]]; then
-    PYTHON_BIN="/home/lucas.ocunha/.conda/envs/tcc/bin/python"
-elif [[ -n "${CONDA_PREFIX:-}" && -f "$CONDA_PREFIX/bin/python" ]]; then
+if [[ -n "${CONDA_PREFIX:-}" && -f "$CONDA_PREFIX/bin/python" ]]; then
     PYTHON_BIN="$CONDA_PREFIX/bin/python"
+elif [[ -n "${CISIA_CONDA_ENV:-}" && -f "$HOME/.conda/envs/$CISIA_CONDA_ENV/bin/python" ]]; then
+    PYTHON_BIN="$HOME/.conda/envs/$CISIA_CONDA_ENV/bin/python"
+elif [[ -f "$HOME/.conda/envs/tcc-hpc/bin/python" ]]; then
+    PYTHON_BIN="$HOME/.conda/envs/tcc-hpc/bin/python"
+elif [[ -f "$HOME/.conda/envs/tcc/bin/python" ]]; then
+    PYTHON_BIN="$HOME/.conda/envs/tcc/bin/python"
+elif [[ -f "$HOME/.conda/envs/cae/bin/python" ]]; then
+    PYTHON_BIN="$HOME/.conda/envs/cae/bin/python"
+elif [[ -f "/home/lucas.ocunha/.conda/envs/cae/bin/python" ]]; then
+    PYTHON_BIN="/home/lucas.ocunha/.conda/envs/cae/bin/python"
 elif command -v python3 &>/dev/null; then
     PYTHON_BIN="$(command -v python3)"
 else

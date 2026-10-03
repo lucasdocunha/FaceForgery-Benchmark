@@ -7,9 +7,22 @@ from sklearn.metrics import (
 )
 from sklearn.linear_model import LogisticRegression
 
-MODELS_ROOT = Path("/media/ssd2/lucas.ocunha/models-tcc")
-OUT_DIR = Path("/home/lucas.ocunha/tcc/results/mostrar_rayson")
-TABLES_DIR = Path("/home/lucas.ocunha/tcc/tables")
+import os
+
+MODELS_ROOT = Path(os.environ.get("TCC_MODELS_ROOT", os.environ.get("CISIA_MODELS_ROOT", "/media/ssd2/lucas.ocunha/models-tcc")))
+if not MODELS_ROOT.exists():
+    for candidate in [
+        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/models-tcc"),
+        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/faceforgery"),
+        Path("/media/ssd2/lucas.ocunha/models-tcc"),
+    ]:
+        if candidate.exists():
+            MODELS_ROOT = candidate
+            break
+
+PROJECT_ROOT = Path(os.environ.get("TCC_PROJECT_ROOT", Path(__file__).resolve().parent.parent))
+OUT_DIR = PROJECT_ROOT / "results" / "mostrar_rayson"
+TABLES_DIR = PROJECT_ROOT / "tables"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 TABLES_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -13,7 +13,19 @@ methods = manifest['method'].values
 paradigms = manifest['paradigm'].values
 real_mask = (manifest['target'] == 0).values
 
-root = Path('/media/ssd2/lucas.ocunha/models-tcc')
+import os
+
+root = Path(os.environ.get("TCC_MODELS_ROOT", os.environ.get("CISIA_MODELS_ROOT", "/media/ssd2/lucas.ocunha/models-tcc")))
+if not root.exists():
+    for candidate in [
+        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/models-tcc"),
+        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/faceforgery"),
+        Path("/media/ssd2/lucas.ocunha/models-tcc"),
+    ]:
+        if candidate.exists():
+            root = candidate
+            break
+
 families = ['clip', 'dino', 'vit', 'resnet', 'mobilenet', 'xception']
 seeds = [42, 123, 2024, 7, 2025]
 
