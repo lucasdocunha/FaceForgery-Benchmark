@@ -8,7 +8,7 @@ from pathlib import Path
 
 import torch
 
-MAX_PARAMETERS = 3_000_000_000
+MAX_PARAMETERS = 4_500_000_000
 # Transformers 5 matches skip entries as regex prefixes or exact suffixes.
 # A bare parent name does not exclude nested children such as
 # model.vision_model.encoder.layers.0.self_attn.q_proj.
@@ -59,7 +59,10 @@ def resolve_base(config):
 
 def load_processor(path, config):
     _, processor_type, *_ = optional_dependencies()
-    processor = processor_type.from_pretrained(path, local_files_only=True, trust_remote_code=False, backend="pil")
+    try:
+        processor = processor_type.from_pretrained(path, local_files_only=True, trust_remote_code=False, backend="pil")
+    except (AttributeError, TypeError):
+        processor = processor_type.from_pretrained(path, local_files_only=True, trust_remote_code=False)
     processor.tokenizer.padding_side = "right"
     overrides = config.get("processor", {})
     if hasattr(processor, "image_seq_len"):
