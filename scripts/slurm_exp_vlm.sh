@@ -101,6 +101,7 @@ for SEED in "${SEEDS[@]}"; do
     echo "------------------------------------------------------------------------------"
     export TCC_SEED="$SEED"
     export TCC_RUN_DIR="${USER_MODELS_ROOT}/vlm_lora_seed_${SEED}"
+    rm -rf "$TCC_RUN_DIR"
     mkdir -p "$TCC_RUN_DIR"
 
     python research_cli.py experimental train \

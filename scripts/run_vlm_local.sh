@@ -54,6 +54,7 @@ for SEED in "${SEEDS[@]}"; do
     RUN_DIR="${MODELS_BASE}/vlm_smol_seed_${SEED}"
     export TCC_RUN_DIR="$RUN_DIR"
     export TCC_SEED="$SEED"
+    rm -rf "$RUN_DIR"
     mkdir -p "$RUN_DIR"
 
     "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
