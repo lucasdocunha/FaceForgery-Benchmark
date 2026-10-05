@@ -12,7 +12,8 @@ import io
 import random
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+from PIL import Image, ImageEnhance, ImageFile, ImageFilter, ImageOps
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import torch
 from torch.utils.data import Dataset
 from .provenance import contained, digest_file

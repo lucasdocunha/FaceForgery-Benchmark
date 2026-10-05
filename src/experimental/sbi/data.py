@@ -11,7 +11,8 @@ from collections import Counter
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageOps
+from PIL import Image, ImageDraw, ImageEnhance, ImageFile, ImageFilter, ImageOps
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 from torch.utils.data import Dataset
 
 from src.robustness.imaging import corrupt, sample_seed, to_tensor

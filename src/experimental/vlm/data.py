@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageFile
 from torch.utils.data import Dataset
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from src.robustness.manifests import validate
 from src.robustness.provenance import contained, digest_file
