@@ -92,8 +92,8 @@ def normalize_config(config):
         raise ValueError("amp and plots must be booleans")
     if m["ae_mode"] not in {"frozen", "recon_finetune", "end_to_end"}:
         raise ValueError("ae_mode must be frozen, recon_finetune, or end_to_end")
-    if m["input_mode"] not in {"x_only", "residual_only", "full"}:
-        raise ValueError("input_mode must be x_only, residual_only, or full")
+    if m["input_mode"] not in {"x_only", "residual_only", "recon_only", "full"}:
+        raise ValueError("input_mode must be x_only, residual_only, recon_only, or full")
     if m["backbone"] not in {"small", "resnet18"} or not isinstance(m["width"], int) or m["width"] < 4 or not isinstance(m["hidden_dim"], int) or m["hidden_dim"] < 2:
         raise ValueError("Invalid detector backbone or dimensions")
     if not 0 <= m["dropout"] < 1:

@@ -199,8 +199,8 @@ class _Detector(nn.Module):
 class ResidualDetector(_Detector):
     def __init__(self, autoencoder, *, freeze_ae=None, ae_mode=None, input_mode="full", gradient=False, backbone="small", backbone_weights=None, width=16, dropout=0.1, initialize=True):
         super().__init__(autoencoder, freeze_ae, ae_mode)
-        if input_mode not in {"x_only", "residual_only", "full"}:
-            raise ValueError("input_mode must be x_only, residual_only, or full")
+        if input_mode not in {"x_only", "residual_only", "recon_only", "full"}:
+            raise ValueError("input_mode must be x_only, residual_only, recon_only, or full")
         self.input_mode = input_mode
         self.fusion = ResidualFusionBlock(gradient)
         channels = self.fusion.out_channels
@@ -236,6 +236,7 @@ class ResidualDetector(_Detector):
         fused = self.fusion(x, reconstruction)
         scale = x.new_tensor([0.229, 0.224, 0.225]).reshape(1, 3, 1, 1)
         rgb, residual = normalize_rgb(x), fused[:, 6:9] / scale
+        recon = normalize_rgb(fused[:, 3:6])
         zeros = torch.zeros_like(x)
         # Keep the exact same stem shape and initialization in every ablation.
         # Its first three channels always receive the active single modality.
@@ -243,8 +244,10 @@ class ResidualDetector(_Detector):
             encoded = torch.cat((rgb, zeros, zeros, torch.zeros_like(fused[:, 9:])), dim=1)
         elif self.input_mode == "residual_only":
             encoded = torch.cat((residual, zeros, zeros, fused[:, 9:]), dim=1)
+        elif self.input_mode == "recon_only":
+            encoded = torch.cat((recon, zeros, zeros, torch.zeros_like(fused[:, 9:])), dim=1)
         else:
-            encoded = torch.cat((rgb, normalize_rgb(fused[:, 3:6]), residual, fused[:, 9:]), dim=1)
+            encoded = torch.cat((rgb, recon, residual, fused[:, 9:]), dim=1)
         features = self.backbone(encoded)
         return {**details, "features": features, "logits": self.classifier(features)}
 

@@ -172,14 +172,14 @@ def test_explicit_autoencoder_gradient_modes(kind, mode):
 def test_input_ablations_preserve_backbone_initialization_and_isolate_signals():
     models, tensors = {}, {}
     x = torch.rand(2, 3, 32, 32)
-    for mode in ("x_only", "residual_only", "full"):
+    for mode in ("x_only", "residual_only", "recon_only", "full"):
         torch.manual_seed(12)
         model = ResidualDetector(ae(), input_mode=mode, gradient=True, width=4).eval()
         models[mode] = model
         handle = model.backbone.register_forward_pre_hook(lambda module, args, key=mode: tensors.update({key: args[0].detach()}))
         model(x)
         handle.remove()
-    for mode in ("x_only", "residual_only"):
+    for mode in ("x_only", "residual_only", "recon_only"):
         assert tensors[mode].shape == tensors["full"].shape
         assert tensors[mode][:, 3:9].count_nonzero() == 0
         for key, value in models[mode].state_dict().items():
@@ -188,6 +188,8 @@ def test_input_ablations_preserve_backbone_initialization_and_isolate_signals():
     assert torch.equal(tensors["x_only"][:, :3], tensors["full"][:, :3])
     assert torch.equal(tensors["residual_only"][:, :3], tensors["full"][:, 6:9])
     assert torch.equal(tensors["residual_only"][:, 9:], tensors["full"][:, 9:])
+    assert torch.equal(tensors["recon_only"][:, :3], tensors["full"][:, 3:6])
+    assert tensors["recon_only"][:, 9:].count_nonzero() == 0
 
 
 def test_kl_reduction_logs_dimension_independent_nats():
