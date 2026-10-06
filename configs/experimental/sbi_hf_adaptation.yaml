@@ -23,5 +23,5 @@ training:
   lr_backbone: 0.00001
   lr_head: 0.0001
   amp: true
-  failure_policy: error
+  failure_policy: exclude
   cache_images: false
