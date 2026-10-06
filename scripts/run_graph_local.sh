@@ -99,108 +99,132 @@ for SEED in "${SEEDS[@]}"; do
     export TCC_SEED="$SEED"
 
     # SupCon (Supervised Contrastive Learning)
-    echo "▶️  [$(date +%T)] Treinando SupCon | Seed $SEED..."
     RUN_DIR="${MODELS_BASE}/metric_supcon_seed_${SEED}"
-    export TCC_RUN_DIR="$RUN_DIR"
-    export TCC_METRIC_KIND="supcon"
-    rm -rf "$RUN_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
-        --family metric \
-        --config "${REPO_DIR}/configs/experimental/metric_srm.yaml" \
-        --seed "$SEED" \
-        --output "$RUN_DIR" \
-        --device "$DEVICE" \
-        --execute
-
     CALIB_DIR="${RUN_DIR}/calibration"
-    rm -rf "$CALIB_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
-        --family metric \
-        --run "$RUN_DIR" \
-        --manifest "$TCC_VAL_MANIFEST" \
-        --root "$TCC_VAL_ROOT" \
-        --output "$CALIB_DIR" \
-        --options "$OPTIONS_FILE" \
-        --device "$DEVICE" \
-        --execute
+    if [[ -f "${RUN_DIR}/artifact.json" && -f "${CALIB_DIR}/calibration.json" ]]; then
+        echo "⏭️  [$(date +%T)] SupCon Seed $SEED já treinado e calibrado. Pulando..."
+    else
+        if [[ ! -f "${RUN_DIR}/artifact.json" ]]; then
+            echo "▶️  [$(date +%T)] Treinando SupCon | Seed $SEED..."
+            export TCC_RUN_DIR="$RUN_DIR"
+            export TCC_METRIC_KIND="supcon"
+            rm -rf "$RUN_DIR"
+            "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
+                --family metric \
+                --config "${REPO_DIR}/configs/experimental/metric_srm.yaml" \
+                --seed "$SEED" \
+                --output "$RUN_DIR" \
+                --device "$DEVICE" \
+                --execute
+        fi
+
+        rm -rf "$CALIB_DIR"
+        "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
+            --family metric \
+            --run "$RUN_DIR" \
+            --manifest "$TCC_VAL_MANIFEST" \
+            --root "$TCC_VAL_ROOT" \
+            --output "$CALIB_DIR" \
+            --options "$OPTIONS_FILE" \
+            --device "$DEVICE" \
+            --execute
+    fi
 
     # GAT (Graph Attention Network)
-    echo "▶️  [$(date +%T)] Treinando GAT | Seed $SEED..."
     RUN_DIR="${MODELS_BASE}/graph_gat_seed_${SEED}"
-    export TCC_RUN_DIR="$RUN_DIR"
-    export TCC_GRAPH_KIND="gat"
-    rm -rf "$RUN_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
-        --family graph \
-        --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
-        --seed "$SEED" \
-        --output "$RUN_DIR" \
-        --device "$DEVICE" \
-        --execute
-
     CALIB_DIR="${RUN_DIR}/calibration"
-    rm -rf "$CALIB_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
-        --family graph \
-        --run "$RUN_DIR" \
-        --manifest "$TCC_VAL_MANIFEST" \
-        --root "$TCC_VAL_ROOT" \
-        --output "$CALIB_DIR" \
-        --options "$OPTIONS_FILE" \
-        --device "$DEVICE" \
-        --execute
+    if [[ -f "${RUN_DIR}/artifact.json" && -f "${CALIB_DIR}/calibration.json" ]]; then
+        echo "⏭️  [$(date +%T)] GAT Seed $SEED já treinado e calibrado. Pulando..."
+    else
+        if [[ ! -f "${RUN_DIR}/artifact.json" ]]; then
+            echo "▶️  [$(date +%T)] Treinando GAT | Seed $SEED..."
+            export TCC_RUN_DIR="$RUN_DIR"
+            export TCC_GRAPH_KIND="gat"
+            rm -rf "$RUN_DIR"
+            "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
+                --family graph \
+                --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
+                --seed "$SEED" \
+                --output "$RUN_DIR" \
+                --device "$DEVICE" \
+                --execute
+        fi
+
+        rm -rf "$CALIB_DIR"
+        "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
+            --family graph \
+            --run "$RUN_DIR" \
+            --manifest "$TCC_VAL_MANIFEST" \
+            --root "$TCC_VAL_ROOT" \
+            --output "$CALIB_DIR" \
+            --options "$OPTIONS_FILE" \
+            --device "$DEVICE" \
+            --execute
+    fi
 
     # GCN (Graph Convolutional Network)
-    echo "▶️  [$(date +%T)] Treinando GCN | Seed $SEED..."
     RUN_DIR="${MODELS_BASE}/graph_gcn_seed_${SEED}"
-    export TCC_RUN_DIR="$RUN_DIR"
-    export TCC_GRAPH_KIND="gcn"
-    rm -rf "$RUN_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
-        --family graph \
-        --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
-        --seed "$SEED" \
-        --output "$RUN_DIR" \
-        --device "$DEVICE" \
-        --execute
-
     CALIB_DIR="${RUN_DIR}/calibration"
-    rm -rf "$CALIB_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
-        --family graph \
-        --run "$RUN_DIR" \
-        --manifest "$TCC_VAL_MANIFEST" \
-        --root "$TCC_VAL_ROOT" \
-        --output "$CALIB_DIR" \
-        --options "$OPTIONS_FILE" \
-        --device "$DEVICE" \
-        --execute
+    if [[ -f "${RUN_DIR}/artifact.json" && -f "${CALIB_DIR}/calibration.json" ]]; then
+        echo "⏭️  [$(date +%T)] GCN Seed $SEED já treinado e calibrado. Pulando..."
+    else
+        if [[ ! -f "${RUN_DIR}/artifact.json" ]]; then
+            echo "▶️  [$(date +%T)] Treinando GCN | Seed $SEED..."
+            export TCC_RUN_DIR="$RUN_DIR"
+            export TCC_GRAPH_KIND="gcn"
+            rm -rf "$RUN_DIR"
+            "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
+                --family graph \
+                --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
+                --seed "$SEED" \
+                --output "$RUN_DIR" \
+                --device "$DEVICE" \
+                --execute
+        fi
+
+        rm -rf "$CALIB_DIR"
+        "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
+            --family graph \
+            --run "$RUN_DIR" \
+            --manifest "$TCC_VAL_MANIFEST" \
+            --root "$TCC_VAL_ROOT" \
+            --output "$CALIB_DIR" \
+            --options "$OPTIONS_FILE" \
+            --device "$DEVICE" \
+            --execute
+    fi
 
     # GraphSAGE
-    echo "▶️  [$(date +%T)] Treinando GraphSAGE | Seed $SEED..."
     RUN_DIR="${MODELS_BASE}/graph_sage_seed_${SEED}"
-    export TCC_RUN_DIR="$RUN_DIR"
-    export TCC_GRAPH_KIND="sage"
-    rm -rf "$RUN_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
-        --family graph \
-        --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
-        --seed "$SEED" \
-        --output "$RUN_DIR" \
-        --device "$DEVICE" \
-        --execute
-
     CALIB_DIR="${RUN_DIR}/calibration"
-    rm -rf "$CALIB_DIR"
-    "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
-        --family graph \
-        --run "$RUN_DIR" \
-        --manifest "$TCC_VAL_MANIFEST" \
-        --root "$TCC_VAL_ROOT" \
-        --output "$CALIB_DIR" \
-        --options "$OPTIONS_FILE" \
-        --device "$DEVICE" \
-        --execute
+    if [[ -f "${RUN_DIR}/artifact.json" && -f "${CALIB_DIR}/calibration.json" ]]; then
+        echo "⏭️  [$(date +%T)] GraphSAGE Seed $SEED já treinado e calibrado. Pulando..."
+    else
+        if [[ ! -f "${RUN_DIR}/artifact.json" ]]; then
+            echo "▶️  [$(date +%T)] Treinando GraphSAGE | Seed $SEED..."
+            export TCC_RUN_DIR="$RUN_DIR"
+            export TCC_GRAPH_KIND="sage"
+            rm -rf "$RUN_DIR"
+            "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
+                --family graph \
+                --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
+                --seed "$SEED" \
+                --output "$RUN_DIR" \
+                --device "$DEVICE" \
+                --execute
+        fi
+
+        rm -rf "$CALIB_DIR"
+        "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental calibrate \
+            --family graph \
+            --run "$RUN_DIR" \
+            --manifest "$TCC_VAL_MANIFEST" \
+            --root "$TCC_VAL_ROOT" \
+            --output "$CALIB_DIR" \
+            --options "$OPTIONS_FILE" \
+            --device "$DEVICE" \
+            --execute
+    fi
 
     echo "✅ [$(date +%T)] Seed $SEED concluída com sucesso para todas as GNNs e Probes Métricos!"
 done
