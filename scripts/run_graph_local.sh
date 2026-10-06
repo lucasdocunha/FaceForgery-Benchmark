@@ -87,6 +87,9 @@ export TCC_DEVICE="$DEVICE"
 export TCC_LABEL_FRACTION="1.0"
 export TCC_GRAPH_BACKEND="pyg"
 
+OPTIONS_FILE="${CACHE_STORAGE}/val_options.json"
+echo "{\"cache\": \"${VAL_CACHE_DIR}\"}" > "$OPTIONS_FILE"
+
 # 2. Treinamento das GNNs e Probes Métricos em 5 Seeds
 for SEED in "${SEEDS[@]}"; do
     echo ""
@@ -117,7 +120,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
+        --options "$OPTIONS_FILE" \
         --device "$DEVICE" \
         --execute
 
@@ -143,7 +146,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
+        --options "$OPTIONS_FILE" \
         --device "$DEVICE" \
         --execute
 
@@ -169,7 +172,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
+        --options "$OPTIONS_FILE" \
         --device "$DEVICE" \
         --execute
 
@@ -195,7 +198,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
+        --options "$OPTIONS_FILE" \
         --device "$DEVICE" \
         --execute
 
