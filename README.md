@@ -46,6 +46,7 @@ Desenvolvido no âmbito do Programa de Pós-Graduação em Informática (**PPGIA
 - [**Roteiro Narrativo da Apresentação**](presentation/roteiro.md): Roteiro de fala minuto a minuto detalhando o que explicar em cada slide para a banca.
 
 ### 3. Documentação Técnica Aprofundada ([`docs/`](docs/))
+- [**Detalhamento de Datasets e Benchmarks**](docs/detalhamento_datasets_benchmarks.md): Guia exaustivo de balanceamento, características e taxonomia de geradores do MFFI, Celeb-DF v2 e DF-40.
 - [**Análise Técnica dos Modelos**](docs/analise_tecnica_modelos_deepfake.md): Relatório técnico dissecando as 6 arquiteturas.
 - [**Auditoria do Dataset DF-40**](docs/df40-audit.md): Protocolos e escopo dos métodos generativos do DF-40.
 - [**Guia de Explicabilidade (XAI)**](docs/explicability.md): Manual dos métodos de atribuição e renderização.
