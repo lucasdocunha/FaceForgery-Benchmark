@@ -101,7 +101,6 @@ for SEED in "${SEEDS[@]}"; do
     export TCC_RUN_DIR="$RUN_DIR"
     export TCC_METRIC_KIND="supcon"
     rm -rf "$RUN_DIR"
-    mkdir -p "$RUN_DIR"
     "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
         --family metric \
         --config "${REPO_DIR}/configs/experimental/metric_srm.yaml" \
@@ -118,7 +117,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"source_val\": \"${VAL_CACHE_DIR}\"}" \
+        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
         --device "$DEVICE" \
         --execute
 
@@ -128,7 +127,6 @@ for SEED in "${SEEDS[@]}"; do
     export TCC_RUN_DIR="$RUN_DIR"
     export TCC_GRAPH_KIND="gat"
     rm -rf "$RUN_DIR"
-    mkdir -p "$RUN_DIR"
     "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
         --family graph \
         --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
@@ -145,7 +143,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"source_val\": \"${VAL_CACHE_DIR}\"}" \
+        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
         --device "$DEVICE" \
         --execute
 
@@ -155,7 +153,6 @@ for SEED in "${SEEDS[@]}"; do
     export TCC_RUN_DIR="$RUN_DIR"
     export TCC_GRAPH_KIND="gcn"
     rm -rf "$RUN_DIR"
-    mkdir -p "$RUN_DIR"
     "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
         --family graph \
         --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
@@ -172,7 +169,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"source_val\": \"${VAL_CACHE_DIR}\"}" \
+        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
         --device "$DEVICE" \
         --execute
 
@@ -182,7 +179,6 @@ for SEED in "${SEEDS[@]}"; do
     export TCC_RUN_DIR="$RUN_DIR"
     export TCC_GRAPH_KIND="sage"
     rm -rf "$RUN_DIR"
-    mkdir -p "$RUN_DIR"
     "${PYTHON}" "${REPO_DIR}/research_cli.py" experimental train \
         --family graph \
         --config "${REPO_DIR}/configs/experimental/graph_srm.yaml" \
@@ -199,7 +195,7 @@ for SEED in "${SEEDS[@]}"; do
         --manifest "$TCC_VAL_MANIFEST" \
         --root "$TCC_VAL_ROOT" \
         --output "$CALIB_DIR" \
-        --options "{\"source_val\": \"${VAL_CACHE_DIR}\"}" \
+        --options "{\"cache\": \"${VAL_CACHE_DIR}\"}" \
         --device "$DEVICE" \
         --execute
 
