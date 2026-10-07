@@ -31,6 +31,7 @@ MODES = {
     "frequency_3": 1,
     "concat_frequency": 7,
     "srm": 6,
+    "srm_only": 3,
     "dtcwt": 9,
 }
 RECIPE = {
@@ -80,6 +81,10 @@ def encode_tensor(
 
         residuals = SRMConv2d(mode="residual_only").to(rgb.device)(rgb)
         out = torch.cat([rgb, residuals], dim=1)
+    elif mode == "srm_only":
+        from src.forensics.srm import SRMConv2d
+
+        out = SRMConv2d(mode="residual_only").to(rgb.device)(rgb)
     elif mode == "dtcwt":
         from src.forensics.dtcwt_module import extract_dtcwt_features
 

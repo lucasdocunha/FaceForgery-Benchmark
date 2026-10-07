@@ -24,6 +24,10 @@ def encode_legacy_tensor(raw: torch.Tensor, mode: str, in_channels=None):
             from src.forensics.srm import extract_srm_residuals
 
             out = torch.cat([rgb, extract_srm_residuals(rgb[None])[0]])
+        elif mode == "srm_only":
+            from src.forensics.srm import extract_srm_residuals
+
+            out = extract_srm_residuals(rgb[None])[0]
         elif mode == "dtcwt":
             from src.forensics.dtcwt_module import extract_dtcwt_features
 

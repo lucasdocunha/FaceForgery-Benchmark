@@ -434,7 +434,7 @@ def train_single_seed(
 def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Campanha completa de treinamento SRM e DTCWT nas 5 sementes")
     parser.add_argument("--gpu", type=int, default=0, choices=[0, 1], help="Índice da GPU (0 ou 1)")
-    parser.add_argument("--mode", type=str, default=None, choices=["srm", "dtcwt"], help="Modo forense (srm ou dtcwt)")
+    parser.add_argument("--mode", type=str, default=None, choices=["srm", "srm_only", "dtcwt"], help="Modo forense (srm, srm_only ou dtcwt)")
     parser.add_argument("--families", default="mobilenet,resnet,xception,vit,clip,dino", help="Famílias separadas por vírgula (ordem da mais leve à mais pesada)")
     parser.add_argument("--seeds", default="42,123,2024,7,2025", help="Seeds separadas por vírgula")
     parser.add_argument("--epochs", type=int, default=15, help="Número de épocas (padrão: 15)")

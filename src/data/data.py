@@ -24,6 +24,7 @@ FourierMode = Literal[
     "frequency_3",  # Magnitude FFT com máscara passa-alta (enfatiza altas frequências); 1 canal.
     "concat_frequency",  # RGB (3) + magnitude + fase + passa-alta (3×1 canal); 6 canais.
     "srm",  # RGB (3) + 3 resíduos de ruído SRM de esteganálise; 6 canais.
+    "srm_only",  # 3 resíduos de ruído SRM de esteganálise puros (sem RGB); 3 canais.
     "dtcwt",  # RGB (3) + 6 sub-bandas direcionais DTCWT (±15°, ±45°, ±75°); 9 canais.
 ]
 
@@ -37,6 +38,7 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
     "frequency_3",
     "concat_frequency",
     "srm",
+    "srm_only",
     "dtcwt",
 )
 
@@ -44,7 +46,7 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
 FOURIER_CHANNELS = {
     "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
     "concat": 4, "frequency_3": 1, "concat_frequency": 7,
-    "srm": 6, "dtcwt": 9,
+    "srm": 6, "srm_only": 3, "dtcwt": 9,
 }
 
 
@@ -79,6 +81,9 @@ def encode_pil_image(img: Image.Image, fourier: FourierMode, image_size: int) ->
         from src.forensics.srm import extract_srm_residuals
         srm_res = extract_srm_residuals(rgb.unsqueeze(0))[0]
         return torch.cat([rgb, srm_res], dim=0)
+    elif fourier == "srm_only":
+        from src.forensics.srm import extract_srm_residuals
+        return extract_srm_residuals(rgb.unsqueeze(0))[0]
     elif fourier == "dtcwt":
         from src.forensics.dtcwt_module import extract_dtcwt_features
         dtcwt_bands = extract_dtcwt_features(rgb.unsqueeze(0), mode="directional_only")[0]
@@ -268,6 +273,12 @@ class ImageDataset(Dataset):
             from src.forensics.srm import extract_srm_residuals
             srm_res = extract_srm_residuals(image.unsqueeze(0))[0]
             output = torch.cat([image, srm_res], dim=0)
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
+
+        elif self.fourier == "srm_only":
+            from src.forensics.srm import extract_srm_residuals
+            output = extract_srm_residuals(image.unsqueeze(0))[0]
             if self.in_channels is not None:
                 output = output[:self.in_channels]
 

@@ -9,7 +9,7 @@ import yaml
 FOURIER_CHANNELS = {
     "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
     "concat": 4, "frequency_3": 1, "concat_frequency": 7,
-    "srm": 6, "dtcwt": 9,
+    "srm": 6, "srm_only": 3, "dtcwt": 9,
 }
 
 # Artefato gravado por Trainer.fit() em <run_dir>/results/ e lido por
