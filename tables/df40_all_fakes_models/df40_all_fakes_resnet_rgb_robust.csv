@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_rgb_robust,resnet,none,Difusão,DiT,31885,18686,58.6,55.06,0.557,35.0
+resnet_rgb_robust,resnet,none,Difusão,SiT,31885,21433,67.22,63.94,0.6349,35.6
+resnet_rgb_robust,resnet,none,Difusão,ddim,31885,2716,8.52,7.66,0.0954,33.4
+resnet_rgb_robust,resnet,none,Difusão,sd2.1,53474,53267,99.61,99.51,0.9927,93.9
+resnet_rgb_robust,resnet,none,Difusão,pixart,31885,31103,97.55,96.89,0.955,139.9
+resnet_rgb_robust,resnet,none,Difusão,RDDM,17738,6364,35.88,32.58,0.3603,16.4
+resnet_rgb_robust,resnet,none,Difusão,CollabDiff,1000,175,17.5,15.8,0.1748,2.7
+resnet_rgb_robust,resnet,none,Síntese GAN,StyleGAN2,31885,30712,96.32,95.48,0.9337,26.3
+resnet_rgb_robust,resnet,none,Síntese GAN,StyleGAN3,31885,31339,98.29,97.84,0.9638,27.2
+resnet_rgb_robust,resnet,none,Síntese GAN,StyleGANXL,31885,25424,79.74,77.24,0.7544,26.2
+resnet_rgb_robust,resnet,none,Síntese GAN,VQGAN,31885,10830,33.97,31.13,0.3422,27.4
+resnet_rgb_robust,resnet,none,Síntese GAN,stargan,1984,928,46.77,43.6,0.4563,1.9
+resnet_rgb_robust,resnet,none,Síntese GAN,starganv2,2000,67,3.35,2.7,0.0403,1.8
+resnet_rgb_robust,resnet,none,Troca Facial,deepfacelab,3122,1931,61.85,57.78,0.5803,2.8
+resnet_rgb_robust,resnet,none,Troca Facial,faceswap,24634,19576,79.47,76.35,0.7383,21.2
+resnet_rgb_robust,resnet,none,Troca Facial,mobileswap,47522,41446,87.21,85.07,0.8263,39.6
+resnet_rgb_robust,resnet,none,Troca Facial,blendface,24790,17717,71.47,67.74,0.6621,19.7
+resnet_rgb_robust,resnet,none,Troca Facial,uniface,24346,20926,85.95,83.48,0.8077,20.1
+resnet_rgb_robust,resnet,none,Edição / T2I,MidJourney,635,549,86.46,83.31,0.814,6.0
+resnet_rgb_robust,resnet,none,Edição / T2I,whichfaceisreal,1001,648,64.74,63.24,0.6239,5.8
+resnet_rgb_robust,resnet,none,Edição / T2I,styleclip,2824,1532,54.25,52.55,0.5279,9.4
+resnet_rgb_robust,resnet,none,Edição / T2I,e4e,60123,40185,66.84,64.56,0.6445,187.5
+resnet_rgb_robust,resnet,none,Avatares & Reencenação,heygen,1605,283,17.63,16.2,0.184,1.9
+resnet_rgb_robust,resnet,none,Avatares & Reencenação,cdf_reenactment,128671,103607,80.52,77.82,0.7632,104.4

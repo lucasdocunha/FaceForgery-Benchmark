@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_rgb_robust,mobilenet,none,Difusão,DiT,31885,26292,82.46,84.72,0.7843,37.1
+mobilenet_rgb_robust,mobilenet,none,Difusão,SiT,31885,27012,84.72,86.68,0.8052,36.6
+mobilenet_rgb_robust,mobilenet,none,Difusão,ddim,31885,5337,16.74,18.0,0.2308,37.8
+mobilenet_rgb_robust,mobilenet,none,Difusão,sd2.1,53474,52700,98.55,98.73,0.9779,92.7
+mobilenet_rgb_robust,mobilenet,none,Difusão,pixart,31885,31747,99.57,99.67,0.9824,136.8
+mobilenet_rgb_robust,mobilenet,none,Difusão,RDDM,17738,9699,54.68,62.09,0.5983,13.8
+mobilenet_rgb_robust,mobilenet,none,Difusão,CollabDiff,1000,244,24.4,25.3,0.284,2.6
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,StyleGAN2,31885,31365,98.37,98.73,0.9498,26.2
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,StyleGAN3,31885,30590,95.94,96.74,0.9162,28.9
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,StyleGANXL,31885,23401,73.39,75.47,0.7226,26.9
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,VQGAN,31885,10468,32.83,35.76,0.4148,30.8
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,stargan,1984,676,34.07,36.95,0.4113,1.9
+mobilenet_rgb_robust,mobilenet,none,Síntese GAN,starganv2,2000,158,7.9,8.45,0.1299,2.1
+mobilenet_rgb_robust,mobilenet,none,Troca Facial,deepfacelab,3122,2155,69.03,72.17,0.6708,3.4
+mobilenet_rgb_robust,mobilenet,none,Troca Facial,faceswap,24634,20339,82.56,84.72,0.7894,21.0
+mobilenet_rgb_robust,mobilenet,none,Troca Facial,mobileswap,47522,42649,89.75,91.29,0.8544,39.1
+mobilenet_rgb_robust,mobilenet,none,Troca Facial,blendface,24790,20658,83.33,85.2,0.7981,19.8
+mobilenet_rgb_robust,mobilenet,none,Troca Facial,uniface,24346,21161,86.92,88.45,0.8333,21.1
+mobilenet_rgb_robust,mobilenet,none,Edição / T2I,MidJourney,635,590,92.91,93.54,0.9279,6.2
+mobilenet_rgb_robust,mobilenet,none,Edição / T2I,whichfaceisreal,1001,946,94.51,95.2,0.9408,6.2
+mobilenet_rgb_robust,mobilenet,none,Edição / T2I,styleclip,2824,1824,64.59,65.83,0.6538,9.6
+mobilenet_rgb_robust,mobilenet,none,Edição / T2I,e4e,60123,49481,82.3,83.59,0.8097,187.6
+mobilenet_rgb_robust,mobilenet,none,Avatares & Reencenação,heygen,1605,501,31.21,34.27,0.3777,1.4
+mobilenet_rgb_robust,mobilenet,none,Avatares & Reencenação,cdf_reenactment,128671,115913,90.08,91.56,0.8608,97.9

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_srm,clip,srm,Difusão,DiT,31885,19060,59.78,63.71,0.6409,39.1
+clip_srm,clip,srm,Difusão,SiT,31885,20822,65.3,68.95,0.6876,37.6
+clip_srm,clip,srm,Difusão,ddim,31885,12306,38.59,41.25,0.4236,37.8
+clip_srm,clip,srm,Difusão,sd2.1,53474,53062,99.23,99.39,0.9904,88.6
+clip_srm,clip,srm,Difusão,pixart,31885,30662,96.16,96.88,0.9579,144.1
+clip_srm,clip,srm,Difusão,RDDM,17738,7847,44.24,50.17,0.5391,20.9
+clip_srm,clip,srm,Difusão,CollabDiff,1000,323,32.3,34.0,0.358,2.9
+clip_srm,clip,srm,Síntese GAN,StyleGAN2,31885,30711,96.32,97.15,0.9568,37.8
+clip_srm,clip,srm,Síntese GAN,StyleGAN3,31885,30070,94.31,95.5,0.94,38.1
+clip_srm,clip,srm,Síntese GAN,StyleGANXL,31885,22018,69.05,73.06,0.7222,38.1
+clip_srm,clip,srm,Síntese GAN,VQGAN,31885,28247,88.59,90.56,0.8875,38.4
+clip_srm,clip,srm,Síntese GAN,stargan,1984,1160,58.47,60.69,0.612,3.4
+clip_srm,clip,srm,Síntese GAN,starganv2,2000,500,25.0,26.35,0.2707,3.2
+clip_srm,clip,srm,Troca Facial,deepfacelab,3122,1712,54.84,58.33,0.598,4.3
+clip_srm,clip,srm,Troca Facial,faceswap,24634,20854,84.66,86.83,0.8521,29.3
+clip_srm,clip,srm,Troca Facial,mobileswap,47522,30273,63.7,67.66,0.672,57.0
+clip_srm,clip,srm,Troca Facial,blendface,24790,16615,67.02,70.72,0.7007,30.6
+clip_srm,clip,srm,Troca Facial,uniface,24346,21032,86.39,88.15,0.8706,29.9
+clip_srm,clip,srm,Edição / T2I,MidJourney,635,489,77.01,78.11,0.7823,5.1
+clip_srm,clip,srm,Edição / T2I,whichfaceisreal,1001,945,94.41,95.3,0.9374,8.3
+clip_srm,clip,srm,Edição / T2I,styleclip,2824,2170,76.84,78.51,0.7791,13.2
+clip_srm,clip,srm,Edição / T2I,e4e,60123,56974,94.76,95.53,0.9445,191.2
+clip_srm,clip,srm,Avatares & Reencenação,heygen,1605,504,31.4,34.7,0.3564,2.7
+clip_srm,clip,srm,Avatares & Reencenação,cdf_reenactment,128671,93242,72.47,75.09,0.7477,148.6
