@@ -1,4 +1,4 @@
-model_family,fourier_mode,seed,test_auc,test_acc,test_d_auc,test_d_acc,df40_auc,celeb_video_auc,elapsed_min,cached
-mobilenet,srm_only,2024,0.779,0.6949,0.6642,0.6194,0.679,0.767,239.3,False
-resnet,srm_only,2024,0.8211,0.736,0.7235,0.6604,0.6398,0.7357,234.8,False
-xception,srm_only,2024,0.7277,0.6622,0.6386,0.6162,0.6621,0.7403,301.5,False
+model_family,fourier_mode,seed,test_auc,test_d_auc,df40_auc,celeb_video_auc,elapsed_min,cached
+mobilenet,srm_only,2024,0.7790393443265418,0.6641636639539051,0.6790383292210743,0.7670191672174487,0.0,True
+resnet,srm_only,2024,0.8211347579608486,0.7234830062065415,0.6398360036412684,0.7357237276933245,0.0,True
+xception,srm_only,2024,0.7277174469241856,0.6386313038099238,0.6621243558944423,0.7402511566424322,0.0,True
