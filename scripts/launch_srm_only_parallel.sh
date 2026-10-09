@@ -41,7 +41,7 @@ nohup "$VENV_PY" -u "$REPO_DIR/scripts/run_forensics_campaign.py" \
     --epochs 15 \
     --batch-size 64 \
     --num-workers 4 \
-    > "$REPO_DIR/logs/srm_only_gpu0.log" 2>&1 &
+    >> "$REPO_DIR/logs/srm_only_gpu0.log" 2>&1 &
 
 PID_GPU0=$!
 echo "✅ GPU 0 iniciada com PID: $PID_GPU0 (Log: logs/srm_only_gpu0.log)"
@@ -55,7 +55,7 @@ nohup "$VENV_PY" -u "$REPO_DIR/scripts/run_forensics_campaign.py" \
     --epochs 15 \
     --batch-size 32 \
     --num-workers 4 \
-    > "$REPO_DIR/logs/srm_only_gpu1.log" 2>&1 &
+    >> "$REPO_DIR/logs/srm_only_gpu1.log" 2>&1 &
 
 PID_GPU1=$!
 echo "✅ GPU 1 iniciada com PID: $PID_GPU1 (Log: logs/srm_only_gpu1.log)"

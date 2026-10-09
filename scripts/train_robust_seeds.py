@@ -63,13 +63,15 @@ def _balanced_sampler(dataset: ImageDataset, seed: int) -> WeightedRandomSampler
 
 
 def is_seed_completed(run_dir: Path) -> bool:
-    """Verifica se uma seed já concluiu treino e avaliação no test_d."""
+    """Verifica se uma seed já concluiu treino e avaliações completas (test_d, df40, celeb_df)."""
     results_dir = run_dir / "results"
     return (
         (results_dir / "metrics_test.csv").exists()
         and (results_dir / "metrics_test_d.csv").exists()
         and (results_dir / "outputs_test.npz").exists()
         and (results_dir / "outputs_test_d.npz").exists()
+        and (results_dir / "metrics_df40.csv").exists()
+        and (results_dir / "metrics_celeb_df.csv").exists()
     )
 
 
@@ -168,6 +170,113 @@ def eval_df40(
     )
     shim = RunShim(output_dir, family, fourier_mode, regime, seed, val_threshold)
     return _save_results(shim, "df40", df40_metrics)
+
+
+def eval_celeb_df(
+    model: nn.Module,
+    family: str,
+    fourier_mode: str,
+    regime: str,
+    seed: int,
+    output_dir: Path,
+    image_size: int,
+    batch_size: int,
+    num_workers: int,
+    device: torch.device,
+    celeb_csv: Path,
+    crops_dir: Path,
+) -> dict | None:
+    """Executa a avaliação no Celeb-DF v2 (Frame e Vídeo) e grava os artefatos oficiais."""
+    results_dir = output_dir / "results"
+    f_csv = results_dir / "metrics_celeb_df.csv"
+    v_csv = results_dir / "metrics_celeb_df_video.csv"
+    npz_path = results_dir / "outputs_celeb_df.npz"
+    if f_csv.exists() and v_csv.exists() and npz_path.exists():
+        return pd.read_csv(f_csv).iloc[0].to_dict()
+
+    val_metrics_csv = results_dir / "metrics_val.csv"
+    val_threshold = float(pd.read_csv(val_metrics_csv).iloc[0]["threshold"]) if val_metrics_csv.exists() else 0.5
+
+    df_meta = pd.read_csv(celeb_csv)
+    dataset = ImageDataset(
+        celeb_csv,
+        crops_dir,
+        transform=clean_transform(image_size),
+        fourier=fourier_mode,
+        spatial_size=(image_size, image_size),
+    )
+    loader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=device.type == "cuda",
+        persistent_workers=num_workers > 0,
+    )
+
+    model.eval()
+    y_trues, p_fakes = [], []
+    with torch.no_grad():
+        for batch in loader:
+            x = batch[0].to(device)
+            y = batch[1]
+            logits = model(x)
+            probs = torch.softmax(logits, dim=-1)[:, 1].cpu().numpy()
+            y_trues.extend(y.numpy().tolist())
+            p_fakes.extend(probs.tolist())
+
+    y_trues = np.array(y_trues)
+    p_fakes = np.nan_to_num(np.array(p_fakes), nan=0.5, posinf=1.0, neginf=0.0)
+
+    from src.pipelines.evaluation import safe_auc
+    from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+    frame_auc = safe_auc(y_trues, p_fakes)
+    frame_preds = (p_fakes >= val_threshold).astype(int)
+    frame_acc = float(accuracy_score(y_trues, frame_preds))
+    frame_f1 = float(f1_score(y_trues, frame_preds, zero_division=0))
+    frame_p = float(precision_score(y_trues, frame_preds, zero_division=0))
+    frame_r = float(recall_score(y_trues, frame_preds, zero_division=0))
+    frame_spec = float(recall_score(1 - y_trues, 1 - frame_preds, zero_division=0))
+
+    # Video metrics
+    df_temp = df_meta.copy()
+    df_temp["prob_fake"] = p_fakes
+    video_df = df_temp.groupby("video_id").agg({"target": "first", "prob_fake": "mean"}).reset_index()
+    vid_y = video_df["target"].to_numpy().astype(int)
+    vid_p = np.nan_to_num(video_df["prob_fake"].to_numpy(), nan=0.5, posinf=1.0, neginf=0.0)
+    vid_preds = (vid_p >= val_threshold).astype(int)
+
+    video_auc = safe_auc(vid_y, vid_p)
+    video_acc = float(accuracy_score(vid_y, vid_preds))
+    video_f1 = float(f1_score(vid_y, vid_preds, zero_division=0))
+    video_p = float(precision_score(vid_y, vid_preds, zero_division=0))
+    video_r = float(recall_score(vid_y, vid_preds, zero_division=0))
+    video_spec = float(recall_score(1 - vid_y, 1 - vid_preds, zero_division=0))
+
+    results_dir.mkdir(parents=True, exist_ok=True)
+    row_frame = {
+        "model_family": family, "fourier_mode": fourier_mode,
+        "regime": regime, "seed": seed, "split": "celeb_df",
+        "threshold": val_threshold, "auc": frame_auc, "acc": frame_acc,
+        "f1": frame_f1, "precision": frame_p, "recall": frame_r,
+        "specificity": frame_spec, "loss": 0.0,
+        "frame_auc": frame_auc, "frame_acc": frame_acc, "frame_f1": frame_f1,
+        "video_auc": video_auc, "video_acc": video_acc, "video_f1": video_f1,
+    }
+    pd.DataFrame([row_frame]).to_csv(f_csv, index=False)
+
+    row_video = {
+        "model_family": family, "fourier_mode": fourier_mode,
+        "regime": regime, "seed": seed, "split": "celeb_df_video",
+        "threshold": val_threshold, "auc": video_auc, "acc": video_acc,
+        "f1": video_f1, "precision": video_p, "recall": video_r,
+        "specificity": video_spec, "loss": 0.0,
+    }
+    pd.DataFrame([row_video]).to_csv(v_csv, index=False)
+
+    np.savez_compressed(npz_path, y_true=y_trues, p_fake=p_fakes, video_y=vid_y, video_p=vid_p, threshold=val_threshold)
+    return row_frame
 
 
 def train_single_seed(
@@ -334,6 +443,20 @@ def train_single_seed(
                 df40_auc = round(float(m_df40["auc"]), 4)
         except Exception as e:
             print(f"⚠️ [DF40 Eval] Erro ao avaliar {family} seed {seed}: {e}", flush=True)
+
+    # Avaliação no Celeb-DF v2 se dados existirem
+    celeb_csv = data_root() / "celeb_df" / "test.csv"
+    celeb_crops = Path("/media/ssd2/lucas.ocunha/datasets/celeb_df_crops")
+    celeb_video_auc = None
+    if celeb_csv.exists() and celeb_crops.exists():
+        try:
+            m_celeb = eval_celeb_df(
+                model, family, fourier_mode, regime, seed, output_dir, img_size, bs, num_workers, device, celeb_csv, celeb_crops
+            )
+            if m_celeb is not None:
+                celeb_video_auc = round(float(m_celeb["video_auc"]), 4)
+        except Exception as e:
+            print(f"⚠️ [Celeb-DF Eval] Erro ao avaliar {family} seed {seed}: {e}", flush=True)
 
     elapsed_min = (time.time() - t_start) / 60
     val_metrics = pd.read_csv(output_dir / "results" / "metrics_val.csv").iloc[0].to_dict()
