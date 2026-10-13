@@ -34,10 +34,11 @@ from src.pipelines.config import load_config
 
 
 class GenericDF40Dataset(Dataset):
-    def __init__(self, paths: list[Path], img_size: int, fourier_mode: str):
+    def __init__(self, paths: list[Path], img_size: int, fourier_mode: str, in_channels: int = 3):
         self.paths = paths
         self.img_size = img_size
         self.fourier_mode = fourier_mode
+        self.in_channels = in_channels
         self.base_transform = transforms.Compose([
             transforms.Resize((img_size, img_size)),
             transforms.ToTensor(),
@@ -96,7 +97,10 @@ class GenericDF40Dataset(Dataset):
             t_high = self.freq_norm(torch.from_numpy(high).float().unsqueeze(0))
             t_low = self.freq_norm(torch.from_numpy(low).float().unsqueeze(0))
 
-            return torch.cat([rgb_norm, t_mag, t_phase, t_high, t_low], dim=0)
+            out = torch.cat([rgb_norm, t_mag, t_phase, t_high, t_low], dim=0)
+            if self.in_channels == 6:
+                out = out[:6]
+            return out
 
         return rgb_norm
 
@@ -151,14 +155,30 @@ def main():
     # Configuração e Construção do Modelo
     config_file = ROOT_DIR / "configs" / f"{args.family}.yaml"
     cfg = load_config(config_file, {"fourier_mode": args.mode, "regime": "finetune"})
-    img_size = cfg.image_size
 
-    spec = get_model_spec(args.family)
-    model = spec.build(cfg).to(device).eval()
+    # Auto-detect in_channels from run_config.json if available
+    run_cfg_path = ckpt_path.parent.parent / "results" / "run_config.json"
+    if run_cfg_path.exists():
+        import json
+        with open(run_cfg_path) as f:
+            rc = json.load(f)
+            if "in_channels" in rc:
+                cfg.in_channels_override = int(rc["in_channels"])
 
+    # Fallback: inspect checkpoint directly
     state = torch.load(ckpt_path, map_location=device)
     if "model_state_dict" in state:
         state = state["model_state_dict"]
+
+    for weight_key in ("conv1.weight", "backbone.stem.0.weight", "patch_embed.proj.weight", "visual.conv1.weight"):
+        if weight_key in state:
+            detected_in_channels = state[weight_key].shape[1]
+            cfg.in_channels_override = detected_in_channels
+            break
+
+    img_size = cfg.image_size
+    spec = get_model_spec(args.family)
+    model = spec.build(cfg).to(device).eval()
     model.load_state_dict(state)
 
     root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
@@ -212,7 +232,7 @@ def main():
         if n_imgs == 0:
             continue
 
-        ds = GenericDF40Dataset(imgs, img_size=img_size, fourier_mode=args.mode)
+        ds = GenericDF40Dataset(imgs, img_size=img_size, fourier_mode=args.mode, in_channels=cfg.in_channels)
         loader = DataLoader(ds, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
         t0 = time.time()
