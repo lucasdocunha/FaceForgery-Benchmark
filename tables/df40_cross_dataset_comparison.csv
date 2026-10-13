@@ -1,0 +1,5 @@
+modelo,treino,mffi_test_auc,mffi_test_acc,mffi_testd_auc,mffi_testd_acc,df40_test_auc,df40_test_acc,celeb_video_auc,celeb_video_acc,celeb_frame_auc,celeb_frame_acc
+DINO (SRM),MFFI,91.26,80.83,84.72,72.61,79.52,75.33,83.19,72.59,77.88,72.75
+DINO (SRM),DF-40,72.6,66.08,63.08,59.0,99.92,98.92,70.04,62.36,68.34,68.49
+ResNet-18 (SRM),MFFI,83.72,75.4,75.42,68.52,68.04,65.0,65.75,67.0,61.2,62.5
+ResNet-18 (SRM),DF-40,56.42,54.81,52.19,52.08,99.28,94.78,65.44,69.5,62.62,67.16
