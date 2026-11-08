@@ -32,4 +32,8 @@ min_dataset
 !/data/.gitkeep
 
 .cache/
+.hf_token
+*.log
+logs/
+*.lock
 

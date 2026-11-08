@@ -29,6 +29,9 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
     "concat",
     "frequency_3",
     "concat_frequency",
+    "srm",
+    "srm_only",
+    "dtcwt",
 )
 
 

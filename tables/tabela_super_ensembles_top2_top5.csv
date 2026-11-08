@@ -1,0 +1,9 @@
+comite,rank,n_redes,modelos,estrategia,val_auc,test_auc,test_hard_auc,df40_auc,celeb_video_auc,tipo
+Top-2 Híbrido,2,2,"CLIP Robusto (s987) + ResNet Concat (s123)",geom,0.9984,0.9540,0.8280,0.8540,0.7380,Híbrido Espaço-Espectro
+Top-3 Campeão Geral,1,3,"CLIP Robusto (s987) + CLIP Concat (s2025) + ResNet Concat (s123)",geom,0.9988,0.9620,0.8350,0.8644,0.7420,Híbrido Espaço-Espectro
+Top-4 Híbrido,3,4,"CLIP Robusto + CLIP Concat + ResNet Concat + DINO Concat",mean,0.9988,0.9625,0.8380,0.8615,0.7450,Híbrido Espaço-Espectro
+Top-5 Campeões,4,5,"CLIP Robusto + DINO Robusto + ResNet Concat + DINO Concat + Xception Concat",mean,0.9986,0.9580,0.8390,0.8405,0.7480,Híbrido Espaço-Espectro
+Top-2 Espacial Puro,1,2,"CLIP Robusto + DINO Robusto",geom,0.9963,0.9396,0.8781,0.8248,0.7180,Espacial Puro RGB
+Top-3 Espacial Puro,2,3,"CLIP + DINO + ResNet",geom,0.9957,0.9347,0.8700,0.7976,0.7152,Espacial Puro RGB
+Top-4 Espacial Puro,3,4,"CLIP + DINO + ResNet + ViT",geom,0.9948,0.9286,0.8653,0.7968,0.7190,Espacial Puro RGB
+Top-5 Espacial Puro,4,5,"CLIP + DINO + ResNet + ViT + MobileNet",stacking,0.9963,0.9318,0.8597,0.8064,0.7210,Espacial Puro RGB
