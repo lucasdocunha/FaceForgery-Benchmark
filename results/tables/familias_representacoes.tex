@@ -1,5 +1,5 @@
 % =====================================================================
-% Tabela: ROC-AUC por família e representação de entrada no MFFI
+% Tabela: ROC-AUC e Acurácia por família e representação de entrada no MFFI
 % (Test, Test-Hard, Delta) e entre bases (DF-40, Celeb-DF v2 por vídeo).
 % Requer: \usepackage{booktabs}
 % Fontes: ajuste fino (7 representações), RGB com data augmentation,
@@ -9,91 +9,91 @@
 
 \begin{table*}[!t]
 \centering
-\caption{ROC-AUC (média\,$\pm$\,desvio-padrão entre sementes estocásticas) no Test (limpo) e no Test-Hard (degradado) do MFFI e na transferência sem retreino para DF-40 e Celeb-DF v2 (AUC por vídeo), para cada família e representação de entrada.
+\caption{ROC-AUC e Acurácia (média\,$\pm$\,desvio-padrão entre sementes estocásticas) no Test (limpo) e no Test-Hard (degradado) do MFFI e na transferência sem retreino para DF-40 e Celeb-DF v2 (nível de vídeo), para cada família e representação de entrada.
 As sete primeiras linhas de cada família usam ajuste fino convencional; as três últimas utilizam treinamento robusto com \textit{RandomizedRobustAugment} ($^\dagger$).
-$\Delta$ é a queda absoluta Test$-$Test-Hard (menor é melhor).
+$\Delta$ é a queda absoluta de AUC (Test$-$Test-Hard, menor é melhor).
 O melhor valor de cada coluna está em \textbf{negrito}; para $\Delta$, consideram-se apenas configurações com Test $\geq 0{,}6$, pois representações com acurácia próxima ao acaso (\textit{e.g.}, \textit{Complex Spectrum}) exibem $\Delta \approx 0$ trivialmente.}
 \label{tab:familias_representacoes}
 \vspace{-2mm}
 \scriptsize\renewcommand{\arraystretch}{0.88}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}ll ccc cc@{}}
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}ll cc cc c cc cc@{}}
 \toprule
- & & \multicolumn{3}{c}{MFFI} & \multicolumn{2}{c}{Entre bases (sem retreino)} \\
-\cmidrule(lr){3-5}\cmidrule(lr){6-7}
-Família & Representação & Test & Test-Hard & $\Delta$ & DF-40 & Celeb-DF (vídeo) \\
+ & & \multicolumn{2}{c}{Test (limpo)} & \multicolumn{2}{c}{Test-Hard (degradado)} & & \multicolumn{2}{c}{DF-40} & \multicolumn{2}{c}{Celeb-DF v2 (vídeo)} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+Família & Representação & AUC & Acc & AUC & Acc & $\Delta$ & AUC & Acc & AUC & Acc \\
 \midrule
-Xception~\cite{chollet2017xception} & \textit{RGB} & \pmsd{0,771}{0,006} & \pmsd{0,639}{0,022} & \pmsd{0,132}{0,027} & \pmsd{0,730}{0,024} & \pmsd{0,656}{0,024} \\
- & \textit{Log-Magnitude} & \pmsd{0,704}{0,008} & \pmsd{0,533}{0,008} & \pmsd{0,171}{0,004} & \pmsd{0,418}{0,027} & \pmsd{0,533}{0,016} \\
- & \textit{Phase} & \pmsd{0,589}{0,006} & \pmsd{0,511}{0,005} & \pmsd{0,078}{0,003} & \pmsd{0,481}{0,025} & \pmsd{0,561}{0,007} \\
- & \textit{Complex Spectrum} & \pmsd{0,562}{0,004} & \pmsd{0,517}{0,004} & \pmsd{0,045}{0,005} & \pmsd{0,489}{0,014} & \pmsd{0,563}{0,015} \\
- & \textit{RGB+Mag} & \pmsd{0,733}{0,004} & \pmsd{0,612}{0,003} & \pmsd{0,121}{0,003} & \pmsd{0,734}{0,011} & \pmsd{0,584}{0,019} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,699}{0,013} & \pmsd{0,533}{0,011} & \pmsd{0,166}{0,004} & \pmsd{0,456}{0,032} & \pmsd{0,552}{0,013} \\
- & \textit{RGB+Freq} & \pmsd{0,659}{0,006} & \pmsd{0,575}{0,005} & \pmsd{0,085}{0,004} & \pmsd{0,597}{0,016} & \pmsd{0,458}{0,021} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,756}{0,003} & \pmsd{0,685}{0,004} & \pmsd{0,071}{0,005} & \pmsd{0,673}{0,010} & \pmsd{0,590}{0,030} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,753}{0,005} & \pmsd{0,682}{0,005} & \pmsd{0,071}{0,002} & \pmsd{0,686}{0,014} & \pmsd{0,582}{0,027} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,720}{0,007} & \pmsd{0,636}{0,002} & \pmsd{0,085}{0,005} & \pmsd{0,645}{0,015} & \pmsd{0,745}{0,019} \\
+Xception~\cite{chollet2017xception} & \textit{RGB}                                       & \pmsd{0,771}{0,006} & \pmsd{0,704}{0,005} & \pmsd{0,639}{0,022} & \pmsd{0,612}{0,019} & \pmsd{0,132}{0,027} & \pmsd{0,730}{0,024} & \pmsd{0,693}{0,011} & \pmsd{0,656}{0,024} & \pmsd{0,662}{0,009} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,704}{0,008} & \pmsd{0,651}{0,006} & \pmsd{0,533}{0,008} & \pmsd{0,550}{0,005} & \pmsd{0,171}{0,004} & \pmsd{0,418}{0,027} & \pmsd{0,487}{0,015} & \pmsd{0,533}{0,016} & \pmsd{0,622}{0,012} \\
+                                    & \textit{Phase}                                     & \pmsd{0,589}{0,006} & \pmsd{0,581}{0,003} & \pmsd{0,511}{0,005} & \pmsd{0,569}{0,003} & \pmsd{0,078}{0,003} & \pmsd{0,481}{0,025} & \pmsd{0,535}{0,013} & \pmsd{0,561}{0,007} & \pmsd{0,654}{0,002} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,562}{0,004} & \pmsd{0,573}{0,000} & \pmsd{0,517}{0,004} & \pmsd{0,573}{0,000} & \pmsd{0,045}{0,005} & \pmsd{0,489}{0,014} & \pmsd{0,551}{0,000} & \pmsd{0,563}{0,015} & \pmsd{0,656}{0,000} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,733}{0,004} & \pmsd{0,672}{0,003} & \pmsd{0,612}{0,003} & \pmsd{0,590}{0,003} & \pmsd{0,121}{0,003} & \pmsd{0,734}{0,011} & \pmsd{0,681}{0,004} & \pmsd{0,584}{0,019} & \pmsd{0,669}{0,004} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,699}{0,013} & \pmsd{0,648}{0,010} & \pmsd{0,533}{0,011} & \pmsd{0,538}{0,012} & \pmsd{0,166}{0,004} & \pmsd{0,456}{0,032} & \pmsd{0,498}{0,019} & \pmsd{0,552}{0,013} & \pmsd{0,618}{0,010} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,659}{0,006} & \pmsd{0,610}{0,004} & \pmsd{0,575}{0,005} & \pmsd{0,575}{0,003} & \pmsd{0,085}{0,004} & \pmsd{0,597}{0,016} & \pmsd{0,588}{0,008} & \pmsd{0,458}{0,021} & \pmsd{0,342}{0,002} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,756}{0,003} & \pmsd{0,691}{0,003} & \pmsd{0,685}{0,004} & \pmsd{0,648}{0,003} & \pmsd{0,071}{0,005} & \pmsd{0,673}{0,010} & \pmsd{0,663}{0,008} & \pmsd{0,590}{0,030} & \pmsd{0,666}{0,007} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,753}{0,005} & \pmsd{0,689}{0,004} & \pmsd{0,682}{0,005} & \pmsd{0,646}{0,003} & \pmsd{0,071}{0,002} & \pmsd{0,686}{0,014} & \pmsd{0,668}{0,005} & \pmsd{0,582}{0,027} & \pmsd{0,663}{0,012} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,720}{0,007} & \pmsd{0,661}{0,001} & \pmsd{0,636}{0,002} & \pmsd{0,614}{0,002} & \pmsd{0,085}{0,005} & \pmsd{0,645}{0,015} & \pmsd{0,628}{0,005} & \pmsd{0,745}{0,019} & \pmsd{0,665}{0,004} \\
 \midrule
-ResNet-18~\cite{ref_resnet} & \textit{RGB} & \pmsd{0,876}{0,022} & \pmsd{0,680}{0,039} & \pmsd{0,196}{0,058} & \pmsd{0,691}{0,032} & \pmsd{0,724}{0,038} \\
- & \textit{Log-Magnitude} & \pmsd{0,750}{0,009} & \pmsd{0,541}{0,013} & \pmsd{0,209}{0,005} & \pmsd{0,451}{0,049} & \pmsd{0,531}{0,025} \\
- & \textit{Phase} & \pmsd{0,647}{0,007} & \pmsd{0,521}{0,002} & \pmsd{0,126}{0,006} & \pmsd{0,505}{0,012} & \pmsd{0,637}{0,013} \\
- & \textit{Complex Spectrum} & \pmsd{0,699}{0,035} & \pmsd{0,544}{0,009} & \pmsd{0,156}{0,026} & \pmsd{0,476}{0,048} & \pmsd{0,589}{0,059} \\
- & \textit{RGB+Mag} & \pmsd{0,872}{0,011} & \pmsd{0,666}{0,023} & \pmsd{0,206}{0,017} & \pmsd{0,780}{0,016} & \pmsd{0,649}{0,027} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,750}{0,006} & \pmsd{0,536}{0,005} & \pmsd{0,213}{0,006} & \pmsd{0,442}{0,010} & \pmsd{0,529}{0,021} \\
- & \textit{RGB+Freq} & \pmsd{0,834}{0,007} & \pmsd{0,687}{0,010} & \pmsd{0,147}{0,005} & \pmsd{0,707}{0,032} & \pmsd{0,386}{0,019} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,847}{0,009} & \pmsd{0,767}{0,008} & \pmsd{0,079}{0,002} & \pmsd{0,674}{0,026} & \pmsd{0,651}{0,033} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,837}{0,009} & \pmsd{0,754}{0,011} & \pmsd{0,083}{0,002} & \pmsd{0,680}{0,036} & \pmsd{0,657}{0,038} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,818}{0,004} & \pmsd{0,723}{0,001} & \pmsd{0,095}{0,004} & \pmsd{0,647}{0,010} & \pmsd{0,735}{0,007} \\
+ResNet-18~\cite{ref_resnet}         & \textit{RGB}                                       & \pmsd{0,876}{0,022} & \pmsd{0,770}{0,024} & \pmsd{0,680}{0,039} & \pmsd{0,620}{0,026} & \pmsd{0,196}{0,058} & \pmsd{0,691}{0,032} & \pmsd{0,641}{0,021} & \pmsd{0,724}{0,038} & \pmsd{0,662}{0,084} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,750}{0,009} & \pmsd{0,686}{0,007} & \pmsd{0,541}{0,013} & \pmsd{0,547}{0,007} & \pmsd{0,209}{0,005} & \pmsd{0,451}{0,049} & \pmsd{0,485}{0,026} & \pmsd{0,531}{0,025} & \pmsd{0,618}{0,031} \\
+                                    & \textit{Phase}                                     & \pmsd{0,647}{0,007} & \pmsd{0,607}{0,006} & \pmsd{0,521}{0,002} & \pmsd{0,540}{0,007} & \pmsd{0,126}{0,006} & \pmsd{0,505}{0,012} & \pmsd{0,513}{0,007} & \pmsd{0,637}{0,013} & \pmsd{0,609}{0,096} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,699}{0,035} & \pmsd{0,642}{0,024} & \pmsd{0,544}{0,009} & \pmsd{0,543}{0,010} & \pmsd{0,156}{0,026} & \pmsd{0,476}{0,048} & \pmsd{0,510}{0,036} & \pmsd{0,589}{0,059} & \pmsd{0,560}{0,130} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,872}{0,011} & \pmsd{0,766}{0,019} & \pmsd{0,666}{0,023} & \pmsd{0,605}{0,021} & \pmsd{0,206}{0,017} & \pmsd{0,780}{0,016} & \pmsd{0,708}{0,011} & \pmsd{0,649}{0,027} & \pmsd{0,640}{0,034} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,750}{0,006} & \pmsd{0,686}{0,004} & \pmsd{0,536}{0,005} & \pmsd{0,541}{0,007} & \pmsd{0,213}{0,006} & \pmsd{0,442}{0,010} & \pmsd{0,474}{0,007} & \pmsd{0,529}{0,021} & \pmsd{0,597}{0,057} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,834}{0,007} & \pmsd{0,747}{0,008} & \pmsd{0,687}{0,010} & \pmsd{0,640}{0,012} & \pmsd{0,147}{0,005} & \pmsd{0,707}{0,032} & \pmsd{0,638}{0,027} & \pmsd{0,386}{0,019} & \pmsd{0,335}{0,010} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,847}{0,009} & \pmsd{0,748}{0,009} & \pmsd{0,767}{0,008} & \pmsd{0,680}{0,010} & \pmsd{0,079}{0,002} & \pmsd{0,674}{0,026} & \pmsd{0,646}{0,025} & \pmsd{0,651}{0,033} & \pmsd{0,687}{0,012} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,837}{0,009} & \pmsd{0,738}{0,014} & \pmsd{0,754}{0,011} & \pmsd{0,667}{0,015} & \pmsd{0,083}{0,002} & \pmsd{0,680}{0,036} & \pmsd{0,652}{0,023} & \pmsd{0,657}{0,038} & \pmsd{0,689}{0,022} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,818}{0,004} & \pmsd{0,735}{0,001} & \pmsd{0,723}{0,001} & \pmsd{0,660}{0,002} & \pmsd{0,095}{0,004} & \pmsd{0,647}{0,010} & \pmsd{0,634}{0,003} & \pmsd{0,735}{0,007} & \pmsd{0,698}{0,010} \\
 \midrule
-MobileNetV3~\cite{howard2019searching} & \textit{RGB} & \pmsd{0,845}{0,005} & \pmsd{0,683}{0,033} & \pmsd{0,162}{0,037} & \pmsd{0,704}{0,014} & \pmsd{0,673}{0,019} \\
- & \textit{Log-Magnitude} & \pmsd{0,718}{0,006} & \pmsd{0,542}{0,003} & \pmsd{0,176}{0,005} & \pmsd{0,451}{0,018} & \pmsd{0,551}{0,013} \\
- & \textit{Phase} & \pmsd{0,629}{0,005} & \pmsd{0,523}{0,003} & \pmsd{0,105}{0,002} & \pmsd{0,510}{0,019} & \pmsd{0,551}{0,014} \\
- & \textit{Complex Spectrum} & \pmsd{0,687}{0,004} & \pmsd{0,534}{0,003} & \pmsd{0,153}{0,002} & \pmsd{0,598}{0,045} & \pmsd{0,561}{0,013} \\
- & \textit{RGB+Mag} & \pmsd{0,805}{0,007} & \pmsd{0,630}{0,003} & \pmsd{0,175}{0,007} & \pmsd{0,668}{0,018} & \pmsd{0,569}{0,019} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,713}{0,007} & \pmsd{0,545}{0,009} & \pmsd{0,168}{0,003} & \pmsd{0,426}{0,030} & \pmsd{0,577}{0,020} \\
- & \textit{RGB+Freq} & \pmsd{0,708}{0,002} & \pmsd{0,603}{0,003} & \pmsd{0,105}{0,002} & \pmsd{0,564}{0,025} & \pmsd{0,415}{0,022} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,832}{0,006} & \pmsd{0,749}{0,006} & \pmsd{0,083}{0,004} & \pmsd{0,706}{0,019} & \pmsd{0,686}{0,014} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,828}{0,005} & \pmsd{0,740}{0,007} & \pmsd{0,088}{0,005} & \pmsd{0,736}{0,010} & \pmsd{0,707}{0,025} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,777}{0,013} & \pmsd{0,666}{0,007} & \pmsd{0,111}{0,007} & \pmsd{0,665}{0,032} & \pmsd{0,731}{0,041} \\
+MobileNetV3~\cite{howard2019searching} & \textit{RGB}                                       & \pmsd{0,845}{0,005} & \pmsd{0,742}{0,004} & \pmsd{0,683}{0,033} & \pmsd{0,625}{0,019} & \pmsd{0,162}{0,037} & \pmsd{0,704}{0,014} & \pmsd{0,669}{0,010} & \pmsd{0,673}{0,019} & \pmsd{0,681}{0,015} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,718}{0,006} & \pmsd{0,659}{0,004} & \pmsd{0,542}{0,003} & \pmsd{0,526}{0,005} & \pmsd{0,176}{0,005} & \pmsd{0,451}{0,018} & \pmsd{0,466}{0,016} & \pmsd{0,551}{0,013} & \pmsd{0,460}{0,077} \\
+                                    & \textit{Phase}                                     & \pmsd{0,629}{0,005} & \pmsd{0,555}{0,008} & \pmsd{0,523}{0,003} & \pmsd{0,500}{0,005} & \pmsd{0,105}{0,002} & \pmsd{0,510}{0,019} & \pmsd{0,468}{0,014} & \pmsd{0,551}{0,014} & \pmsd{0,343}{0,001} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,687}{0,004} & \pmsd{0,616}{0,004} & \pmsd{0,534}{0,003} & \pmsd{0,521}{0,004} & \pmsd{0,153}{0,002} & \pmsd{0,598}{0,045} & \pmsd{0,573}{0,040} & \pmsd{0,561}{0,013} & \pmsd{0,367}{0,010} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,805}{0,007} & \pmsd{0,718}{0,007} & \pmsd{0,630}{0,003} & \pmsd{0,594}{0,005} & \pmsd{0,175}{0,007} & \pmsd{0,668}{0,018} & \pmsd{0,631}{0,013} & \pmsd{0,569}{0,019} & \pmsd{0,395}{0,010} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,713}{0,007} & \pmsd{0,651}{0,004} & \pmsd{0,545}{0,009} & \pmsd{0,523}{0,008} & \pmsd{0,168}{0,003} & \pmsd{0,426}{0,030} & \pmsd{0,443}{0,020} & \pmsd{0,577}{0,020} & \pmsd{0,447}{0,038} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,708}{0,002} & \pmsd{0,639}{0,004} & \pmsd{0,603}{0,003} & \pmsd{0,567}{0,003} & \pmsd{0,105}{0,002} & \pmsd{0,564}{0,025} & \pmsd{0,535}{0,021} & \pmsd{0,415}{0,022} & \pmsd{0,577}{0,026} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,832}{0,006} & \pmsd{0,736}{0,007} & \pmsd{0,749}{0,006} & \pmsd{0,668}{0,007} & \pmsd{0,083}{0,004} & \pmsd{0,706}{0,019} & \pmsd{0,672}{0,016} & \pmsd{0,686}{0,014} & \pmsd{0,695}{0,006} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,828}{0,005} & \pmsd{0,735}{0,004} & \pmsd{0,740}{0,007} & \pmsd{0,662}{0,004} & \pmsd{0,088}{0,005} & \pmsd{0,736}{0,010} & \pmsd{0,697}{0,010} & \pmsd{0,707}{0,025} & \pmsd{0,711}{0,012} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,777}{0,013} & \pmsd{0,695}{0,007} & \pmsd{0,666}{0,007} & \pmsd{0,623}{0,005} & \pmsd{0,111}{0,007} & \pmsd{0,665}{0,032} & \pmsd{0,650}{0,017} & \pmsd{0,731}{0,041} & \pmsd{\textbf{0,716}}{0,012} \\
 \midrule
-ViT~\cite{ref_vit} & \textit{RGB} & \pmsd{0,815}{0,009} & \pmsd{0,704}{0,028} & \pmsd{0,111}{0,027} & \pmsd{0,704}{0,016} & \pmsd{0,694}{0,042} \\
- & \textit{Log-Magnitude} & \pmsd{0,724}{0,009} & \pmsd{0,535}{0,009} & \pmsd{0,189}{0,009} & \pmsd{0,445}{0,020} & \pmsd{0,553}{0,027} \\
- & \textit{Phase} & \pmsd{0,602}{0,005} & \pmsd{0,496}{0,003} & \pmsd{0,106}{0,002} & \pmsd{0,526}{0,018} & \pmsd{0,539}{0,012} \\
- & \textit{Complex Spectrum} & \pmsd{0,570}{0,009} & \pmsd{0,554}{0,006} & \pmsd{0,016}{0,006} & \pmsd{0,509}{0,011} & \pmsd{0,501}{0,019} \\
- & \textit{RGB+Mag} & \pmsd{0,826}{0,003} & \pmsd{0,712}{0,006} & \pmsd{0,114}{0,004} & \pmsd{0,632}{0,024} & \pmsd{0,588}{0,023} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,724}{0,007} & \pmsd{0,528}{0,007} & \pmsd{0,196}{0,002} & \pmsd{0,472}{0,030} & \pmsd{0,557}{0,020} \\
- & \textit{RGB+Freq} & \pmsd{0,791}{0,007} & \pmsd{0,676}{0,006} & \pmsd{0,116}{0,007} & \pmsd{0,542}{0,022} & \pmsd{0,452}{0,014} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,822}{0,005} & \pmsd{0,763}{0,005} & \pmsd{0,059}{0,001} & \pmsd{0,724}{0,018} & \pmsd{0,671}{0,019} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,818}{0,006} & \pmsd{0,765}{0,006} & \pmsd{0,054}{0,005} & \pmsd{0,746}{0,009} & \pmsd{0,628}{0,019} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,659}{0,001} & \pmsd{0,610}{0,007} & \pmsd{\textbf{0,048}}{0,007} & \pmsd{0,408}{0,067} & \pmsd{0,496}{0,013} \\
+ViT~\cite{ref_vit}                  & \textit{RGB}                                       & \pmsd{0,815}{0,009} & \pmsd{0,731}{0,010} & \pmsd{0,704}{0,028} & \pmsd{0,641}{0,022} & \pmsd{0,111}{0,027} & \pmsd{0,704}{0,016} & \pmsd{0,675}{0,011} & \pmsd{0,694}{0,042} & \pmsd{0,680}{0,005} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,724}{0,009} & \pmsd{0,635}{0,007} & \pmsd{0,535}{0,009} & \pmsd{0,550}{0,005} & \pmsd{0,189}{0,009} & \pmsd{0,445}{0,020} & \pmsd{0,540}{0,011} & \pmsd{0,553}{0,027} & \pmsd{0,652}{0,006} \\
+                                    & \textit{Phase}                                     & \pmsd{0,602}{0,005} & \pmsd{0,574}{0,001} & \pmsd{0,496}{0,003} & \pmsd{0,573}{0,000} & \pmsd{0,106}{0,002} & \pmsd{0,526}{0,018} & \pmsd{0,550}{0,002} & \pmsd{0,539}{0,012} & \pmsd{0,656}{0,000} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,570}{0,009} & \pmsd{0,573}{0,000} & \pmsd{0,554}{0,006} & \pmsd{0,573}{0,000} & \pmsd{0,016}{0,006} & \pmsd{0,509}{0,011} & \pmsd{0,552}{0,000} & \pmsd{0,501}{0,019} & \pmsd{0,656}{0,000} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,826}{0,003} & \pmsd{0,757}{0,005} & \pmsd{0,712}{0,006} & \pmsd{0,660}{0,005} & \pmsd{0,114}{0,004} & \pmsd{0,632}{0,024} & \pmsd{0,628}{0,013} & \pmsd{0,588}{0,023} & \pmsd{0,660}{0,002} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,724}{0,007} & \pmsd{0,631}{0,009} & \pmsd{0,528}{0,007} & \pmsd{0,556}{0,008} & \pmsd{0,196}{0,002} & \pmsd{0,472}{0,030} & \pmsd{0,529}{0,011} & \pmsd{0,557}{0,020} & \pmsd{0,646}{0,010} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,791}{0,007} & \pmsd{0,717}{0,005} & \pmsd{0,676}{0,006} & \pmsd{0,644}{0,003} & \pmsd{0,116}{0,007} & \pmsd{0,542}{0,022} & \pmsd{0,574}{0,010} & \pmsd{0,452}{0,014} & \pmsd{0,343}{0,001} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,822}{0,005} & \pmsd{0,735}{0,005} & \pmsd{0,763}{0,005} & \pmsd{0,683}{0,003} & \pmsd{0,059}{0,001} & \pmsd{0,724}{0,018} & \pmsd{0,687}{0,012} & \pmsd{0,671}{0,019} & \pmsd{0,674}{0,012} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,818}{0,006} & \pmsd{0,732}{0,006} & \pmsd{0,765}{0,006} & \pmsd{0,684}{0,007} & \pmsd{0,054}{0,005} & \pmsd{0,746}{0,009} & \pmsd{0,710}{0,012} & \pmsd{0,628}{0,019} & \pmsd{0,676}{0,009} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,659}{0,001} & \pmsd{0,580}{0,002} & \pmsd{0,610}{0,007} & \pmsd{0,572}{0,001} & \pmsd{\textbf{0,048}}{0,007} & \pmsd{0,408}{0,067} & \pmsd{0,553}{0,007} & \pmsd{0,496}{0,013} & \pmsd{0,656}{0,000} \\
 \midrule
-DINOv3~\cite{simeoni2025dinov3} & \textit{RGB} & \pmsd{\textbf{0,934}}{0,007} & \pmsd{0,737}{0,055} & \pmsd{0,197}{0,060} & \pmsd{0,721}{0,029} & \pmsd{0,724}{0,077} \\
- & \textit{Log-Magnitude} & \pmsd{0,761}{0,003} & \pmsd{0,536}{0,004} & \pmsd{0,225}{0,004} & \pmsd{0,484}{0,026} & \pmsd{0,517}{0,023} \\
- & \textit{Phase} & \pmsd{0,713}{0,007} & \pmsd{0,533}{0,009} & \pmsd{0,180}{0,007} & \pmsd{0,521}{0,026} & \pmsd{0,625}{0,018} \\
- & \textit{Complex Spectrum} & \pmsd{0,499}{0,001} & \pmsd{0,498}{0,005} & \pmsd{0,002}{0,004} & \pmsd{0,500}{0,000} & \pmsd{0,504}{0,024} \\
- & \textit{RGB+Mag} & \pmsd{0,917}{0,007} & \pmsd{0,683}{0,010} & \pmsd{0,233}{0,009} & \pmsd{0,756}{0,021} & \pmsd{0,696}{0,021} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,763}{0,017} & \pmsd{0,537}{0,006} & \pmsd{0,226}{0,014} & \pmsd{0,500}{0,027} & \pmsd{0,547}{0,029} \\
- & \textit{RGB+Freq} & \pmsd{0,860}{0,008} & \pmsd{0,682}{0,010} & \pmsd{0,178}{0,004} & \pmsd{0,705}{0,039} & \pmsd{0,366}{0,019} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,927}{0,009} & \pmsd{0,845}{0,018} & \pmsd{0,081}{0,011} & \pmsd{0,775}{0,034} & \pmsd{0,656}{0,022} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,923}{0,008} & \pmsd{\textbf{0,852}}{0,007} & \pmsd{0,071}{0,011} & \pmsd{0,808}{0,025} & \pmsd{0,755}{0,045} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,792}{0,013} & \pmsd{0,708}{0,012} & \pmsd{0,084}{0,001} & \pmsd{0,614}{0,024} & \pmsd{\textbf{0,763}}{0,029} \\
+DINOv3~\cite{simeoni2025dinov3}     & \textit{RGB}                                       & \pmsd{\textbf{0,934}}{0,007} & \pmsd{\textbf{0,871}}{0,015} & \pmsd{0,737}{0,055} & \pmsd{0,684}{0,041} & \pmsd{0,197}{0,060} & \pmsd{0,721}{0,029} & \pmsd{0,659}{0,021} & \pmsd{0,724}{0,077} & \pmsd{0,678}{0,036} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,761}{0,003} & \pmsd{0,678}{0,009} & \pmsd{0,536}{0,004} & \pmsd{0,546}{0,003} & \pmsd{0,225}{0,004} & \pmsd{0,484}{0,026} & \pmsd{0,540}{0,016} & \pmsd{0,517}{0,023} & \pmsd{0,650}{0,006} \\
+                                    & \textit{Phase}                                     & \pmsd{0,713}{0,007} & \pmsd{0,652}{0,005} & \pmsd{0,533}{0,009} & \pmsd{0,562}{0,004} & \pmsd{0,180}{0,007} & \pmsd{0,521}{0,026} & \pmsd{0,542}{0,012} & \pmsd{0,625}{0,018} & \pmsd{0,658}{0,002} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,499}{0,001} & \pmsd{0,573}{0,000} & \pmsd{0,498}{0,005} & \pmsd{0,573}{0,000} & \pmsd{0,002}{0,004} & \pmsd{0,500}{0,000} & \pmsd{0,531}{0,046} & \pmsd{0,504}{0,024} & \pmsd{0,594}{0,140} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,917}{0,007} & \pmsd{0,851}{0,014} & \pmsd{0,683}{0,010} & \pmsd{0,638}{0,010} & \pmsd{0,233}{0,009} & \pmsd{0,756}{0,021} & \pmsd{0,698}{0,018} & \pmsd{0,696}{0,021} & \pmsd{0,662}{0,028} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,763}{0,017} & \pmsd{0,676}{0,013} & \pmsd{0,537}{0,006} & \pmsd{0,542}{0,007} & \pmsd{0,226}{0,014} & \pmsd{0,500}{0,027} & \pmsd{0,551}{0,023} & \pmsd{0,547}{0,029} & \pmsd{0,652}{0,003} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,860}{0,008} & \pmsd{0,782}{0,012} & \pmsd{0,682}{0,010} & \pmsd{0,663}{0,012} & \pmsd{0,178}{0,004} & \pmsd{0,705}{0,039} & \pmsd{0,666}{0,011} & \pmsd{0,366}{0,019} & \pmsd{0,327}{0,018} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,927}{0,009} & \pmsd{0,839}{0,012} & \pmsd{0,845}{0,018} & \pmsd{\textbf{0,750}}{0,014} & \pmsd{0,081}{0,011} & \pmsd{0,775}{0,034} & \pmsd{0,714}{0,025} & \pmsd{0,656}{0,022} & \pmsd{0,669}{0,007} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,923}{0,008} & \pmsd{0,824}{0,013} & \pmsd{\textbf{0,852}}{0,007} & \pmsd{0,746}{0,012} & \pmsd{0,071}{0,011} & \pmsd{0,808}{0,025} & \pmsd{0,753}{0,016} & \pmsd{0,755}{0,045} & \pmsd{\textbf{0,716}}{0,013} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,792}{0,013} & \pmsd{0,718}{0,007} & \pmsd{0,708}{0,012} & \pmsd{0,660}{0,003} & \pmsd{0,084}{0,001} & \pmsd{0,614}{0,024} & \pmsd{0,609}{0,023} & \pmsd{\textbf{0,763}}{0,029} & \pmsd{0,663}{0,010} \\
 \midrule
-CLIP~\cite{ref_clip} & \textit{RGB} & \pmsd{0,917}{0,006} & \pmsd{0,765}{0,041} & \pmsd{0,152}{0,046} & \pmsd{0,764}{0,046} & \pmsd{0,713}{0,028} \\
- & \textit{Log-Magnitude} & \pmsd{0,734}{0,001} & \pmsd{0,530}{0,004} & \pmsd{0,204}{0,004} & \pmsd{0,483}{0,024} & \pmsd{0,516}{0,014} \\
- & \textit{Phase} & \pmsd{0,627}{0,010} & \pmsd{0,499}{0,002} & \pmsd{0,127}{0,009} & \pmsd{0,518}{0,033} & \pmsd{0,559}{0,029} \\
- & \textit{Complex Spectrum} & \pmsd{0,527}{0,038} & \pmsd{0,520}{0,025} & \pmsd{0,007}{0,013} & \pmsd{0,472}{0,055} & \pmsd{0,470}{0,060} \\
- & \textit{RGB+Mag} & \pmsd{0,894}{0,004} & \pmsd{0,726}{0,012} & \pmsd{0,168}{0,015} & \pmsd{0,765}{0,032} & \pmsd{0,639}{0,030} \\
- & \textit{High-Pass Spectrum} & \pmsd{0,732}{0,006} & \pmsd{0,533}{0,007} & \pmsd{0,199}{0,010} & \pmsd{0,473}{0,027} & \pmsd{0,573}{0,011} \\
- & \textit{RGB+Freq} & \pmsd{0,779}{0,007} & \pmsd{0,650}{0,006} & \pmsd{0,128}{0,011} & \pmsd{0,594}{0,021} & \pmsd{0,430}{0,028} \\
-\cmidrule(l){2-7}
- & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,907}{0,001} & \pmsd{0,845}{0,002} & \pmsd{0,062}{0,002} & \pmsd{\textbf{0,814}}{0,013} & \pmsd{0,670}{0,014} \\
- & \textit{RGB+SRM} (com \textit{data augmentation}) & \pmsd{0,896}{0,004} & \pmsd{0,835}{0,003} & \pmsd{0,061}{0,005} & \pmsd{0,810}{0,018} & \pmsd{0,653}{0,037} \\
- & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,655}{0,012} & \pmsd{0,603}{0,012} & \pmsd{0,052}{0,003} & \pmsd{0,333}{0,017} & \pmsd{0,552}{0,011} \\
+CLIP~\cite{ref_clip}                & \textit{RGB}                                       & \pmsd{0,917}{0,006} & \pmsd{0,833}{0,010} & \pmsd{0,765}{0,041} & \pmsd{0,691}{0,024} & \pmsd{0,152}{0,046} & \pmsd{0,764}{0,046} & \pmsd{0,722}{0,032} & \pmsd{0,713}{0,028} & \pmsd{0,526}{0,142} \\
+                                    & \textit{Log-Magnitude}                             & \pmsd{0,734}{0,001} & \pmsd{0,673}{0,003} & \pmsd{0,530}{0,004} & \pmsd{0,544}{0,005} & \pmsd{0,204}{0,004} & \pmsd{0,483}{0,024} & \pmsd{0,516}{0,018} & \pmsd{0,516}{0,014} & \pmsd{0,652}{0,007} \\
+                                    & \textit{Phase}                                     & \pmsd{0,627}{0,010} & \pmsd{0,588}{0,011} & \pmsd{0,499}{0,002} & \pmsd{0,536}{0,008} & \pmsd{0,127}{0,009} & \pmsd{0,518}{0,033} & \pmsd{0,519}{0,023} & \pmsd{0,559}{0,029} & \pmsd{0,673}{0,006} \\
+                                    & \textit{Complex Spectrum}                          & \pmsd{0,527}{0,038} & \pmsd{0,573}{0,000} & \pmsd{0,520}{0,025} & \pmsd{0,573}{0,000} & \pmsd{0,007}{0,013} & \pmsd{0,472}{0,055} & \pmsd{0,551}{0,000} & \pmsd{0,470}{0,060} & \pmsd{0,656}{0,000} \\
+                                    & \textit{RGB+Mag}                                   & \pmsd{0,894}{0,004} & \pmsd{0,815}{0,007} & \pmsd{0,726}{0,012} & \pmsd{0,678}{0,007} & \pmsd{0,168}{0,015} & \pmsd{0,765}{0,032} & \pmsd{0,712}{0,027} & \pmsd{0,639}{0,030} & \pmsd{0,507}{0,093} \\
+                                    & \textit{High-Pass Spectrum}                        & \pmsd{0,732}{0,006} & \pmsd{0,671}{0,003} & \pmsd{0,533}{0,007} & \pmsd{0,531}{0,006} & \pmsd{0,199}{0,010} & \pmsd{0,473}{0,027} & \pmsd{0,497}{0,013} & \pmsd{0,573}{0,011} & \pmsd{0,650}{0,011} \\
+                                    & \textit{RGB+Freq}                                  & \pmsd{0,779}{0,007} & \pmsd{0,706}{0,007} & \pmsd{0,650}{0,006} & \pmsd{0,627}{0,004} & \pmsd{0,128}{0,011} & \pmsd{0,594}{0,021} & \pmsd{0,593}{0,013} & \pmsd{0,430}{0,028} & \pmsd{0,333}{0,007} \\
+ \cmidrule(l){2-11}
+                                    & \textit{RGB} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,907}{0,001} & \pmsd{0,814}{0,005} & \pmsd{0,845}{0,002} & \pmsd{0,743}{0,005} & \pmsd{0,062}{0,002} & \pmsd{\textbf{0,814}}{0,013} & \pmsd{\textbf{0,757}}{0,011} & \pmsd{0,670}{0,014} & \pmsd{0,648}{0,027} \\
+                                    & \textit{RGB+SRM} (com \textit{data augmentation})  & \pmsd{0,896}{0,004} & \pmsd{0,796}{0,009} & \pmsd{0,835}{0,003} & \pmsd{0,729}{0,010} & \pmsd{0,061}{0,005} & \pmsd{0,810}{0,018} & \pmsd{0,742}{0,009} & \pmsd{0,653}{0,037} & \pmsd{0,650}{0,043} \\
+                                    & \textit{SRM-only} (com \textit{data augmentation})$^\dagger$ & \pmsd{0,655}{0,012} & \pmsd{0,609}{0,002} & \pmsd{0,603}{0,012} & \pmsd{0,585}{0,006} & \pmsd{0,052}{0,003} & \pmsd{0,333}{0,017} & \pmsd{0,541}{0,013} & \pmsd{0,552}{0,011} & \pmsd{0,659}{0,002} \\
 \bottomrule
 \end{tabular}
 \end{table*}
