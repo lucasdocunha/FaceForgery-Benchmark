@@ -19,12 +19,12 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 PYTHON_EXEC = sys.executable
 
 FAMILIES = [
-    ("resnet", 256),
-    ("mobilenet", 256),
-    ("xception", 128),
-    ("vit", 128),
-    ("clip", 128),
-    ("dino", 128),
+    ("resnet", 512),
+    ("mobilenet", 512),
+    ("xception", 256),
+    ("vit", 256),
+    ("clip", 256),
+    ("dino", 256),
 ]
 
 METHODS = [
@@ -129,7 +129,7 @@ def main():
                 "--checkpoint", task["checkpoint"],
                 "--batch-size", str(task["batch_size"]),
                 "--device", args.device,
-                "--num-workers", "6",
+                "--num-workers", "10",
                 "--output-dir", str(TABLES_DIR.relative_to(ROOT_DIR)),
             ]
 

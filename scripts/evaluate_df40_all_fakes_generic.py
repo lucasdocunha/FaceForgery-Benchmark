@@ -70,36 +70,37 @@ class GenericDF40Dataset(Dataset):
 
         elif self.fourier_mode == "concat":
             gray = 0.2989 * img_tensor[0] + 0.5870 * img_tensor[1] + 0.1140 * img_tensor[2]
-            fshift = np.fft.fftshift(np.fft.fft2(gray.numpy()))
-            mag = np.log1p(np.abs(fshift))
+            fshift = torch.fft.fftshift(torch.fft.fft2(gray))
+            mag = torch.log1p(torch.abs(fshift))
             span = mag.max() - mag.min()
-            norm_mag = np.zeros_like(mag) if span < 1e-8 else (mag - mag.min()) / span
-            t_mag = self.freq_norm(torch.from_numpy(norm_mag).float().unsqueeze(0))
+            norm_mag = torch.zeros_like(mag) if span < 1e-8 else (mag - mag.min()) / span
+            t_mag = self.freq_norm(norm_mag.unsqueeze(0))
             return torch.cat([rgb_norm, t_mag], dim=0)
 
         elif self.fourier_mode == "concat_frequency":
             gray = 0.2989 * img_tensor[0] + 0.5870 * img_tensor[1] + 0.1140 * img_tensor[2]
-            fshift = np.fft.fftshift(np.fft.fft2(gray.numpy()))
-            abs_f = np.abs(fshift)
+            fshift = torch.fft.fftshift(torch.fft.fft2(gray))
+            abs_f = torch.abs(fshift)
 
-            def safe_norm(arr):
+            def safe_norm_th(arr):
                 sp = arr.max() - arr.min()
-                return np.zeros_like(arr) if sp < 1e-8 else (arr - arr.min()) / sp
+                return torch.zeros_like(arr) if sp < 1e-8 else (arr - arr.min()) / sp
 
             h, w = fshift.shape
-            y, x = np.ogrid[:h, :w]
+            y = torch.arange(h).view(-1, 1)
+            x = torch.arange(w).view(1, -1)
             r2 = (min(h, w) * 0.12) ** 2
             d2 = (y - h // 2) ** 2 + (x - w // 2) ** 2
 
-            mag = safe_norm(np.log1p(abs_f))
-            phase = safe_norm((np.angle(fshift) + np.pi) / (2 * np.pi))
-            high = safe_norm(np.log1p(abs_f * (d2 >= r2)))
-            low = safe_norm(np.log1p(abs_f * (d2 < r2)))
+            mag = safe_norm_th(torch.log1p(abs_f))
+            phase = safe_norm_th((torch.angle(fshift) + torch.pi) / (2 * torch.pi))
+            high = safe_norm_th(torch.log1p(abs_f * (d2 >= r2)))
+            low = safe_norm_th(torch.log1p(abs_f * (d2 < r2)))
 
-            t_mag = self.freq_norm(torch.from_numpy(mag).float().unsqueeze(0))
-            t_phase = self.freq_norm(torch.from_numpy(phase).float().unsqueeze(0))
-            t_high = self.freq_norm(torch.from_numpy(high).float().unsqueeze(0))
-            t_low = self.freq_norm(torch.from_numpy(low).float().unsqueeze(0))
+            t_mag = self.freq_norm(mag.unsqueeze(0))
+            t_phase = self.freq_norm(phase.unsqueeze(0))
+            t_high = self.freq_norm(high.unsqueeze(0))
+            t_low = self.freq_norm(low.unsqueeze(0))
 
             out = torch.cat([rgb_norm, t_mag, t_phase, t_high, t_low], dim=0)
             if self.in_channels == 6:
@@ -122,8 +123,8 @@ def main():
     parser.add_argument("--family", type=str, required=True, help="Família (dino, clip, resnet, etc)")
     parser.add_argument("--mode", type=str, default="none", help="Modo (none, srm, srm_only, concat, concat_frequency)")
     parser.add_argument("--checkpoint", type=str, required=True, help="Caminho do best.pth")
-    parser.add_argument("--batch-size", type=int, default=128, help="Batch size")
-    parser.add_argument("--num-workers", type=int, default=6, help="Workers DataLoader")
+    parser.add_argument("--batch-size", type=int, default=256, help="Batch size")
+    parser.add_argument("--num-workers", type=int, default=10, help="Workers DataLoader")
     parser.add_argument("--threshold", type=float, default=None, help="Threshold fixo (ou auto de metrics_val.csv)")
     parser.add_argument("--output-dir", type=str, default="tables/df40_all_fakes_models", help="Diretório de saída")
     parser.add_argument("--device", type=str, default="cuda:0", help="Dispositivo (ex: cuda:0, cuda:1, cpu)")
@@ -187,6 +188,17 @@ def main():
     model.load_state_dict(state)
 
     root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+    cache_path = root / "paths_cache.json"
+    paths_cache = None
+    if cache_path.exists():
+        import json
+        try:
+            with open(cache_path) as f:
+                paths_cache = json.load(f)
+            print(f"⚡ [Cache de Imagens Ativo] {sum(len(v) for v in paths_cache.values()):,} caminhos carregados instantaneamente.")
+        except Exception:
+            paths_cache = None
+
     techniques = [
         # Difusão
         ("DiT", "DiT", "Difusão"),
@@ -232,7 +244,10 @@ def main():
         if not folder.exists():
             continue
 
-        imgs = collect_images_for_folder(folder)
+        if paths_cache and name in paths_cache:
+            imgs = [Path(p) for p in paths_cache[name]]
+        else:
+            imgs = collect_images_for_folder(folder)
         n_imgs = len(imgs)
         if n_imgs == 0:
             continue
