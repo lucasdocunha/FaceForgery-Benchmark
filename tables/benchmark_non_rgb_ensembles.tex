@@ -1,0 +1,74 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Desempenho dos Ensembles Forenses Não-RGB (SRM e Fourier Concat) sob Múltiplas Estratégias de Fusão.}
+\label{tab:non_rgb_ensembles}
+\begin{tabular}{l c l c c c c}
+\toprule
+\textbf{Comitê Não-RGB} & \textbf{$K$} & \textbf{Estratégia} & \textbf{Val AUC (\%)} & \textbf{Test AUC (\%)} & \textbf{Test-D AUC (\%)} & \textbf{DF-40 AUC (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\
+\midrule
+\textbf{Top-2 Não-RGB} & 2 & \texttt{mean} & 99.59 & 93.10 & 86.35 & 84.06 & 74.84 \\
+ & 2 & \texttt{geometric} & 99.65 & 93.51 & \textbf{87.34} & 84.62 & 76.37 \\
+ & 2 & \texttt{harmonic} & 99.54 & 93.07 & 87.17 & 84.40 & 76.66 \\
+ & 2 & \texttt{max} & 99.35 & 92.56 & 85.67 & 83.59 & 70.13 \\
+ & 2 & \texttt{weighted} & 99.60 & 93.12 & 86.36 & 84.05 & 74.89 \\
+ & 2 & \texttt{optimal_weights} & 99.68 & 93.29 & 86.54 & 83.33 & 76.21 \\
+ & 2 & \texttt{stacking} & 99.68 & 93.28 & 86.52 & 83.41 & 76.14 \\
+ & 2 & \texttt{majority} & 98.66 & 87.02 & 80.10 & 79.31 & 71.94 \\
+\midrule
+\textbf{Top-3 Não-RGB} & 3 & \texttt{mean} & 99.59 & 93.52 & 82.05 & 85.51 & 75.30 \\
+ & 3 & \texttt{geometric} & 99.60 & 93.62 & 82.21 & \textbf{86.40} & 76.47 \\
+ & 3 & \texttt{harmonic} & 99.09 & 91.07 & 78.99 & 85.09 & 76.73 \\
+ & 3 & \texttt{max} & 98.81 & 92.13 & 75.01 & 83.41 & 64.63 \\
+ & 3 & \texttt{weighted} & 99.61 & 93.58 & 82.33 & 85.54 & 75.33 \\
+ & 3 & \texttt{optimal_weights} & 99.72 & 93.83 & 85.04 & 83.92 & 76.41 \\
+ & 3 & \texttt{stacking} & 99.71 & 93.84 & 84.18 & 84.48 & 76.27 \\
+ & 3 & \texttt{majority} & 99.13 & 90.24 & 78.88 & 82.80 & 72.51 \\
+\midrule
+\textbf{Top-4 Não-RGB} & 4 & \texttt{mean} & 99.57 & 92.78 & 81.58 & 84.66 & 77.91 \\
+ & 4 & \texttt{geometric} & 99.59 & 93.39 & 82.39 & 86.05 & \textbf{78.23} \\
+ & 4 & \texttt{harmonic} & 99.07 & 90.93 & 78.85 & 84.96 & 77.94 \\
+ & 4 & \texttt{max} & 98.79 & 91.51 & 74.81 & 82.59 & 65.25 \\
+ & 4 & \texttt{weighted} & 99.58 & 92.87 & 81.78 & 84.70 & 77.80 \\
+ & 4 & \texttt{optimal_weights} & 99.72 & 93.83 & 85.04 & 83.92 & 76.39 \\
+ & 4 & \texttt{stacking} & 99.71 & 93.55 & 83.85 & 84.09 & 77.14 \\
+ & 4 & \texttt{majority} & 99.18 & 90.53 & 79.47 & 83.06 & 74.20 \\
+\midrule
+\textbf{Top-5 Não-RGB} & 5 & \texttt{mean} & 99.50 & 92.33 & 82.10 & 84.18 & 75.29 \\
+ & 5 & \texttt{geometric} & 99.53 & 92.94 & 82.86 & 86.06 & 75.74 \\
+ & 5 & \texttt{harmonic} & 98.99 & 90.61 & 78.62 & 85.18 & 75.77 \\
+ & 5 & \texttt{max} & 98.78 & 91.36 & 74.95 & 82.46 & 65.13 \\
+ & 5 & \texttt{weighted} & 99.53 & 92.44 & 82.25 & 84.26 & 75.40 \\
+ & 5 & \texttt{optimal_weights} & 99.72 & 93.83 & 85.02 & 83.93 & 76.39 \\
+ & 5 & \texttt{stacking} & 99.71 & 93.53 & 83.89 & 84.08 & 77.07 \\
+ & 5 & \texttt{majority} & 99.15 & 90.35 & 80.13 & 82.72 & 72.53 \\
+\midrule
+\textbf{Top-2 Fourier Concat} & 2 & \texttt{mean} & 98.79 & 91.04 & 68.34 & 80.91 & 71.20 \\
+ & 2 & \texttt{geometric} & 98.85 & 90.97 & 67.86 & 80.64 & 71.58 \\
+ & 2 & \texttt{harmonic} & 98.66 & 90.20 & 67.42 & 80.23 & 71.71 \\
+ & 2 & \texttt{max} & 97.80 & 90.09 & 69.02 & 81.54 & 64.21 \\
+ & 2 & \texttt{weighted} & 98.88 & 91.21 & 68.43 & 80.77 & 71.23 \\
+ & 2 & \texttt{optimal_weights} & 98.96 & 91.45 & 68.68 & 80.40 & 71.50 \\
+ & 2 & \texttt{stacking} & 98.94 & 91.38 & 68.61 & 80.48 & 71.42 \\
+ & 2 & \texttt{majority} & 97.33 & 86.27 & 64.57 & 77.36 & 63.88 \\
+\midrule
+\textbf{Top-3 Fourier Concat} & 3 & \texttt{mean} & 99.03 & 92.95 & 70.10 & 84.00 & 73.05 \\
+ & 3 & \texttt{geometric} & 99.09 & 92.80 & 69.63 & 83.01 & 72.98 \\
+ & 3 & \texttt{harmonic} & 98.76 & 90.80 & 68.31 & 81.55 & 72.71 \\
+ & 3 & \texttt{max} & 97.56 & 92.46 & 72.27 & 82.99 & 65.50 \\
+ & 3 & \texttt{weighted} & 99.08 & 92.97 & 70.08 & 83.71 & 73.05 \\
+ & 3 & \texttt{optimal_weights} & 99.16 & 92.97 & 70.12 & 82.62 & 72.48 \\
+ & 3 & \texttt{stacking} & 99.13 & 93.04 & 70.19 & 83.06 & 73.03 \\
+ & 3 & \texttt{majority} & 98.26 & 90.92 & 67.98 & 81.68 & 65.66 \\
+\midrule
+\textbf{Top-4 Fourier Concat} & 4 & \texttt{mean} & 98.54 & 91.59 & 68.75 & 84.00 & 72.19 \\
+ & 4 & \texttt{geometric} & 98.55 & 91.64 & 68.13 & 82.82 & 72.29 \\
+ & 4 & \texttt{harmonic} & 97.69 & 88.86 & 66.51 & 80.46 & 72.04 \\
+ & 4 & \texttt{max} & 97.14 & 91.16 & 71.66 & 82.58 & 65.17 \\
+ & 4 & \texttt{weighted} & 98.74 & 92.05 & 69.05 & 83.97 & 72.58 \\
+ & 4 & \texttt{optimal_weights} & 99.16 & 92.98 & 70.12 & 82.63 & 72.49 \\
+ & 4 & \texttt{stacking} & 99.07 & 92.84 & 69.83 & 83.15 & 73.01 \\
+ & 4 & \texttt{majority} & 97.75 & 89.97 & 67.44 & 82.23 & 65.70 \\
+\bottomrule
+\end{tabular}
+\end{table*}

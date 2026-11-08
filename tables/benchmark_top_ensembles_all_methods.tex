@@ -1,0 +1,47 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Avaliação Exaustiva dos Super-Ensembles Campeões (Top-2 ao Top-5) em Todos os Métodos de Fusão.}
+\label{tab:hybrid_ensembles_all}
+\begin{tabular}{l c l c c c c}
+\toprule
+\textbf{Comitê Híbrido} & \textbf{$K$} & \textbf{Estratégia} & \textbf{Val AUC (\%)} & \textbf{Test AUC (\%)} & \textbf{Test-D AUC (\%)} & \textbf{DF-40 AUC (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\
+\midrule
+\textbf{Top-2 Híbrido} & 2 & \texttt{mean} & 99.06 & 92.40 & 78.79 & 85.42 & 70.29 \\
+ & 2 & \texttt{geometric} & 98.91 & 91.94 & 78.58 & 85.40 & 70.25 \\
+ & 2 & \texttt{harmonic} & 98.52 & 90.09 & 77.11 & 84.59 & 70.16 \\
+ & 2 & \texttt{max} & 98.42 & 91.93 & 73.81 & 83.40 & 64.38 \\
+ & 2 & \texttt{weighted} & 99.11 & 92.59 & 79.84 & 85.76 & 70.28 \\
+ & 2 & \texttt{optimal_weights} & 99.09 & 92.60 & 82.22 & 85.85 & 69.48 \\
+ & 2 & \texttt{stacking} & 99.13 & 92.67 & 81.44 & 86.00 & 69.89 \\
+ & 2 & \texttt{majority} & 97.57 & 88.62 & 75.43 & 82.05 & 60.37 \\
+\midrule
+\textbf{Top-3 Campeão Geral} & 3 & \texttt{mean} & 99.02 & 93.26 & 78.29 & 86.41 & 70.96 \\
+ & 3 & \texttt{geometric} & 99.02 & 93.03 & 78.52 & 86.44 & 70.78 \\
+ & 3 & \texttt{harmonic} & 98.55 & 90.47 & 76.74 & 85.00 & 70.52 \\
+ & 3 & \texttt{max} & 97.63 & 92.64 & 72.79 & 83.37 & 65.82 \\
+ & 3 & \texttt{weighted} & 99.06 & 93.32 & 79.04 & \textbf{86.53} & 70.95 \\
+ & 3 & \texttt{optimal_weights} & 99.11 & 92.92 & 82.05 & 86.15 & 69.85 \\
+ & 3 & \texttt{stacking} & 99.17 & 93.23 & 80.82 & \textbf{86.52} & 70.70 \\
+ & 3 & \texttt{majority} & 98.14 & 91.27 & 76.29 & 84.17 & 62.74 \\
+\midrule
+\textbf{Top-4 Híbrido} & 4 & \texttt{mean} & 99.48 & 94.14 & 76.76 & 86.15 & 74.40 \\
+ & 4 & \texttt{geometric} & 99.50 & 94.16 & 77.02 & 85.58 & 74.63 \\
+ & 4 & \texttt{harmonic} & 99.08 & 91.59 & 75.68 & 83.51 & 74.32 \\
+ & 4 & \texttt{max} & 97.71 & 92.89 & 72.83 & 83.37 & 65.83 \\
+ & 4 & \texttt{weighted} & 99.51 & 94.19 & 76.95 & 86.12 & 74.45 \\
+ & 4 & \texttt{optimal_weights} & 99.59 & 93.84 & 78.23 & 84.25 & 74.67 \\
+ & 4 & \texttt{stacking} & 99.62 & 94.21 & 78.72 & 85.70 & \textbf{74.79} \\
+ & 4 & \texttt{majority} & 99.15 & 92.75 & 75.19 & 84.59 & 68.53 \\
+\midrule
+\textbf{Top-5 Campeões} & 5 & \texttt{mean} & 99.58 & 93.06 & 77.98 & 84.05 & 73.69 \\
+ & 5 & \texttt{geometric} & 99.58 & 93.71 & 78.74 & 83.36 & 74.50 \\
+ & 5 & \texttt{harmonic} & 98.61 & 90.41 & 76.29 & 81.19 & 74.46 \\
+ & 5 & \texttt{max} & 97.36 & 89.27 & 71.37 & 82.33 & 64.23 \\
+ & 5 & \texttt{weighted} & 99.66 & 93.58 & 78.96 & 84.14 & 73.87 \\
+ & 5 & \texttt{optimal_weights} & 99.79 & \textbf{94.60} & \textbf{83.92} & 82.08 & 72.93 \\
+ & 5 & \texttt{stacking} & 99.78 & 94.35 & 83.60 & 83.92 & 73.45 \\
+ & 5 & \texttt{majority} & 99.34 & 91.76 & 76.70 & 82.50 & 69.08 \\
+\bottomrule
+\end{tabular}
+\end{table*}
