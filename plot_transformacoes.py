@@ -1,12 +1,15 @@
 """
 Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × 6 colunas (transformações).
-Ilustra a resposta espacial e espectral (Fourier) para a mesma imagem sob condições normais (Clean)
-e sob estresse / perturbação do conjunto difícil (Test-Hard / Test-D).
+Ilustra a resposta forense espacial e de resíduos SRM (Spatial Rich Models) ou espectral (Fourier) para a mesma imagem
+sob condições normais (Clean) e sob estresse / perturbação do conjunto difícil (Test-Hard / Test-D).
 """
 
 from __future__ import annotations
 
 import argparse
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -25,6 +28,7 @@ plt.rcParams.update({
 })
 
 from src.data.paths import phase1_split_root
+from src.forensics.srm import extract_srm_residuals
 
 SPATIAL_SIZE = (128, 128)
 
@@ -33,6 +37,8 @@ freq_norm = transforms.Normalize(mean=[0.5], std=[0.5])
 to_tensor = transforms.ToTensor()
 resize = transforms.Resize(SPATIAL_SIZE)
 
+
+# ── Helpers Gerais e Fourier ───────────────────────────────────────────────
 
 def _gray(t: torch.Tensor) -> np.ndarray:
     return (0.299 * t[0] + 0.587 * t[1] + 0.114 * t[2]).numpy()
@@ -68,7 +74,7 @@ def load_fft(source_path: str | Path) -> Tuple[torch.Tensor, np.ndarray]:
     return t, np.fft.fftshift(np.fft.fft2(gray))
 
 
-def compute_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
+def compute_fourier_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
     re_bounds = _pclip_bounds(np.real(fft).ravel())
     im_bounds = _pclip_bounds(np.imag(fft).ravel())
 
@@ -108,18 +114,63 @@ def compute_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
     ]
 
 
-def render_grid(
-    row_specs: List[Tuple[str, Path]],
-    out_pdf: Path,
-    out_png: Path | None = None,
-) -> None:
-    data = []
+# ── Extração e Painéis SRM (Spatial Rich Models) ───────────────────────────
+
+def compute_srm_panels_for_batch(row_specs: List[Tuple[str, Path]]) -> List[Tuple[str, List[Dict]]]:
+    """Computa os painéis forenses SRM com escala normalizada compartilhada entre as amostras."""
+    raw_data = []
+    all_srms = []
+
     for label, path in row_specs:
         if not Path(path).exists():
             raise FileNotFoundError(f"Imagem não encontrada: {path}")
-        t, fft = load_fft(path)
-        data.append((label, compute_panels(t, fft)))
+        with Image.open(path) as pil:
+            img_rgb = pil.convert("RGB").resize((256, 256))
+        t = to_tensor(img_rgb).unsqueeze(0)
+        srm = extract_srm_residuals(t)[0].numpy()  # [3, 256, 256]
+        raw_data.append((label, np.array(img_rgb) / 255.0, srm))
+        all_srms.append(srm)
 
+    # Escalas compartilhadas em percentil 99.5 para calibrar a escala visual de resíduo
+    v_scales = [
+        float(max(np.percentile(np.abs(srm[f]), 99.5) for srm in all_srms) + 1e-6)
+        for f in range(3)
+    ]
+    e_scale = float(max(np.percentile(np.mean(np.abs(srm), axis=0), 99.5) for srm in all_srms) + 1e-6)
+
+    data = []
+    for label, rgb, srm in raw_data:
+        # Centraliza o resíduo zero no cinza neutro (0.5)
+        srm1 = np.clip((srm[0] / (2.0 * v_scales[0])) + 0.5, 0.0, 1.0)
+        srm2 = np.clip((srm[1] / (2.0 * v_scales[1])) + 0.5, 0.0, 1.0)
+        srm3 = np.clip((srm[2] / (2.0 * v_scales[2])) + 0.5, 0.0, 1.0)
+
+        # Mapa composto falso-colorido de 3 canais SRM
+        comp = np.stack([srm1, srm2, srm3], axis=-1)
+
+        # Energia média absoluta de ruído forense
+        energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
+
+        panels = [
+            {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"},
+            {"img": srm1, "cmap": "gray", "title": "SRM 1 (1st Order)", "desc": r"Horizontal edge" "\n" r"$f_1 = [1, -2, 1]/2$"},
+            {"img": srm2, "cmap": "gray", "title": "SRM 2 (2nd Order)", "desc": r"3×3 Laplacian" "\n" r"$f_2 = \nabla^2 / 4$"},
+            {"img": srm3, "cmap": "gray", "title": "SRM 3 (3rd Order)", "desc": r"5×5 Square edge" "\n" r"$f_3 \text{ (Steganalysis)}$"},
+            {"img": comp, "cmap": None, "title": "SRM Composite", "desc": r"Multichannel map" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"},
+            {"img": energy, "cmap": "inferno", "title": "Noise Energy", "desc": r"Residual response" "\n" r"$\frac{1}{3}\sum |s_i|$"},
+        ]
+        data.append((label, panels))
+
+    return data
+
+
+# ── Renderizador do Grid ───────────────────────────────────────────────────
+
+def render_grid(
+    data: List[Tuple[str, List[Dict]]],
+    out_pdf: Path,
+    out_png: Path | None = None,
+) -> None:
     n_rows = len(data)
     N = len(data[0][1])
 
@@ -264,7 +315,6 @@ def render_grid(
 
 def resolve_split_dirs() -> Tuple[Path, Path]:
     clean_dir = phase1_split_root("test")
-    # Tenta caminhos canônicos para test_d
     hard_candidates = [
         Path("/media/ssd2/lucas.ocunha/datasets/phase1/test_d"),
         clean_dir.parent / "test_d",
@@ -276,6 +326,12 @@ def resolve_split_dirs() -> Tuple[Path, Path]:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Gera figura em PDF com 4 linhas (Real Clean, Real Hard, Fake Clean, Fake Hard) x 6 transformações."
+    )
+    parser.add_argument(
+        "--domain",
+        choices=("srm", "fourier"),
+        default="srm",
+        help="Domínio de representação forense: 'srm' (Spatial Rich Models, padrão) ou 'fourier' (espectral).",
     )
     parser.add_argument(
         "--preset",
@@ -290,8 +346,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("figures/fourier/fourier_transformacoes.pdf"),
-        help="Caminho de saída para o PDF.",
+        default=None,
+        help="Caminho de saída para o PDF. Por padrão figures/srm/srm_transformacoes.pdf (ou fourier).",
     )
 
     args = parser.parse_args(argv)
@@ -317,10 +373,25 @@ def main(argv: list[str] | None = None) -> None:
         ("Fake\n(Degraded)", p_fake_hard),
     ]
 
-    out_pdf = args.output
+    if args.output is None:
+        if args.domain == "srm":
+            out_pdf = Path("figures/srm/srm_transformacoes.pdf")
+        else:
+            out_pdf = Path("figures/fourier/fourier_transformacoes.pdf")
+    else:
+        out_pdf = args.output
+
     out_png = out_pdf.with_suffix(".png")
 
-    render_grid(rows, out_pdf=out_pdf, out_png=out_png)
+    if args.domain == "srm":
+        data = compute_srm_panels_for_batch(rows)
+    else:
+        data = []
+        for label, path in rows:
+            t, fft = load_fft(path)
+            data.append((label, compute_fourier_panels(t, fft)))
+
+    render_grid(data, out_pdf=out_pdf, out_png=out_png)
 
 
 if __name__ == "__main__":
