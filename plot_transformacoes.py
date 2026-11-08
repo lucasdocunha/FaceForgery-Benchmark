@@ -1,6 +1,6 @@
 """
-Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × Colunas forenses de resíduos SRM.
-Configuração padrão solicitada: 1ª Derivada, 2ª Derivada, 3ª Derivada e Combinada (juntando todas).
+Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × 5 colunas de resíduo SRM.
+Colunas: Face Original (RGB), 1ª Derivada (SRM 1), 2ª Derivada (SRM 2), 3ª Derivada (SRM 3) e Combinada (SRM Multicanal).
 """
 
 from __future__ import annotations
@@ -104,7 +104,7 @@ def compute_fourier_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
     )
 
     return [
-        {"img": rgb, "cmap": None, "title": "RGB", "desc": "Spatial domain\n(ImageNet-normalized)"},
+        {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(ImageNet-normalized)"},
         {"img": mag, "cmap": "inferno", "title": "Log-Magnitude", "desc": r"$\log(|\mathcal{F}| + 1)$"},
         {"img": phase, "cmap": "inferno", "title": "Phase", "desc": r"$\angle\mathcal{F} \in [0,\,1]$"},
         {"img": re, "cmap": "coolwarm", "title": "Re(F)", "desc": "Real part of FFT\n(shared scale)"},
@@ -117,14 +117,14 @@ def compute_fourier_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
 
 def compute_srm_panels_for_batch(
     row_specs: List[Tuple[str, Path]],
-    columns: int = 4,
+    columns: int = 5,
 ) -> List[Tuple[str, List[Dict]]]:
     """Computa os painéis forenses SRM com escala normalizada compartilhada entre as amostras.
     
     Opções de columns:
-      - 4: 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada (Juntando todas)
-      - 5: Face (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada
-      - 6: Face (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada, Energia
+      - 5 (padrão): Face Original (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada (Juntando todas)
+      - 4: 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada
+      - 6: Face Original (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada, Energia
     """
     raw_data = []
     all_srms = []
@@ -156,6 +156,7 @@ def compute_srm_panels_for_batch(
         # Imagem que junta todas as 3 derivadas: composto multicanal falso-colorido
         comp = np.stack([srm1, srm2, srm3], axis=-1)
 
+        p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native input)"}
         p_srm1 = {"img": srm1, "cmap": "gray", "title": "1ª Derivada\n(SRM 1)", "desc": r"Horizontal edge" "\n" r"$f_1 = [1, -2, 1]/2$"}
         p_srm2 = {"img": srm2, "cmap": "gray", "title": "2ª Derivada\n(SRM 2)", "desc": r"3×3 Laplacian" "\n" r"$f_2 = \nabla^2 / 4$"}
         p_srm3 = {"img": srm3, "cmap": "gray", "title": "3ª Derivada\n(SRM 3)", "desc": r"5×5 Steganalysis edge" "\n" r"$f_3 \text{ (Square filter)}$"}
@@ -164,10 +165,8 @@ def compute_srm_panels_for_batch(
         if columns == 4:
             panels = [p_srm1, p_srm2, p_srm3, p_comp]
         elif columns == 5:
-            p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"}
             panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp]
         else:
-            p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"}
             energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
             p_energy = {"img": energy, "cmap": "inferno", "title": "Noise Energy", "desc": r"Residual response" "\n" r"$\frac{1}{3}\sum |s_i|$"}
             panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp, p_energy]
@@ -187,7 +186,7 @@ def render_grid(
     n_rows = len(data)
     N = len(data[0][1])
 
-    CELL = 1.8 if N <= 4 else 1.6
+    CELL = 1.7
     TOP_PAD = 0.55
     LEFT_PAD = 1.15
     BOTTOM = 0.55
@@ -351,8 +350,8 @@ def main(argv: list[str] | None = None) -> None:
         "--columns",
         type=int,
         choices=(4, 5, 6),
-        default=4,
-        help="Quantidade de colunas para SRM: 4 (1ª, 2ª, 3ª e Combinada - padrão), 5 (+Face RGB) ou 6 (+Energia).",
+        default=5,
+        help="Quantidade de colunas para SRM: 5 (Face RGB, 1ª, 2ª, 3ª e Combinada - padrão), 4 (sem RGB) ou 6 (+Energia).",
     )
     parser.add_argument(
         "--preset",
