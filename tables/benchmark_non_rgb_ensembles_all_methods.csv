@@ -1,0 +1,57 @@
+Comitê,K,Estratégia,val_auc,test_auc,test_d_auc,celeb_frame_auc,celeb_video_auc,df40_auc
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,mean,99.59,93.1,86.35,70.88,74.84,84.06
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,geometric,99.65,93.51,87.34,72.71,76.37,84.62
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,harmonic,99.54,93.07,87.17,73.05,76.66,84.4
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,max,99.35,92.56,85.67,66.07,70.13,83.59
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,weighted,99.6,93.12,86.36,70.94,74.89,84.05
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,optimal_weights,99.68,93.29,86.54,71.84,76.21,83.33
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,stacking,99.68,93.28,86.52,71.8,76.14,83.41
+Top-2 Não-RGB (DINO SRM + CLIP SRM),2,majority,98.66,87.02,80.1,67.67,71.94,79.31
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,mean,99.59,93.52,82.05,71.19,75.3,85.51
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,geometric,99.6,93.62,82.21,72.7,76.47,86.4
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,harmonic,99.09,91.07,78.99,72.9,76.73,85.09
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,max,98.81,92.13,75.01,63.49,64.63,83.41
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,weighted,99.61,93.58,82.33,71.25,75.33,85.54
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,optimal_weights,99.72,93.83,85.04,72.0,76.41,83.92
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,stacking,99.71,93.84,84.18,71.98,76.27,84.48
+Top-3 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat),3,majority,99.13,90.24,78.88,68.07,72.51,82.8
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,mean,99.57,92.78,81.58,73.26,77.91,84.66
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,geometric,99.59,93.39,82.39,74.07,78.23,86.05
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,harmonic,99.07,90.93,78.85,73.86,77.94,84.96
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,max,98.79,91.51,74.81,63.71,65.25,82.59
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,weighted,99.58,92.87,81.78,73.21,77.8,84.7
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,optimal_weights,99.72,93.83,85.04,72.0,76.39,83.92
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,stacking,99.71,93.55,83.85,72.86,77.14,84.09
+Top-4 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM),4,majority,99.18,90.53,79.47,70.28,74.2,83.06
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,mean,99.5,92.33,82.1,71.11,75.29,84.18
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,geometric,99.53,92.94,82.86,72.07,75.74,86.06
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,harmonic,98.99,90.61,78.62,72.19,75.77,85.18
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,max,98.78,91.36,74.95,63.71,65.13,82.46
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,weighted,99.53,92.44,82.25,71.24,75.4,84.26
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,optimal_weights,99.72,93.83,85.02,72.0,76.39,83.93
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,stacking,99.71,93.53,83.89,72.8,77.07,84.08
+Top-5 Não-RGB (DINO SRM + CLIP SRM + RESNET Concat + MOBILENET SRM + VIT SRM),5,majority,99.15,90.35,80.13,69.02,72.53,82.72
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,mean,98.79,91.04,68.34,66.91,71.2,80.91
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,geometric,98.85,90.97,67.86,67.07,71.58,80.64
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,harmonic,98.66,90.2,67.42,67.2,71.71,80.23
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,max,97.8,90.09,69.02,63.28,64.21,81.54
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,weighted,98.88,91.21,68.43,66.88,71.23,80.77
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,optimal_weights,98.96,91.45,68.68,66.77,71.5,80.4
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,stacking,98.94,91.38,68.61,66.75,71.42,80.48
+Top-2 Fourier Concat (DINO Concat + RESNET Concat),2,majority,97.33,86.27,64.57,61.71,63.88,77.36
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,mean,99.03,92.95,70.1,67.44,73.05,84.0
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,geometric,99.09,92.8,69.63,67.72,72.98,83.01
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,harmonic,98.76,90.8,68.31,67.85,72.71,81.55
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,max,97.56,92.46,72.27,63.64,65.5,82.99
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,weighted,99.08,92.97,70.08,67.6,73.05,83.71
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,optimal_weights,99.16,92.97,70.12,67.5,72.48,82.62
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,stacking,99.13,93.04,70.19,67.47,73.03,83.06
+Top-3 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat),3,majority,98.26,90.92,67.98,63.63,65.66,81.68
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,mean,98.54,91.59,68.75,66.21,72.19,84.0
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,geometric,98.55,91.64,68.13,66.75,72.29,82.82
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,harmonic,97.69,88.86,66.51,66.87,72.04,80.46
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,max,97.14,91.16,71.66,62.96,65.17,82.58
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,weighted,98.74,92.05,69.05,66.52,72.58,83.97
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,optimal_weights,99.16,92.98,70.12,67.5,72.49,82.63
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,stacking,99.07,92.84,69.83,67.24,73.01,83.15
+Top-4 Fourier Concat (DINO Concat + RESNET Concat + CLIP Concat + XCEPTION Concat),4,majority,97.75,89.97,67.44,63.73,65.7,82.23
