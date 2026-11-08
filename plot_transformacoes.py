@@ -1,7 +1,6 @@
 """
-Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × 6 colunas (transformações).
-Ilustra a resposta forense espacial e de resíduos SRM (Spatial Rich Models) ou espectral (Fourier) para a mesma imagem
-sob condições normais (Clean) e sob estresse / perturbação do conjunto difícil (Test-Hard / Test-D).
+Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × Colunas forenses de resíduos SRM.
+Configuração padrão solicitada: 1ª Derivada, 2ª Derivada, 3ª Derivada e Combinada (juntando todas).
 """
 
 from __future__ import annotations
@@ -116,8 +115,17 @@ def compute_fourier_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
 
 # ── Extração e Painéis SRM (Spatial Rich Models) ───────────────────────────
 
-def compute_srm_panels_for_batch(row_specs: List[Tuple[str, Path]]) -> List[Tuple[str, List[Dict]]]:
-    """Computa os painéis forenses SRM com escala normalizada compartilhada entre as amostras."""
+def compute_srm_panels_for_batch(
+    row_specs: List[Tuple[str, Path]],
+    columns: int = 4,
+) -> List[Tuple[str, List[Dict]]]:
+    """Computa os painéis forenses SRM com escala normalizada compartilhada entre as amostras.
+    
+    Opções de columns:
+      - 4: 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada (Juntando todas)
+      - 5: Face (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada
+      - 6: Face (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada, Energia
+    """
     raw_data = []
     all_srms = []
 
@@ -131,7 +139,7 @@ def compute_srm_panels_for_batch(row_specs: List[Tuple[str, Path]]) -> List[Tupl
         raw_data.append((label, np.array(img_rgb) / 255.0, srm))
         all_srms.append(srm)
 
-    # Escalas compartilhadas em percentil 99.5 para calibrar a escala visual de resíduo
+    # Escalas compartilhadas em percentil 99.5
     v_scales = [
         float(max(np.percentile(np.abs(srm[f]), 99.5) for srm in all_srms) + 1e-6)
         for f in range(3)
@@ -140,25 +148,30 @@ def compute_srm_panels_for_batch(row_specs: List[Tuple[str, Path]]) -> List[Tupl
 
     data = []
     for label, rgb, srm in raw_data:
-        # Centraliza o resíduo zero no cinza neutro (0.5)
+        # Normalização dos resíduos individuais (0.5 = cinza neutro)
         srm1 = np.clip((srm[0] / (2.0 * v_scales[0])) + 0.5, 0.0, 1.0)
         srm2 = np.clip((srm[1] / (2.0 * v_scales[1])) + 0.5, 0.0, 1.0)
         srm3 = np.clip((srm[2] / (2.0 * v_scales[2])) + 0.5, 0.0, 1.0)
 
-        # Mapa composto falso-colorido de 3 canais SRM
+        # Imagem que junta todas as 3 derivadas: composto multicanal falso-colorido
         comp = np.stack([srm1, srm2, srm3], axis=-1)
 
-        # Energia média absoluta de ruído forense
-        energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
+        p_srm1 = {"img": srm1, "cmap": "gray", "title": "1ª Derivada\n(SRM 1)", "desc": r"Horizontal edge" "\n" r"$f_1 = [1, -2, 1]/2$"}
+        p_srm2 = {"img": srm2, "cmap": "gray", "title": "2ª Derivada\n(SRM 2)", "desc": r"3×3 Laplacian" "\n" r"$f_2 = \nabla^2 / 4$"}
+        p_srm3 = {"img": srm3, "cmap": "gray", "title": "3ª Derivada\n(SRM 3)", "desc": r"5×5 Steganalysis edge" "\n" r"$f_3 \text{ (Square filter)}$"}
+        p_comp = {"img": comp, "cmap": None, "title": "Combinada\n(Todas)", "desc": r"Multichannel composite" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"}
 
-        panels = [
-            {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"},
-            {"img": srm1, "cmap": "gray", "title": "SRM 1 (1st Order)", "desc": r"Horizontal edge" "\n" r"$f_1 = [1, -2, 1]/2$"},
-            {"img": srm2, "cmap": "gray", "title": "SRM 2 (2nd Order)", "desc": r"3×3 Laplacian" "\n" r"$f_2 = \nabla^2 / 4$"},
-            {"img": srm3, "cmap": "gray", "title": "SRM 3 (3rd Order)", "desc": r"5×5 Square edge" "\n" r"$f_3 \text{ (Steganalysis)}$"},
-            {"img": comp, "cmap": None, "title": "SRM Composite", "desc": r"Multichannel map" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"},
-            {"img": energy, "cmap": "inferno", "title": "Noise Energy", "desc": r"Residual response" "\n" r"$\frac{1}{3}\sum |s_i|$"},
-        ]
+        if columns == 4:
+            panels = [p_srm1, p_srm2, p_srm3, p_comp]
+        elif columns == 5:
+            p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"}
+            panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp]
+        else:
+            p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native RGB)"}
+            energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
+            p_energy = {"img": energy, "cmap": "inferno", "title": "Noise Energy", "desc": r"Residual response" "\n" r"$\frac{1}{3}\sum |s_i|$"}
+            panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp, p_energy]
+
         data.append((label, panels))
 
     return data
@@ -174,8 +187,8 @@ def render_grid(
     n_rows = len(data)
     N = len(data[0][1])
 
-    CELL = 1.6
-    TOP_PAD = 0.50
+    CELL = 1.8 if N <= 4 else 1.6
+    TOP_PAD = 0.55
     LEFT_PAD = 1.15
     BOTTOM = 0.55
     WSPACE = 0.06
@@ -238,6 +251,7 @@ def render_grid(
             color=TITLE_COLOR,
             fontsize=FS,
             fontweight="bold",
+            multialignment="center",
         )
 
     # Descrições das colunas
@@ -325,13 +339,20 @@ def resolve_split_dirs() -> Tuple[Path, Path]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Gera figura em PDF com 4 linhas (Real Clean, Real Hard, Fake Clean, Fake Hard) x 6 transformações."
+        description="Gera figura em PDF com 4 linhas (Real Clean, Real Hard, Fake Clean, Fake Hard) x Colunas de resíduo SRM."
     )
     parser.add_argument(
         "--domain",
         choices=("srm", "fourier"),
         default="srm",
-        help="Domínio de representação forense: 'srm' (Spatial Rich Models, padrão) ou 'fourier' (espectral).",
+        help="Domínio forense: 'srm' (padrão) ou 'fourier'.",
+    )
+    parser.add_argument(
+        "--columns",
+        type=int,
+        choices=(4, 5, 6),
+        default=4,
+        help="Quantidade de colunas para SRM: 4 (1ª, 2ª, 3ª e Combinada - padrão), 5 (+Face RGB) ou 6 (+Energia).",
     )
     parser.add_argument(
         "--preset",
@@ -384,7 +405,7 @@ def main(argv: list[str] | None = None) -> None:
     out_png = out_pdf.with_suffix(".png")
 
     if args.domain == "srm":
-        data = compute_srm_panels_for_batch(rows)
+        data = compute_srm_panels_for_batch(rows, columns=args.columns)
     else:
         data = []
         for label, path in rows:
