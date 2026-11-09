@@ -7,7 +7,7 @@
 
 \begin{table*}[!t]
 \centering
-\caption{Taxa de acerto/detecção (\%) na transferência direta sem retreino para o benchmark DF-40 (650.549 imagens falsas em 24 técnicas), discriminada pelos 5 paradigmas de geração: Difusão (7 técnicas, 201k imagens), Síntese GAN (6 técnicas, 131k imagens), Troca Facial (5 técnicas, 124k imagens), Edição / Text-to-Image (4 técnicas, 64k imagens) e Avatares \& Reencenação (2 técnicas, 66k imagens), além da média geral consolidada entre sementes estocásticas (média\,$\pm$\,desvio-padrão).
+\caption{Taxa de acerto/detecção (\%) na transferência direta sem retreino para o benchmark DF-40 (650.549 imagens falsas em 24 técnicas), discriminada pelos 5 paradigmas de geração: Difusão (7 técnicas, 201k imagens), Síntese GAN (6 técnicas, 131k imagens), Troca Facial (5 técnicas, 124k imagens), Edição / Text-to-Image (4 técnicas, 64k imagens) e Avatares \& Reencenação (2 técnicas, 66k imagens), além da média geral consolidada entre 3 sementes estocásticas (42, 123 e 2024; média\,$\pm$\,desvio-padrão).
 O melhor valor válido de cada coluna está em \textbf{negrito} (excluem-se representações com predição trivial/acaso como \textit{Complex Spectrum}).}
 \label{tab:df40_paradigmas}
 \vspace{-2mm}
@@ -17,76 +17,76 @@ O melhor valor válido de cada coluna está em \textbf{negrito} (excluem-se repr
 \toprule
 Família & Protocolo & Representação & Difusão & Síntese GAN & Troca Facial & Edição / T2I & Avatares & Total Geral \\
 \midrule
-Xception~\cite{chollet2017xception} & Protocolo 1  & \textit{RGB}                     & \pmsd{80,8\%}{0,9\%} & \pmsd{87,8\%}{0,6\%} & \pmsd{92,3\%}{0,6\%} & \pmsd{97,7\%}{0,7\%} & \pmsd{92,7\%}{0,8\%} & \pmsd{88,5\%}{0,4\%} \\
+Xception~\cite{chollet2017xception} & Protocolo 1  & \textit{RGB}                     & \pmsd{80,9\%}{1,0\%} & \pmsd{87,9\%}{0,7\%} & \pmsd{92,4\%}{0,7\%} & \pmsd{97,8\%}{0,7\%} & \pmsd{92,7\%}{1,0\%} & \pmsd{88,5\%}{0,4\%} \\
                                     &              & \textit{Log-Magnitude}           & \pmsd{73,9\%}{1,4\%} & \pmsd{76,2\%}{3,7\%} & \pmsd{54,1\%}{6,7\%} & \pmsd{94,4\%}{0,6\%} & \pmsd{55,2\%}{5,8\%} & \pmsd{68,9\%}{3,5\%} \\
                                     &              & \textit{Phase}                   & \pmsd{92,9\%}{3,6\%} & \pmsd{88,4\%}{8,8\%} & \pmsd{90,2\%}{6,6\%} & \pmsd{94,5\%}{4,1\%} & \pmsd{91,1\%}{6,3\%} & \pmsd{91,3\%}{5,7\%} \\
-                                    &              & \textit{Complex Spectrum}        & \pmsd{99,9\%}{0,1\%} & \pmsd{99,9\%}{0,1\%} & \pmsd{99,6\%}{0,2\%} & \pmsd{99,9\%}{0,0\%} & \pmsd{99,4\%}{0,3\%} & \pmsd{99,7\%}{0,1\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{82,6\%}{0,6\%} & \pmsd{89,7\%}{0,6\%} & \pmsd{91,1\%}{0,7\%} & \pmsd{95,6\%}{0,4\%} & \pmsd{90,2\%}{1,2\%} & \pmsd{88,5\%}{0,6\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{73,2\%}{1,9\%} & \pmsd{77,1\%}{2,6\%} & \pmsd{52,4\%}{5,0\%} & \pmsd{94,6\%}{1,1\%} & \pmsd{55,8\%}{4,3\%} & \pmsd{68,6\%}{2,4\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{86,2\%}{1,2\%} & \pmsd{86,3\%}{1,3\%} & \pmsd{88,0\%}{1,4\%} & \pmsd{88,8\%}{1,2\%} & \pmsd{88,2\%}{1,8\%} & \pmsd{87,2\%}{1,2\%} \\
+                                    &              & \textit{Complex Spectrum}        & \pmsd{99,9\%}{0,1\%} & \pmsd{99,9\%}{0,1\%} & \pmsd{99,6\%}{0,2\%} & \pmsd{99,9\%}{0,0\%} & \pmsd{99,5\%}{0,3\%} & \pmsd{99,8\%}{0,1\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{82,6\%}{0,7\%} & \pmsd{90,0\%}{0,5\%} & \pmsd{91,2\%}{0,7\%} & \pmsd{95,7\%}{0,4\%} & \pmsd{90,4\%}{1,3\%} & \pmsd{88,6\%}{0,6\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{74,1\%}{0,8\%} & \pmsd{77,4\%}{3,1\%} & \pmsd{54,1\%}{4,3\%} & \pmsd{94,4\%}{1,3\%} & \pmsd{57,7\%}{2,5\%} & \pmsd{69,7\%}{1,5\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{86,5\%}{1,4\%} & \pmsd{86,8\%}{1,1\%} & \pmsd{88,6\%}{0,8\%} & \pmsd{89,2\%}{1,1\%} & \pmsd{89,0\%}{0,8\%} & \pmsd{87,7\%}{0,8\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{88,8\%}{1,4\%} & \pmsd{85,3\%}{1,6\%} & \pmsd{89,9\%}{1,3\%} & \pmsd{96,6\%}{1,1\%} & \pmsd{89,6\%}{1,8\%} & \pmsd{89,2\%}{1,4\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{90,0\%}{0,4\%} & \pmsd{87,7\%}{2,1\%} & \pmsd{93,5\%}{1,9\%} & \pmsd{96,6\%}{0,7\%} & \pmsd{93,7\%}{1,9\%} & \pmsd{91,6\%}{1,2\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{88,4\%}{1,4\%} & \pmsd{84,7\%}{1,4\%} & \pmsd{89,5\%}{1,3\%} & \pmsd{96,9\%}{1,1\%} & \pmsd{88,9\%}{1,7\%} & \pmsd{88,8\%}{1,3\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{90,0\%}{0,4\%} & \pmsd{88,7\%}{1,0\%} & \pmsd{94,1\%}{1,7\%} & \pmsd{96,9\%}{0,6\%} & \pmsd{94,3\%}{1,8\%} & \pmsd{92,1\%}{0,8\%} \\
                                     &              & \textit{SRM-only}$^\dagger$      & \pmsd{\textbf{91,7\%}}{1,3\%} & \pmsd{88,6\%}{1,7\%} & \pmsd{93,1\%}{1,7\%} & \pmsd{98,2\%}{0,2\%} & \pmsd{\textbf{94,8\%}}{1,9\%} & \pmsd{92,6\%}{1,4\%} \\
 \midrule
-ResNet-18~\cite{ref_resnet}         & Protocolo 1  & \textit{RGB}                     & \pmsd{62,2\%}{1,6\%} & \pmsd{73,8\%}{0,4\%} & \pmsd{72,5\%}{0,9\%} & \pmsd{91,5\%}{1,3\%} & \pmsd{67,5\%}{2,3\%} & \pmsd{70,5\%}{0,6\%} \\
-                                    &              & \textit{Log-Magnitude}           & \pmsd{63,4\%}{1,1\%} & \pmsd{77,9\%}{4,0\%} & \pmsd{44,5\%}{1,9\%} & \pmsd{96,6\%}{0,3\%} & \pmsd{37,2\%}{4,2\%} & \pmsd{60,7\%}{1,7\%} \\
+ResNet-18~\cite{ref_resnet}         & Protocolo 1  & \textit{RGB}                     & \pmsd{62,3\%}{1,9\%} & \pmsd{73,8\%}{0,5\%} & \pmsd{72,2\%}{0,7\%} & \pmsd{91,0\%}{0,9\%} & \pmsd{66,6\%}{1,7\%} & \pmsd{70,2\%}{0,3\%} \\
+                                    &              & \textit{Log-Magnitude}           & \pmsd{63,3\%}{1,1\%} & \pmsd{77,9\%}{4,0\%} & \pmsd{44,5\%}{1,9\%} & \pmsd{96,6\%}{0,3\%} & \pmsd{37,2\%}{4,2\%} & \pmsd{60,7\%}{1,7\%} \\
                                     &              & \textit{Phase}                   & \pmsd{60,8\%}{1,2\%} & \pmsd{58,3\%}{3,8\%} & \pmsd{50,2\%}{7,2\%} & \pmsd{66,5\%}{1,2\%} & \pmsd{55,9\%}{5,7\%} & \pmsd{57,9\%}{3,4\%} \\
-                                    &              & \textit{Complex Spectrum}        & \pmsd{61,3\%}{11,4\%} & \pmsd{64,7\%}{14,9\%} & \pmsd{43,9\%}{13,2\%} & \pmsd{94,9\%}{3,0\%} & \pmsd{46,9\%}{14,2\%} & \pmsd{59,1\%}{12,1\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{74,8\%}{5,8\%} & \pmsd{81,8\%}{3,2\%} & \pmsd{84,5\%}{5,9\%} & \pmsd{88,3\%}{5,1\%} & \pmsd{78,6\%}{8,6\%} & \pmsd{80,2\%}{5,5\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{61,5\%}{4,6\%} & \pmsd{73,2\%}{2,4\%} & \pmsd{42,9\%}{1,4\%} & \pmsd{97,4\%}{0,7\%} & \pmsd{36,4\%}{3,3\%} & \pmsd{58,9\%}{2,4\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{86,8\%}{2,3\%} & \pmsd{93,5\%}{1,4\%} & \pmsd{88,1\%}{2,9\%} & \pmsd{83,6\%}{3,4\%} & \pmsd{83,7\%}{4,8\%} & \pmsd{87,5\%}{2,7\%} \\
+                                    &              & \textit{Complex Spectrum}        & \pmsd{63,2\%}{13,2\%} & \pmsd{66,1\%}{17,9\%} & \pmsd{45,1\%}{15,9\%} & \pmsd{95,3\%}{3,5\%} & \pmsd{48,9\%}{16,7\%} & \pmsd{60,7\%}{14,4\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{75,1\%}{7,1\%} & \pmsd{82,2\%}{3,8\%} & \pmsd{85,3\%}{7,0\%} & \pmsd{86,7\%}{4,7\%} & \pmsd{79,5\%}{10,3\%} & \pmsd{80,5\%}{6,7\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{59,3\%}{1,4\%} & \pmsd{72,1\%}{1,4\%} & \pmsd{42,4\%}{1,2\%} & \pmsd{97,2\%}{0,7\%} & \pmsd{35,6\%}{3,4\%} & \pmsd{57,7\%}{0,5\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{86,4\%}{2,6\%} & \pmsd{92,9\%}{0,9\%} & \pmsd{86,9\%}{1,9\%} & \pmsd{83,2\%}{4,0\%} & \pmsd{81,8\%}{3,8\%} & \pmsd{86,6\%}{2,5\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{68,8\%}{2,6\%} & \pmsd{76,5\%}{1,8\%} & \pmsd{85,0\%}{4,1\%} & \pmsd{67,5\%}{6,3\%} & \pmsd{82,7\%}{5,0\%} & \pmsd{76,1\%}{3,3\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{69,2\%}{2,8\%} & \pmsd{75,1\%}{2,8\%} & \pmsd{84,0\%}{3,0\%} & \pmsd{73,4\%}{8,6\%} & \pmsd{81,4\%}{2,9\%} & \pmsd{76,1\%}{2,4\%} \\
-                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{73,4\%}{4,0\%} & \pmsd{78,2\%}{2,1\%} & \pmsd{89,2\%}{5,5\%} & \pmsd{87,7\%}{3,6\%} & \pmsd{88,9\%}{6,0\%} & \pmsd{81,9\%}{4,2\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{67,6\%}{1,5\%} & \pmsd{75,6\%}{0,3\%} & \pmsd{83,1\%}{1,9\%} & \pmsd{65,0\%}{4,8\%} & \pmsd{80,3\%}{1,7\%} & \pmsd{74,5\%}{0,6\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{67,8\%}{0,1\%} & \pmsd{73,8\%}{1,4\%} & \pmsd{83,0\%}{2,8\%} & \pmsd{71,7\%}{9,7\%} & \pmsd{80,7\%}{3,1\%} & \pmsd{74,9\%}{0,7\%} \\
+                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{75,4\%}{0,8\%} & \pmsd{79,2\%}{1,0\%} & \pmsd{91,9\%}{0,9\%} & \pmsd{89,5\%}{0,7\%} & \pmsd{91,8\%}{1,1\%} & \pmsd{84,0\%}{0,7\%} \\
 \midrule
-MobileNetV3~\cite{howard2019searching} & Protocolo 1  & \textit{RGB}                     & \pmsd{64,9\%}{0,5\%} & \pmsd{72,4\%}{1,3\%} & \pmsd{70,7\%}{2,1\%} & \pmsd{88,0\%}{1,6\%} & \pmsd{65,7\%}{1,8\%} & \pmsd{70,0\%}{1,2\%} \\
-                                    &              & \textit{Log-Magnitude}           & \pmsd{51,9\%}{7,7\%} & \pmsd{53,6\%}{4,7\%} & \pmsd{29,7\%}{4,1\%} & \pmsd{86,8\%}{2,7\%} & \pmsd{29,2\%}{6,6\%} & \pmsd{46,9\%}{5,5\%} \\
-                                    &              & \textit{Phase}                   & \pmsd{33,9\%}{3,2\%} & \pmsd{15,9\%}{4,1\%} & \pmsd{19,9\%}{5,0\%} & \pmsd{28,6\%}{4,2\%} & \pmsd{21,8\%}{4,8\%} & \pmsd{24,6\%}{3,9\%} \\
-                                    &              & \textit{Complex Spectrum}        & \pmsd{39,8\%}{1,5\%} & \pmsd{40,5\%}{1,9\%} & \pmsd{22,9\%}{0,8\%} & \pmsd{71,1\%}{1,6\%} & \pmsd{30,2\%}{1,7\%} & \pmsd{37,9\%}{1,2\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{61,4\%}{2,0\%} & \pmsd{69,1\%}{1,7\%} & \pmsd{64,2\%}{4,5\%} & \pmsd{88,5\%}{3,7\%} & \pmsd{51,5\%}{6,0\%} & \pmsd{64,2\%}{3,0\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{46,8\%}{1,3\%} & \pmsd{45,1\%}{4,0\%} & \pmsd{23,4\%}{3,1\%} & \pmsd{84,1\%}{1,5\%} & \pmsd{20,4\%}{4,6\%} & \pmsd{40,4\%}{2,5\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{55,1\%}{3,2\%} & \pmsd{45,3\%}{5,5\%} & \pmsd{51,9\%}{4,2\%} & \pmsd{51,6\%}{2,4\%} & \pmsd{43,5\%}{5,5\%} & \pmsd{49,8\%}{4,0\%} \\
+MobileNetV3~\cite{howard2019searching} & Protocolo 1  & \textit{RGB}                     & \pmsd{64,9\%}{0,6\%} & \pmsd{72,3\%}{1,6\%} & \pmsd{71,5\%}{1,6\%} & \pmsd{88,0\%}{1,9\%} & \pmsd{66,4\%}{1,3\%} & \pmsd{70,3\%}{1,2\%} \\
+                                    &              & \textit{Log-Magnitude}           & \pmsd{51,9\%}{7,7\%} & \pmsd{53,6\%}{4,7\%} & \pmsd{29,7\%}{4,1\%} & \pmsd{86,8\%}{2,7\%} & \pmsd{29,2\%}{6,5\%} & \pmsd{46,9\%}{5,5\%} \\
+                                    &              & \textit{Phase}                   & \pmsd{33,9\%}{3,2\%} & \pmsd{15,9\%}{4,1\%} & \pmsd{19,9\%}{5,0\%} & \pmsd{28,6\%}{4,1\%} & \pmsd{21,8\%}{4,8\%} & \pmsd{24,6\%}{3,9\%} \\
+                                    &              & \textit{Complex Spectrum}        & \pmsd{39,5\%}{1,6\%} & \pmsd{40,1\%}{2,2\%} & \pmsd{22,9\%}{1,0\%} & \pmsd{70,4\%}{1,3\%} & \pmsd{30,3\%}{2,0\%} & \pmsd{37,7\%}{1,3\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{62,0\%}{2,0\%} & \pmsd{69,4\%}{2,0\%} & \pmsd{65,9\%}{3,7\%} & \pmsd{87,0\%}{2,6\%} & \pmsd{53,6\%}{5,3\%} & \pmsd{65,0\%}{3,0\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{47,4\%}{0,6\%} & \pmsd{45,8\%}{4,6\%} & \pmsd{24,0\%}{3,5\%} & \pmsd{84,5\%}{1,5\%} & \pmsd{21,1\%}{5,3\%} & \pmsd{41,0\%}{2,6\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{56,2\%}{2,8\%} & \pmsd{45,6\%}{6,6\%} & \pmsd{53,0\%}{4,5\%} & \pmsd{52,0\%}{2,7\%} & \pmsd{45,0\%}{5,7\%} & \pmsd{50,8\%}{4,4\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{73,2\%}{3,2\%} & \pmsd{70,9\%}{2,4\%} & \pmsd{80,9\%}{4,1\%} & \pmsd{83,7\%}{3,4\%} & \pmsd{84,2\%}{4,2\%} & \pmsd{77,5\%}{2,8\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{77,8\%}{0,9\%} & \pmsd{74,9\%}{0,7\%} & \pmsd{85,9\%}{1,9\%} & \pmsd{88,0\%}{1,5\%} & \pmsd{89,2\%}{1,0\%} & \pmsd{82,1\%}{0,9\%} \\
-                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{71,8\%}{2,1\%} & \pmsd{76,5\%}{0,3\%} & \pmsd{79,8\%}{0,8\%} & \pmsd{87,5\%}{2,8\%} & \pmsd{82,5\%}{1,0\%} & \pmsd{78,0\%}{0,7\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{74,6\%}{1,7\%} & \pmsd{71,8\%}{1,7\%} & \pmsd{82,6\%}{2,9\%} & \pmsd{82,1\%}{1,8\%} & \pmsd{85,9\%}{3,0\%} & \pmsd{78,6\%}{2,0\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{77,5\%}{0,6\%} & \pmsd{75,2\%}{0,4\%} & \pmsd{85,2\%}{1,5\%} & \pmsd{87,2\%}{0,8\%} & \pmsd{88,9\%}{0,9\%} & \pmsd{81,7\%}{0,8\%} \\
+                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{70,8\%}{0,4\%} & \pmsd{76,3\%}{0,3\%} & \pmsd{79,6\%}{0,9\%} & \pmsd{88,3\%}{2,8\%} & \pmsd{82,4\%}{1,2\%} & \pmsd{77,7\%}{0,1\%} \\
 \midrule
-ViT~\cite{ref_vit}                  & Protocolo 1  & \textit{RGB}                     & \pmsd{72,0\%}{2,9\%} & \pmsd{75,1\%}{5,1\%} & \pmsd{85,2\%}{5,2\%} & \pmsd{94,3\%}{2,0\%} & \pmsd{78,8\%}{4,8\%} & \pmsd{78,7\%}{3,9\%} \\
+ViT~\cite{ref_vit}                  & Protocolo 1  & \textit{RGB}                     & \pmsd{71,2\%}{2,9\%} & \pmsd{73,7\%}{5,2\%} & \pmsd{83,8\%}{5,4\%} & \pmsd{93,9\%}{2,3\%} & \pmsd{77,5\%}{5,0\%} & \pmsd{77,6\%}{4,0\%} \\
                                     &              & \textit{Log-Magnitude}           & \pmsd{87,6\%}{0,8\%} & \pmsd{94,0\%}{1,4\%} & \pmsd{79,2\%}{5,7\%} & \pmsd{99,4\%}{0,2\%} & \pmsd{84,6\%}{5,2\%} & \pmsd{87,9\%}{2,2\%} \\
                                     &              & \textit{Phase}                   & \pmsd{99,5\%}{0,6\%} & \pmsd{99,5\%}{0,5\%} & \pmsd{99,0\%}{1,2\%} & \pmsd{99,7\%}{0,3\%} & \pmsd{99,2\%}{0,9\%} & \pmsd{99,4\%}{0,7\%} \\
                                     &              & \textit{Complex Spectrum}        & \pmsd{100,0\%}{0,0\%} & \pmsd{100,0\%}{0,0\%} & \pmsd{100,0\%}{0,0\%} & \pmsd{100,0\%}{0,0\%} & \pmsd{100,0\%}{0,0\%} & \pmsd{100,0\%}{0,0\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{76,4\%}{0,9\%} & \pmsd{90,4\%}{2,6\%} & \pmsd{86,0\%}{3,7\%} & \pmsd{91,9\%}{2,6\%} & \pmsd{82,1\%}{3,8\%} & \pmsd{83,7\%}{2,2\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{88,8\%}{3,4\%} & \pmsd{92,1\%}{1,5\%} & \pmsd{74,7\%}{3,3\%} & \pmsd{99,6\%}{0,1\%} & \pmsd{79,7\%}{3,7\%} & \pmsd{86,0\%}{2,0\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{86,7\%}{1,2\%} & \pmsd{88,0\%}{2,4\%} & \pmsd{89,3\%}{2,7\%} & \pmsd{82,5\%}{2,3\%} & \pmsd{81,0\%}{6,0\%} & \pmsd{85,9\%}{2,6\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{76,4\%}{1,1\%} & \pmsd{89,7\%}{2,7\%} & \pmsd{84,4\%}{2,2\%} & \pmsd{91,3\%}{2,9\%} & \pmsd{80,6\%}{3,0\%} & \pmsd{82,9\%}{1,9\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{88,1\%}{3,7\%} & \pmsd{92,0\%}{1,7\%} & \pmsd{74,0\%}{3,6\%} & \pmsd{99,6\%}{0,1\%} & \pmsd{78,7\%}{3,8\%} & \pmsd{85,4\%}{2,0\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{86,5\%}{1,5\%} & \pmsd{87,8\%}{2,9\%} & \pmsd{89,7\%}{3,2\%} & \pmsd{82,7\%}{2,8\%} & \pmsd{81,7\%}{7,1\%} & \pmsd{86,0\%}{3,2\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{75,3\%}{1,8\%} & \pmsd{80,0\%}{1,3\%} & \pmsd{85,9\%}{1,0\%} & \pmsd{86,4\%}{1,9\%} & \pmsd{81,6\%}{1,3\%} & \pmsd{80,7\%}{1,0\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{82,5\%}{1,5\%} & \pmsd{84,9\%}{1,9\%} & \pmsd{88,1\%}{1,2\%} & \pmsd{89,8\%}{3,4\%} & \pmsd{87,0\%}{0,9\%} & \pmsd{85,7\%}{1,5\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{75,9\%}{1,7\%} & \pmsd{80,6\%}{0,5\%} & \pmsd{85,9\%}{1,2\%} & \pmsd{85,8\%}{1,6\%} & \pmsd{82,1\%}{0,9\%} & \pmsd{81,0\%}{0,9\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{82,2\%}{1,6\%} & \pmsd{84,7\%}{2,2\%} & \pmsd{87,8\%}{1,2\%} & \pmsd{89,5\%}{4,1\%} & \pmsd{86,6\%}{0,2\%} & \pmsd{85,4\%}{1,6\%} \\
                                     &              & \textit{SRM-only}$^\dagger$      & \pmsd{96,5\%}{3,0\%} & \pmsd{98,3\%}{0,5\%} & \pmsd{99,5\%}{0,2\%} & \pmsd{99,8\%}{0,2\%} & \pmsd{99,7\%}{0,2\%} & \pmsd{98,4\%}{1,1\%} \\
 \midrule
-DINOv3~\cite{simeoni2025dinov3}     & Protocolo 1  & \textit{RGB}                     & \pmsd{66,1\%}{5,8\%} & \pmsd{86,4\%}{4,8\%} & \pmsd{79,2\%}{2,6\%} & \pmsd{\textbf{100,0\%}}{0,0\%} & \pmsd{73,0\%}{3,9\%} & \pmsd{77,4\%}{3,9\%} \\
-                                    &              & \textit{Log-Magnitude}           & \pmsd{84,8\%}{1,7\%} & \pmsd{91,1\%}{0,5\%} & \pmsd{70,1\%}{0,7\%} & \pmsd{98,6\%}{0,9\%} & \pmsd{68,2\%}{1,9\%} & \pmsd{81,3\%}{0,9\%} \\
+DINOv3~\cite{simeoni2025dinov3}     & Protocolo 1  & \textit{RGB}                     & \pmsd{66,2\%}{7,1\%} & \pmsd{87,7\%}{4,9\%} & \pmsd{79,2\%}{3,2\%} & \pmsd{100,0\%}{0,0\%} & \pmsd{73,3\%}{4,8\%} & \pmsd{77,8\%}{4,7\%} \\
+                                    &              & \textit{Log-Magnitude}           & \pmsd{84,8\%}{1,7\%} & \pmsd{91,1\%}{0,5\%} & \pmsd{70,1\%}{0,7\%} & \pmsd{98,6\%}{0,9\%} & \pmsd{68,3\%}{1,9\%} & \pmsd{81,3\%}{0,9\%} \\
                                     &              & \textit{Phase}                   & \pmsd{78,0\%}{4,3\%} & \pmsd{82,2\%}{3,2\%} & \pmsd{76,5\%}{5,4\%} & \pmsd{80,9\%}{3,3\%} & \pmsd{79,7\%}{6,3\%} & \pmsd{79,2\%}{4,5\%} \\
-                                    &              & \textit{Complex Spectrum}        & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,2\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{75,0\%}{3,0\%} & \pmsd{81,3\%}{1,2\%} & \pmsd{85,1\%}{3,8\%} & \pmsd{98,4\%}{0,9\%} & \pmsd{78,8\%}{5,7\%} & \pmsd{81,3\%}{2,9\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{86,4\%}{3,3\%} & \pmsd{91,0\%}{2,9\%} & \pmsd{74,3\%}{9,4\%} & \pmsd{98,9\%}{0,5\%} & \pmsd{74,1\%}{8,7\%} & \pmsd{83,8\%}{4,7\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{90,7\%}{0,5\%} & \pmsd{\textbf{96,3\%}}{0,5\%} & \pmsd{95,0\%}{1,9\%} & \pmsd{92,1\%}{1,7\%} & \pmsd{91,0\%}{3,3\%} & \pmsd{\textbf{92,8\%}}{1,1\%} \\
+                                    &              & \textit{Complex Spectrum}        & \pmsd{99,9\%}{0,2\%} & \pmsd{99,8\%}{0,3\%} & \pmsd{99,9\%}{0,2\%} & \pmsd{99,9\%}{0,3\%} & \pmsd{99,8\%}{0,3\%} & \pmsd{99,9\%}{0,2\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{74,0\%}{2,9\%} & \pmsd{81,1\%}{1,3\%} & \pmsd{83,5\%}{2,7\%} & \pmsd{98,4\%}{1,1\%} & \pmsd{76,3\%}{3,4\%} & \pmsd{80,1\%}{2,1\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{86,6\%}{4,0\%} & \pmsd{90,5\%}{3,3\%} & \pmsd{74,2\%}{11,5\%} & \pmsd{99,0\%}{0,6\%} & \pmsd{74,4\%}{10,6\%} & \pmsd{83,8\%}{5,8\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{90,7\%}{0,6\%} & \pmsd{\textbf{96,5\%}}{0,4\%} & \pmsd{95,9\%}{0,7\%} & \pmsd{92,1\%}{2,1\%} & \pmsd{92,6\%}{0,6\%} & \pmsd{\textbf{93,4\%}}{0,3\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{75,4\%}{6,6\%} & \pmsd{87,1\%}{2,6\%} & \pmsd{\textbf{95,3\%}}{2,6\%} & \pmsd{84,3\%}{8,4\%} & \pmsd{93,8\%}{3,5\%} & \pmsd{86,2\%}{3,4\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{73,9\%}{3,4\%} & \pmsd{88,0\%}{2,7\%} & \pmsd{92,3\%}{3,8\%} & \pmsd{88,2\%}{8,5\%} & \pmsd{87,7\%}{4,8\%} & \pmsd{84,4\%}{3,5\%} \\
-                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{75,1\%}{14,6\%} & \pmsd{77,9\%}{25,4\%} & \pmsd{78,6\%}{30,9\%} & \pmsd{94,2\%}{3,8\%} & \pmsd{78,9\%}{29,5\%} & \pmsd{79,0\%}{21,8\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{73,9\%}{7,2\%} & \pmsd{86,3\%}{2,4\%} & \pmsd{94,3\%}{1,9\%} & \pmsd{88,3\%}{3,3\%} & \pmsd{92,6\%}{3,1\%} & \pmsd{85,5\%}{3,8\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{75,9\%}{1,6\%} & \pmsd{89,5\%}{1,5\%} & \pmsd{93,3\%}{0,5\%} & \pmsd{94,1\%}{0,7\%} & \pmsd{89,9\%}{1,0\%} & \pmsd{86,6\%}{0,1\%} \\
+                                    &              & \textit{SRM-only}$^\dagger$      & \pmsd{75,1\%}{14,5\%} & \pmsd{77,9\%}{25,4\%} & \pmsd{78,6\%}{30,9\%} & \pmsd{94,2\%}{3,8\%} & \pmsd{78,9\%}{29,5\%} & \pmsd{79,0\%}{21,8\%} \\
 \midrule
-CLIP~\cite{ref_clip}                & Protocolo 1  & \textit{RGB}                     & \pmsd{81,3\%}{2,1\%} & \pmsd{89,5\%}{3,8\%} & \pmsd{73,3\%}{4,6\%} & \pmsd{97,7\%}{0,9\%} & \pmsd{56,7\%}{6,1\%} & \pmsd{78,1\%}{3,2\%} \\
-                                    &              & \textit{Log-Magnitude}           & \pmsd{80,2\%}{2,7\%} & \pmsd{86,4\%}{3,4\%} & \pmsd{63,9\%}{5,8\%} & \pmsd{97,2\%}{1,1\%} & \pmsd{65,3\%}{7,1\%} & \pmsd{77,0\%}{4,0\%} \\
+CLIP~\cite{ref_clip}                & Protocolo 1  & \textit{RGB}                     & \pmsd{80,8\%}{2,1\%} & \pmsd{88,6\%}{4,1\%} & \pmsd{71,8\%}{4,4\%} & \pmsd{97,5\%}{1,0\%} & \pmsd{54,2\%}{4,2\%} & \pmsd{77,0\%}{2,8\%} \\
+                                    &              & \textit{Log-Magnitude}           & \pmsd{80,1\%}{2,7\%} & \pmsd{86,4\%}{3,4\%} & \pmsd{63,9\%}{5,8\%} & \pmsd{97,2\%}{1,1\%} & \pmsd{65,3\%}{7,1\%} & \pmsd{77,0\%}{4,0\%} \\
                                     &              & \textit{Phase}                   & \pmsd{69,5\%}{6,6\%} & \pmsd{42,2\%}{9,8\%} & \pmsd{59,1\%}{8,8\%} & \pmsd{54,5\%}{10,7\%} & \pmsd{55,3\%}{10,2\%} & \pmsd{57,7\%}{8,7\%} \\
-                                    &              & \textit{Complex Spectrum}        & \pmsd{50,0\%}{57,7\%} & \pmsd{50,0\%}{57,7\%} & \pmsd{50,0\%}{57,7\%} & \pmsd{50,0\%}{57,7\%} & \pmsd{50,0\%}{57,7\%} & \pmsd{50,0\%}{57,7\%} \\
-                                    &              & \textit{RGB+Mag}                 & \pmsd{80,6\%}{3,7\%} & \pmsd{83,8\%}{3,6\%} & \pmsd{70,2\%}{7,4\%} & \pmsd{97,5\%}{0,3\%} & \pmsd{66,0\%}{8,6\%} & \pmsd{78,0\%}{4,7\%} \\
-                                    &              & \textit{High-Pass Spectrum}      & \pmsd{79,2\%}{1,8\%} & \pmsd{74,7\%}{5,9\%} & \pmsd{57,6\%}{4,0\%} & \pmsd{98,1\%}{0,7\%} & \pmsd{61,7\%}{3,0\%} & \pmsd{72,5\%}{2,8\%} \\
-                                    &              & \textit{RGB+Freq}                & \pmsd{75,8\%}{2,0\%} & \pmsd{75,2\%}{3,9\%} & \pmsd{77,5\%}{2,5\%} & \pmsd{64,8\%}{4,9\%} & \pmsd{72,0\%}{2,6\%} & \pmsd{74,2\%}{1,6\%} \\
+                                    &              & \textit{Complex Spectrum}        & \pmsd{33,3\%}{57,7\%} & \pmsd{33,3\%}{57,7\%} & \pmsd{33,3\%}{57,7\%} & \pmsd{33,3\%}{57,7\%} & \pmsd{33,3\%}{57,7\%} & \pmsd{33,3\%}{57,7\%} \\
+                                    &              & \textit{RGB+Mag}                 & \pmsd{79,5\%}{3,7\%} & \pmsd{82,1\%}{1,4\%} & \pmsd{66,8\%}{3,7\%} & \pmsd{97,3\%}{0,3\%} & \pmsd{62,9\%}{7,1\%} & \pmsd{76,0\%}{3,0\%} \\
+                                    &              & \textit{High-Pass Spectrum}      & \pmsd{78,4\%}{0,9\%} & \pmsd{73,6\%}{6,8\%} & \pmsd{56,0\%}{2,7\%} & \pmsd{98,0\%}{0,8\%} & \pmsd{60,3\%}{1,7\%} & \pmsd{71,5\%}{2,2\%} \\
+                                    &              & \textit{RGB+Freq}                & \pmsd{75,1\%}{1,6\%} & \pmsd{74,3\%}{4,2\%} & \pmsd{77,8\%}{3,0\%} & \pmsd{65,1\%}{6,0\%} & \pmsd{72,2\%}{3,2\%} & \pmsd{73,9\%}{1,9\%} \\
  \cmidrule(lr){2-9}
-                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{24,2\%}{29,4\%} & \pmsd{25,5\%}{27,4\%} & \pmsd{27,3\%}{32,3\%} & \pmsd{25,6\%}{30,4\%} & \pmsd{24,5\%}{31,4\%} & \pmsd{25,2\%}{29,9\%} \\
-                                    &              & \textit{RGB+SRM}                 & \pmsd{74,4\%}{2,7\%} & \pmsd{86,3\%}{3,7\%} & \pmsd{77,1\%}{6,2\%} & \pmsd{94,0\%}{1,9\%} & \pmsd{72,3\%}{5,9\%} & \pmsd{78,9\%}{3,8\%} \\
+                                    & Protocolo 2  & \textit{RGB}$^\dagger$           & \pmsd{32,0\%}{30,4\%} & \pmsd{33,3\%}{27,5\%} & \pmsd{36,0\%}{33,4\%} & \pmsd{33,9\%}{31,1\%} & \pmsd{32,5\%}{33,1\%} & \pmsd{33,3\%}{30,8\%} \\
+                                    &              & \textit{RGB+SRM}                 & \pmsd{73,2\%}{1,2\%} & \pmsd{84,9\%}{2,8\%} & \pmsd{74,6\%}{4,4\%} & \pmsd{93,4\%}{1,7\%} & \pmsd{69,7\%}{3,4\%} & \pmsd{77,1\%}{2,0\%} \\
                                     &              & \textit{SRM-only}$^\dagger$      & \pmsd{69,0\%}{35,8\%} & \pmsd{72,7\%}{33,3\%} & \pmsd{72,1\%}{38,2\%} & \pmsd{77,0\%}{28,7\%} & \pmsd{72,1\%}{41,6\%} & \pmsd{71,7\%}{36,1\%} \\
 \bottomrule
 \end{tabular}
