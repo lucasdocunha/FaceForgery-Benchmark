@@ -1,0 +1,29 @@
+\begin{table*}[!htb]
+\centering
+\caption{Comparativo sistemático de comitês (Top-2 a Top-4) em quatro categorias de representação no benchmark, otimizados na validação do \gls*{mffi}. Métricas em \%: \gls*{auc} nas partições do \gls*{mffi}, no Celeb-DF v2 (por vídeo) e no DF-40 (protocolo~1), acompanhadas da Revocação ponderada no protocolo~2 do DF-40 ($650.549$ imagens falsas, limiar calibrado na validação). Em negrito, o maior valor de cada coluna.}
+\label{tab:ensembles_4categorias_top2_top4}
+\vspace{-2mm}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}ll l l c c c c c c@{}}
+\toprule
+\textbf{Categoria} & \textbf{Comitê} & \textbf{Membros Integrantes} & \textbf{Fusão} & \makecell{\textbf{Val}\\\textbf{(\%)}} & \makecell{\textbf{Test}\\\textbf{(\%)}} & \makecell{\textbf{Test-Hard}\\\textbf{(\%)}} & \makecell{\textbf{Celeb-DF}\\\textbf{Vídeo (\%)}} & \makecell{\textbf{DF-40}\\\textbf{AUC (\%)}} & \makecell{\textbf{DF-40 P2}\\\textbf{Revoc. (\%)}} \\
+\midrule
+\multirow{3}{*}{\makecell[l]{\textbf{Espacial}\\\textbf{Robusto}\\\textit{(RGB Aumento)}}} & Top-2 & DINOv3 RGB \textbf{+} CLIP RGB & \texttt{média geométrica} & 99,7 & 94,7 & \textbf{89,0} & 67,3 & 81,2 & \textbf{88,2} \\
+ & Top-3 & DINOv3 RGB \textbf{+} CLIP RGB \textbf{+} MobileNetV3 RGB & \texttt{pesos ótimos} & 99,7 & 94,2 & 87,3 & 65,6 & 80,6 & 81,8 \\
+ & Top-4 & DINOv3 RGB \textbf{+} CLIP RGB \textbf{+} MobileNetV3 RGB \textbf{+} Xception RGB & \texttt{pesos ótimos} & 99,7 & 94,2 & 87,3 & 65,6 & 80,6 & 81,8 \\
+\midrule
+\multirow{3}{*}{\makecell[l]{\textbf{Espacial}\\\textbf{Convencional}\\\textit{(RGB Padrão)}}} & Top-2 & DINOv3 RGB \textbf{+} CLIP RGB & \texttt{média geométrica} & 99,8 & 94,9 & 83,4 & 65,4 & 78,7 & 77,7 \\
+ & Top-3 & DINOv3 RGB \textbf{+} CLIP RGB \textbf{+} ResNet-18 RGB & \texttt{stacking} & \textbf{99,8} & 94,6 & 80,9 & 70,6 & 77,1 & 72,3 \\
+ & Top-4 & DINOv3 RGB \textbf{+} CLIP RGB \textbf{+} ResNet-18 RGB \textbf{+} MobileNetV3 RGB & \texttt{stacking} & \textbf{99,8} & 94,6 & 80,6 & 70,8 & 77,2 & 74,6 \\
+\midrule
+\multirow{3}{*}{\makecell[l]{\textbf{Híbrido}\\\textbf{Multidomínio}\\\textit{(RGB+SRM/Freq)}}} & Top-2 & DINOv3 RGB+SRM \textbf{+} DINOv3 RGB+Fourier & \texttt{stacking} & \textbf{99,8} & 94,6 & 80,1 & 73,2 & 77,4 & 80,5 \\
+ & Top-3 & DINOv3 RGB+SRM \textbf{+} DINOv3 RGB+Fourier \textbf{+} CLIP RGB+SRM & \texttt{média geométrica} & \textbf{99,8} & \textbf{95,1} & 82,8 & 73,8 & \textbf{81,8} & 84,5 \\
+ & Top-4 & DINOv3 RGB+SRM \textbf{+} DINOv3 RGB+Fourier \textbf{+} CLIP RGB+SRM \textbf{+} ResNet-18 RGB+Fourier & \texttt{pesos ótimos} & \textbf{99,8} & 94,8 & 82,6 & 74,0 & 79,7 & 84,2 \\
+\midrule
+\multirow{3}{*}{\makecell[l]{\textbf{Não-RGB}\\\textbf{Puro}\\\textit{(SRM+Fourier)}}} & Top-2 & ResNet-18 SRM-only \textbf{+} DINOv3 Fourier 3-Bandas & \texttt{stacking} & 96,4 & 85,3 & 68,9 & 72,4 & 63,7 & 85,1 \\
+ & Top-3 & ResNet-18 SRM-only \textbf{+} DINOv3 SRM-only \textbf{+} DINOv3 Magnitude & \texttt{stacking} & 96,8 & 84,8 & 70,6 & \textbf{78,4} & 64,0 & 82,2 \\
+ & Top-4 & ResNet-18 SRM-only \textbf{+} DINOv3 SRM-only \textbf{+} DINOv3 Magnitude \textbf{+} DINOv3 Fourier 3-Bandas & \texttt{stacking} & 96,9 & 85,5 & 69,9 & 77,4 & 63,7 & 83,6 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
