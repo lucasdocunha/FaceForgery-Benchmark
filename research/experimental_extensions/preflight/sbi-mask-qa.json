@@ -1,0 +1,29 @@
+{
+  "purpose": "min-dataset mask QA, no quality claim",
+  "seed": 42,
+  "landmark_source": "mediapipe_mesh",
+  "landmark_sha256": "9b789b93e424ba4202d1c638d497dd3677ba3469440059a72766e045775f0a49",
+  "forehead_note": "MediaPipe mesh hull covers less forehead than original SBI dlib-81",
+  "examples": [
+    {
+      "sample_id": "d4c1f004001ab10e2190a54afe562a226bc4ae19cb04eda8a38a9f1dff05e00d",
+      "mask_fraction": 0.3345947265625,
+      "mean_abs_change": 0.021355523003472224
+    },
+    {
+      "sample_id": "2c26043522ec1f82da86046c268e1a989ca81ce5109ae2b3a95ee784fe66ef95",
+      "mask_fraction": 0.359375,
+      "mean_abs_change": 0.01098489200367647
+    },
+    {
+      "sample_id": "0850900ae8fe434d8ea982e240299dd6742face80774a634030d95416aa940df",
+      "mask_fraction": 0.44873046875,
+      "mean_abs_change": 0.014132072099673201
+    },
+    {
+      "sample_id": "f4c722854e2fb638425da777b7f83047664f9530fd7bccc83e01ba6f936b0e9b",
+      "mask_fraction": 0.3426513671875,
+      "mean_abs_change": 0.032977255029616015
+    }
+  ]
+}

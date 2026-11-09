@@ -1,0 +1,1389 @@
+{
+  "purpose": "pilot/min-dataset/development; fixed one-epoch HF adaptation with prior MFFI fake exposure",
+  "source_only": true,
+  "selection": "one prescribed epoch and source-val Youden threshold; no tuning or min-test access",
+  "software_at_summary": {
+    "commit": "3c55159ccda351da947ca53c0b40b0ff0e7e9222",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "summary_driver_sha256": "ddee265fd7f7d6f1055a5220b94061823e8d0400fa731cebccfd9252c023d3ea",
+  "shared_runtime_mmap_fix": "aebd160",
+  "resource_note": "Initial jobs completed their only epoch but exceeded RSS during best-bundle restore. Resume finalization performed zero additional updates. Resumed telemetry measures finalization only; original training peak VRAM was not retained.",
+  "runs": {
+    "dino": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42",
+      "config": {
+        "name": "sbi-hf-dino-srm-one-epoch-pilot",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "dino",
+          "mode": "srm",
+          "image_size": 224,
+          "initialization": "hf_mffi",
+          "weights": "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/dino/srm/finetune_robust/seed_42/weights/best.pth",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "sbi",
+          "epochs": 1,
+          "batch_size": 2,
+          "workers": 0,
+          "grad_accum_steps": 16,
+          "lr_backbone": 1e-05,
+          "lr_head": 0.0001,
+          "weight_decay": 0.0001,
+          "amp": true,
+          "early_stop_patience": 2,
+          "scheduler_patience": 2,
+          "failure_policy": "error",
+          "mask": {},
+          "cache_images": true,
+          "post_augment": true,
+          "bootstrap_draws": 300
+        },
+        "network_spec": {
+          "kind": "hf",
+          "family": "dino",
+          "config": {
+            "model_family": "dino",
+            "architecture": "resnet18",
+            "fourier_mode": "srm",
+            "regime": "finetune_robust",
+            "initialization_contract": "regime-v2",
+            "seed": 42,
+            "seeds": [
+              42,
+              123,
+              2024,
+              7,
+              2025
+            ],
+            "epochs": 15,
+            "batch_size": 64,
+            "num_workers": 8,
+            "image_size": 224,
+            "data_limit": null,
+            "raw_min": false,
+            "lr_head": 0.0002,
+            "lr_backbone": 2e-05,
+            "weight_decay": 0.0001,
+            "early_stop_patience": 5,
+            "scheduler_patience": 3,
+            "max_grad_norm": 1.0,
+            "dropout": 0.2,
+            "augment": true,
+            "robust": false,
+            "train_backbone": true,
+            "use_weighted_sampler": true,
+            "use_class_weights": true,
+            "label_smoothing": 0.0,
+            "threshold_strategy": "f1",
+            "mixup_alpha": 0.2,
+            "cutmix_alpha": 0.0,
+            "unfreeze_last_n": 2,
+            "multi_gpu": false,
+            "allow_pretrained": true,
+            "patch_size": 16,
+            "hidden_size": 256,
+            "num_hidden_layers": 6,
+            "num_attention_heads": 8,
+            "projection_dim": 128,
+            "variant": "large",
+            "model_size": "base",
+            "expert_family": "mobilenet",
+            "num_experts": 7,
+            "routing_strategy": "dense",
+            "top_k": 3,
+            "in_channels_override": 6
+          }
+        },
+        "provenance": {
+          "train_manifest": {
+            "source_sha256": "dc2c2d370f62c92dd597fe289be2572de290f9fa1dd9d07f0e30e215b3422789",
+            "source_label_column": "target",
+            "source_label_convention": "fake-is-1",
+            "group_column": null,
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "19df960524cf6ad08542db9ec651aa8b7d5b2d11432b13a020c7ca1612d0994d",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "train",
+            "class_counts": {
+              "1": 798,
+              "0": 202
+            }
+          },
+          "val_manifest": {
+            "source_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+            "source_label_column": "target",
+            "source_label_convention": "fake-is-1",
+            "group_column": null,
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6f0c10a6b428f1a81586e1863a016a9d1a7716f8fb3316d5b2720207ea4bd107",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "val",
+            "class_counts": {
+              "1": 592,
+              "0": 408
+            }
+          },
+          "cohort": {
+            "arm": "sbi",
+            "real_ids_sha256": "4dcdb28be2087a081985930332d83276960ef45e762cec20ab4a21e0f9f5d4f7",
+            "n_unique_real": 202,
+            "n_available_mffi_fake": 0,
+            "examples_per_epoch": 404,
+            "landmark_source": "mediapipe_mesh",
+            "landmark_sha256": "9b789b93e424ba4202d1c638d497dd3677ba3469440059a72766e045775f0a49",
+            "failures": {},
+            "failure_policy": "error",
+            "recipe": "sbi_landmark_hull_v1",
+            "image_inventory_sha256": "a940cd9bd44ff24104d02f6d49c0c454cea0f912d31a320f791d98587020b7ab",
+            "fake_exposure": "SBI only"
+          },
+          "initialization_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+          "label_convention": "fake-is-1",
+          "initial_model_state_sha256": "4c1b354324d4d2d99c2099b4bff1938416d43a3407d771423b8ea87418aa3d5a",
+          "val_image_inventory_sha256": "d6551752332b1bc43c407415b8b4fef21b4c615e3d881c959a1ca596bc6543ce",
+          "selection": "MFFI source validation including fakes; never target selection",
+          "prior_mffi_fake_exposure": true,
+          "code_sha256": {
+            "__init__.py": "47c7a99df5d5ccb3680ef9100651287aa9b27dd0eeb63fdbded4c18afac8956e",
+            "cache.py": "2fccb4e51f827867e022fa03b01ecec305a19f7e43d620ee90e37fc78ef7b7cc",
+            "data.py": "f12f0cc4646f730fe0abe862a2da78a76c033dc37ed0ae416ff2059d60621770",
+            "landmarks.py": "20e52c43c072f61a6ed2e0485eca7f4e2c51d7778d6c1341e32db068c8a77d8c",
+            "qa.py": "4710f907ad225048b3dc7d4c4b56e15ad48d4b80bc41ae1499b8fea6f4df5430",
+            "training.py": "4be0aed150ff70e22e015dff5af778f5a7ee827d14ae715716b6f8df3cc1386c"
+          }
+        }
+      },
+      "training_record_software": {
+        "commit": "aebd1609fe5769c577eec150b33a95ebeb817765",
+        "code_sha256": {
+          "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+          "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+          "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+          "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+          "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+          "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+          "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+          "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+          "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+          "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+          "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+          "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+          "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+          "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+          "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+          "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+          "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+          "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+        },
+        "python": "3.12.13",
+        "packages": {
+          "torch": "2.10.0+rocm7.1",
+          "torchvision": "0.25.0+rocm7.1",
+          "timm": "1.0.27",
+          "numpy": "2.4.4",
+          "pandas": "3.0.2",
+          "scikit-learn": "1.8.0",
+          "Pillow": "12.2.0"
+        }
+      },
+      "history": [
+        {
+          "epoch": 0,
+          "global_step": 13,
+          "train_loss": 0.48251084053870474,
+          "components": {
+            "cross_entropy": 0.48251084053870474
+          },
+          "validation": {
+            "auc": 0.9675100192103868,
+            "f1": 0.9041963578780681,
+            "accuracy": 0.879,
+            "eer": 0.09290540540540537,
+            "log_loss": 0.2808155651501774
+          }
+        }
+      ],
+      "telemetry_finalization_only": {
+        "runtime_seconds": 0.7941889749999973,
+        "peak_vram_bytes": 1050906112,
+        "peak_rss_kib": 2499088,
+        "trainable_parameters": 87576706,
+        "epochs_completed": 1,
+        "global_step": 13,
+        "best_epoch": 0,
+        "best_metric": 0.9675100192103868
+      },
+      "initial_attempt_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/sbi_hf_strong_pilot.py",
+          "dino"
+        ],
+        "exit_code": -15,
+        "stop_reason": "RSS exceeded 3072 MiB",
+        "peak_sampled_rss_kib": 3300344,
+        "seconds": 64.50175674299953
+      },
+      "finalization_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/sbi_hf_strong_pilot.py",
+          "dino",
+          "--resume",
+          "--fit-only"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 3013292,
+        "seconds": 39.02136762200007
+      },
+      "fresh_inference_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42/proxy-suite-config.json",
+          "--execute"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 2072904,
+        "seconds": 61.53440793600021
+      },
+      "checkpoint_sha256": "9a44c2dd9ae9f2c3946e01360807aed2d44e0d0305703bc5280845ba3a22ae41",
+      "calibration_sha256": "40bc561149980a5d2f9473aacd5a376674eaaa3793b6d502abbe7995fca2e95f",
+      "history_sha256": "a561129bd1893893ba68d063f7c39300d868c7b997e876cebfbaf78389b249d8",
+      "fresh_reload_max_abs_error": 0.0,
+      "adapted": {
+        "clean": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.9675100192103868,
+          "average_precision": 0.9798280403347673,
+          "balanced_accuracy": 0.9103570482246952,
+          "eer": 0.09290540540540537,
+          "eer_threshold": 0.7801194239307094,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.92399658411614,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.911,
+          "brier": 0.08646059461547932,
+          "log_loss": 0.2808155651501774,
+          "ece_10_equal_width": 0.0966377488537691,
+          "threshold": 0.7766229510307312,
+          "tn": 370,
+          "fp": 38,
+          "fn": 51,
+          "tp": 541,
+          "confusion_matrix": [
+            [
+              370,
+              38
+            ],
+            [
+              51,
+              541
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9068627450980392,
+              0.09313725490196079
+            ],
+            [
+              0.08614864864864864,
+              0.9138513513513513
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.09313725490196079,
+          "tpr": 0.9138513513513513,
+          "auc_status": "defined",
+          "threshold_policy": "frozen source-validation youden",
+          "auc_interval": {
+            "estimate": 0.9675100192103868,
+            "lower": 0.9587673768249386,
+            "upper": 0.9768492877568818,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "degraded": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.8958022820614733,
+          "average_precision": 0.9333725881022807,
+          "balanced_accuracy": 0.8122184684684685,
+          "eer": 0.18627450980392157,
+          "eer_threshold": 0.6589771041683122,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.8019138755980861,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.793,
+          "brier": 0.13530144291992877,
+          "log_loss": 0.4136590387068012,
+          "ece_10_equal_width": 0.07137492971774191,
+          "threshold": 0.7766229510307312,
+          "tn": 374,
+          "fp": 34,
+          "fn": 173,
+          "tp": 419,
+          "confusion_matrix": [
+            [
+              374,
+              34
+            ],
+            [
+              173,
+              419
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9166666666666666,
+              0.08333333333333333
+            ],
+            [
+              0.2922297297297297,
+              0.7077702702702703
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.08333333333333333,
+          "tpr": 0.7077702702702703,
+          "auc_status": "defined",
+          "threshold_policy": "frozen source-validation youden",
+          "auc_interval": {
+            "estimate": 0.8958022820614733,
+            "lower": 0.8776580161362145,
+            "upper": 0.9139046686366762,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "paired_test_d": {
+          "quantity": "test_d_minus_test_auc",
+          "estimate": -0.07170773714891354,
+          "interval": {
+            "estimate": -0.07170773714891354,
+            "lower": -0.08888659900387008,
+            "upper": -0.05600223286876556,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "other_minus_reference_auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "frozen_threshold": 0.7766229510307312
+      },
+      "unadapted": {
+        "clean_cache": "/home/lucas/ffb-research/local/features/eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+        "clean_cache_identity": "eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+        "degraded_cache": "/home/lucas/ffb-research/local/features/proxy-val/7ac0f5598c481f732ad9174341adcf0780c90d973764eb5ea218100d437655b9",
+        "degraded_cache_identity": "7ac0f5598c481f732ad9174341adcf0780c90d973764eb5ea218100d437655b9",
+        "representation": {
+          "checkpoint_sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6",
+          "run_config_sha256": "0819f9c25c95619c33c08c071911ed7bec4696da65e43283e66367dc74414fa8",
+          "extraction": {
+            "mode": "srm",
+            "image_size": 224,
+            "channels": 6,
+            "resize": "PIL bilinear square",
+            "normalization": {
+              "mean": [
+                0.485,
+                0.456,
+                0.406
+              ],
+              "std": [
+                0.229,
+                0.224,
+                0.225
+              ]
+            },
+            "srm_on_normalized": true,
+            "feature_point": "input to final root classifier Linear in eval mode",
+            "features_dtype": "float16",
+            "logits_dtype": "float32",
+            "amp_dtype": "torch.bfloat16",
+            "checkpoint_class1": "fake"
+          },
+          "code_sha256": {
+            "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+            "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+            "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+            "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+            "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+          },
+          "packages": {
+            "torch": "2.10.0+rocm7.1",
+            "torchvision": "0.25.0+rocm7.1",
+            "timm": "1.0.27",
+            "numpy": "2.4.4",
+            "pandas": "3.0.2",
+            "scikit-learn": "1.8.0",
+            "Pillow": "12.2.0"
+          }
+        },
+        "threshold": 0.1919327825307846,
+        "threshold_policy": "youden on original clean min-val logits; fixed for degraded inference",
+        "clean": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.9940133147853736,
+          "average_precision": 0.9963030725445402,
+          "balanced_accuracy": 0.9697105193428723,
+          "eer": 0.031862745098039214,
+          "eer_threshold": 0.19888270018147483,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.9745762711864406,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.97,
+          "brier": 0.03317687891056605,
+          "log_loss": 0.12362702147835465,
+          "ece_10_equal_width": 0.04310667028365426,
+          "threshold": 0.1919327825307846,
+          "tn": 395,
+          "fp": 13,
+          "fn": 17,
+          "tp": 575,
+          "confusion_matrix": [
+            [
+              395,
+              13
+            ],
+            [
+              17,
+              575
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9681372549019608,
+              0.031862745098039214
+            ],
+            [
+              0.028716216216216218,
+              0.9712837837837838
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.031862745098039214,
+          "tpr": 0.9712837837837838,
+          "auc_status": "defined"
+        },
+        "degraded": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.9614301801801801,
+          "average_precision": 0.9754609291501917,
+          "balanced_accuracy": 0.8971416269210386,
+          "eer": 0.1053921568627451,
+          "eer_threshold": 0.16067944350195862,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.9076655052264808,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.894,
+          "brier": 0.10722811708688858,
+          "log_loss": 0.3407259077801906,
+          "ece_10_equal_width": 0.12060534194958748,
+          "threshold": 0.1919327825307846,
+          "tn": 373,
+          "fp": 35,
+          "fn": 71,
+          "tp": 521,
+          "confusion_matrix": [
+            [
+              373,
+              35
+            ],
+            [
+              71,
+              521
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9142156862745098,
+              0.0857843137254902
+            ],
+            [
+              0.11993243243243243,
+              0.8800675675675675
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.0857843137254902,
+          "tpr": 0.8800675675675675,
+          "auc_status": "defined"
+        },
+        "clean_auc_ci": {
+          "estimate": 0.9940133147853736,
+          "lower": 0.9909618218585451,
+          "upper": 0.9968733618998994,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "degraded_auc_ci": {
+          "estimate": 0.9614301801801801,
+          "lower": 0.9512640652224759,
+          "upper": 0.9702019981081087,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "paired_degraded_minus_clean_auc": {
+          "estimate": -0.032583134605193464,
+          "lower": -0.041889304536945254,
+          "upper": -0.02338035697370741,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "adapted_minus_unadapted_clean_auc": {
+        "estimate": -0.026503295574986763,
+        "lower": -0.035127952145835674,
+        "upper": -0.017778282532016965,
+        "confidence": 0.95,
+        "requested_draws": 300,
+        "valid_draws": 300,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "adapted_minus_unadapted_degraded_auc": {
+        "estimate": -0.06562789811870684,
+        "lower": -0.08194792715017965,
+        "upper": -0.051743785538741156,
+        "confidence": 0.95,
+        "requested_draws": 300,
+        "valid_draws": 300,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "evaluation_config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42/calibration.json",
+        "output": "/home/lucas/ffb-research/local/pilots/sbi-hf-dino-srm-seed42/proxy-suite",
+        "scope": "pilot",
+        "targets": [
+          {
+            "name": "min-val-clean-development",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-val-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/val"
+          },
+          {
+            "name": "min-val-degraded-proxy",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-val-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-val-degraded-proxy"
+          }
+        ],
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 2,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      },
+      "suite_metrics_sha256": "f798cae628ef9752020af6aba79ac7bc72b87c54c65d1bb561a9afd4b85e28c9"
+    },
+    "clip": {
+      "run_dir": "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42",
+      "config": {
+        "name": "sbi-hf-clip-srm-one-epoch-pilot",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42",
+        "data": {
+          "train_manifest": "/home/lucas/ffb-research/local/manifests/min-train.csv",
+          "val_manifest": "/home/lucas/ffb-research/local/manifests/min-val.csv",
+          "train_root": "/home/lucas/ffb-research/local/data/min_dataset/train",
+          "val_root": "/home/lucas/ffb-research/local/data/min_dataset/val",
+          "landmarks": "/home/lucas/ffb-research/local/data/train_real_landmarks.sqlite"
+        },
+        "model": {
+          "architecture": "clip",
+          "mode": "srm",
+          "image_size": 224,
+          "initialization": "hf_mffi",
+          "weights": "/home/lucas/ffb-research/local/checkpoints/MFFI-Models/clip/srm/finetune_robust/seed_42/weights/best.pth",
+          "train_backbone": true
+        },
+        "training": {
+          "arm": "sbi",
+          "epochs": 1,
+          "batch_size": 2,
+          "workers": 0,
+          "grad_accum_steps": 16,
+          "lr_backbone": 1e-05,
+          "lr_head": 0.0001,
+          "weight_decay": 0.0001,
+          "amp": true,
+          "early_stop_patience": 2,
+          "scheduler_patience": 2,
+          "failure_policy": "error",
+          "mask": {},
+          "cache_images": true,
+          "post_augment": true,
+          "bootstrap_draws": 300
+        },
+        "network_spec": {
+          "kind": "hf",
+          "family": "clip",
+          "config": {
+            "model_family": "clip",
+            "architecture": "resnet18",
+            "fourier_mode": "srm",
+            "regime": "finetune_robust",
+            "initialization_contract": "regime-v2",
+            "seed": 42,
+            "seeds": [
+              42,
+              123,
+              2024,
+              7,
+              2025
+            ],
+            "epochs": 15,
+            "batch_size": 64,
+            "num_workers": 8,
+            "image_size": 224,
+            "data_limit": null,
+            "raw_min": false,
+            "lr_head": 0.001,
+            "lr_backbone": 0.0001,
+            "weight_decay": 0.0001,
+            "early_stop_patience": 5,
+            "scheduler_patience": 3,
+            "max_grad_norm": 1.0,
+            "dropout": 0.2,
+            "augment": true,
+            "robust": false,
+            "train_backbone": true,
+            "use_weighted_sampler": true,
+            "use_class_weights": true,
+            "label_smoothing": 0.0,
+            "threshold_strategy": "accuracy",
+            "mixup_alpha": 0.0,
+            "cutmix_alpha": 0.0,
+            "unfreeze_last_n": 2,
+            "multi_gpu": false,
+            "allow_pretrained": true,
+            "patch_size": 16,
+            "hidden_size": 256,
+            "num_hidden_layers": 6,
+            "num_attention_heads": 8,
+            "projection_dim": 128,
+            "variant": "large",
+            "model_size": "base",
+            "expert_family": "mobilenet",
+            "num_experts": 7,
+            "routing_strategy": "dense",
+            "top_k": 3,
+            "in_channels_override": 6
+          },
+          "vision_config": {
+            "transformers_version": "5.14.1",
+            "architectures": null,
+            "output_hidden_states": false,
+            "return_dict": true,
+            "dtype": null,
+            "chunk_size_feed_forward": 0,
+            "is_encoder_decoder": false,
+            "id2label": {
+              "0": "LABEL_0",
+              "1": "LABEL_1"
+            },
+            "label2id": {
+              "LABEL_0": 0,
+              "LABEL_1": 1
+            },
+            "problem_type": null,
+            "hidden_size": 768,
+            "intermediate_size": 3072,
+            "projection_dim": 512,
+            "num_hidden_layers": 12,
+            "num_attention_heads": 12,
+            "num_channels": 6,
+            "image_size": 224,
+            "patch_size": 16,
+            "hidden_act": "quick_gelu",
+            "layer_norm_eps": 1e-05,
+            "attention_dropout": 0.0,
+            "initializer_range": 0.02,
+            "initializer_factor": 1.0,
+            "_name_or_path": "",
+            "model_type": "clip_vision_model",
+            "output_attentions": false
+          }
+        },
+        "provenance": {
+          "train_manifest": {
+            "source_sha256": "dc2c2d370f62c92dd597fe289be2572de290f9fa1dd9d07f0e30e215b3422789",
+            "source_label_column": "target",
+            "source_label_convention": "fake-is-1",
+            "group_column": null,
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "19df960524cf6ad08542db9ec651aa8b7d5b2d11432b13a020c7ca1612d0994d",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "train",
+            "class_counts": {
+              "1": 798,
+              "0": 202
+            }
+          },
+          "val_manifest": {
+            "source_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+            "source_label_column": "target",
+            "source_label_convention": "fake-is-1",
+            "group_column": null,
+            "group_unit": "image-only (identity/source dependence unresolved)",
+            "warning": "Conversion certifies declared semantics, not visual ground truth or dataset independence.",
+            "schema": "faceforgery-research-v1",
+            "label_convention": "fake-is-1",
+            "manifest_sha256": "6f0c10a6b428f1a81586e1863a016a9d1a7716f8fb3316d5b2720207ea4bd107",
+            "rows": 1000,
+            "dataset": "mffi-min",
+            "split": "val",
+            "class_counts": {
+              "1": 592,
+              "0": 408
+            }
+          },
+          "cohort": {
+            "arm": "sbi",
+            "real_ids_sha256": "4dcdb28be2087a081985930332d83276960ef45e762cec20ab4a21e0f9f5d4f7",
+            "n_unique_real": 202,
+            "n_available_mffi_fake": 0,
+            "examples_per_epoch": 404,
+            "landmark_source": "mediapipe_mesh",
+            "landmark_sha256": "9b789b93e424ba4202d1c638d497dd3677ba3469440059a72766e045775f0a49",
+            "failures": {},
+            "failure_policy": "error",
+            "recipe": "sbi_landmark_hull_v1",
+            "image_inventory_sha256": "a940cd9bd44ff24104d02f6d49c0c454cea0f912d31a320f791d98587020b7ab",
+            "fake_exposure": "SBI only"
+          },
+          "initialization_sha256": "ac4e747513156c17b4fef4c961e1049f025cb855bcc6638db453de59352adc93",
+          "label_convention": "fake-is-1",
+          "initial_model_state_sha256": "e95d0ec4fb8b2f3de918024c3caf9fea482622392bbc617062e13134fbc0c4ae",
+          "val_image_inventory_sha256": "d6551752332b1bc43c407415b8b4fef21b4c615e3d881c959a1ca596bc6543ce",
+          "selection": "MFFI source validation including fakes; never target selection",
+          "prior_mffi_fake_exposure": true,
+          "code_sha256": {
+            "__init__.py": "47c7a99df5d5ccb3680ef9100651287aa9b27dd0eeb63fdbded4c18afac8956e",
+            "cache.py": "2fccb4e51f827867e022fa03b01ecec305a19f7e43d620ee90e37fc78ef7b7cc",
+            "data.py": "f12f0cc4646f730fe0abe862a2da78a76c033dc37ed0ae416ff2059d60621770",
+            "landmarks.py": "20e52c43c072f61a6ed2e0485eca7f4e2c51d7778d6c1341e32db068c8a77d8c",
+            "qa.py": "4710f907ad225048b3dc7d4c4b56e15ad48d4b80bc41ae1499b8fea6f4df5430",
+            "training.py": "4be0aed150ff70e22e015dff5af778f5a7ee827d14ae715716b6f8df3cc1386c"
+          }
+        }
+      },
+      "training_record_software": {
+        "commit": "724d4f34648f39950fa7186d7ea019fb881b07d7",
+        "code_sha256": {
+          "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+          "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+          "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+          "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+          "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+          "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+          "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+          "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+          "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+          "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+          "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+          "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+          "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+          "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+          "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+          "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+          "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+          "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+          "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+        },
+        "python": "3.12.13",
+        "packages": {
+          "torch": "2.10.0+rocm7.1",
+          "torchvision": "0.25.0+rocm7.1",
+          "timm": "1.0.27",
+          "numpy": "2.4.4",
+          "pandas": "3.0.2",
+          "scikit-learn": "1.8.0",
+          "Pillow": "12.2.0"
+        }
+      },
+      "history": [
+        {
+          "epoch": 0,
+          "global_step": 13,
+          "train_loss": 1.3307065919484242,
+          "components": {
+            "cross_entropy": 1.3307065919484242
+          },
+          "validation": {
+            "auc": 0.7855019541600424,
+            "f1": 0.45721583652618136,
+            "accuracy": 0.575,
+            "eer": 0.2867647058823529,
+            "log_loss": 0.7954124826300744
+          }
+        }
+      ],
+      "telemetry_finalization_only": {
+        "runtime_seconds": 0.5004564379996737,
+        "peak_vram_bytes": 1036693504,
+        "peak_rss_kib": 2435728,
+        "trainable_parameters": 86390786,
+        "epochs_completed": 1,
+        "global_step": 13,
+        "best_epoch": 0,
+        "best_metric": 0.7855019541600424
+      },
+      "initial_attempt_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/sbi_hf_strong_pilot.py",
+          "clip"
+        ],
+        "exit_code": -15,
+        "stop_reason": "RSS exceeded 3072 MiB",
+        "peak_sampled_rss_kib": 3258596,
+        "seconds": 29.182023155000024
+      },
+      "finalization_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/sbi_hf_strong_pilot.py",
+          "clip",
+          "--resume",
+          "--fit-only"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 2969892,
+        "seconds": 23.51406010000028
+      },
+      "fresh_inference_watchdog": {
+        "command": [
+          ".venv/bin/python",
+          "research_cli.py",
+          "experimental",
+          "evaluate",
+          "--config",
+          "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42/proxy-suite-config.json",
+          "--execute"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 2364312,
+        "seconds": 27.516430748999483
+      },
+      "checkpoint_sha256": "22d69aa374ae316d53f4d751cf5edacb34ac19b250f44f2198fbaf612238ff17",
+      "calibration_sha256": "d331b8113e48ac15ad3c28c50058a5c2b9e747ae9ef0b794c70fa7eaed434bd8",
+      "history_sha256": "db9db0f85fb804dc3cfa91385660905b2cec0f8bbb26ef4523c0b0011df0b878",
+      "fresh_reload_max_abs_error": 0.0,
+      "adapted": {
+        "clean": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.7855019541600424,
+          "average_precision": 0.8537878675353255,
+          "balanced_accuracy": 0.7244137519872813,
+          "eer": 0.2867647058823529,
+          "eer_threshold": 0.18648773431777954,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.7410795974382434,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.717,
+          "brier": 0.2803944799505571,
+          "log_loss": 0.7954124826300744,
+          "ece_10_equal_width": 0.2927209660075605,
+          "threshold": 0.2030746340751648,
+          "tn": 312,
+          "fp": 96,
+          "fn": 187,
+          "tp": 405,
+          "confusion_matrix": [
+            [
+              312,
+              96
+            ],
+            [
+              187,
+              405
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.7647058823529411,
+              0.23529411764705882
+            ],
+            [
+              0.3158783783783784,
+              0.6841216216216216
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.23529411764705882,
+          "tpr": 0.6841216216216216,
+          "auc_status": "defined",
+          "threshold_policy": "frozen source-validation youden",
+          "auc_interval": {
+            "estimate": 0.7855019541600424,
+            "lower": 0.7593589892409296,
+            "upper": 0.8148262165445355,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "degraded": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.7302120594859566,
+          "average_precision": 0.8063639753361727,
+          "balanced_accuracy": 0.6419746952835188,
+          "eer": 0.34121621621621623,
+          "eer_threshold": 0.24977353336037816,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.7383399209486166,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.669,
+          "brier": 0.2697787544447893,
+          "log_loss": 0.749757388858399,
+          "ece_10_equal_width": 0.24781358747929333,
+          "threshold": 0.2030746340751648,
+          "tn": 202,
+          "fp": 206,
+          "fn": 125,
+          "tp": 467,
+          "confusion_matrix": [
+            [
+              202,
+              206
+            ],
+            [
+              125,
+              467
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.4950980392156863,
+              0.5049019607843137
+            ],
+            [
+              0.21114864864864866,
+              0.7888513513513513
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.5049019607843137,
+          "tpr": 0.7888513513513513,
+          "auc_status": "defined",
+          "threshold_policy": "frozen source-validation youden",
+          "auc_interval": {
+            "estimate": 0.7302120594859566,
+            "lower": 0.6999884460001592,
+            "upper": 0.7610941211904184,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "paired_test_d": {
+          "quantity": "test_d_minus_test_auc",
+          "estimate": -0.05528989467408585,
+          "interval": {
+            "estimate": -0.05528989467408585,
+            "lower": -0.08079081002244928,
+            "upper": -0.03167813800307117,
+            "confidence": 0.95,
+            "requested_draws": 300,
+            "valid_draws": 300,
+            "groups": 1000,
+            "seed": 42,
+            "quantity": "other_minus_reference_auc",
+            "method": "paired percentile cluster bootstrap",
+            "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+          }
+        },
+        "frozen_threshold": 0.2030746340751648
+      },
+      "unadapted": {
+        "clean_cache": "/home/lucas/ffb-research/local/features/60adaa6647d799d0a825e6042b04313783f098ebd1650203ffa8f2db988acac3",
+        "clean_cache_identity": "60adaa6647d799d0a825e6042b04313783f098ebd1650203ffa8f2db988acac3",
+        "degraded_cache": "/home/lucas/ffb-research/local/features/clip-degraded-control/88001b6f103d6cf906b156caa3a94f5432ddd444b5c99530bb5c69f40d4a09d1",
+        "degraded_cache_identity": "88001b6f103d6cf906b156caa3a94f5432ddd444b5c99530bb5c69f40d4a09d1",
+        "representation": {
+          "checkpoint_sha256": "ac4e747513156c17b4fef4c961e1049f025cb855bcc6638db453de59352adc93",
+          "run_config_sha256": "cc75f7371bd06246b2f9ef628e04701a8f03e7b757bdf3fb5b4de340dbe2d878",
+          "extraction": {
+            "mode": "srm",
+            "image_size": 224,
+            "channels": 6,
+            "resize": "PIL bilinear square",
+            "normalization": {
+              "mean": [
+                0.485,
+                0.456,
+                0.406
+              ],
+              "std": [
+                0.229,
+                0.224,
+                0.225
+              ]
+            },
+            "srm_on_normalized": true,
+            "feature_point": "input to final root classifier Linear in eval mode",
+            "features_dtype": "float16",
+            "logits_dtype": "float32",
+            "amp_dtype": "torch.bfloat16",
+            "checkpoint_class1": "fake"
+          },
+          "code_sha256": {
+            "src/experimental/features.py": "c31e29d9d95b672ecaab1f48d26a162815324f23d36674c4ea778675ca39170a",
+            "src/data/data.py": "26d804dba1131c6c7e31cc258fe83334c92b20833b435fb1fd42afde76b214a7",
+            "src/forensics/srm.py": "82787c528c1c1ce37097855dd49c0397cf194fdd62f2265afe8e846d051cf4c3",
+            "src/robustness/legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+            "src/pipelines/checkpoints.py": "6fb190407a9e7a94ea69e5514875b0cc2584d9b5d01c0735780e166223dae86c"
+          },
+          "packages": {
+            "torch": "2.10.0+rocm7.1",
+            "torchvision": "0.25.0+rocm7.1",
+            "timm": "1.0.27",
+            "numpy": "2.4.4",
+            "pandas": "3.0.2",
+            "scikit-learn": "1.8.0",
+            "Pillow": "12.2.0"
+          }
+        },
+        "threshold": 0.8351477384567261,
+        "threshold_policy": "youden on original clean min-val logits; fixed for degraded inference",
+        "clean": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.9839982445680976,
+          "average_precision": 0.9902092480010602,
+          "balanced_accuracy": 0.9409943031266561,
+          "eer": 0.06756756756756757,
+          "eer_threshold": 0.5879549013601767,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.944153577661431,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.936,
+          "brier": 0.04996454714645228,
+          "log_loss": 0.18740440048302714,
+          "ece_10_equal_width": 0.03345338364067353,
+          "threshold": 0.8351477384567261,
+          "tn": 395,
+          "fp": 13,
+          "fn": 51,
+          "tp": 541,
+          "confusion_matrix": [
+            [
+              395,
+              13
+            ],
+            [
+              51,
+              541
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9681372549019608,
+              0.031862745098039214
+            ],
+            [
+              0.08614864864864864,
+              0.9138513513513513
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.031862745098039214,
+          "tpr": 0.9138513513513513,
+          "auc_status": "defined"
+        },
+        "degraded": {
+          "n": 1000,
+          "n_real": 408,
+          "n_fake": 592,
+          "auc": 0.9345377086645469,
+          "average_precision": 0.9573780837229577,
+          "balanced_accuracy": 0.8295906200317965,
+          "eer": 0.14864864864864874,
+          "eer_threshold": 0.2413140112483823,
+          "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+          "eer_status": "defined",
+          "f1": 0.8086359175662414,
+          "f1_policy": "fake is positive; zero division returns zero",
+          "accuracy": 0.805,
+          "brier": 0.1206925571040915,
+          "log_loss": 0.41460182123408806,
+          "ece_10_equal_width": 0.10578777597676528,
+          "threshold": 0.8351477384567261,
+          "tn": 393,
+          "fp": 15,
+          "fn": 180,
+          "tp": 412,
+          "confusion_matrix": [
+            [
+              393,
+              15
+            ],
+            [
+              180,
+              412
+            ]
+          ],
+          "confusion_matrix_normalized": [
+            [
+              0.9632352941176471,
+              0.03676470588235294
+            ],
+            [
+              0.30405405405405406,
+              0.6959459459459459
+            ]
+          ],
+          "confusion_axes": "rows true, columns predicted; [real, fake]",
+          "fpr": 0.03676470588235294,
+          "tpr": 0.6959459459459459,
+          "auc_status": "defined"
+        },
+        "clean_auc_ci": {
+          "estimate": 0.9839982445680976,
+          "lower": 0.9769821294564704,
+          "upper": 0.9898947095263839,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "degraded_auc_ci": {
+          "estimate": 0.9345377086645469,
+          "lower": 0.9206415897595773,
+          "upper": 0.9485755414928693,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        },
+        "paired_degraded_minus_clean_auc": {
+          "estimate": -0.049460535903550706,
+          "lower": -0.05982101167919937,
+          "upper": -0.03808748771930256,
+          "confidence": 0.95,
+          "requested_draws": 300,
+          "valid_draws": 300,
+          "groups": 1000,
+          "seed": 42,
+          "quantity": "other_minus_reference_auc",
+          "method": "paired percentile cluster bootstrap",
+          "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+        }
+      },
+      "adapted_minus_unadapted_clean_auc": {
+        "estimate": -0.19849629040805516,
+        "lower": -0.22457210678314474,
+        "upper": -0.16820671559145634,
+        "confidence": 0.95,
+        "requested_draws": 300,
+        "valid_draws": 300,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "adapted_minus_unadapted_degraded_auc": {
+        "estimate": -0.2043256491785903,
+        "lower": -0.23597838099758603,
+        "upper": -0.17352386484311888,
+        "confidence": 0.95,
+        "requested_draws": 300,
+        "valid_draws": 300,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "evaluation_config": {
+        "model": {
+          "type": "experimental",
+          "family": "sbi",
+          "path": "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42"
+        },
+        "calibration": "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42/calibration.json",
+        "output": "/home/lucas/ffb-research/local/pilots/sbi-hf-clip-srm-seed42/proxy-suite",
+        "scope": "pilot",
+        "targets": [
+          {
+            "name": "min-val-clean-development",
+            "kind": "test",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-val-clean-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min_dataset/val"
+          },
+          {
+            "name": "min-val-degraded-proxy",
+            "kind": "test_d",
+            "manifest": "/home/lucas/ffb-research/local/manifests/min-val-degraded-proxy.csv",
+            "root": "/home/lucas/ffb-research/local/data/min-val-degraded-proxy"
+          }
+        ],
+        "inference": {
+          "device": "cuda:0",
+          "batch_size": 2,
+          "workers": 0,
+          "use_amp": true,
+          "bootstrap_draws": 300,
+          "bootstrap_seed": 42,
+          "confidence": 0.95,
+          "plots": true
+        }
+      },
+      "suite_metrics_sha256": "bb3b096dbbd2f20d614d60288827e56af27f50899be93c3470444c90ecda6737"
+    }
+  }
+}

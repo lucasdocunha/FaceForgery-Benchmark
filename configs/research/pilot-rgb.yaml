@@ -1,0 +1,27 @@
+name: rgb-paired-robustness-pilot
+purpose: pilot
+model:
+  kind: rgb
+  backbone: resnet18
+  pretrained: true
+  width: 32
+  branch_dropout: 0.2
+data:
+  train_manifest: data/canonical/mffi/train.csv
+  val_manifest: data/canonical/mffi/val.csv
+  train_root: data/datasets/phase1/trainset
+  val_root: data/datasets/phase1/valset
+training:
+  seed: 42
+  epochs: 10
+  batch_size: 32
+  workers: 4
+  image_size: 224
+  lr: 0.0001
+  weight_decay: 0.0001
+  patience: 4
+  recipe: robust_v1
+  paired_training: true
+  consistency_weight: 0.0
+  aux_weight: 0.1
+output_root: outputs/research

@@ -1,0 +1,31 @@
+Modelo,Tipo,AUC (%),ACC (%),F1 (%),Precision (%),Recall (%),Specificity (%)
+CLIP,Robusto (987),82.63,77.61,80.22,78.16,82.4,71.72
+DINO,Robusto (987),75.18,68.22,73.19,68.42,78.67,55.39
+VIT,Robusto (987),72.73,68.75,71.73,71.55,71.92,64.86
+RESNET,Robusto (987),64.51,62.74,66.41,66.02,66.8,57.77
+MOBILENET,Robusto (987),73.05,68.91,71.19,72.78,69.68,67.98
+XCEPTION,Robusto (987),68.15,67.24,74.41,65.34,86.4,43.69
+CLIP,Padrão (42),75.25,72.3,75.67,73.35,78.14,65.12
+DINO,Padrão (42),71.72,65.64,70.19,67.27,73.39,56.13
+VIT,Padrão (42),69.22,67.26,71.17,69.15,73.3,59.82
+RESNET,Padrão (42),71.04,65.11,66.65,70.45,63.23,67.42
+MOBILENET,Padrão (42),69.85,66.46,68.57,70.93,66.36,66.58
+XCEPTION,Padrão (42),74.21,69.52,74.91,68.56,82.56,53.49
+ENS: DINO + XCEPTION + VIT (max),Ensemble Robusto (max),71.79,68.5,75.6,66.0,88.49,43.92
+ENS: DINO + XCEPTION + VIT (mean),Ensemble Robusto (mean),75.19,68.66,70.19,73.84,66.88,70.86
+ENS: DINO + XCEPTION + VIT (geom),Ensemble Robusto (geom),76.22,66.61,64.19,78.57,54.26,81.8
+ENS: CLIP + DINO (max),Ensemble Robusto (max),81.55,75.02,79.53,72.57,87.97,59.1
+ENS: CLIP + DINO (mean),Ensemble Robusto (mean),82.46,75.62,77.89,77.93,77.85,72.88
+ENS: CLIP + DINO (geom),Ensemble Robusto (geom),81.98,71.7,71.94,79.4,65.76,79.02
+ENS: CLIP + DINO + XCEPTION (max),Ensemble Robusto (max),79.58,71.03,78.08,67.0,93.54,43.34
+ENS: CLIP + DINO + XCEPTION (mean),Ensemble Robusto (mean),80.14,74.62,77.52,75.78,79.35,68.8
+ENS: CLIP + DINO + XCEPTION (geom),Ensemble Robusto (geom),80.33,71.62,71.95,79.11,65.97,78.58
+ENS: CLIP + DINO + VIT (max),Ensemble Robusto (max),80.83,73.45,78.76,70.49,89.24,54.04
+ENS: CLIP + DINO + VIT (mean),Ensemble Robusto (mean),80.58,72.57,73.9,77.74,70.42,75.2
+ENS: CLIP + DINO + VIT (geom),Ensemble Robusto (geom),80.7,68.54,66.24,81.16,55.95,84.02
+ENS: CLIP + DINO + RESNET (max),Ensemble Robusto (max),73.29,67.78,75.53,64.98,90.16,40.24
+ENS: CLIP + DINO + RESNET (mean),Ensemble Robusto (mean),78.91,71.84,74.68,74.08,75.28,67.6
+ENS: CLIP + DINO + RESNET (geom),Ensemble Robusto (geom),79.74,71.31,71.39,79.32,64.91,79.18
+ENS: TODOS OS 6 ROBUSTOS (max),Ensemble Robusto (max),72.97,65.81,75.49,62.44,95.43,29.38
+ENS: TODOS OS 6 ROBUSTOS (mean),Ensemble Robusto (mean),78.11,72.07,74.66,74.73,74.59,68.98
+ENS: TODOS OS 6 ROBUSTOS (geom),Ensemble Robusto (geom),79.2,70.39,69.33,80.85,60.68,82.32

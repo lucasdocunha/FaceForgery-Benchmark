@@ -1,0 +1,7 @@
+model_family,n_seeds,test_auc_mean,test_d_auc_mean,df40_auc_mean,celeb_video_auc_mean
+clip,3,0.6554,0.6031,0.3329,0.5517
+dino,2,0.7917,0.7077,0.6138,0.7626
+mobilenet,4,0.7773,0.6658,0.6647,0.7313
+resnet,3,0.8184,0.7233,0.6468,0.7351
+vit,3,0.6585,0.6104,0.4079,0.4965
+xception,3,0.7205,0.6359,0.645,0.7455

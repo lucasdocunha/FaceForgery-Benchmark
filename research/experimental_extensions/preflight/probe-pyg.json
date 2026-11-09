@@ -1,0 +1,20 @@
+{
+  "kind": "pyg",
+  "python": "3.12.13",
+  "status": "passed",
+  "torch": "2.10.0+rocm7.1",
+  "hip": "7.1.25424",
+  "gpu_available": true,
+  "gpu": "_CudaDeviceProperties(name='AMD Radeon Graphics', major=12, minor=0, gcnArchName='gfx1200', total_memory=16304MB, multi_processor_count=16, uuid=65643437-3666-3565-3132-343733636335, pci_bus_id=7, pci_device_id=0, pci_domain_id=0, L2_cache_size=4MB)",
+  "bf16_supported": true,
+  "torch_geometric": "2.8.0.post1",
+  "operators": [
+    "GCNConv",
+    "GATConv",
+    "SAGEConv"
+  ],
+  "peak_vram_bytes": 159396352,
+  "seconds": 3.174797815000602,
+  "max_rss_kib": 1633284,
+  "memory_pressure_after": "some avg10=0.00 avg60=0.00 avg300=0.00 total=1270516\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=1230930\n"
+}

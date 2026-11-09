@@ -36,8 +36,17 @@ def mobilenet(
 
     if pretrained and not allow_pretrained:
         raise ValueError("External pretrained MobileNet weights are disabled for this project.")
+
     builder = _VARIANTS[variant]
-    model = builder(weights="DEFAULT" if pretrained else None)
+    from src.data.paths import pretrained_root
+    local_mobilenet = pretrained_root() / "mobilenet" / f"mobilenet_v3_{variant}.pth"
+    if pretrained and local_mobilenet.exists():
+        print(f"[mobilenet] Carregando pesos pré-treinados locais de: {local_mobilenet}", flush=True)
+        model = builder(weights=None)
+        state = torch.load(local_mobilenet, map_location="cpu", weights_only=True)
+        model.load_state_dict(state)
+    else:
+        model = builder(weights="DEFAULT" if pretrained else None)
     _adapt_first_conv(model, in_channels)
 
     last_linear = model.classifier[-1]
@@ -66,8 +75,11 @@ def unfreeze_last_blocks(model: nn.Module, last_n_blocks: int = 3) -> None:
         param.requires_grad = True
 
 
+from src.models._regime import uses_pretraining
+
+
 def build(config) -> nn.Module:
-    return mobilenet(2, config.in_channels, config.regime == "finetune",
+    return mobilenet(2, config.in_channels, uses_pretraining(config, "mobilenet"),
                      config.variant, config.dropout, config.allow_pretrained)
 
 

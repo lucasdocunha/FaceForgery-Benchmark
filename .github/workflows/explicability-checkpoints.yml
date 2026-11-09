@@ -1,0 +1,70 @@
+name: Explicability checkpoint compatibility assets
+on:
+  push:
+    branches: [explicability]
+    paths: ['.github/workflows/explicability-checkpoints.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    if: github.ref == 'refs/heads/explicability'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [resnet, xception, mobilenet, vit, clip, dino, dino-frequency]
+    steps:
+      - name: Download immutable weights and verify Hub LFS checksum
+        env:
+          MODEL: ${{ matrix.model }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, time, urllib.request
+          pin = '3bef179cdc08850e1d720182e55a040d00c9d582'
+          repo = 'lucasoc/MFFI-Models'
+          model = os.environ['MODEL']
+          family, mode = ('dino','magnitude') if model == 'dino-frequency' else (model,'none')
+          prefix = f'{family}/{mode}/finetune/seed_42'
+          out = pathlib.Path('/tmp/assets'); out.mkdir(parents=True, exist_ok=True)
+          tree_url = f'https://huggingface.co/api/models/{repo}/tree/{pin}/{prefix}/weights'
+          with urllib.request.urlopen(tree_url, timeout=60) as r: tree = json.load(r)
+          weight = next(f for f in tree if f['path'].endswith('/best.pth'))
+          if weight['size'] > 500_000_000: raise ValueError('Unexpectedly large checkpoint')
+          expected = weight['lfs']['oid']
+          paths = [weight['path'], prefix+'/results/run_config.json']
+          if model == 'dino-frequency':
+              paths += [f'dino/magnitude/finetune/seed_{s}/results/predictions_val.csv' for s in [42,123,2024]]
+              paths += [prefix+f'/results/predictions_{s}.csv' for s in ['test','test_d']]
+          status = []
+          for name in paths:
+              url = f'https://huggingface.co/{repo}/resolve/{pin}/{name}'
+              target = out/name; target.parent.mkdir(parents=True, exist_ok=True)
+              for attempt in range(3):
+                  try:
+                      h=hashlib.sha256(); size=0
+                      with urllib.request.urlopen(url, timeout=90) as r, target.open('wb') as f:
+                          while True:
+                              block = r.read(1024*1024)
+                              if not block: break
+                              size += len(block)
+                              if size > 500_000_000: raise ValueError('Download exceeds bound')
+                              f.write(block); h.update(block)
+                      break
+                  except Exception:
+                      if attempt == 2: raise
+                      time.sleep(3*(attempt+1))
+              digest=h.hexdigest()
+              if name == weight['path'] and (digest != expected or size != weight['size']):
+                  raise ValueError('Checkpoint differs from immutable Hub LFS metadata')
+              status.append({'path':name,'sha256':digest,'bytes':size,'url':url})
+          (out/'download_provenance.json').write_text(json.dumps({'revision':pin,'model':model,'files':status},indent=2))
+          print(json.dumps(status,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: explicability-weights-${{ matrix.model }}
+          path: /tmp/assets/
+          retention-days: 3
+          if-no-files-found: error

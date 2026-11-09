@@ -1,0 +1,25 @@
+Paradigma,Tecnica,N_Amostras,clip_Acerto_%,clip_AUC_%,dino_Acerto_%,dino_AUC_%,clip_dino_Acerto_%,clip_dino_AUC_%,mega_Acerto_%,mega_AUC_%
+Avatares Comerciais (HeyGen),heygen,250,30.4,60.1,33.2,53.0,33.2,56.6,47.6,59.8
+Edição Text-to-Image (T2I),whichfaceisreal,250,97.2,93.0,99.2,94.4,99.2,95.1,99.6,93.4
+Edição Text-to-Image (T2I),MidJourney,248,82.7,87.5,100.0,93.4,98.0,92.2,99.2,89.7
+Edição Text-to-Image (T2I),e4e,250,96.8,92.3,95.6,87.9,98.0,91.5,98.0,89.6
+Edição Text-to-Image (T2I),styleclip,250,85.2,87.2,94.8,89.3,94.8,90.1,92.4,84.3
+Modelos de Difusão (Diffusion),sd2.1,250,99.2,96.3,100.0,98.8,100.0,98.8,100.0,97.9
+Modelos de Difusão (Diffusion),pixart,250,98.4,93.3,99.6,95.7,99.6,96.2,100.0,96.0
+Modelos de Difusão (Diffusion),SiT,250,74.4,81.0,84.8,82.0,85.2,83.1,93.2,81.7
+Modelos de Difusão (Diffusion),DiT,250,70.0,79.8,75.2,78.7,78.4,80.6,91.2,79.5
+Modelos de Difusão (Diffusion),RDDM,250,57.6,75.9,56.8,71.2,62.8,74.5,80.0,73.1
+Modelos de Difusão (Diffusion),CollabDiff,250,40.4,66.6,36.0,58.8,42.8,64.1,39.2,55.9
+Modelos de Difusão (Diffusion),ddim,250,37.2,63.5,23.6,52.6,37.6,58.8,31.2,47.4
+Reencenação Facial (Talking),cdf_reenactment,500,74.6,82.6,93.8,87.6,89.0,86.7,96.4,86.9
+Síntese GAN,StyleGAN3,250,95.6,91.9,100.0,93.2,100.0,94.1,100.0,95.2
+Síntese GAN,StyleGAN2,250,96.4,91.4,100.0,92.2,100.0,93.4,100.0,93.6
+Síntese GAN,StyleGANXL,250,78.0,83.7,100.0,89.9,99.2,88.8,99.2,85.0
+Síntese GAN,VQGAN,250,90.0,88.4,66.0,73.8,89.2,83.1,72.8,70.0
+Síntese GAN,stargan,200,61.0,77.2,84.0,80.1,76.0,79.8,66.0,66.5
+Síntese GAN,starganv2,199,37.7,61.9,19.6,47.2,33.2,57.4,13.6,34.7
+Troca Facial (Face Swap),uniface,250,92.4,88.2,99.6,93.1,98.8,92.6,99.2,89.0
+Troca Facial (Face Swap),faceswap,250,94.0,89.2,95.6,85.5,96.4,88.7,99.2,87.4
+Troca Facial (Face Swap),blendface,250,77.2,81.7,96.0,89.8,93.6,87.7,96.8,84.8
+Troca Facial (Face Swap),mobileswap,250,75.2,80.3,96.4,89.1,89.6,86.4,96.4,85.9
+Troca Facial (Face Swap),deepfacelab,250,76.0,81.3,88.4,84.4,88.0,84.7,91.2,79.9

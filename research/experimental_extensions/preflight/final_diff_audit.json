@@ -1,0 +1,77 @@
+{
+  "purpose": "read-only changed-path, committed-blob and added-line audit; credential patterns are a targeted check, not a proof of absence",
+  "completed_utc": "2026-10-03T16:22:04.830659+00:00",
+  "audited_commit": "4f909cfd025a84cd8f87cd5535e0850704fd2eed",
+  "target_base": "1b2b0e27693b695114c888c8e12e874714d950a6",
+  "verified_remote_ICLR": "1b2b0e27693b695114c888c8e12e874714d950a6",
+  "remote_unchanged": true,
+  "changed_file_count": 206,
+  "protected_path_changes": [],
+  "forbidden_artifacts": [],
+  "files_over_1_mib": [],
+  "added_em_dash_count": 0,
+  "credential_pattern_matches": {
+    "private_key_header": 0,
+    "github_token": 0,
+    "huggingface_token": 0,
+    "aws_access_key": 0
+  },
+  "workstation_paths_in_source_configs_scripts": [],
+  "coauthor_trailers": 0,
+  "diff_check_exit_code": 0,
+  "diff_check_output": "",
+  "largest_files": [
+    {
+      "path": "research/experimental_extensions/preflight/sbi-mask-qa.png",
+      "bytes": 388637,
+      "sha256": "78a5914d541c73e8313c3b5100d1c0cc8a5da965d542fc7a407bdadc6808b956"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/frozen_min_test/comparison.json",
+      "bytes": 134103,
+      "sha256": "9a677c17bf538de5bd06da33fcce8fac9c03e3dfef7b541b9e472034c43b1da6"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/representations/dino_srm_supcon_min_val_tsne.png",
+      "bytes": 101673,
+      "sha256": "77118a9abad41ba10f053620388bee15d94858246ac7aebad19496c99957f7af"
+    },
+    {
+      "path": "research/experimental_extensions/pilots/reconstruction_pilot.json",
+      "bytes": 100553,
+      "sha256": "52183e6fe28a2516c602ae3fdd3f45aded4484c4094429092090a85871af1bdb"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/sbi/validation_degraded_proxy.json",
+      "bytes": 82767,
+      "sha256": "aa9a3e4a4ecbdd4896d19a65ae42fefc3aaadb08b52937ba8f5b1a39a9a4358f"
+    },
+    {
+      "path": "research/experimental_extensions/experiment_matrix.yaml",
+      "bytes": 72081,
+      "sha256": "92050fa9ac71e0431434b16c6fdc24af197f379bb0723d32d82cefd93d411611"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/representations/dino_srm_min_val.json",
+      "bytes": 68885,
+      "sha256": "8c3e99e3c8691b715ea2cf364b8dac134a0419f138dfa476d66dff3d41a319d5"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/representations/dino_srm_min_val_initial.json",
+      "bytes": 65408,
+      "sha256": "510afb785219b98c408001f132bce0fb706106f89aa13396cf22c3aa205a7eda"
+    },
+    {
+      "path": "research/experimental_extensions/pilot_results/sbi/hf_dino_mixed_adaptation_seed42.json",
+      "bytes": 61669,
+      "sha256": "2a24ab4ee7e2735a0a28e06827f1eaf54d469fe24d112e72f42d1c8e08932299"
+    },
+    {
+      "path": "research/experimental_extensions/pilots/moe_dino_original_mixed_source_smoke.json",
+      "bytes": 57005,
+      "sha256": "f27d5ba8abdefaa168e6470979c4058c2cee54f1b5992c2302e206437c81c897"
+    }
+  ],
+  "all_committed_blob_inventory_sha256": "32703bf16fae8a0866607efa2df03074afcab8ed8ee146178ed2e532eeb6859d",
+  "passed": true
+}

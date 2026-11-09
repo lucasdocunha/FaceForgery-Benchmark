@@ -27,7 +27,8 @@ LOGIT_LIMIT = 80.0
 
 def amp_context(device: torch.device, enabled: bool = True):
     if enabled and device.type == "cuda":
-        return torch.amp.autocast("cuda")
+        amp_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        return torch.amp.autocast("cuda", dtype=amp_dtype)
     return nullcontext()
 
 

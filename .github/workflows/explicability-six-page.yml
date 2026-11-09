@@ -1,0 +1,71 @@
+name: Six-page IEEE manuscript
+on:
+  push:
+    branches: [explicability]
+    paths: ['scripts/prepare_six_page_manuscript.py', 'paper/six-page/**', '.github/workflows/explicability-six-page.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: explicability-six-page
+  cancel-in-progress: true
+jobs:
+  paper:
+    if: github.ref == 'refs/heads/explicability'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install PDF build tools only
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends texlive-publishers texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Inspect original format and stage new edition
+        run: |
+          mkdir -p /tmp/six-page-review
+          pdfinfo paper/original-sibgrapi.pdf > /tmp/six-page-review/original-pdfinfo.txt
+          pdffonts paper/original-sibgrapi.pdf > /tmp/six-page-review/original-fonts.txt
+          cat /tmp/six-page-review/original-pdfinfo.txt
+          cat /tmp/six-page-review/original-fonts.txt
+          if [ ! -f paper/six-page/main.tex ]; then python scripts/prepare_six_page_manuscript.py; fi
+      - name: Compile and inspect complete manuscript
+        working-directory: paper/six-page
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > /tmp/six-page-review/pass1.txt
+          bibtex main > /tmp/six-page-review/bibtex.txt
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > /tmp/six-page-review/pass2.txt
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > /tmp/six-page-review/pass3.txt
+          pdfinfo main.pdf > /tmp/six-page-review/pdfinfo.txt
+          pdftotext -layout main.pdf /tmp/six-page-review/main.txt
+          pdftoppm -scale-to 1500 -png main.pdf /tmp/six-page-review/page > /dev/null 2>&1
+          cp main.tex main.pdf main.log main.bbl /tmp/six-page-review/
+          cat /tmp/six-page-review/pdfinfo.txt
+          grep -E 'Overfull|undefined|LaTeX Warning|Citation' main.log || true
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('/tmp/six-page-review/main.txt').read_text()
+          for i, page in enumerate(text.split('\f'),1):
+              if page.strip():
+                  print(f'=== PAGE {i} ({len(page.split())} words) ===')
+                  print(page)
+          PY
+      - name: Include authoritative source hashes and dimensions
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out = pathlib.Path('/tmp/six-page-review')
+          def h(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['paper/explicability/main.pdf','paper/explicability/main.tex','paper/explicability/references.bib','paper/original-sibgrapi.pdf','paper/six-page/main.tex']
+          report = {'source_commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'files':{p:h(p) for p in files if pathlib.Path(p).exists()}}
+          (out/'provenance.json').write_text(json.dumps(report,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: six-page-paper-review
+          path: /tmp/six-page-review/
+          retention-days: 14
+          if-no-files-found: error

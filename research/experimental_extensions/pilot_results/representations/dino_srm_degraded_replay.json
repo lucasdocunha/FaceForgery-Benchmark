@@ -1,0 +1,1171 @@
+{
+  "software": {
+    "commit": "724d4f34648f39950fa7186d7ea019fb881b07d7",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+      "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+      "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "driver_sha256": "a56d9f1256de4e06ed993b1c5c5376d04244283d120bb41e1612257bfcc23d89",
+  "scope": "source-only development follow-up; not independent benchmark evidence",
+  "seed_scope": "downstream fit and label selection, fixed HF-supervised DINO-SRM extractor",
+  "previous_pilot": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final",
+  "previous_pilot_sha256": "21ac9016f941d9dae8096a56f06d0159e48c46c6069b39edcc6c88e24b8f95b1",
+  "seed": 42,
+  "checkpoint_baseline": {
+    "n": 1000,
+    "n_real": 408,
+    "n_fake": 592,
+    "auc": 0.9940133147853736,
+    "average_precision": 0.9963030725445402,
+    "balanced_accuracy": 0.9697105193428723,
+    "eer": 0.031862745098039214,
+    "eer_threshold": 0.19888270018147483,
+    "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+    "eer_status": "defined",
+    "f1": 0.9745762711864406,
+    "f1_policy": "fake is positive; zero division returns zero",
+    "accuracy": 0.97,
+    "brier": 0.03317687891056605,
+    "log_loss": 0.12362702147835465,
+    "ece_10_equal_width": 0.04310667028365426,
+    "threshold": 0.1919327825307846,
+    "tn": 395,
+    "fp": 13,
+    "fn": 17,
+    "tp": 575,
+    "confusion_matrix": [
+      [
+        395,
+        13
+      ],
+      [
+        17,
+        575
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9681372549019608,
+        0.031862745098039214
+      ],
+      [
+        0.028716216216216218,
+        0.9712837837837838
+      ]
+    ],
+    "confusion_axes": "rows true, columns predicted; [real, fake]",
+    "fpr": 0.031862745098039214,
+    "tpr": 0.9712837837837838,
+    "auc_status": "defined"
+  },
+  "config_changes": [
+    "fresh run_dir",
+    "disable diagnostic t-SNE only"
+  ],
+  "runs": [
+    {
+      "family": "metric",
+      "kind": "raw_centroid",
+      "label_fraction": 1.0,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/metric-raw_centroid-fraction1-seed42",
+      "previous_artifact_sha256": "f99c8dceafe64c8e1208c10be86a8201faf171031e4f7fea50db37c452bd5bfa",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/metric-raw_centroid-fraction1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.4923294484615326,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "64377a5b57df52c65f9c8c0efc6b119cf27814c0b39baafb1f7a6a6c68cbdea3",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 1000,
+      "telemetry": {
+        "runtime_seconds": 0.17505347800033633,
+        "peak_rss_kib": 770604,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.19563260600079957,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "metric",
+      "kind": "raw_knn",
+      "label_fraction": 1.0,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/metric-raw_knn-fraction1-seed42",
+      "previous_artifact_sha256": "9e1c47e9d49db5d5b8368252edc918021b096a27b4f59af277cf01347daf17f2",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/metric-raw_knn-fraction1-seed42",
+      "status": "complete",
+      "frozen_threshold": 1.0,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "f185191ed38ce2243b8ae21761dda79e973fc4b9aaf881c9e93e348bdd50c2c2",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 1000,
+      "telemetry": {
+        "runtime_seconds": 0.16604119399926276,
+        "peak_rss_kib": 805040,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.18754379500023788,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "metric",
+      "kind": "linear",
+      "label_fraction": 1.0,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/metric-linear-fraction1-seed42",
+      "previous_artifact_sha256": "818a6a2d57ff89f0ee0fdc2ea27268c18f455a1b1809bfcb4aafa6de5d111913",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/metric-linear-fraction1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.7694572806358337,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "d09444f4991bdd8214e1f4d9d33eaf64163f153d506c50f2cf86f9cd5b014413",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 1000,
+      "telemetry": {
+        "runtime_seconds": 0.7937198350000472,
+        "peak_rss_kib": 904256,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 2050,
+        "epochs_completed": 6,
+        "global_step": 96,
+        "best_epoch": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.8111693239998203,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "metric",
+      "kind": "mlp",
+      "label_fraction": 1.0,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/metric-mlp-fraction1-seed42",
+      "previous_artifact_sha256": "06113495fbf1e107c958cd2a809bf6a0a79bcc7b34d80f0226078b1738b1c25c",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/metric-mlp-fraction1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.9924314022064209,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "e2a6e993cd6ad21999cfe2852f5e6c20556528a047549bc30dc75c44e1378bf5",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 1000,
+      "telemetry": {
+        "runtime_seconds": 0.41388743500010605,
+        "peak_rss_kib": 915860,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 65730,
+        "epochs_completed": 8,
+        "global_step": 128,
+        "best_epoch": 2,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.4302900299999237,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "metric",
+      "kind": "supcon",
+      "label_fraction": 1.0,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/metric-supcon-fraction1-seed42",
+      "previous_artifact_sha256": "b9deb8b9afc25f817b17f558dfc5ec97a6420ef4c77a1af17254fced5ed7d3f1",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/metric-supcon-fraction1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.6688669323921204,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "3476c86c1b625c5e0585df15eeabc8f7dc9629d198f54544e55a43774f283930",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 1000,
+      "telemetry": {
+        "runtime_seconds": 0.5735555459996249,
+        "peak_rss_kib": 917636,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 73920,
+        "epochs_completed": 8,
+        "global_step": 128,
+        "best_epoch": 2,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.5910695150005267,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "linear",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-linear-fraction0.05-seed42",
+      "previous_artifact_sha256": "30b1940e8268b1782b1a23767c918a530cb391889c184558773f4c50fbdf894c",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-linear-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.7527289390563965,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "b135aa7e045e8e36504e0b25e9e5f09dccbbdff29d28c0de24ef795863615998",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 0.3188146219999908,
+        "peak_rss_kib": 921088,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.33775756300019566,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "mlp",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-mlp-fraction0.05-seed42",
+      "previous_artifact_sha256": "00fff41a04f20452b8085c93e0afcd90340dd66cf8291271fa4f0688b97d6594",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-mlp-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.44173285365104675,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "a1d8d5ec3268a3ff70d1877bc0ffd242ccb2d5cf659e36bfe80eef77b7c2b7e8",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 0.46049018600024283,
+        "peak_rss_kib": 925328,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 32866,
+        "epochs_completed": 10,
+        "global_step": 20,
+        "best_epoch": 9,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.47935236299963435,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "knn",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-knn-fraction0.05-seed42",
+      "previous_artifact_sha256": "0e8646f2f7c906d9ace20e6d0763e2757310c9ccae558176de1a9c540485123e",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-knn-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.4,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "088e5320068357ec1967067f70e7ad3eb7f356ed796a9d071d5cbaa2e994c6ad",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 0.36277878300006705,
+        "peak_rss_kib": 925892,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.38123279600040405,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "lp",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-lp-fraction0.05-seed42",
+      "previous_artifact_sha256": "85e8ebb893064853aed65f8729baddfe8f351a6b190d1ac82a9144c6378c1006",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-lp-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.9448090570935626,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "9eccc9d61bcae7881a669bc036e1a3937e764d4ea94ab2e5a0494b2c29cf81c8",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 0.3679016420001062,
+        "peak_rss_kib": 925912,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.38811268100016605,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "correct_smooth",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-correct_smooth-fraction0.05-seed42",
+      "previous_artifact_sha256": "d0d7e977e87d5e9e80ae5673b1f329cc42096cf924e7d4dff2b2ee5b4992f7b1",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-correct_smooth-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.8714594394448232,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "6626ed4ce1c174f3d9dd617e1055be65349f287d825d38ab3a16606711334ab7",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 0.3723797109996667,
+        "peak_rss_kib": 925956,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.39084446400011075,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "gcn",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-gcn-fraction0.05-seed42",
+      "previous_artifact_sha256": "bce8fcde1a4be4a6dbe4ef69e739fb7822c062c4353cc415b18451c60e798cdf",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-gcn-fraction0.05-seed42",
+      "status": "complete",
+      "wall_seconds": 2.4031578459998855,
+      "initial_audit": {
+        "status": "failed",
+        "error": "AssertionError: \nNot equal to tolerance rtol=0, atol=1e-12\n\nMismatched elements: 77 / 1000 (7.7%)\nFirst 5 mismatches are at indices:\n [4]: 0.2854002118110657 (ACTUAL), 0.285400241613388 (DESIRED)\n [9]: 0.274373322725296 (ACTUAL), 0.2743733525276184 (DESIRED)\n [35]: 0.8062945604324341 (ACTUAL), 0.8062946200370789 (DESIRED)\n [39]: 0.2712757885456085 (ACTUAL), 0.2712757587432861 (DESIRED)\n [43]: 0.2471270412206649 (ACTUAL), 0.2471270114183426 (DESIRED)\nMax absolute difference among violations: 1.1920929e-07\nMax relative difference among violations: 2.28321319e-07\n ACTUAL: array([0.262147, 0.872556, 0.267356, 0.880802, 0.2854  , 0.303427,\n       0.373108, 0.477873, 0.869849, 0.274373, 0.863494, 0.849098,\n       0.391377, 0.881699, 0.845853, 0.301395, 0.872739, 0.365328,...\n DESIRED: array([0.262147, 0.872556, 0.267356, 0.880802, 0.2854  , 0.303427,\n       0.373108, 0.477873, 0.869849, 0.274373, 0.863494, 0.849098,\n       0.391377, 0.881699, 0.845853, 0.301395, 0.872739, 0.365328,..."
+      },
+      "frozen_threshold": 0.47787293791770935,
+      "max_absolute_clean_score_difference": 1.1920928955078125e-07,
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 7.450580596923828e-09,
+      "clean_auc_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true,
+      "artifact_sha256": "97215309c196ca1a65eb48596d3f671f50218d8df4e3802d6e3aae43cb76867e",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 2.3829404349999095,
+        "peak_rss_kib": 929220,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135394,
+        "epochs_completed": 10,
+        "global_step": 20,
+        "best_epoch": 8,
+        "seed": 42,
+        "scope": "cached-feature development"
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gat",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-gat-fraction0.05-seed42",
+      "previous_artifact_sha256": "41db0c0b9c00ae299c7345deb91492bafb475ae9ebbd22bc5615cc1f0061ca18",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-gat-fraction0.05-seed42",
+      "status": "complete",
+      "wall_seconds": 1.7739838199995575,
+      "initial_audit": {
+        "status": "failed",
+        "error": "AssertionError: \nNot equal to tolerance rtol=0, atol=1e-12\n\nMismatched elements: 40 / 1000 (4%)\nFirst 5 mismatches are at indices:\n [5]: 0.4488098323345184 (ACTUAL), 0.448809802532196 (DESIRED)\n [17]: 0.459205687046051 (ACTUAL), 0.4592057168483734 (DESIRED)\n [66]: 0.4478401839733124 (ACTUAL), 0.4478402137756347 (DESIRED)\n [121]: 0.4488886594772339 (ACTUAL), 0.4488886296749115 (DESIRED)\n [137]: 0.448877215385437 (ACTUAL), 0.4488771855831146 (DESIRED)\nMax absolute difference among violations: 5.96046448e-08\nMax relative difference among violations: 1.32987734e-07\n ACTUAL: array([0.44952 , 0.552975, 0.449371, 0.549087, 0.449471, 0.44881 ,\n       0.459893, 0.469757, 0.547108, 0.44948 , 0.542159, 0.552181,\n       0.458532, 0.548703, 0.552262, 0.450945, 0.547854, 0.459206,...\n DESIRED: array([0.44952 , 0.552975, 0.449371, 0.549087, 0.449471, 0.44881 ,\n       0.459893, 0.469757, 0.547108, 0.44948 , 0.542159, 0.552181,\n       0.458532, 0.548703, 0.552262, 0.450945, 0.547854, 0.459206,..."
+      },
+      "frozen_threshold": 0.46975699067115784,
+      "max_absolute_clean_score_difference": 5.960464477539063e-08,
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 1.1920928955078125e-06,
+      "clean_auc_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true,
+      "artifact_sha256": "36fe3a1cfbe6f5314db05e3f7de2d4d6f2071af31bcc27521555989b6b1d9f55",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 1.753769645999455,
+        "peak_rss_kib": 929916,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135462,
+        "epochs_completed": 6,
+        "global_step": 12,
+        "best_epoch": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "sage",
+      "label_fraction": 0.05,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-sage-fraction0.05-seed42",
+      "previous_artifact_sha256": "17dc20985685c659bba1386ba94581588925c65d9853db6c97cdbc3dbec3ab73",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-sage-fraction0.05-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.47896289825439453,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "a0fd936fbd55e8d4d49169a60af96d217af8964428274fbb865095292e8b3215",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 51,
+      "telemetry": {
+        "runtime_seconds": 1.603229545999966,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 139554,
+        "epochs_completed": 6,
+        "global_step": 12,
+        "best_epoch": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 1.62221331299952,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "linear",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-linear-fraction0.1-seed42",
+      "previous_artifact_sha256": "591f2f6c364f5241b4edc4af82e6c8e352828f19fce5f401bfd88d5c1a8feb2c",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-linear-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.9701499342918396,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "e592c5de2270aa10f3a0b4cd87f83116c5ab4fe46e95ea229df64bbe2023edb4",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 0.3017290960005994,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.3208110069999748,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "mlp",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-mlp-fraction0.1-seed42",
+      "previous_artifact_sha256": "7245e37738d68e3fae8201a6185c5ddd2d240b5a2e666944a149e25547454cac",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-mlp-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.4841550290584564,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "ecc4817337512a334477ddffc4dfb4643c163616c9e9248aac103956ab701f72",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 0.42675501000030636,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 32866,
+        "epochs_completed": 8,
+        "global_step": 32,
+        "best_epoch": 2,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.44529388200044195,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "knn",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-knn-fraction0.1-seed42",
+      "previous_artifact_sha256": "16f806792b85605892b683a3afe9c4c49e5dc93979f06645105c58bec613672c",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-knn-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 1.0,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "7f793138b5f4020880a6cbf02c7870c55f75954192fafbabad7809429c0b630c",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 0.43391343699931895,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.4524958299998616,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "lp",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-lp-fraction0.1-seed42",
+      "previous_artifact_sha256": "ff05f8d7432ecd1126e0850b25fa4fb0a50a89ee1bb32a639901238f77d1b20d",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-lp-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.9738888204140692,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "1de46978a15b6dbdfa25e4e8b98730ed026d6d7be0b88c1702155838cc50d50f",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 0.3620497459996841,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.3806259279999722,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "correct_smooth",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-correct_smooth-fraction0.1-seed42",
+      "previous_artifact_sha256": "0614b0408e48a2da242757a0f62a7d85e67dbb984595bc04fe5475f89a42c0c5",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-correct_smooth-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.9838279366609144,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "470e3dca4b7e79857a6ccc766a3ad60f4681114b3ca769d6e84d40b6ff7eea19",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 0.3590635350001321,
+        "peak_rss_kib": 930108,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "best_epoch": null,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 0.37737967900011427,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": null,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    },
+    {
+      "family": "graph",
+      "kind": "gcn",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-gcn-fraction0.1-seed42",
+      "previous_artifact_sha256": "364eed38f3e430c7b6aac5a048547ae771c6ad7220ce2fc9aa309d40bbc60dbd",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-gcn-fraction0.1-seed42",
+      "status": "complete",
+      "wall_seconds": 1.8791502249996483,
+      "initial_audit": {
+        "status": "failed",
+        "error": "AssertionError: \nNot equal to tolerance rtol=0, atol=1e-12\n\nMismatched elements: 65 / 1000 (6.5%)\nFirst 5 mismatches are at indices:\n [13]: 0.7558794021606445 (ACTUAL), 0.7558794617652893 (DESIRED)\n [21]: 0.7486587762832642 (ACTUAL), 0.7486587166786194 (DESIRED)\n [44]: 0.7130270004272461 (ACTUAL), 0.7130270600318909 (DESIRED)\n [62]: 0.397099882364273 (ACTUAL), 0.3970999121665954 (DESIRED)\n [73]: 0.3912854194641113 (ACTUAL), 0.3912854492664337 (DESIRED)\nMax absolute difference among violations: 1.1920929e-07\nMax relative difference among violations: 1.55994522e-07\n ACTUAL: array([0.390885, 0.74784 , 0.394046, 0.754329, 0.402633, 0.413724,\n       0.51479 , 0.561039, 0.743709, 0.397198, 0.735945, 0.723962,\n       0.510756, 0.755879, 0.720966, 0.439158, 0.746432, 0.509845,...\n DESIRED: array([0.390885, 0.74784 , 0.394046, 0.754329, 0.402633, 0.413724,\n       0.51479 , 0.561039, 0.743709, 0.397198, 0.735945, 0.723962,\n       0.510756, 0.755879, 0.720966, 0.439158, 0.746432, 0.509845,..."
+      },
+      "frozen_threshold": 0.5339283347129822,
+      "max_absolute_clean_score_difference": 1.1920928955078125e-07,
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 1.4901161193847656e-08,
+      "clean_auc_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true,
+      "artifact_sha256": "2e2571b66bd90f73afed9ba5ffed94c91225f7e20f21268a7287cf71502d9cf5",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 1.8586798289998114,
+        "peak_rss_kib": 930120,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135394,
+        "epochs_completed": 7,
+        "global_step": 28,
+        "best_epoch": 1,
+        "seed": 42,
+        "scope": "cached-feature development"
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gat",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-gat-fraction0.1-seed42",
+      "previous_artifact_sha256": "c6cb93a428dd9f0129dbeea82e95cfd5148090edadaad10283860cd50e0850f1",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-gat-fraction0.1-seed42",
+      "status": "complete",
+      "wall_seconds": 1.8497785640001894,
+      "initial_audit": {
+        "status": "failed",
+        "error": "AssertionError: \nNot equal to tolerance rtol=0, atol=1e-12\n\nMismatched elements: 36 / 1000 (3.6%)\nFirst 5 mismatches are at indices:\n [25]: 0.4584154188632965 (ACTUAL), 0.4584154486656189 (DESIRED)\n [28]: 0.4571425914764404 (ACTUAL), 0.457142561674118 (DESIRED)\n [30]: 0.5723053812980652 (ACTUAL), 0.5723053216934204 (DESIRED)\n [88]: 0.4946301579475403 (ACTUAL), 0.4946301877498626 (DESIRED)\n [153]: 0.4601487219333648 (ACTUAL), 0.4601487517356872 (DESIRED)\nMax absolute difference among violations: 5.96046448e-08\nMax relative difference among violations: 1.12934157e-07\n ACTUAL: array([0.455942, 0.576131, 0.456052, 0.576751, 0.455746, 0.456315,\n       0.477784, 0.491559, 0.576557, 0.455806, 0.572043, 0.576146,\n       0.476849, 0.570803, 0.576041, 0.463401, 0.577005, 0.477369,...\n DESIRED: array([0.455942, 0.576131, 0.456052, 0.576751, 0.455746, 0.456315,\n       0.477784, 0.491559, 0.576557, 0.455806, 0.572043, 0.576146,\n       0.476849, 0.570803, 0.576041, 0.463401, 0.577005, 0.477369,..."
+      },
+      "frozen_threshold": 0.49106156826019287,
+      "max_absolute_clean_score_difference": 5.960464477539063e-08,
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 2.9802322387695312e-08,
+      "clean_auc_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true,
+      "artifact_sha256": "ccf1c1e12ba4cb861020036f37b30abb0cfc82b48c4d01f9a9660c741e70ce98",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 1.8295404050004436,
+        "peak_rss_kib": 934060,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135462,
+        "epochs_completed": 6,
+        "global_step": 24,
+        "best_epoch": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "sage",
+      "label_fraction": 0.1,
+      "previous_status": "complete",
+      "previous_run": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-final/graph-sage-fraction0.1-seed42",
+      "previous_artifact_sha256": "1e68dd6ee469bc9947776dfd3861041e9bb8a2ebfe85b142305c6e2b13ffbfd5",
+      "previous_reload": {
+        "status": "rejected",
+        "error": "Feature-model implementation changed; use the recorded code version or refit"
+      },
+      "run_dir": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/graph-sage-fraction0.1-seed42",
+      "status": "complete",
+      "frozen_threshold": 0.5332072973251343,
+      "max_absolute_clean_score_difference": 0.0,
+      "threshold_unchanged": true,
+      "label_mask_unchanged": true,
+      "artifact_sha256": "14a9fe6d22715d9da3351a1bcb8c3d682cdfe681a1a05f5f28b1bb059c95a97c",
+      "implementation": {
+        "feature_training.py": "5aa646a0818d62503691759836e55dd1bd44045ab15a11dcc26ef0263b68cdf8",
+        "metric.py": "c02eb6088df431172c0a6730b6d0e73c5e3cd48d127e80422c4f316002aa83c3",
+        "graphs.py": "3c221dde3ea5d8756488309372c143474e54cce08800f7dfe34b33cfb9c09c2d",
+        "graph_training.py": "8b2ddaad916fa730d374e9a7a4ffbdf4fe20a16c347da1aaa0e0aa5ad78d5454"
+      },
+      "label_count": 101,
+      "telemetry": {
+        "runtime_seconds": 2.3295387430007395,
+        "peak_rss_kib": 934312,
+        "peak_rss_scope": "process lifetime high-water mark",
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 139554,
+        "epochs_completed": 9,
+        "global_step": 36,
+        "best_epoch": 3,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "wall_seconds": 2.3482386679997944,
+      "initial_audit": {
+        "status": "complete",
+        "error": null
+      },
+      "max_absolute_reload_difference": 0.0,
+      "max_absolute_selected_weight_difference": 0.0,
+      "clean_auc_difference": 0.0,
+      "decisions_unchanged": true,
+      "confusion_counts_unchanged": true,
+      "best_epoch_unchanged": true
+    }
+  ],
+  "wall_seconds": 18.396769109999696,
+  "peak_rss_kib": 934312,
+  "initial_replay": "/home/lucas/ffb-research/local/pilots/representations-dino-srm-proxy-followup/replay.json",
+  "initial_replay_sha256": "b5fa367b74674c3e5280b4e35f14c3135ac9b8c1ca9605b0419ac16cc33fbb9c",
+  "verification": {
+    "software": {
+      "commit": "3c55159ccda351da947ca53c0b40b0ff0e7e9222",
+      "code_sha256": {
+        "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+        "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+        "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+        "commands.py": "9beda180b1c9c84df38850c3e150f2a3af6e66c5fca6760413c18b1b0f2c774d",
+        "degraded_proxy.py": "a2baf929d91c21e1ed42890a6eed16f63f8a3f3a962f564eefdd944c8c354bed",
+        "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+        "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+        "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+        "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+        "heldout_sbi_proxy.py": "78dac691c4173fb5e4c43a4a29a4bea4729a31aa974d0fee117bb0ec9a530827",
+        "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+        "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+        "inference.py": "d047dd488cbd3fed5bdbb496ab51cb01221112bb86cf4086d06381733cc7257a",
+        "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+        "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+        "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+        "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+        "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+        "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8",
+        "suite.py": "b1d89a11fccd95527ba2b6b61f0952859dd68ac89872b3baa6bff61a8b001754"
+      },
+      "python": "3.12.13",
+      "packages": {
+        "torch": "2.10.0+rocm7.1",
+        "torchvision": "0.25.0+rocm7.1",
+        "timm": "1.0.27",
+        "numpy": "2.4.4",
+        "pandas": "3.0.2",
+        "scikit-learn": "1.8.0",
+        "Pillow": "12.2.0"
+      }
+    },
+    "driver_sha256": "4e4d5d5251cc3ca6dc78578984f01f0343e39334a61ba64c54a46bc5cc349401",
+    "scope": "source-only development follow-up; not independent benchmark evidence",
+    "seed_scope": "downstream fit and label selection, fixed HF-supervised DINO-SRM extractor",
+    "score_atol": 1e-06,
+    "score_rtol": 0,
+    "policy": "float32 tolerance; exact thresholds, masks, decisions and selected epochs; AUC tolerance 1e-12"
+  }
+}

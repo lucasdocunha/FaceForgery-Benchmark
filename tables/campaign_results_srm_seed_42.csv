@@ -1,0 +1,3 @@
+model_family,fourier_mode,seed,test_auc,test_acc,test_d_auc,test_d_acc,df40_auc,celeb_video_auc,elapsed_min,cached
+vit,srm,42,0.8097,0.7214,0.7537,0.6743,0.7522,0.6091,570.1,False
+dino,srm,42,0.9126,0.8083,0.8472,0.7261,0.7952,0.8319,252.0,False

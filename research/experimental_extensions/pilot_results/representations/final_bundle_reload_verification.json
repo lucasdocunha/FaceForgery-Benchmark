@@ -1,0 +1,10 @@
+{
+  "metric-supcon-fraction1-seed42": {
+    "status": "passed",
+    "max_absolute_csv_difference": 5.551115123125783e-17
+  },
+  "graph-gat-fraction0.05-seed42": {
+    "status": "passed",
+    "max_absolute_csv_difference": 5.551115123125783e-17
+  }
+}

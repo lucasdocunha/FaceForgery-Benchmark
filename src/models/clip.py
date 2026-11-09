@@ -17,8 +17,11 @@ class CLIPClassifier(nn.Module):
         self.last_attentions = output.attentions if self.capture_attentions else None
         return self.classifier(output.pooler_output)
 
+from src.models._regime import uses_pretraining
+
+
 def build(config) -> nn.Module:
-    if config.regime == "scratch":
+    if not uses_pretraining(config, "clip"):
         cfg = CLIPVisionConfig(image_size=config.image_size, patch_size=config.patch_size,
             hidden_size=config.hidden_size, num_hidden_layers=config.num_hidden_layers,
             num_attention_heads=config.num_attention_heads, intermediate_size=config.hidden_size * 4,
@@ -26,11 +29,8 @@ def build(config) -> nn.Module:
         backbone = CLIPVisionModel(cfg)
     else:
         if not config.allow_pretrained: raise ValueError("External pretrained CLIP weights are disabled")
-        # use_safetensors=True é obrigatório, não cosmético: o repo oficial publica
-        # pytorch_model.bin, e o transformers recusa torch.load de .bin com torch < 2.6
-        # (CVE-2025-32434), o que tornava o finetune de CLIP impossível de carregar.
-        # Mesma abordagem da branch pre-refatoracao, que rodou nos servidores.
-        backbone = CLIPVisionModel.from_pretrained(_CLIP_REPO, use_safetensors=True)
+        from src.models._pretrained import load_hf_backbone
+        backbone = load_hf_backbone(CLIPVisionModel, "clip", _CLIP_REPO)
         emb = embeddings(backbone)
         emb.patch_embedding = adapt_conv2d_channels(emb.patch_embedding, config.in_channels)
         backbone.config.num_channels = config.in_channels

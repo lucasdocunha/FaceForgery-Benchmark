@@ -15,6 +15,8 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 logger = logging.getLogger(__name__)
 
+from src.utils.atomic import atomic_torch_save
+from src.utils.progress import progress
 from src.pipelines.config import RUN_CONFIG_FILENAME
 from src.pipelines.evaluation import (
     best_threshold, checkpoint_score, evaluate_classifier, sanitize_inputs, sanitize_logits,
@@ -91,6 +93,10 @@ def _scalar_metrics(metrics: dict) -> dict:
     return {key: metrics[key] for key in keys}
 
 
+def _safe_torch_save(obj, path: Path) -> None:
+    atomic_torch_save(obj, path)
+
+
 class Trainer:
     def __init__(self, model, train_loader, val_loader, test_loader, config, output_dir, model_spec, device=None):
         self.config = config
@@ -160,10 +166,14 @@ class Trainer:
         for folder in ("weights", "results", "plots"):
             (self.output_dir / folder).mkdir(parents=True, exist_ok=True)
         self._save_run_config()
+        print("Effective training configuration: " + json.dumps(self.config.to_dict(), sort_keys=True), flush=True)
         criterion = self._criterion()
         optimizer = self._optimizer()
         scheduler = ReduceLROnPlateau(optimizer, mode="max", patience=self.config.scheduler_patience)
-        scaler = torch.amp.GradScaler("cuda", enabled=self.device.type == "cuda")
+        use_cuda = self.device.type == "cuda"
+        amp_dtype = torch.bfloat16 if (use_cuda and torch.cuda.is_bf16_supported()) else torch.float16
+        use_scaler = use_cuda and amp_dtype == torch.float16
+        scaler = torch.amp.GradScaler("cuda", enabled=use_scaler)
         best_score, best_threshold_value, stale, history = -float("inf"), .5, 0, []
 
         task_tag = f"{self.config.model_family}/{self.config.fourier_mode}/{self.config.regime}/seed_{self.config.seed}"
@@ -183,15 +193,40 @@ class Trainer:
                 x, y = sanitize_inputs(x.to(self.device)), y.to(self.device)
                 optimizer.zero_grad(set_to_none=True)
                 x, y_a, y_b, lam = apply_mixup_or_cutmix(x, y, self.config.mixup_alpha, self.config.cutmix_alpha)
-                with torch.amp.autocast("cuda", enabled=self.device.type == "cuda"):
-                    logits = sanitize_logits(self.model(x))
+                with torch.amp.autocast("cuda", dtype=amp_dtype, enabled=use_cuda):
+                    logits = self.model(x)
+                    if not torch.isfinite(logits).all():
+                        logger.warning("Non-finite logits detected during training step; skipping batch.")
+                        optimizer.zero_grad(set_to_none=True)
+                        continue
                     loss = mixup_loss(criterion, logits, y_a, y_b, lam)
-                scaler.scale(loss).backward()
-                scaler.unscale_(optimizer)
-                if self.config.max_grad_norm is not None:
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.max_grad_norm)
-                scaler.step(optimizer)
-                scaler.update()
+                    if not torch.isfinite(loss):
+                        logger.warning("Non-finite loss detected during training step; skipping batch.")
+                        optimizer.zero_grad(set_to_none=True)
+                        continue
+
+                if use_scaler:
+                    scaler.scale(loss).backward()
+                    scaler.unscale_(optimizer)
+                    if self.config.max_grad_norm is not None:
+                        norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.max_grad_norm)
+                        if not torch.isfinite(norm):
+                            logger.warning("Non-finite gradient norm detected; skipping step.")
+                            optimizer.zero_grad(set_to_none=True)
+                            scaler.update()
+                            continue
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    if self.config.max_grad_norm is not None:
+                        norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.max_grad_norm)
+                        if not torch.isfinite(norm):
+                            logger.warning("Non-finite gradient norm detected; skipping step.")
+                            optimizer.zero_grad(set_to_none=True)
+                            continue
+                    optimizer.step()
+
                 losses.append(float(loss.detach().item()))
 
                 if num_batches and (step % log_interval == 0 or step == num_batches):
@@ -211,10 +246,11 @@ class Trainer:
             )
             score = checkpoint_score(validation)
             scheduler.step(score)
+            train_loss = float(np.mean(losses)) if losses else 0.0
             self.epochs_completed = epoch + 1
             train_loss_avg = float(np.mean(losses)) if losses else 0.0
             history.append({
-                "epoch": epoch + 1, "train_loss": train_loss_avg,
+                "epoch": epoch + 1, "train_loss": train_loss,
                 "val_loss": validation["loss"], "val_auc": validation["auc"], "val_acc": validation["acc"],
                 "threshold": threshold, "threshold_score": threshold_score,
             })
@@ -222,7 +258,7 @@ class Trainer:
             is_best = score > best_score
             if is_best:
                 best_score, best_threshold_value, stale = score, threshold, 0
-                torch.save(model_state_dict(self.model), self.output_dir / "weights" / "best.pth")
+                _safe_torch_save(model_state_dict(self.model), self.output_dir / "weights" / "best.pth")
             else:
                 stale += 1
 
@@ -239,7 +275,14 @@ class Trainer:
                 logger.info(f"[{task_tag}] Early stopping triggered at epoch {epoch + 1}.")
                 break
 
-        torch.save(model_state_dict(self.model), self.output_dir / "weights" / "final.pth")
+            print(
+                f"[{self.config.model_family}/{self.config.fourier_mode}] Epoch {epoch + 1}/{self.config.epochs} "
+                f"- Train Loss: {train_loss:.4f} | Val Loss: {validation['loss']:.4f} "
+                f"| Val Acc: {validation['acc']:.4f} | Val AUC: {validation['auc']:.4f} "
+                f"| Best Score: {best_score:.4f} (stale={stale})",
+                flush=True,
+            )
+        # Apenas best.pth é mantido como checkpoint final oficial
         unwrap_model(self.model).load_state_dict(torch.load(
             self.output_dir / "weights" / "best.pth", map_location=self.device, weights_only=True,
         ))
@@ -265,4 +308,33 @@ class Trainer:
         pd.DataFrame(history).to_csv(self.output_dir / "results" / "history.csv", index=False)
         plot_confusion_matrix(test, str(self.output_dir), title=f"{self.config.model_family} confusion matrix")
         plot_roc_auc(test, str(self.output_dir), title=f"{self.config.model_family} ROC", family=self.config.model_family)
+        print("Final test metrics: " + json.dumps(_scalar_metrics(test), sort_keys=True), flush=True)
+        print(f"Run artifacts: {self.output_dir}", flush=True)
         return test
+
+    def evaluate_from_checkpoint(self, checkpoint_path: Path | None = None) -> dict:
+        ckpt = checkpoint_path or (self.output_dir / "weights" / "best.pth")
+        unwrap_model(self.model).load_state_dict(torch.load(ckpt, map_location=self.device, weights_only=True))
+        criterion = self._criterion()
+        validation = evaluate_classifier(
+            self.model, self.val_loader, criterion, self.device,
+            use_amp=self.device.type == "cuda", desc="Val best",
+        )
+        threshold, _ = best_threshold(
+            validation["y_true"], validation["probs"], self.config.threshold_strategy,
+        )
+        test = evaluate_classifier(
+            self.model, self.test_loader, criterion, self.device, threshold=threshold,
+            use_amp=self.device.type == "cuda", desc="Test",
+        )
+        self._save_split("val", validation, threshold)
+        self._save_split("test", test, threshold)
+        save_metrics_csv(test, str(self.output_dir), extra_info={
+            **self.config.to_dict(), "threshold": threshold,
+        })
+        plot_confusion_matrix(test, str(self.output_dir), title=f"{self.config.model_family} confusion matrix")
+        plot_roc_auc(test, str(self.output_dir), title=f"{self.config.model_family} ROC", family=self.config.model_family)
+        print("Final test metrics: " + json.dumps(_scalar_metrics(test), sort_keys=True), flush=True)
+        print(f"Run artifacts: {self.output_dir}", flush=True)
+        return test
+

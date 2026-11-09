@@ -1,0 +1,37 @@
+# Set TCC_EVAL_MODEL to a completed reconstruction run directory.
+# Review with research_cli.py evaluate-suite --config this-file.yaml.
+# Append --execute for inference after freezing source-validation calibration.
+model:
+  type: experimental
+  family: reconstruction
+  path: ${TCC_EVAL_MODEL}
+calibration: ${TCC_EVAL_CALIBRATION}
+output: ${TCC_OUTPUT_ROOT}/evaluation
+scope: benchmark
+targets:
+  - name: test
+    manifest: ${TCC_EVAL_TEST_MANIFEST}
+    root: ${TCC_EVAL_TEST_ROOT}
+  - name: test_d
+    manifest: ${TCC_EVAL_TEST_D_MANIFEST}
+    root: ${TCC_EVAL_TEST_D_ROOT}
+  - name: df40
+    manifest: ${TCC_EVAL_DF40_MANIFEST}
+    root: ${TCC_EVAL_DF40_ROOT}
+    breakdown: true
+    # Comparable to legacy pooled-real tables; source domain is a confounder.
+    # Switch to source_matched after certifying source_domain annotations.
+    real_reference_policy: pooled_all_real
+  - name: celeb_df_v2
+    manifest: ${TCC_EVAL_CELEB_MANIFEST}
+    root: ${TCC_EVAL_CELEB_ROOT}
+    primary_unit: video
+inference:
+  device: cuda:0
+  batch_size: 16
+  workers: 0
+  use_amp: true
+  bootstrap_draws: 1000
+  bootstrap_seed: 42
+  confidence: 0.95
+  plots: true

@@ -1,12 +1,17 @@
 from torch.utils.data import Dataset
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
+
+# Permite que o PIL carregue imagens JPEG ligeiramente truncadas no disco sem falhar
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 from pathlib import Path
 from torchvision import transforms
 import os
 import torch
 from typing import Literal
+
+from src.data.augmentations import RandomizedRobustAugment
 
 # Cada modo define como o tensor de saída é montado a partir da imagem RGB.
 # FFT: grayscale (luminância) → fft2 → fftshift; canais de saída variam conforme o modo.
@@ -18,6 +23,9 @@ FourierMode = Literal[
     "concat",  # RGB (3) + magnitude FFT normalizada (1) empilhados; 4 canais.
     "frequency_3",  # Magnitude FFT com máscara passa-alta (enfatiza altas frequências); 1 canal.
     "concat_frequency",  # RGB (3) + magnitude + fase + passa-alta (3×1 canal); 6 canais.
+    "srm",  # RGB (3) + 3 resíduos de ruído SRM de esteganálise; 6 canais.
+    "srm_only",  # 3 resíduos de ruído SRM de esteganálise puros (sem RGB); 3 canais.
+    "dtcwt",  # RGB (3) + 6 sub-bandas direcionais DTCWT (±15°, ±45°, ±75°); 9 canais.
 ]
 
 # Ordem fixa para benchmarks (sem nomes duplicados para o mesmo tensor).
@@ -37,7 +45,8 @@ ALL_FOURIER_MODES: tuple[FourierMode, ...] = (
 
 FOURIER_CHANNELS = {
     "none": 3, "magnitude": 1, "phase": 1, "complex": 2,
-    "concat": 4, "frequency_3": 1, "concat_frequency": 6,
+    "concat": 4, "frequency_3": 1, "concat_frequency": 7,
+    "srm": 6, "srm_only": 3, "dtcwt": 9,
 }
 
 
@@ -62,14 +71,28 @@ def encode_pil_image(img: Image.Image, fourier: FourierMode, image_size: int) ->
     phase = channel((np.angle(spectrum) + np.pi) / (2 * np.pi))
     height, width = spectrum.shape
     y, x = np.ogrid[:height, :width]
-    mask = ((y-height//2)**2 + (x-width//2)**2) >= (min(height, width)*.12)**2
-    highpass = channel(np.log1p(np.abs(spectrum) * mask))
+    r2 = (min(height, width) * 0.12) ** 2
+    dist2 = (y - height // 2) ** 2 + (x - width // 2) ** 2
+    highpass = channel(np.log1p(np.abs(spectrum) * (dist2 >= r2)))
+    lowpass = channel(np.log1p(np.abs(spectrum) * (dist2 < r2)))
     scale = max(float(np.abs(spectrum).max()), 1e-8)
     complex_value = torch.from_numpy(np.stack((spectrum.real/scale, spectrum.imag/scale)).astype(np.float32))
+    if fourier == "srm":
+        from src.forensics.srm import extract_srm_residuals
+        srm_res = extract_srm_residuals(rgb.unsqueeze(0))[0]
+        return torch.cat([rgb, srm_res], dim=0)
+    elif fourier == "srm_only":
+        from src.forensics.srm import extract_srm_residuals
+        return extract_srm_residuals(rgb.unsqueeze(0))[0]
+    elif fourier == "dtcwt":
+        from src.forensics.dtcwt_module import extract_dtcwt_features
+        dtcwt_bands = extract_dtcwt_features(rgb.unsqueeze(0), mode="directional_only")[0]
+        return torch.cat([rgb, dtcwt_bands], dim=0)
+
     values = {
         "none": rgb, "magnitude": magnitude, "phase": phase, "complex": complex_value,
         "concat": torch.cat((rgb, magnitude)), "frequency_3": highpass,
-        "concat_frequency": torch.cat((rgb, magnitude, phase, highpass)),
+        "concat_frequency": torch.cat((rgb, magnitude, phase, highpass, lowpass)),
     }
     return torch.nan_to_num(values[fourier], nan=0.0, posinf=1.0, neginf=-1.0)
 
@@ -83,8 +106,18 @@ class ImageDataset(Dataset):
         data_limit: int = np.inf,
         fourier: FourierMode = "none",
         spatial_size: tuple[int, int] | None = (128, 128),
+        in_channels: int | None = None,
+        allow_skip_unreadable: bool | None = None,
     ):
         self.images_dir = images_dir
+        self.in_channels = in_channels
+        if allow_skip_unreadable is None:
+            self.allow_skip_unreadable = (
+                os.environ.get("TCC_SKIP_UNREADABLE", "0") == "1"
+                or bool(os.environ.get("TCC_DATASET_ROOT"))
+            )
+        else:
+            self.allow_skip_unreadable = bool(allow_skip_unreadable)
         self.df = pd.read_csv(file_csv)
         self.df.columns = self.df.columns.str.strip()
 
@@ -93,6 +126,13 @@ class ImageDataset(Dataset):
         self.df["img_name"] = self.df["img_name"].apply(
             lambda x: os.path.join(self.images_dir, x)
         )
+
+        if os.environ.get("TCC_JOB_DIR"):
+            # Absolute paths inside a CSV override images_dir in os.path.join.
+            # Reject workstation manifests and traversal before a long HPC run.
+            for name in self.df["img_name"]:
+                if not Path(os.path.abspath(name)).is_relative_to("/datasets"):
+                    raise ValueError(f"CISIA input image is outside /datasets: {name}")
 
         self.spatial_transform = (
             transforms.Resize(spatial_size) if spatial_size is not None else None
@@ -142,25 +182,26 @@ class ImageDataset(Dataset):
                     img = self.spatial_transform(img)
 
         except Exception as e:
-            print(f"Erro na imagem: {img_path} -> {e}")
-            if _skip_count + 1 >= len(self):
-                raise RuntimeError(
-                    "Nenhuma imagem pôde ser carregada (verifique caminhos no CSV e no disco)."
-                ) from e
-            return self.__getitem__((idx + 1) % len(self), _skip_count=_skip_count + 1)
+            if getattr(self, "allow_skip_unreadable", False) or os.environ.get("TCC_SKIP_UNREADABLE") == "1":
+                if _skip_count < 100:
+                    next_idx = (idx + 1) % len(self)
+                    return self.__getitem__(next_idx, _skip_count=_skip_count + 1)
+            raise RuntimeError(f"Unreadable image at original index {idx}: {img_path}; substitution is forbidden") from e
 
         label = self.df.iloc[idx, 1]
 
-        # Aplica augmentações de corte/flip espaciais na imagem original antes do cálculo do tensor
-        if self.spatial_augment is not None:
-            img = self.spatial_augment(img)
-
-        # O tensor base agora respeita as coordenadas e transformações exatas do domínio espacial
-        img_tensor = self.to_tensor(img)
-        if self.tensor_transform is not None:
-            image = self.tensor_transform(img)
+        # Aplica augmentações e obtém tensor base e imagem normalizada
+        if isinstance(self.transform, RandomizedRobustAugment):
+            img_tensor = self.transform.transform_to_tensor(img)
+            image = self.transform.normalize(img_tensor.clone())
         else:
-            image = self.normalize(img_tensor)
+            if self.spatial_augment is not None:
+                img = self.spatial_augment(img)
+            img_tensor = self.to_tensor(img)
+            if self.tensor_transform is not None:
+                image = self.tensor_transform(img)
+            else:
+                image = self.normalize(img_tensor)
 
         # --- Montagem do tensor conforme o modo (espacial vs. frequência vs. híbrido) ---
         if self.fourier == "none":
@@ -188,16 +229,65 @@ class ImageDataset(Dataset):
             output = torch.cat([image, fft], dim=0)
 
         elif self.fourier == "concat_frequency":
-            # Espaço (3) + três descritores FFT (magnitude, fase, passa-alta), cada um 1 canal.
+            # Espaço (3) + quatro descritores FFT (magnitude, fase, passa-alta, passa-baixa), cada um 1 canal -> Total 7 canais.
+            # Otimização: calcula fft2 e fftshift uma única vez para todos os 4 descritores espectrais.
+            img_np = self._to_grayscale(img_tensor).detach().cpu().numpy()
+            fshift = np.fft.fftshift(np.fft.fft2(img_np))
+            abs_f = np.abs(fshift)
+
+            # 1. Magnitude log-compressa
+            mag = self._safe_normalize(np.log1p(abs_f))
+            t_mag = torch.nan_to_num(torch.tensor(mag, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            # 2. Fase normalizada [0, 1]
+            phase = (np.angle(fshift) + np.pi) / (2 * np.pi)
+            t_phase = torch.nan_to_num(torch.tensor(phase, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            # 3 e 4. Passa-alta e passa-baixa espectral
+            height, width = fshift.shape
+            y, x = np.ogrid[:height, :width]
+            center_y, center_x = height // 2, width // 2
+            r2 = (min(height, width) * 0.12) ** 2
+            dist2 = (y - center_y) ** 2 + (x - center_x) ** 2
+
+            highpass = self._safe_normalize(np.log1p(abs_f * (dist2 >= r2)))
+            t_highpass = torch.nan_to_num(torch.tensor(highpass, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
+            lowpass = self._safe_normalize(np.log1p(abs_f * (dist2 < r2)))
+            t_lowpass = torch.nan_to_num(torch.tensor(lowpass, dtype=torch.float32).unsqueeze(0), nan=0.0, posinf=1.0, neginf=0.0)
+
             fft = torch.cat(
                 [
-                    self.frequency_normalize(self._fft_magnitude(img_tensor)),
-                    self.frequency_normalize(self._fft_phase(img_tensor)),
-                    self.frequency_normalize(self._fft_highpass(img_tensor)),
+                    self.frequency_normalize(t_mag),
+                    self.frequency_normalize(t_phase),
+                    self.frequency_normalize(t_highpass),
+                    self.frequency_normalize(t_lowpass),
                 ],
                 dim=0,
             )
             output = torch.cat([image, fft], dim=0)
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
+
+        elif self.fourier == "srm":
+            from src.forensics.srm import extract_srm_residuals
+            srm_res = extract_srm_residuals(image.unsqueeze(0))[0]
+            output = torch.cat([image, srm_res], dim=0)
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
+
+        elif self.fourier == "srm_only":
+            from src.forensics.srm import extract_srm_residuals
+            output = extract_srm_residuals(image.unsqueeze(0))[0]
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
+
+        elif self.fourier == "dtcwt":
+            from src.forensics.dtcwt_module import extract_dtcwt_features
+            dtcwt_bands = extract_dtcwt_features(image.unsqueeze(0), mode="directional_only")[0]
+            output = torch.cat([image, dtcwt_bands], dim=0)
+            if self.in_channels is not None:
+                output = output[:self.in_channels]
 
         else:
             raise ValueError(f"Modo de Fourier inválido: {self.fourier}")
@@ -266,3 +356,18 @@ class ImageDataset(Dataset):
         highpass = self._safe_normalize(highpass)
         tensor = torch.tensor(highpass, dtype=torch.float32).unsqueeze(0)
         return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
+
+    def _fft_lowpass(self, img: torch.Tensor):
+        # Máscara circular: mantém o disco central de baixa frequência; zera bordas do espectro.
+        img_np = self._to_grayscale(img).detach().cpu().numpy()
+        fshift = np.fft.fftshift(np.fft.fft2(img_np))
+        height, width = fshift.shape
+        y, x = np.ogrid[:height, :width]
+        center_y, center_x = height // 2, width // 2
+        radius = min(height, width) * 0.12
+        mask = ((y - center_y) ** 2 + (x - center_x) ** 2) < radius**2
+        lowpass = np.log1p(np.abs(fshift) * mask)
+        lowpass = self._safe_normalize(lowpass)
+        tensor = torch.tensor(lowpass, dtype=torch.float32).unsqueeze(0)
+        return torch.nan_to_num(tensor, nan=0.0, posinf=1.0, neginf=0.0)
+

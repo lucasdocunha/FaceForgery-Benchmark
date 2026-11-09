@@ -1,0 +1,83 @@
+name: Apresentação pt-BR
+on:
+  push:
+    branches: [explicability]
+    paths:
+      - 'presentation/build.py'
+      - 'presentation/conteudo.py'
+      - 'presentation/dados.json'
+      - 'presentation/requirements.txt'
+      - '.github/workflows/presentation-ptbr.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: presentation-explicability
+  cancel-in-progress: true
+jobs:
+  presentation:
+    if: github.ref == 'refs/heads/explicability' && github.repository == 'Lucas-PG/FaceForgery-Benchmark'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    env:
+      MPLBACKEND: Agg
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ambiente isolado da apresentação; nenhum modelo ou dataset
+        run: |
+          python -m pip install -r presentation/requirements.txt
+          if [ ! -f /usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf ] && [ ! -f /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq fonts-liberation
+          fi
+      - name: Gerar PowerPoint, PDF, HTML e notebook; verificar conteúdo
+        run: |
+          python presentation/build.py
+          git diff --exit-code -- paper.pdf paper/six-page paper/explicability paper/original-sibgrapi.pdf src configs pyproject.toml uv.lock
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apresentacao-ptbr
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            presentation/apresentacao.pptx
+            presentation/apresentacao.pdf
+            presentation/apresentacao.html
+            presentation/apresentacao.ipynb
+            presentation/roteiro.md
+            presentation/visao-geral.png
+            presentation/build.json
+            /tmp/presentation-previews/
+      - name: Versionar apenas os arquivos gerados em explicability
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/explicability'
+          CURRENT="$(git rev-parse HEAD)"
+          REMOTE="$(git ls-remote origin refs/heads/explicability | cut -f1)"
+          if [ "$CURRENT" != "$REMOTE" ]; then
+            echo 'A branch mudou durante a geração; artefatos preservados, sem sobrescrita.'
+            exit 1
+          fi
+          git add -f -- presentation/apresentacao.pptx presentation/apresentacao.pdf presentation/apresentacao.html presentation/apresentacao.ipynb presentation/roteiro.md presentation/visao-geral.png presentation/build.json
+          python - <<'PY'
+          import subprocess
+          allowed = {'presentation/' + name for name in ['apresentacao.pptx','apresentacao.pdf','apresentacao.html','apresentacao.ipynb','roteiro.md','visao-geral.png','build.json']}
+          staged = set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if not staged <= allowed:
+              raise RuntimeError('Mudança fora dos artefatos permitidos')
+          PY
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'presentation: publish pt-BR slides and executed companion notebook'
+          git push origin HEAD:refs/heads/explicability

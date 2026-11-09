@@ -9,14 +9,25 @@ import torch
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from torchvision import transforms
 
+from src.data.augmentations import RandomizedRobustAugment
 from src.data.data import ImageDataset
 from src.data.paths import data_root, models_root, phase1_split_root
 from src.models.registry import get_model_spec
 from src.pipelines.config import TrainingConfig, load_config
 from src.pipelines.training import Trainer, seed_everything
 
+# In cluster/container environments where /dev/shm may be restricted or missing,
+# use file system sharing strategy for DataLoaders instead of POSIX semaphores.
+try:
+    torch.multiprocessing.set_sharing_strategy("file_system")
+except Exception:
+    pass
+
 
 def _transform(config: TrainingConfig, train: bool):
+    if train and (config.robust or "robust" in str(config.regime)):
+        return RandomizedRobustAugment(config.image_size)
+
     operations = []
     if train and config.augment and config.fourier_mode == "none":
         operations.extend([
@@ -86,21 +97,21 @@ def build_loaders(config: TrainingConfig):
 
 
 def train_from_config(config_path, fourier=None, regime=None, seed=None, epochs=None,
-                      data_limit=None, raw_min=None, multi_gpu=None, num_workers=None):
+                      data_limit=None, raw_min=None, multi_gpu=None, robust=None, num_workers=None):
     # multi_gpu=None (e não True) para que `multi_gpu: false` no YAML seja respeitado:
     # load_config trata todo override não-None como explícito. run_tasks_on_gpus
     # continua forçando multi_gpu=False por worker.
     config = load_config(config_path, {
         "fourier_mode": fourier, "regime": regime, "seed": seed, "epochs": epochs,
         "data_limit": data_limit, "raw_min": raw_min, "multi_gpu": multi_gpu,
-        "num_workers": num_workers,
+        "robust": robust, "num_workers": num_workers,
     })
     seed_everything(config.seed)
     spec = get_model_spec(config.model_family)
     model = spec.build(config)
     if not config.train_backbone:
         spec.freeze_backbone(model)
-    elif config.regime == "finetune":
+    elif "finetune" in config.regime:
         spec.unfreeze_for_finetune(model, config.unfreeze_last_n)
     loaders = build_loaders(config)
     output = models_root() / config.model_family / config.fourier_mode / config.regime / f"seed_{config.seed}"
@@ -116,7 +127,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Train one configured run")
     parser.add_argument("--config", required=True, type=Path)
     parser.add_argument("--fourier")
-    parser.add_argument("--regime", choices=("scratch", "finetune"))
+    parser.add_argument("--regime", choices=("scratch", "finetune", "scratch_robust", "finetune_robust"))
+    parser.add_argument("--robust", action=argparse.BooleanOptionalAction, default=None)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--data-limit", type=int)
@@ -132,6 +144,7 @@ def main(argv=None):
         args.data_limit,
         args.raw_min,
         num_workers=args.num_workers,
+        robust=args.robust,
     )
 
 

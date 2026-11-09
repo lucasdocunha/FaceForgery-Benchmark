@@ -1,0 +1,29 @@
+{
+  "idioma": "pt-BR",
+  "slides": 15,
+  "formato": "16:9",
+  "fonte_dos_dados": "e9beb4e212b7e3f749f65e84d27ef7f10b52de99",
+  "status": "Resultados reportados no estudo anterior; nenhum experimento novo de XAI.",
+  "verificacoes": [
+    "15 slides no PowerPoint e no PDF",
+    "notebook executado sem erro; dados publicados apenas",
+    "textos dentro das páginas",
+    "ausência de sobreposição entre caixas de texto",
+    "AUC e diferenças derivadas verificadas",
+    "HTML independente de rede"
+  ],
+  "sha256": {
+    "apresentacao.pptx": "de8fb2ad2ccd1e472f749d3c18193f77756367b983a8df66a7723d624440d719",
+    "apresentacao.pdf": "39bb33c72a2c5fde8f67880f38b7675b2057b80de52fc4e52ab8cb2ff1c75c13",
+    "apresentacao.html": "e43e4650e28f50b3212586eaa0b2a79759c83ce08e7d0d53a85739d98a7c2202",
+    "apresentacao.ipynb": "05828e57789e6a7cd97b6c82bc67d849f8d14eeb5b321dfbb13dbb4148ce964b",
+    "roteiro.md": "68ec3cad881894c7079a4fc3ae362497b47a6a819d13d4e8ceaa9e35f7ddba22",
+    "visao-geral.png": "bee8d9e111170d3ed0a6b4a9f06f55d58ca1db7443eb0ee3eb6dc695f75d416c"
+  },
+  "source_sha256": {
+    "dados.json": "c903cd438ee5087ff6dcb7d697b1ebc0b9bd587dbb116580eee2cd5b6219e435",
+    "conteudo.py": "5236a08496fe3ce039e09a1c8aaf6de5084be0b543af98120fc0437cba937c79",
+    "build.py": "d348ae49ee23dae14d7dbcc6e50214064cd4b5d70c1cab179e4e6c24dcbecd41",
+    "requirements.txt": "dd5022478ec3e792cb767b5e86371e3d448c9927e915e276a28f97507e0371aa"
+  }
+}

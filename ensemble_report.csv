@@ -1,0 +1,4 @@
+split,strategy,subset,pool,members,member_names,auc
+val,mean,search,best-mode,3,clip/none/finetune;dino/none/finetune;resnet/none/finetune,0.9983180745490768
+test,mean,search,best-mode,3,clip/none/finetune;dino/none/finetune;resnet/none/finetune,0.9550526367187511
+test_d,mean,search,best-mode,3,clip/none/finetune;dino/none/finetune;resnet/none/finetune,0.7483193189846185

@@ -1,0 +1,1468 @@
+schema: faceforgery-experimental-matrix-v1
+status: implemented; local pilots complete; full-benchmark server validation pending
+canonical_seeds:
+- 42
+- 123
+- 2024
+- 7
+- 2025
+operator_guide: research/experimental_extensions/SERVER_RUNBOOK.md
+source_environment:
+- TCC_TRAIN_MANIFEST
+- TCC_VAL_MANIFEST
+- TCC_TRAIN_ROOT
+- TCC_VAL_ROOT
+- TCC_PRETRAINED_ROOT
+- TCC_MODELS_ROOT
+- TCC_DATA_ROOT
+- TCC_EXPERIMENT_ROOT
+- TCC_RUN_DIR
+- TCC_SEED
+common_evaluation_environment:
+- TCC_EVAL_MODEL
+- TCC_EVAL_CALIBRATION
+- TCC_OUTPUT_ROOT
+- TCC_SUITE_OUTPUT
+- TCC_CALIBRATION_DIR
+instructions:
+- 'Set TCC_RUN_DIR from each row and choose one canonical TCC_SEED. Respect that row seed_scope: metric/graph keep
+  the pretrained extractor fixed, while SBI/reconstruction use matching upstream seed conditions.'
+- Set TCC_EVAL_MODEL=$TCC_RUN_DIR and TCC_EVAL_CALIBRATION=$TCC_CALIBRATION_DIR/calibration.json after calibration.
+- Use the single suite_command for all four targets and paired Test/Test-D uncertainty.
+- Optional separate_suite_commands require the runbook split-config preparation; choose a fresh separate output
+  and do not execute the same populations twice.
+- Each variants value is a separate recorded condition with its own output; do not launch the entire exploratory
+  graph grid without source-validation screening.
+- All source/cache/target paths must be certified; missing dependencies/assets fail explicitly.
+- Preserve exact implementation snapshot with the artifacts because bundle guards reject changed code.
+evaluation_protocols:
+  test:
+    environment:
+    - TCC_EVAL_TEST_MANIFEST
+    - TCC_EVAL_TEST_ROOT
+    unit: image
+    threshold: frozen source validation
+  test_d:
+    environment:
+    - TCC_EVAL_TEST_D_MANIFEST
+    - TCC_EVAL_TEST_D_ROOT
+    unit: image
+    pairing: same IDs,labels,groups as Test
+  df40:
+    environment:
+    - TCC_EVAL_DF40_MANIFEST
+    - TCC_EVAL_DF40_ROOT
+    unit: image plus technique/paradigm
+    real_reference_policy: pooled_all_real
+    limitation: legacy comparable; source-domain confounded; cdf/frames overlaps Celeb-DF source
+  celeb_df_v2:
+    environment:
+    - TCC_EVAL_CELEB_MANIFEST
+    - TCC_EVAL_CELEB_ROOT
+    unit: video mean frame p_fake
+    polarity: official 1=real explicitly converted to internal 1=fake
+    coverage: official 518 test videos
+experiments:
+- name: sbi-hf-dino-srm-mixed
+  priority: 1
+  server_reason: Primary cross-dataset hypothesis while retaining MFFI fake discrimination; compare unadapted, secondary
+    SBI-only and original/adapted simple fusion.
+  family: sbi
+  architecture: dino verified pretrained SRM backbone
+  regime: mixed SBI pseudo-fakes and MFFI fakes after prior MFFI exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models dino/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_adaptation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/dino/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-dino-srm-mixed/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_adaptation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: primary mixed SBI/MFFI adaptation
+- name: sbi-hf-clip-srm-mixed
+  priority: 1
+  server_reason: Primary cross-dataset hypothesis while retaining MFFI fake discrimination; compare unadapted, secondary
+    SBI-only and original/adapted simple fusion.
+  family: sbi
+  architecture: clip verified pretrained SRM backbone
+  regime: mixed SBI pseudo-fakes and MFFI fakes after prior MFFI exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models clip/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_adaptation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/clip/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-clip-srm-mixed/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_adaptation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: primary mixed SBI/MFFI adaptation
+- name: sbi-hf-dino-srm-sbi-only
+  priority: 1
+  server_reason: Secondary forgetting control against the mixed primary and unadapted checkpoint; local SBI-only
+    adaptation reduced degraded discrimination.
+  family: sbi
+  architecture: dino verified pretrained SRM backbone
+  regime: SBI-only adaptation after MFFI fake exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models dino/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_sbi_only_ablation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/dino/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-dino-srm-sbi-only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_sbi_only_ablation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: secondary SBI-only forgetting ablation; run after the mixed primary
+- name: sbi-hf-clip-srm-sbi-only
+  priority: 1
+  server_reason: Secondary forgetting control against the mixed primary and unadapted checkpoint; local SBI-only
+    adaptation reduced degraded discrimination.
+  family: sbi
+  architecture: clip verified pretrained SRM backbone
+  regime: SBI-only adaptation after MFFI fake exposure
+  input_representation: 224 px normalized RGB plus exact legacy 3 SRM filters
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: lucasoc/MFFI-Models clip/srm/finetune_robust matching seed; original run_config.json required
+  config: configs/experimental/sbi_hf_sbi_only_ablation.yaml
+  environment:
+    TCC_SBI_INIT_CHECKPOINT: ${TCC_MODELS_ROOT}/clip/srm/finetune_robust/seed_${TCC_SEED}/weights/best.pth
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-hf-clip-srm-sbi-only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_hf_sbi_only_ablation.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: secondary SBI-only forgetting ablation; run after the mixed primary
+- name: srm-original-plus-mixed-sbi
+  priority: 1
+  server_reason: Pair each original DINO/CLIP SRM checkpoint with its own mixed-adapted realization to test an SBI
+    specialist without replacing the original score.
+  family: moe
+  architecture: 'two frozen experts: original SRM and its exact-initializer mixed SBI adaptation'
+  regime: fixed mean/geometric probabilities; source val_select calibration; incidental router/LR fits on val_fit
+  input_representation: cached features and certified new-expert probabilities
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: original matching-seed DINO/CLIP SRM checkpoint, SHA-256 bound to mixed SBI run initialization_sha256
+  config: configs/experimental/moe_srm_mixed_sbi_pair.yaml
+  environment:
+    TCC_FEATURE_SRM_VAL: certified cache from the exact unadapted initializer checkpoint
+    TCC_SBI_MIXED_RUN_DIR: ${TCC_EXPERIMENT_ROOT}/sbi-hf-${TCC_FUSION_BACKBONE}-srm-mixed/seed_${TCC_SEED}
+    TCC_SBI_INIT_CHECKPOINT_SHA256: read config.provenance.initialization_sha256 from the immutable mixed run.json
+    TCC_FUSION_METHOD: mean or geometric; separate calibration and suite output for each
+  run_directory: ${TCC_EXPERIMENT_ROOT}/srm-original-plus-mixed-sbi/${TCC_FUSION_BACKBONE}/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_srm_mixed_sbi_pair.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe_srm_mixed_sbi_pair.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe_srm_mixed_sbi_pair.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json, distinct per TCC_FUSION_METHOD
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+  campaign_role: primary complementarity control with fixed mean and geometric scores
+  variants:
+    backbone:
+    - dino
+    - clip
+    fusion_method:
+    - mean
+    - geometric
+  variant_environment:
+    backbone: TCC_FUSION_BACKBONE
+    fusion_method: TCC_FUSION_METHOD
+  operator_note: Run the artifact fit once per backbone/seed, then both source calibrations and both frozen four-target
+    suites. Existing HF/adapted validation-selection overlap remains a limitation.
+- name: sbi-generic-sbi
+  priority: 1
+  server_reason: Required clean-training-forgery control; local failure must remain visible.
+  family: sbi
+  architecture: MobileNetV3-Large
+  regime: matched generic initialization and update budget
+  input_representation: 224 px exact legacy 6-channel SRM
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: ImageNet mobilenet_v3_large-5c1a4163.pth
+  config: configs/experimental/sbi_generic.yaml
+  environment:
+    TCC_SBI_ARM: sbi
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-generic-sbi/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_generic.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: sbi-generic-mffi
+  priority: 1
+  server_reason: Required clean-training-forgery control; local failure must remain visible.
+  family: sbi
+  architecture: MobileNetV3-Large
+  regime: matched generic initialization and update budget
+  input_representation: 224 px exact legacy 6-channel SRM
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: ImageNet mobilenet_v3_large-5c1a4163.pth
+  config: configs/experimental/sbi_generic.yaml
+  environment:
+    TCC_SBI_ARM: mffi
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-generic-mffi/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_generic.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: sbi-generic-mixed
+  priority: 1
+  server_reason: Required clean-training-forgery control; local failure must remain visible.
+  family: sbi
+  architecture: MobileNetV3-Large
+  regime: matched generic initialization and update budget
+  input_representation: 224 px exact legacy 6-channel SRM
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: ImageNet mobilenet_v3_large-5c1a4163.pth
+  config: configs/experimental/sbi_generic.yaml
+  environment:
+    TCC_SBI_ARM: mixed
+  run_directory: ${TCC_EXPERIMENT_ROOT}/sbi-generic-mixed/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family sbi --config configs/experimental/sbi_generic.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family sbi --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/sbi.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/sbi.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: srm-pair-control
+  priority: 2
+  server_reason: Mandatory original strong-pair individual/mean/geometric/LR/router control on identical held-out
+    rows.
+  family: moe
+  architecture: frozen DINO-SRM + CLIP-SRM, small router
+  regime: val_fit router/LR; val_select selection and frozen thresholds
+  input_representation: cached features and certified new-expert probabilities
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: verified matching-seed HF DINO/CLIP SRM
+  config: configs/experimental/moe_srm_pair_control.yaml
+  environment:
+    TCC_FEATURE_DINO_SRM_VAL: certified DINO-SRM val cache
+    TCC_FEATURE_CLIP_SRM_VAL: certified CLIP-SRM val cache
+  run_directory: ${TCC_EXPERIMENT_ROOT}/srm-pair-control/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_srm_pair_control.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe_srm_pair_control.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe_srm_pair_control.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: srm-pair-plus-new-expert
+  priority: 2
+  server_reason: Advance only if held-out comparison supports complementarity over the strong SRM pair.
+  family: moe
+  architecture: frozen DINO-SRM + CLIP-SRM + one new expert, small router
+  regime: val_fit router/LR; val_select selection and frozen thresholds
+  input_representation: cached features and certified new-expert probabilities
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: verified matching-seed HF DINO/CLIP SRM plus frozen source-selected new run
+  config: configs/experimental/moe_srm_pair_new_expert.yaml
+  environment:
+    TCC_NEW_EXPERT_ROLE: reconstruction or sbi, matching the actual saved expert
+    TCC_FEATURE_DINO_SRM_VAL: certified DINO-SRM val cache
+    TCC_FEATURE_CLIP_SRM_VAL: certified CLIP-SRM val cache
+    TCC_NEW_EXPERT_VAL_PREDICTIONS: input-bound full-val predictions
+    TCC_NEW_EXPERT_CALIBRATION: that expert frozen source calibration
+  run_directory: ${TCC_EXPERIMENT_ROOT}/srm-pair-plus-new-expert/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_srm_pair_new_expert.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe_srm_pair.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe_srm_pair.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: moe-srm-rgb-reconstruction-soft
+  priority: 2
+  server_reason: Mandatory router vs individual/mean/geometric/LR comparisons; retain all baseline artifacts.
+  family: moe
+  architecture: frozen SRM/RGB/reconstruction experts and small router
+  regime: held-out late fusion
+  input_representation: feature caches plus reconstruction score
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: verified matching-seed HF SRM/RGB and residual-fusion reconstruction run
+  config: configs/experimental/moe_frozen_soft.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/moe-srm-rgb-reconstruction-soft/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_frozen_soft.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-residual-frozen
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: moe-srm-rgb-reconstruction-top2
+  priority: 2
+  server_reason: Mandatory router vs individual/mean/geometric/LR comparisons; retain all baseline artifacts.
+  family: moe
+  architecture: frozen SRM/RGB/reconstruction experts and small router
+  regime: held-out late fusion
+  input_representation: feature caches plus reconstruction score
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI val_fit only; no training on frozen experts' memorized MFFI-train scores
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: verified matching-seed HF SRM/RGB and residual-fusion reconstruction run
+  config: configs/experimental/moe_frozen_top2.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/moe-srm-rgb-reconstruction-top2/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family moe --config configs/experimental/moe_frozen_top2.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family moe --run "$TCC_RUN_DIR" --manifest
+    "$TCC_RUN_DIR/val_select.csv" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy
+    youden --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/moe.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/moe.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-residual-frozen
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-cae
+  priority: 3
+  server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
+  family: reconstruction
+  architecture: cae width 32 latent 128 224 px
+  regime: real-only source training; reconstruction validation
+  input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: AE random init; explicit full pretrained Alex LPIPS state
+  config: configs/experimental/reconstruction/server_cae.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-cae/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_cae.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-vae
+  priority: 3
+  server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
+  family: reconstruction
+  architecture: vae width 32 latent 128 224 px
+  regime: real-only source training; reconstruction validation
+  input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: AE random init; explicit full pretrained Alex LPIPS state
+  config: configs/experimental/reconstruction/server_vae.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-vae/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_vae.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-gated
+  priority: 3
+  server_reason: Test discrepancy signal at full source-real scale; local202-real error baselines are near chance.
+  family: reconstruction
+  architecture: gated width 32 latent 128 224 px
+  regime: real-only source training; reconstruction validation
+  input_representation: raw RGB; L1+SSIM+pretrained LPIPS; explicit KL for VAE
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: AE random init; explicit full pretrained Alex LPIPS state
+  config: configs/experimental/reconstruction/server_gated.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-gated/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_gated.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-residual-x_only
+  priority: 3
+  server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
+    trained.
+  family: reconstruction
+  architecture: pretrained ResNet18 and VAE224
+  regime: matched input ablations or explicit AE gradient mode
+  input_representation: x-only / residual-only / full9channels plus Sobel as declared
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching VAE224 run and resnet18-f37072fd.pth
+  config: configs/experimental/reconstruction/server_residual_x_only.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+    TCC_RESNET18_WEIGHTS: explicit offline ImageNet ResNet18 state
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-residual-x_only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_residual_x_only.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-residual-residual_only
+  priority: 3
+  server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
+    trained.
+  family: reconstruction
+  architecture: pretrained ResNet18 and VAE224
+  regime: matched input ablations or explicit AE gradient mode
+  input_representation: x-only / residual-only / full9channels plus Sobel as declared
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching VAE224 run and resnet18-f37072fd.pth
+  config: configs/experimental/reconstruction/server_residual_residual_only.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+    TCC_RESNET18_WEIGHTS: explicit offline ImageNet ResNet18 state
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-residual-residual_only/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_residual_residual_only.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-residual-frozen
+  priority: 3
+  server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
+    trained.
+  family: reconstruction
+  architecture: pretrained ResNet18 and VAE224
+  regime: matched input ablations or explicit AE gradient mode
+  input_representation: x-only / residual-only / full9channels plus Sobel as declared
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching VAE224 run and resnet18-f37072fd.pth
+  config: configs/experimental/reconstruction/server_residual_frozen.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+    TCC_RESNET18_WEIGHTS: explicit offline ImageNet ResNet18 state
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-residual-frozen/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_residual_frozen.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-residual-recon_finetune
+  priority: 3
+  server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
+    trained.
+  family: reconstruction
+  architecture: pretrained ResNet18 and VAE224
+  regime: matched input ablations or explicit AE gradient mode
+  input_representation: x-only / residual-only / full9channels plus Sobel as declared
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching VAE224 run and resnet18-f37072fd.pth
+  config: configs/experimental/reconstruction/server_residual_recon_finetune.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+    TCC_RESNET18_WEIGHTS: explicit offline ImageNet ResNet18 state
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-residual-recon_finetune/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_residual_recon_finetune.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-residual-end_to_end
+  priority: 3
+  server_reason: Attribution requires full fusion to beat matched x-only; use differential AE learning rate where
+    trained.
+  family: reconstruction
+  architecture: pretrained ResNet18 and VAE224
+  regime: matched input ablations or explicit AE gradient mode
+  input_representation: x-only / residual-only / full9channels plus Sobel as declared
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching VAE224 run and resnet18-f37072fd.pth
+  config: configs/experimental/reconstruction/server_residual_end_to_end.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+    TCC_RESNET18_WEIGHTS: explicit offline ImageNet ResNet18 state
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-residual-end_to_end/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_residual_end_to_end.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-latent
+  priority: 3
+  server_reason: Retain as complementary-score hypothesis, not standalone promotion.
+  family: reconstruction
+  architecture: VAE mu/logvar/KL plus MLP
+  regime: frozen genuine-only VAE; labeled classifier
+  input_representation: latent statistics
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matching seed VAE224 run
+  config: configs/experimental/reconstruction/server_latent_frozen.yaml
+  environment:
+    TCC_AE_RUN: matching seed reconstruction-vae run
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-latent/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/server_latent_frozen.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-vae
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: reconstruction-spatial-latent-mean
+  priority: 3
+  server_reason: Cheap controlled test of spatial/latent complementarity.
+  family: reconstruction
+  architecture: fixed spatial/latent mean
+  regime: no fitted fusion weights
+  input_representation: two frozen p_fake scores
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: matched seed/resolution/source populations
+  config: configs/experimental/reconstruction/mean_ensemble.yaml
+  environment:
+    TCC_SPATIAL_RUN: reconstruction-residual-frozen
+    TCC_LATENT_RUN: reconstruction-latent
+  run_directory: ${TCC_EXPERIMENT_ROOT}/reconstruction-spatial-latent-mean/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family reconstruction --config configs/experimental/reconstruction/mean_ensemble.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family reconstruction --run "$TCC_RUN_DIR"
+    --manifest "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/reconstruction.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/reconstruction.yaml
+    --output "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  depends_on:
+  - reconstruction-residual-frozen
+  - reconstruction-latent
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: vlm-qwen3-2b-nf4
+  priority: 4
+  server_reason: Exploratory continuous-score expert; no full-dataset performance evidence from tiny Smol feasibility.
+  family: vlm
+  architecture: Qwen3-VL-2B
+  regime: text-decoder NF4 QLoRA; frozen vision
+  input_representation: image + strict Real/Fake instruction
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: Qwen/Qwen3-VL-2B-Instruct revision89644892e4d85e24eaac8bacfd4f463576704203
+  config: configs/experimental/vlm_qwen3_2b_server.yaml
+  environment: {}
+  run_directory: ${TCC_EXPERIMENT_ROOT}/vlm-qwen3-2b-nf4/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family vlm --config configs/experimental/vlm_qwen3_2b_server.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cuda --execute
+  calibrate_command: python research_cli.py experimental calibrate --family vlm --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cuda --threshold-policy
+    youden --execute
+  suite_config: configs/experimental/suites/vlm.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/vlm.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cuda --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cuda
+      --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cuda
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cuda
+      --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cuda --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  seed_scope: matching upstream seed and downstream realization, subject to verified controlled-condition equality
+- name: metric-srm
+  priority: 4
+  server_reason: 'Exploratory only: local projection did not beat stronger simple controls.'
+  family: metric
+  architecture: frozen DINO-SRM projection128 with SupCon
+  regime: train projection on certified train cache; source-val selection
+  input_representation: L2 normalized embeddings and cosine centroids
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: fixed verified HF DINO-SRM seed42 cache reused across all downstream seeds; exact cache contract
+    remains bound
+  config: configs/experimental/metric_srm.yaml
+  environment:
+    TCC_METRIC_KIND: supcon
+    TCC_LABEL_FRACTION: '1.0'
+    TCC_DEVICE: cpu
+  run_directory: ${TCC_EXPERIMENT_ROOT}/metric-srm/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family metric --config configs/experimental/metric_srm.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family metric --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy youden
+    --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/metric.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/metric.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  variants:
+    TCC_METRIC_KIND:
+    - supcon
+    - linear
+    - mlp
+    - centroid
+    - knn
+    TCC_LABEL_FRACTION:
+    - 1.0
+  seed_scope: downstream initialization and label selection; fixed HF seed42 extractor, with upstream uncertainty
+    excluded
+- name: graph-srm-low-label
+  priority: 4
+  server_reason: Exploratory downstream label efficiency only; local GNNs did not beat MLP.
+  family: graph
+  architecture: GCN/GAT/GraphSAGE and same-mask shallow/graph baselines
+  regime: bounded sparse ANN; masked source labels; protocol-specific validation
+  input_representation: frozen SRM or same-mask metric embeddings
+  seeds:
+  - 42
+  - 123
+  - 2024
+  - 7
+  - 2025
+  dataset:
+    fit: MFFI phase-1 certified train; real-only where specified
+    selection: MFFI certified val; deterministic val_fit/val_select for fusion
+    targets:
+    - Test
+    - Test-D
+    - DF-40
+    - Celeb-DF v2
+  checkpoint_source: fixed verified HF DINO-SRM seed42 cache reused across all downstream seeds; exact cache contract
+    remains bound
+  config: configs/experimental/graph_fullscale.yaml
+  environment:
+    TCC_GRAPH_KIND: sage
+    TCC_GRAPH_PROTOCOL: inductive
+    TCC_LABEL_FRACTION: '0.05'
+    TCC_DEVICE: cpu
+  run_directory: ${TCC_EXPERIMENT_ROOT}/graph-srm-low-label/seed_${TCC_SEED}
+  train_command: python research_cli.py experimental train --family graph --config configs/experimental/graph_fullscale.yaml
+    --seed "$TCC_SEED" --output "$TCC_RUN_DIR" --device cpu --execute
+  calibrate_command: python research_cli.py experimental calibrate --family graph --run "$TCC_RUN_DIR" --manifest
+    "$TCC_VAL_MANIFEST" --root "$TCC_VAL_ROOT" --output "$TCC_CALIBRATION_DIR" --device cpu --threshold-policy youden
+    --options "$TCC_CALIBRATION_OPTIONS" --execute
+  suite_config: configs/experimental/suites/graph.yaml
+  suite_command: python research_cli.py experimental evaluate --config configs/experimental/suites/graph.yaml --output
+    "$TCC_SUITE_OUTPUT" --device cpu --execute
+  separate_suite_commands:
+    test: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test.yaml" --device cpu --execute
+    test_d: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/test_d.yaml" --device cpu
+      --execute
+    df40: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/df40.yaml" --device cpu --execute
+    celeb_df_v2: python research_cli.py experimental evaluate --config "$TCC_SPLIT_CONFIG_DIR/celeb_df_v2.yaml"
+      --device cpu --execute
+  expected_outputs:
+    training: '${TCC_RUN_DIR}: run configuration, provenance, checkpoint/inventory, telemetry, validation predictions,
+      calibration and metrics'
+    calibration: ${TCC_CALIBRATION_DIR}/calibration.json
+    evaluation:
+    - ${TCC_SUITE_OUTPUT}/test
+    - ${TCC_SUITE_OUTPUT}/test_d
+    - ${TCC_SUITE_OUTPUT}/df40
+    - ${TCC_SUITE_OUTPUT}/celeb_df_v2
+  variants:
+    TCC_GRAPH_KIND:
+    - linear
+    - mlp
+    - knn
+    - lp
+    - correct_smooth
+    - gcn
+    - gat
+    - sage
+    TCC_LABEL_FRACTION:
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.25
+    - 1.0
+    TCC_GRAPH_PROTOCOL:
+    - inductive
+    - transductive
+  seed_scope: downstream initialization and label selection; fixed HF seed42 extractor, with upstream uncertainty
+    excluded

@@ -10,7 +10,7 @@ early_stop_patience: 8
 scheduler_patience: 3
 max_grad_norm: 1.0
 dropout: 0.2
-seeds: [42, 123, 2024]
+seeds: [42, 123, 2024, 7, 2025]
 augment: true
 train_backbone: true
 use_weighted_sampler: true

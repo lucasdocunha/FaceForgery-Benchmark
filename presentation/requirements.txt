@@ -1,0 +1,11 @@
+# Ambiente independente: não altera pyproject.toml nem uv.lock do benchmark.
+python-pptx==1.0.2
+reportlab==4.4.3
+PyMuPDF==1.26.4
+Pillow==11.3.0
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==6.29.5
+pandas==2.2.3
+matplotlib==3.10.1
+numpy==2.2.4

@@ -1,0 +1,41 @@
+# Opt-in analysis only: does not change any ICLR training configuration.
+version: 1
+seed: 42
+regime: finetune
+primary_seed: 42
+families: [resnet, xception, mobilenet, vit, clip, dino]
+methods:
+  - gradcam
+  - integrated_gradients
+  - gradient_shap
+  - kernel_shap
+  - lime
+  - saliency
+  - input_x_gradient
+  - smoothgrad
+  - occlusion
+  - feature_ablation
+  - shapley_sampling
+  - attention_rollout
+settings:
+  baseline: encoded_zero
+  blur_radius: 8
+  ig_steps: 64
+  gradient_samples: 32
+  samples: 512
+  shapley_permutations: 32
+  perturbations_per_eval: 8
+  patch_size: 32
+  partition: grid
+  radial_bins: 8
+  noise_std: 0.02
+  replicates: 1
+  prediction_atol: 0.0001
+  perturbation_controls: true
+  curve_points: 11
+  randomize_head: true
+# Only validation evidence selects the matched architecture. All three seeds must
+# clear the floor in both domains. Do not select on test or on attractive maps.
+task2:
+  enabled: true
+  auc_floor: 0.60

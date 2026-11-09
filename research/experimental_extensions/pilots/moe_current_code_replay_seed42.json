@@ -1,0 +1,636 @@
+{
+  "scope": "pilot/min-dataset/development/final-source-only-replay",
+  "seed": 42,
+  "final_source_commit": "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+  "min_test_accessed": false,
+  "settings_changed": [
+    "output_dir"
+  ],
+  "historical_evidence": {
+    "twoexpert_clean": "moe_mobilenet_twoexpert_seed42.json",
+    "threeexpert_clean": "moe_mobilenet_reconstruction_seed42.json",
+    "twoexpert_degraded": "moe_mobilenet_twoexpert_degraded_seed42.json",
+    "threeexpert_degraded": "moe_mobilenet_reconstruction_degraded_seed42.json"
+  },
+  "historical_bundle_rejections": {
+    "scope": "historical-artifact-rejection/current-code",
+    "code_commit": "62ab0ff4e2100443de370987d9c7f0a488095a9b",
+    "min_test_accessed": false,
+    "records": [
+      {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-final-seed42",
+        "artifact_sha256": "825755f17628eb4c3a1ee3236b044b146bef67ccabefe5cd059dd3390da8d2db",
+        "rejection": "MoE implementation differs from fitted score contract: training.py",
+        "implementation_mismatches": {
+          "training.py": {
+            "recorded": "998fcf1dac8b3a7bdf5b4cf9bfe32fc6de347d27172256d2d8d4f411e931d1e6",
+            "current": "37d90b84f7c4b310669a47971c1a572187295e145538f169ec5d95055985a047"
+          },
+          "data.py": {
+            "recorded": "e9ef34a99658ec53ed8c213817dfbf2e92367d3b9f06c82630d1825766f7730a",
+            "current": "945b343b6fbf6f64d5c1e9928b3a5eff38c873a53c35253a70a9c2ca352882ce"
+          },
+          "inference.py": {
+            "recorded": "7150800c2e1f1dad2ca8b91a0ba8a9a3995080d4b168b4e3085445429f8f268b",
+            "current": "9e8e16d152e73e5f08edfe00d46967092d591835ceca53564851b01015d8757d"
+          }
+        }
+      },
+      {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-reconstruction-soft-seed42",
+        "artifact_sha256": "862865ebf3758a3b4605f26c999f50e1e4949fc5dd94782f91aaf3e98fa898bf",
+        "rejection": "MoE implementation differs from fitted score contract: identity.py",
+        "implementation_mismatches": {
+          "identity.py": {
+            "recorded": "fa44abe49daf512442ac3205ad934d2f8d4aec6a959fca03d0e95ac69fb7ffb0",
+            "current": "be4f01169426c029eed1d0663479124f8221028fcb85dee53c9a404174d29066"
+          }
+        }
+      }
+    ]
+  },
+  "compute_contract": {
+    "cpu_lock": "/home/lucas/ffb-research/locks/cpu-tests.lock",
+    "threads": 2,
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "HIP_VISIBLE_DEVICES": "",
+    "CUDA_VISIBLE_DEVICES": "",
+    "rss_limit_mib": 3072,
+    "time_limit_seconds": 300,
+    "watchdog_version": "pre-msg016",
+    "watchdog_source_preserved_at": "/home/lucas/ffb-research/local/scripts/run_bounded_pre_msg016.py",
+    "watchdog_source_sha256": "999454055d40cf3f5e4f96255963e13446e6912d4590208c28a0c2f88a9e95e6",
+    "global_memory_stop_policy": {
+      "MemAvailable_below_mib": 1024,
+      "full_avg10_above_percent": 1.0
+    },
+    "policy_note": "Successful replays used the stricter pre-msg016 watchdog. No successful result was rerun solely to adopt the msg016 watchdog metadata."
+  },
+  "final_native_sbi_moe_unit_tests": {
+    "owner_source_commit": "62ab0ff4e2100443de370987d9c7f0a488095a9b",
+    "integrated_source_commit": "c863185",
+    "tests": [
+      "tests/experimental/test_moe.py",
+      "tests/experimental/test_sbi.py"
+    ],
+    "passed": 23,
+    "pytest_seconds": 10.37,
+    "watchdog": {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/experimental/test_moe.py",
+        "tests/experimental/test_sbi.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stop_reason": null,
+      "peak_sampled_rss_kib": 1034328,
+      "seconds": 11.507183767998868
+    },
+    "canonical_hf_seed_conditions_tested": [
+      42,
+      123,
+      2024,
+      7,
+      2025
+    ],
+    "seed_fixture_scope": "tiny synthetic SBI fits; not additional min-dataset pilot seeds"
+  },
+  "stopped_attempts": [
+    {
+      "command": [
+        "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+        "/home/lucas/ffb-research/local/scripts/moe_final_replay.py",
+        "--label",
+        "threeexpert",
+        "--integration",
+        "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+        "--summary",
+        "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_72dbdbf_seed42.json",
+        "--pre-format-summary",
+        "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_0f6ba19_seed42.json"
+      ],
+      "exit_code": -15,
+      "stop_reason": "System memory pressure or available memory below 1 GiB",
+      "peak_sampled_rss_kib": 376,
+      "seconds": 0.0014819700008956715,
+      "classification": "Director msg-016 identified the pre-msg016 memory-policy stop as a false positive.",
+      "outputs_created": false
+    }
+  ],
+  "pre_format_replays": {
+    "twoexpert": {
+      "code_commit": "0f6ba19f31190846ab7e2fcc4470b69afed082eb",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-0f6ba19-seed42",
+      "summary_path": "/home/lucas/ffb-research/local/pilots/moe_twoexpert_current_code_0f6ba19_seed42.json",
+      "summary_sha256": "6efd3761aad3be1a21497ab25b4531d5ce7ee36b7ac956e0755739ae3d50ae9f",
+      "artifact_sha256": "bf8c58c96b1f637de95bb647a64a9c40d9c3a8fa2d924346df4f0f40c6e3b2c9",
+      "current_code_rejection": "MoE implementation differs from fitted score contract: models.py",
+      "config_without_output_dir_sha256": "919c5644ff49d96b04c02838cf77b565e66e88fab5545326c5d8f7c47beb84b4",
+      "degraded_output": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-0f6ba19-seed42-degraded",
+      "clean_router_auc": 0.9745077384328661,
+      "degraded_router_auc": 0.7939389028441779,
+      "all_clean_degraded_score_drifts": 0.0,
+      "checkpoint_tensor_drift": 0.0,
+      "watchdog": {
+        "command": [
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/moe_final_replay.py",
+          "--label",
+          "twoexpert",
+          "--integration",
+          "0f6ba19f31190846ab7e2fcc4470b69afed082eb",
+          "--summary",
+          "/home/lucas/ffb-research/local/pilots/moe_twoexpert_current_code_0f6ba19_seed42.json"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 920528,
+        "seconds": 23.512488172000303
+      }
+    },
+    "threeexpert": {
+      "code_commit": "0f6ba19f31190846ab7e2fcc4470b69afed082eb",
+      "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-0f6ba19-seed42",
+      "summary_path": "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_0f6ba19_seed42.json",
+      "summary_sha256": "b05a0697c6a638837c1c8a13b8a6c185a0503bf11f3a6c5e0f4e3377df384a2a",
+      "artifact_sha256": "4ad72909810985c3e61a648a8bd0d4f441d0e4ae962951c0bdde24f89a95e82c",
+      "current_code_rejection": "MoE implementation differs from fitted score contract: models.py",
+      "config_without_output_dir_sha256": "8f1780b21ac3b2d30657e34dc12ce29143fd9933bfe37bd6aba381853dfbca67",
+      "degraded_output": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-0f6ba19-seed42-degraded",
+      "clean_router_auc": 0.9762580017826756,
+      "degraded_router_auc": 0.7932420387326797,
+      "all_clean_degraded_score_drifts": 0.0,
+      "checkpoint_tensor_drift": 0.0,
+      "watchdog": {
+        "command": [
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/moe_final_replay.py",
+          "--label",
+          "threeexpert",
+          "--integration",
+          "0f6ba19f31190846ab7e2fcc4470b69afed082eb",
+          "--summary",
+          "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_0f6ba19_seed42.json"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 967996,
+        "seconds": 28.015587858999424
+      }
+    }
+  },
+  "final_replays": {
+    "twoexpert": {
+      "original_run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-soft-twoexpert-final-seed42",
+      "replay_run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-72dbdbf-seed42",
+      "config_without_output_dir_sha256": "919c5644ff49d96b04c02838cf77b565e66e88fab5545326c5d8f7c47beb84b4",
+      "config": {
+        "task": "moe",
+        "name": "mobilenet-srm-rgb-soft-twoexpert-ablation",
+        "scope": "min-dataset-development-twoexpert-ablation",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-72dbdbf-seed42",
+        "data": {
+          "experts": [
+            {
+              "name": "srm",
+              "role": "srm",
+              "kind": "feature_cache",
+              "path": "/home/lucas/ffb-research/local/features/10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b"
+            },
+            {
+              "name": "rgb",
+              "role": "rgb",
+              "kind": "feature_cache",
+              "path": "/home/lucas/ffb-research/local/features/ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+            }
+          ],
+          "required_roles": [
+            "srm",
+            "rgb"
+          ],
+          "split_seed": 42,
+          "fit_fraction": 0.5
+        },
+        "model": {
+          "hidden_dim": 32,
+          "temperature": 1.0,
+          "train_routing": "soft",
+          "train_top_k": 2,
+          "inference_routing": "soft",
+          "inference_top_k": 1,
+          "expert_dropout": 0.1
+        },
+        "training": {
+          "device": "cpu",
+          "epochs": 6,
+          "batch_size": 32,
+          "lr": 0.001,
+          "amp": false,
+          "cpu_threads": 2,
+          "workers": 0,
+          "early_stop_patience": 4
+        }
+      },
+      "original_artifact_sha256": "825755f17628eb4c3a1ee3236b044b146bef67ccabefe5cd059dd3390da8d2db",
+      "original_calibration_sha256": "343d33e9ef1c48f4b2d00a668ff635fbb31b5caeaff3d1a55a2f2a29ebc52be7",
+      "current_artifact_sha256": "572a971727e347e2e3c23825ce1f231bee63a06626797171d35631de37623cee",
+      "current_calibration_sha256": "9f48f728c964d8a63cfbdc3d79b5a8143bfef8d5f998e87dbe9844b4ba28306c",
+      "original_expert_source_identities": [
+        "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b",
+        "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+      ],
+      "native_expert_calibrations_sha256": {},
+      "immutable_source_inventory_sha256": "0561be6c475fc62eb314b62a4029630fa7cbb78ac188746a73a8f15c4bd1453f",
+      "original_current_code_rejection": "MoE implementation differs from fitted score contract: training.py",
+      "counts": {
+        "val_fit": 494,
+        "val_select": 506
+      },
+      "clean": {
+        "router": {
+          "auc": 0.9745077384328661,
+          "original_auc": 0.9745077384328661,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.41574034094810486,
+          "original_threshold": 0.41574034094810486
+        },
+        "mean": {
+          "auc": 0.9720768171136861,
+          "original_auc": 0.9720768171136861,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.4895888864994049,
+          "original_threshold": 0.4895888864994049
+        },
+        "geometric": {
+          "auc": 0.9706182643221781,
+          "original_auc": 0.9706182643221781,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.4117147624492645,
+          "original_threshold": 0.4117147624492645
+        },
+        "geometric_binary": {
+          "auc": 0.9728790211490155,
+          "original_auc": 0.9728790211490155,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.4092208445072174,
+          "original_threshold": 0.4092208445072174
+        },
+        "logistic": {
+          "auc": 0.9720606109715582,
+          "original_auc": 0.9720606109715582,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 3.3306690738754696e-16,
+          "threshold": 0.5665287590787941,
+          "original_threshold": 0.5665287590787941
+        },
+        "expert_srm": {
+          "auc": 0.9489344461550927,
+          "original_auc": 0.9489344461550927,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.5474640727043152,
+          "original_threshold": 0.5474640727043152
+        },
+        "expert_rgb": {
+          "auc": 0.959468438538206,
+          "original_auc": 0.959468438538206,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.4856911301612854,
+          "original_threshold": 0.4856911301612854
+        }
+      },
+      "degraded": {
+        "router": {
+          "auc": 0.7939389028441779,
+          "original_auc": 0.7939389028441779,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "mean": {
+          "auc": 0.8107446722307755,
+          "original_auc": 0.8107446722307755,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "geometric": {
+          "auc": 0.7319342030629609,
+          "original_auc": 0.7319342030629609,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "geometric_binary": {
+          "auc": 0.772336115387732,
+          "original_auc": 0.772336115387732,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "logistic": {
+          "auc": 0.8093995624341626,
+          "original_auc": 0.8093995624341626,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "expert_srm": {
+          "auc": 0.8346892472246981,
+          "original_auc": 0.8346892472246981,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "expert_rgb": {
+          "auc": 0.6593793047565026,
+          "original_auc": 0.6593793047565026,
+          "maximum_absolute_score_difference": 0.0
+        }
+      },
+      "checkpoint_tensor_maximum_absolute_difference": 0.0,
+      "degraded_output": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-72dbdbf-seed42-degraded",
+      "source_inventory_unchanged": true,
+      "training": {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-twoexpert-current-code-72dbdbf-seed42",
+        "runtime_seconds": 0.5114870769994013,
+        "peak_vram_bytes": 0,
+        "peak_rss_kib": 901776,
+        "trainable_parameters": 82082,
+        "epochs_completed": 6,
+        "global_step": 96,
+        "best_epoch": 3,
+        "best_metric": 0.9745077384328661
+      },
+      "condition_sha256": "1c442f1445b93ef5fadfebf5072cdfd959a0d4da943fb3b8a9992bf8c49febde",
+      "implementation_sha256": {
+        "__main__.py": "6e7e8370087566e97a9a1850a578bb68fbdcfc6f8608dcad4043fdf46de2fd5a",
+        "training.py": "37d90b84f7c4b310669a47971c1a572187295e145538f169ec5d95055985a047",
+        "__init__.py": "2dbc01db7b081d2113d01a786de9b6547ae165ad520c963b64c42f4f97480059",
+        "data.py": "945b343b6fbf6f64d5c1e9928b3a5eff38c873a53c35253a70a9c2ca352882ce",
+        "inference.py": "9e8e16d152e73e5f08edfe00d46967092d591835ceca53564851b01015d8757d",
+        "models.py": "40d2dfa4fd7835ecb3ec410c9e7924f4a5784c614988e87e9d24dd9bcbc0d982",
+        "identity.py": "be4f01169426c029eed1d0663479124f8221028fcb85dee53c9a404174d29066"
+      },
+      "native_source_checkpoint_sha256": {
+        "srm": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f",
+        "rgb": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5"
+      },
+      "full_native_summary_sha256": "1ba7c5fa90fd3804cfa5abaded919de17d15b1e0d406fe02e49866fde24bb143",
+      "watchdog": {
+        "command": [
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/moe_final_replay.py",
+          "--label",
+          "twoexpert",
+          "--integration",
+          "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+          "--summary",
+          "/home/lucas/ffb-research/local/pilots/moe_twoexpert_current_code_72dbdbf_seed42.json",
+          "--pre-format-summary",
+          "/home/lucas/ffb-research/local/pilots/moe_twoexpert_current_code_0f6ba19_seed42.json"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 902524,
+        "seconds": 23.012366382001346
+      }
+    },
+    "threeexpert": {
+      "original_run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-reconstruction-soft-seed42",
+      "replay_run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-72dbdbf-seed42",
+      "config_without_output_dir_sha256": "8f1780b21ac3b2d30657e34dc12ce29143fd9933bfe37bd6aba381853dfbca67",
+      "config": {
+        "task": "moe",
+        "name": "mobilenet_srm_rgb_reconstruction_soft_pilot",
+        "scope": "min-dataset-development-threeexpert-pilot",
+        "seed": 42,
+        "output_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-72dbdbf-seed42",
+        "data": {
+          "experts": [
+            {
+              "name": "srm",
+              "role": "srm",
+              "kind": "feature_cache",
+              "path": "/home/lucas/ffb-research/local/features/10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b"
+            },
+            {
+              "name": "rgb",
+              "role": "rgb",
+              "kind": "feature_cache",
+              "path": "/home/lucas/ffb-research/local/features/ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b"
+            },
+            {
+              "name": "reconstruction",
+              "role": "reconstruction",
+              "kind": "predictions",
+              "path": "/home/lucas/ffb-research/local/reconstruction-pilot/residual-full/validation_predictions.csv",
+              "calibration": "/home/lucas/ffb-research/local/reconstruction-pilot/residual-full/calibration.json"
+            }
+          ],
+          "required_roles": [
+            "srm",
+            "rgb",
+            "reconstruction"
+          ],
+          "expert_seed_policy": "matched",
+          "split_seed": 42,
+          "fit_fraction": 0.5
+        },
+        "model": {
+          "hidden_dim": 32,
+          "temperature": 1.0,
+          "train_routing": "soft",
+          "train_top_k": 2,
+          "inference_routing": "soft",
+          "inference_top_k": 1,
+          "expert_dropout": 0.1
+        },
+        "training": {
+          "device": "cpu",
+          "amp": false,
+          "cpu_threads": 2,
+          "workers": 0,
+          "epochs": 6,
+          "batch_size": 32,
+          "lr": 0.001,
+          "early_stop_patience": 4
+        }
+      },
+      "original_artifact_sha256": "862865ebf3758a3b4605f26c999f50e1e4949fc5dd94782f91aaf3e98fa898bf",
+      "original_calibration_sha256": "71df30833c52eaacf94a78fbed59877481a950efadd168f0ee4d3cbc1c655e9f",
+      "current_artifact_sha256": "28aba426c201f5ae404d0537d8c4e29565d34b0606876714f9b759c04189ea46",
+      "current_calibration_sha256": "ea3425c28ecaa38d75b7043b88c2e690b66fe553ef7d0c5466411cecf22e1931",
+      "original_expert_source_identities": [
+        "10191a7d561c620eff638290f2dc904c592324652166f73d15123b961144889b",
+        "ce9a04dacb09c7203557b6698f402a952b6508cae398cd02a137de9bc933435b",
+        "a38db80510a07b347cae236fb8f97b7ef21865ae050f8c6d3485cbd983a203eb"
+      ],
+      "native_expert_calibrations_sha256": {
+        "reconstruction": "a1d4a699f6677b630588dcdf495ec7deaceedab971fcd20fe060b3a8b004bbf1"
+      },
+      "immutable_source_inventory_sha256": "c3a4bfe00cf0d6af5b33de90595b63a0a6212de573114633a01f5ba0e6ca2087",
+      "original_current_code_rejection": "MoE implementation differs from fitted score contract: models.py",
+      "counts": {
+        "val_fit": 494,
+        "val_select": 506
+      },
+      "clean": {
+        "router": {
+          "auc": 0.9762580017826756,
+          "original_auc": 0.9762580017826756,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.48598071932792664,
+          "original_threshold": 0.48598071932792664
+        },
+        "mean": {
+          "auc": 0.9619803905680252,
+          "original_auc": 0.9619803905680252,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.5960282683372498,
+          "original_threshold": 0.5960282683372498
+        },
+        "geometric": {
+          "auc": 0.9681063122923588,
+          "original_auc": 0.9681063122923588,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.5458498001098633,
+          "original_threshold": 0.5458498001098633
+        },
+        "geometric_binary": {
+          "auc": 0.9665991410744671,
+          "original_auc": 0.9665991410744671,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.7291341423988342,
+          "original_threshold": 0.7291341423988342
+        },
+        "logistic": {
+          "auc": 0.971963374118791,
+          "original_auc": 0.971963374118791,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 3.3306690738754696e-16,
+          "threshold": 0.5656001507259846,
+          "original_threshold": 0.5656001507259846
+        },
+        "expert_srm": {
+          "auc": 0.9489344461550927,
+          "original_auc": 0.9489344461550927,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.5474640727043152,
+          "original_threshold": 0.5474640727043152
+        },
+        "expert_rgb": {
+          "auc": 0.959468438538206,
+          "original_auc": 0.959468438538206,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.4856911301612854,
+          "original_threshold": 0.4856911301612854
+        },
+        "expert_reconstruction": {
+          "auc": 0.654379709910056,
+          "original_auc": 0.654379709910056,
+          "maximum_absolute_score_difference": 0.0,
+          "reload_maximum_absolute_score_difference": 1.1102230246251565e-16,
+          "threshold": 0.9536217451095581,
+          "original_threshold": 0.9536217451095581
+        }
+      },
+      "degraded": {
+        "router": {
+          "auc": 0.7932420387326797,
+          "original_auc": 0.7932420387326797,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "mean": {
+          "auc": 0.7886070820841099,
+          "original_auc": 0.7886070820841099,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "geometric": {
+          "auc": 0.7292115711854792,
+          "original_auc": 0.7292115711854792,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "geometric_binary": {
+          "auc": 0.7537962887934528,
+          "original_auc": 0.7537962887934528,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "logistic": {
+          "auc": 0.8092537071550117,
+          "original_auc": 0.8092537071550117,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "expert_srm": {
+          "auc": 0.8346892472246981,
+          "original_auc": 0.8346892472246981,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "expert_rgb": {
+          "auc": 0.6593793047565026,
+          "original_auc": 0.6593793047565026,
+          "maximum_absolute_score_difference": 0.0
+        },
+        "expert_reconstruction": {
+          "auc": 0.5721335386111336,
+          "original_auc": 0.5721335386111336,
+          "maximum_absolute_score_difference": 0.0
+        }
+      },
+      "checkpoint_tensor_maximum_absolute_difference": 0.0,
+      "degraded_output": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-72dbdbf-seed42-degraded",
+      "source_inventory_unchanged": true,
+      "training": {
+        "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-threeexpert-current-code-72dbdbf-seed42",
+        "runtime_seconds": 0.5172919249998813,
+        "peak_vram_bytes": 0,
+        "peak_rss_kib": 953004,
+        "trainable_parameters": 82147,
+        "epochs_completed": 6,
+        "global_step": 96,
+        "best_epoch": 3,
+        "best_metric": 0.9762580017826756
+      },
+      "condition_sha256": "68eec15d50dae08b8226637eceff975bc773071f926902da8ec80b910ceadbaf",
+      "implementation_sha256": {
+        "__main__.py": "6e7e8370087566e97a9a1850a578bb68fbdcfc6f8608dcad4043fdf46de2fd5a",
+        "training.py": "37d90b84f7c4b310669a47971c1a572187295e145538f169ec5d95055985a047",
+        "__init__.py": "2dbc01db7b081d2113d01a786de9b6547ae165ad520c963b64c42f4f97480059",
+        "data.py": "945b343b6fbf6f64d5c1e9928b3a5eff38c873a53c35253a70a9c2ca352882ce",
+        "inference.py": "9e8e16d152e73e5f08edfe00d46967092d591835ceca53564851b01015d8757d",
+        "models.py": "40d2dfa4fd7835ecb3ec410c9e7924f4a5784c614988e87e9d24dd9bcbc0d982",
+        "identity.py": "be4f01169426c029eed1d0663479124f8221028fcb85dee53c9a404174d29066"
+      },
+      "native_source_checkpoint_sha256": {
+        "srm": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f",
+        "rgb": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5",
+        "reconstruction": "391dfb334c15a39d4871489e43e2dd082739d7b36cdfcab1e4beb8e38fff3d55"
+      },
+      "full_native_summary_sha256": "041de3ad82fdc43a576922940d57055d50dc9cde6da98e884a101aca34618877",
+      "watchdog": {
+        "command": [
+          "/home/lucas/ffb-research/FaceForgery-Benchmark/.venv/bin/python",
+          "/home/lucas/ffb-research/local/scripts/moe_final_replay.py",
+          "--label",
+          "threeexpert",
+          "--integration",
+          "72dbdbf53482ba00afee793ba1ae7727ac3a6b8a",
+          "--summary",
+          "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_72dbdbf_seed42.json",
+          "--pre-format-summary",
+          "/home/lucas/ffb-research/local/pilots/moe_threeexpert_current_code_0f6ba19_seed42.json"
+        ],
+        "exit_code": 0,
+        "stop_reason": null,
+        "peak_sampled_rss_kib": 972632,
+        "seconds": 27.514692999000545
+      }
+    }
+  },
+  "interpretation": "The final-code replays reproduce every historical score and checkpoint tensor. The three-expert router remains weaker than its SRM expert and logistic stacking on the degraded source-validation proxy. Its small clean gain over the two-expert router remains inconclusive. No full-benchmark, cross-dataset or across-seed improvement is established."
+}

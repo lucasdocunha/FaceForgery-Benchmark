@@ -1,0 +1,27 @@
+# Secondary SBI-only forgetting ablation after MFFI fake exposure.
+name: sbi-hf-sbi-only-ablation
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
+  landmarks: ${TCC_DATA_ROOT}/landmarks/train-real.sqlite
+model:
+  initialization: hf_mffi
+  weights: ${TCC_SBI_INIT_CHECKPOINT}
+  mode: srm
+  image_size: 224
+  train_backbone: true
+training:
+  arm: sbi
+  epochs: 5
+  batch_size: 16
+  grad_accum_steps: 4
+  workers: 4
+  lr_backbone: 0.00001
+  lr_head: 0.0001
+  amp: true
+  failure_policy: exclude
+  cache_images: false

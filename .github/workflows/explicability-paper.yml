@@ -1,0 +1,73 @@
+name: Explicability paper build
+on:
+  push:
+    branches: [explicability]
+    paths: ['paper/explicability/*.tex', 'paper/explicability/*.bib', '.github/workflows/explicability-paper.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: explicability-paper-build
+  cancel-in-progress: true
+jobs:
+  paper:
+    if: github.ref == 'refs/heads/explicability'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install TeX and PDF inspection utilities
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures poppler-utils
+      - name: Verify and stage official style
+        run: |
+          python - <<'PY'
+          import hashlib, io, pathlib, urllib.request, zipfile
+          url = 'https://media.iclr.cc/Conferences/ICLR2027/iclr-2027-style-files.zip'
+          with urllib.request.urlopen(url, timeout=60) as r: data = r.read(10_000_001)
+          if hashlib.sha256(data).hexdigest() != '0d940dfa9398ae99a18f24a85a8a683f367204b6af6d17d2899e60a67102529e':
+              raise ValueError('Official style archive changed; review before updating the pin')
+          target = pathlib.Path('paper/explicability')
+          names = {'iclr2027_conference.sty','iclr2027_conference.bst','fancyhdr.sty','natbib.sty'}
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              for entry in z.infolist():
+                  name = pathlib.PurePosixPath(entry.filename).name
+                  if name in names: (target/name).write_bytes(z.read(entry))
+          PY
+      - name: Compile and inspect (no research experiments)
+        working-directory: paper/explicability
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > pass1.txt
+          bibtex main > bibtex.txt
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > pass2.txt
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex > pass3.txt
+          if grep -E 'undefined references|Citation .* undefined|There were undefined citations' main.log; then exit 1; fi
+          pdfinfo main.pdf
+          pdftotext -layout main.pdf main.txt
+          pdftoppm -scale-to 1400 -png main.pdf preview > /dev/null 2>&1
+          echo 'Layout diagnostics:'
+          grep -E 'Overfull|Underfull' main.log || true
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('main.txt').read_text()
+          for i, page in enumerate(text.split('\f'), 1):
+              if page.strip(): print(i, page[:180].replace('\n',' | '))
+          print(text)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: explicability-paper-review
+          path: |
+            paper/explicability/main.pdf
+            paper/explicability/main.txt
+            paper/explicability/main.log
+            paper/explicability/main.bbl
+            paper/explicability/bibtex.txt
+            paper/explicability/pass*.txt
+            paper/explicability/preview-*.png
+          retention-days: 14
+          if-no-files-found: error

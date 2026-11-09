@@ -1,0 +1,21 @@
+pair_idx,class,filename,clean_size,hard_size,mean_pixel_diff,b_shift,dst_clean,dst_hard
+1,Real,71f4fb8c5744283078001a871027efa0.jpg,"(512, 512)","(512, 512)",1.31,-0.02,pair_01_Real_clean_71f4fb8c5744283078001a871027efa0.jpg,pair_01_Real_hard_71f4fb8c5744283078001a871027efa0.jpg
+2,Fake,a961f978aba304a15c3abf54a5124a01.jpg,"(512, 512)","(512, 512)",41.7,43.17,pair_02_Fake_clean_a961f978aba304a15c3abf54a5124a01.jpg,pair_02_Fake_hard_a961f978aba304a15c3abf54a5124a01.jpg
+3,Real,ab69dc08ddc1709964482c521317ac71.jpg,"(512, 512)","(512, 512)",58.33,-47.38,pair_03_Real_clean_ab69dc08ddc1709964482c521317ac71.jpg,pair_03_Real_hard_ab69dc08ddc1709964482c521317ac71.jpg
+4,Fake,de54b8f237ce79bbf9ce4685b02bc3db.jpg,"(512, 512)","(512, 512)",95.27,95.98,pair_04_Fake_clean_de54b8f237ce79bbf9ce4685b02bc3db.jpg,pair_04_Fake_hard_de54b8f237ce79bbf9ce4685b02bc3db.jpg
+5,Real,1a8e698c36152d78488ff4e2a78768cc.jpg,"(512, 512)","(512, 512)",1.69,-0.01,pair_05_Real_clean_1a8e698c36152d78488ff4e2a78768cc.jpg,pair_05_Real_hard_1a8e698c36152d78488ff4e2a78768cc.jpg
+6,Fake,999b6b56d2dfcc159fcaa2b942496dbd.jpg,"(512, 512)","(512, 512)",1.25,-0.01,pair_06_Fake_clean_999b6b56d2dfcc159fcaa2b942496dbd.jpg,pair_06_Fake_hard_999b6b56d2dfcc159fcaa2b942496dbd.jpg
+7,Real,f3b336bed202bb91828b4bdfc507c702.jpg,"(512, 512)","(224, 224)",40.14,-0.59,pair_07_Real_clean_f3b336bed202bb91828b4bdfc507c702.jpg,pair_07_Real_hard_f3b336bed202bb91828b4bdfc507c702.jpg
+8,Fake,79f014d994c407ed0aa64b5188d79d2a.jpg,"(512, 512)","(512, 512)",1.54,-0.0,pair_08_Fake_clean_79f014d994c407ed0aa64b5188d79d2a.jpg,pair_08_Fake_hard_79f014d994c407ed0aa64b5188d79d2a.jpg
+9,Real,c1048e046bbc9508bfa324f4a77e2fe0.jpg,"(512, 512)","(224, 224)",24.77,15.61,pair_09_Real_clean_c1048e046bbc9508bfa324f4a77e2fe0.jpg,pair_09_Real_hard_c1048e046bbc9508bfa324f4a77e2fe0.jpg
+10,Fake,35e815bc7a94b9478148289f4cf2c12a.jpg,"(1088, 1088)","(1088, 1088)",3.58,-0.0,pair_10_Fake_clean_35e815bc7a94b9478148289f4cf2c12a.jpg,pair_10_Fake_hard_35e815bc7a94b9478148289f4cf2c12a.jpg
+11,Real,d04037de1fcee4f1b31dd4dae822f3dd.jpg,"(512, 512)","(512, 512)",28.2,29.58,pair_11_Real_clean_d04037de1fcee4f1b31dd4dae822f3dd.jpg,pair_11_Real_hard_d04037de1fcee4f1b31dd4dae822f3dd.jpg
+12,Fake,68608287f460b40c87f4e9c12d4efcb5.jpg,"(512, 512)","(512, 512)",3.67,0.04,pair_12_Fake_clean_68608287f460b40c87f4e9c12d4efcb5.jpg,pair_12_Fake_hard_68608287f460b40c87f4e9c12d4efcb5.jpg
+13,Real,e1d2e996e3afe4b92306dd203d0f98e7.jpg,"(512, 512)","(512, 512)",1.76,-0.01,pair_13_Real_clean_e1d2e996e3afe4b92306dd203d0f98e7.jpg,pair_13_Real_hard_e1d2e996e3afe4b92306dd203d0f98e7.jpg
+14,Fake,fbbe972da11ac11b43b787fb5020c497.jpg,"(512, 512)","(512, 512)",108.25,107.75,pair_14_Fake_clean_fbbe972da11ac11b43b787fb5020c497.jpg,pair_14_Fake_hard_fbbe972da11ac11b43b787fb5020c497.jpg
+15,Real,42c200db6de1188ca9bc572bea1fb9f4.jpg,"(512, 512)","(512, 512)",2.15,-0.01,pair_15_Real_clean_42c200db6de1188ca9bc572bea1fb9f4.jpg,pair_15_Real_hard_42c200db6de1188ca9bc572bea1fb9f4.jpg
+16,Fake,3d8c185b3729a3a3cce73e418767a67c.jpg,"(512, 512)","(512, 512)",8.14,0.18,pair_16_Fake_clean_3d8c185b3729a3a3cce73e418767a67c.jpg,pair_16_Fake_hard_3d8c185b3729a3a3cce73e418767a67c.jpg
+17,Real,e56e2fc8f6eb6e3902be37c50b634837.jpg,"(512, 512)","(512, 512)",1.11,-0.0,pair_17_Real_clean_e56e2fc8f6eb6e3902be37c50b634837.jpg,pair_17_Real_hard_e56e2fc8f6eb6e3902be37c50b634837.jpg
+18,Fake,79ca17595b9c1bf449ded305a26c25c0.jpg,"(512, 512)","(512, 512)",9.46,0.04,pair_18_Fake_clean_79ca17595b9c1bf449ded305a26c25c0.jpg,pair_18_Fake_hard_79ca17595b9c1bf449ded305a26c25c0.jpg
+19,Real,f5ab2ad76ab21825b8f804eb18f1e353.jpg,"(512, 512)","(512, 512)",41.94,44.21,pair_19_Real_clean_f5ab2ad76ab21825b8f804eb18f1e353.jpg,pair_19_Real_hard_f5ab2ad76ab21825b8f804eb18f1e353.jpg
+20,Fake,1834bff3206436edf5857e907978ef20.jpg,"(512, 512)","(512, 512)",38.3,38.75,pair_20_Fake_clean_1834bff3206436edf5857e907978ef20.jpg,pair_20_Fake_hard_1834bff3206436edf5857e907978ef20.jpg

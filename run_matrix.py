@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import argparse
 import logging
+import sys
 from pathlib import Path
 from typing import Sequence
 
 from src.data.data import ALL_FOURIER_MODES
+from src.data.paths import models_root
 from src.pipelines.config import load_config
 from src.utils.multiprocess import run_tasks_on_gpus
 from train import train_from_config
@@ -16,103 +18,61 @@ FAMILIES = ("resnet", "xception", "mobilenet", "vit", "clip", "dino")
 
 CONFIG_DIR = Path(__file__).resolve().parent / "configs"
 
+def _is_done(family, mode, regime, seed):
+    return (models_root()/family/mode/regime/f"seed_{seed}"/"results"/"metrics_summary.csv").exists()
 
-def build_tasks(
-    regime: str,
-    only: Sequence[str] | None = None,
-    num_workers: int | None = None,
-) -> list[dict]:
-    """Build task list for all combinations of family x Fourier mode x seed."""
-    families = tuple(only) if only else FAMILIES
-    unknown = [family for family in families if family not in FAMILIES]
+def build_tasks(regime, only=None, force=False, raw_min=False, epochs=None, seeds=None, fourier=None, num_workers=None):
+    families=tuple(only) if only else FAMILIES
+    unknown=[family for family in families if family not in FAMILIES]
     if unknown:
-        raise ValueError(
-            f"Unknown model families: {', '.join(unknown)}. Valid families: {', '.join(FAMILIES)}"
-        )
-
-    tasks = []
+        raise ValueError(f"Famílias desconhecidas: {', '.join(unknown)}. Válidas: {', '.join(FAMILIES)}")
+    tasks=[]
+    modes = tuple(fourier) if fourier else ALL_FOURIER_MODES
     for family in families:
-        path = CONFIG_DIR / f"{family}.yaml"
-        config = load_config(path)
-        for mode in ALL_FOURIER_MODES:
+        path=CONFIG_DIR/f"{family}.yaml"
+        overrides = {}
+        if raw_min: overrides["raw_min"] = True
+        if epochs is not None: overrides["epochs"] = epochs
+        if seeds is not None: overrides["seeds"] = tuple(int(s) for s in seeds)
+        config=load_config(path, overrides)
+        for mode in modes:
             for seed in config.seeds:
-                kwargs = {
-                    "config_path": str(path),
-                    "fourier": mode,
-                    "regime": regime,
-                    "seed": seed,
-                }
-                if num_workers is not None:
-                    kwargs["num_workers"] = num_workers
-                tasks.append(
-                    {
-                        "fn": train_from_config,
-                        "name": f"{family}/{mode}/{regime}/seed_{seed}",
-                        "kwargs": kwargs,
-                    }
-                )
+                if not force and _is_done(family, mode, regime, seed):
+                    continue
+                kwargs = {"config_path": str(path), "fourier": mode, "regime": regime, "seed": seed}
+                if raw_min: kwargs["raw_min"] = True
+                if epochs is not None: kwargs["epochs"] = epochs
+                if num_workers is not None: kwargs["num_workers"] = num_workers
+                tasks.append({"fn": train_from_config, "name": f"{family}/{mode}/{regime}/seed_{seed}", "kwargs": kwargs})
     return tasks
 
-
-def main(argv: Sequence[str] | None = None) -> None:
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+def main(argv=None):
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(asctime)s %(levelname)s %(message)s")
+    p=argparse.ArgumentParser()
+    p.add_argument("--regime",required=True,choices=("scratch","finetune"))
+    p.add_argument("--only")
+    p.add_argument("--gpus")
+    p.add_argument("--workers-per-gpu",type=int,default=1)
+    p.add_argument("--num-workers", type=int, default=None, help="DataLoader workers per training process")
+    p.add_argument("--dry-run",action="store_true")
+    p.add_argument("--force",action="store_true",help="re-run tasks even if results/metrics_summary.csv already exists")
+    p.add_argument("--raw-min",action="store_true",help="use min dataset data/raw_min")
+    p.add_argument("--epochs",type=int,default=None,help="override number of epochs")
+    p.add_argument("--seeds",type=str,default=None,help="comma-separated seeds (e.g. 42)")
+    p.add_argument("--fourier",type=str,default=None,help="comma-separated Fourier modes (e.g. none)")
+    a=p.parse_args(argv)
+    tasks=build_tasks(
+        a.regime,
+        a.only.split(",") if a.only else None,
+        a.force,
+        raw_min=a.raw_min,
+        epochs=a.epochs,
+        seeds=a.seeds.split(",") if a.seeds else None,
+        fourier=a.fourier.split(",") if a.fourier else None,
+        num_workers=a.num_workers,
     )
-    parser = argparse.ArgumentParser(
-        description="Execute full benchmark matrix (6 families x 7 Fourier modes x 3 seeds) across available GPUs."
-    )
-    parser.add_argument(
-        "--regime",
-        required=True,
-        choices=("scratch", "finetune"),
-        help="Training regime: 'scratch' (from random init) or 'finetune' (pretrained weights).",
-    )
-    parser.add_argument(
-        "--only",
-        type=str,
-        default=None,
-        help="Comma-separated subset of model families to run (e.g. 'resnet,vit').",
-    )
-    parser.add_argument(
-        "--gpus",
-        type=str,
-        default=None,
-        help="Comma-separated list of GPU indices to distribute tasks on (e.g. '0,1,2,3').",
-    )
-    parser.add_argument(
-        "--workers-per-gpu",
-        type=int,
-        default=1,
-        help="Number of concurrent worker processes per GPU (default: 1).",
-    )
-    parser.add_argument(
-        "--num-workers",
-        type=int,
-        default=None,
-        help="DataLoader num_workers per training task (e.g. 2, 1, or 0).",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print list of tasks to execute without launching training.",
-    )
-
-    args = parser.parse_args(argv)
-    only_families = [x.strip() for x in args.only.split(",")] if args.only else None
-    tasks = build_tasks(args.regime, only_families, num_workers=args.num_workers)
-
-    if args.dry_run:
-        print(f"Dry run: {len(tasks)} tasks scheduled:")
-        for t in tasks:
-            print(f"  - {t['name']}")
-        return
-
-    gpu_ids = [int(x.strip()) for x in args.gpus.split(",") if x.strip()] if args.gpus else None
-    run_tasks_on_gpus(tasks, gpus=gpu_ids, workers_per_gpu=args.workers_per_gpu)
-
-
-if __name__ == "__main__":
-    main()
+    if a.dry_run:
+        print("\n".join(t["name"] for t in tasks)); return
+    run_tasks_on_gpus(tasks,gpus=[int(x) for x in a.gpus.split(",")] if a.gpus else None,workers_per_gpu=a.workers_per_gpu)
+if __name__ == "__main__": main()
 

@@ -1,0 +1,4 @@
+# Install after the existing ICLR environment, or use:
+# uv run --with captum==0.9.0 python explicability.py --help
+# This file intentionally does not change pyproject.toml or uv.lock.
+captum==0.9.0

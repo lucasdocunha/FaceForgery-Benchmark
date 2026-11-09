@@ -5,7 +5,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import dtcwt
+
+try:
+    import dtcwt
+except (ImportError, ModuleNotFoundError):
+    dtcwt = None
 
 
 class DTCWTExtractor(nn.Module):
@@ -21,6 +25,11 @@ class DTCWTExtractor(nn.Module):
     """
     def __init__(self, mode: str = "concat_rgb", nlevels: int = 2):
         super().__init__()
+        if dtcwt is None:
+            raise ImportError(
+                "O pacote 'dtcwt' é necessário para utilizar a extração DTCWT. "
+                "Instale-o com: pip install dtcwt==0.14.0 --no-deps"
+            )
         self.mode = mode
         self.nlevels = nlevels
         self.transform2d = dtcwt.Transform2d()

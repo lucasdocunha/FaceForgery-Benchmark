@@ -1,50 +1,55 @@
-"""Raiz das imagens no disco (mesma para raw e raw_min).
-
-`raw_min` vs `raw` altera apenas os CSV em ``data/raw_min`` ou ``data/raw``;
-os arquivos `.jpg` continuam nos splits phase1 abaixo.
-
-Override opcional: variável de ambiente ``TCC_DATASET_ROOT``.
-"""
-
+"""Portable data/artifact paths; explicit overrides never fall back silently."""
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
 _SPLIT_TO_SUBDIR = {"train": "trainset", "val": "valset", "test": "testset"}
-_SPLIT_TO_SHORT_SUBDIR = {"train": "train", "val": "val", "test": "test"}
-
-_DEFAULT_ROOT = Path("/media/ssd2/lucas.ocunha/datasets/phase1")
-
-# Raiz dos CSVs (data/raw e data/raw_min). Fixa e independente do cwd do processo,
-# já que jobs (ex.: via myjobs) podem rodar com o working directory apontando para
-# uma pasta de sandbox do job, não para a raiz do repositório.
-# Override opcional: variável de ambiente ``TCC_DATA_ROOT``.
-_DEFAULT_DATA_ROOT = Path("/home/lucas.ocunha/research/TCC/data")
+_REPO_DATA_ROOT = Path(__file__).resolve().parents[2] / "data"
 
 
 def phase1_split_root(split: str) -> Path:
-    base = Path(os.environ.get("TCC_DATASET_ROOT", str(_DEFAULT_ROOT)))
-    canonical = base / _SPLIT_TO_SUBDIR[split]
-    if canonical.exists():
-        return canonical
-
-    short = base / _SPLIT_TO_SHORT_SUBDIR[split]
-    if short.exists():
-        return short
-
-    return canonical
+    explicit = os.environ.get("TCC_DATASET_ROOT")
+    candidates = ([Path(explicit).expanduser()] if explicit else
+                  [_REPO_DATA_ROOT / "datasets" / "phase1", _REPO_DATA_ROOT / "datasets" / "min_dataset", Path("/media/ssd2/lucas.ocunha/datasets/phase1")])
+    for base in candidates:
+        for name in dict.fromkeys((_SPLIT_TO_SUBDIR.get(split, split), split)):
+            path = base / name
+            if path.is_dir():
+                return path
+    expected = candidates[0] / _SPLIT_TO_SUBDIR.get(split, split)
+    if explicit:
+        raise FileNotFoundError(f"Split {split!r} not found under TCC_DATASET_ROOT={explicit}; expected {expected}")
+    return expected
 
 
 def data_root() -> Path:
-    return Path(os.environ.get("TCC_DATA_ROOT", str(_DEFAULT_DATA_ROOT)))
+    """CSV manifests, independent of the process working directory."""
+    return Path(os.environ.get("TCC_DATA_ROOT", str(_REPO_DATA_ROOT))).expanduser()
 
 
 def models_root() -> Path:
-    """Root for new-layout checkpoints, configurable per environment."""
-    return Path(os.environ.get("TCC_MODELS_ROOT", str(Path.cwd() / "models")))
+    """Training work tree (job-local when launched by the CISIA runner)."""
+    explicit = os.environ.get("TCC_MODELS_ROOT")
+    if explicit:
+        return Path(explicit).expanduser()
+    ssd2 = Path("/media/ssd2/lucas.ocunha/models-tcc")
+    if ssd2.is_dir():
+        return ssd2
+    return Path(str(_REPO_DATA_ROOT.parent / "models")).expanduser()
 
 
 def output_root() -> Path:
-    """Root for generated tables and heatmaps."""
-    return Path(os.environ.get("TCC_OUTPUT_ROOT", str(Path.cwd())))
+    return Path(os.environ.get("TCC_OUTPUT_ROOT", str(_REPO_DATA_ROOT.parent))).expanduser()
+
+
+def pretrained_root() -> Path:
+    """Read-only pretrained source; the CISIA runner resolves each family."""
+    explicit = os.environ.get("TCC_PRETRAINED_ROOT")
+    if explicit:
+        return Path(explicit).expanduser()
+    for path in (Path("/datasets/ai_models/faceforgery/pretrained"),
+                 Path("/projects/models") / os.environ.get("USER", "") / "pretrained"):
+        if path.is_dir():
+            return path
+    return models_root() / "pretrained"

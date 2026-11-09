@@ -1,0 +1,55 @@
+# Frozen forensic MoE, Experiment I
+
+The original `src/models/moe.py` remains compatible. It trains convolutional experts and a router jointly. The new `src/experimental/moe/` instead consumes frozen expert features and scores, making their complementarity measurable against simple fusion without retraining existing strong backbones.
+
+The default complete configuration requires noise/SRM, spatial/RGB and reconstruction-discrepancy experts. SRM and RGB use the shared verified feature cache. Reconstruction can use certified residual-detector predictions, with their checkpoint-bound input contract and calibration. Additional prediction or feature-cache experts can supply metric, DTCWT, frequency or VLM signals. `required_roles` may be reduced only for an explicitly labeled ablation. A two-expert SRM/RGB run does not validate the complete three-expert method.
+
+Fit only on source validation. `val_fit` and `val_select` are deterministic SHA-256 assignments of source image names within each group, with a declared split seed and fraction. No labels enter the split hash. All members of a group stay together; overlap in provided source IDs or image hashes fails. Both subsets must contain both classes. The source manifest still says `split=val`, with `fusion_subset` distinguishing its role. Lack of identity/video annotations in MFFI is an unresolved dependence limitation. Inherited HF experts were trained on MFFI-train and selected on full MFFI-val; splitting outputs does not remove their earlier validation exposure. Full-scale conclusions need an independent fusion fit and selection population or cross-fitting.
+
+The router sees frozen penultimate features and clipped expert log-odds. Mean/std are fitted exclusively on `val_fit` and stored as frozen model buffers. Only its two-layer MLP trains. The output is the convex weighted mean of expert `p_fake`; binary logits are `[log(1-p_fake), log(p_fake)]`. Inputs are detached, so no expert or input receives gradients. FP32 softmax applies a fixed configurable temperature.
+
+Soft routing and renormalized top-k are implemented with expert dropout. Training top-k must be at least two. Renormalizing a single selected weight makes it identically one, eliminating the classification gradient to the router; top-1 is therefore an explicit inference option after soft or top-2 training. Dropout preserves at least two active experts. The [Switch Transformers](https://jmlr.org/papers/volume23/21-0998/21-0998.pdf) auxiliary objective motivates `N * sum(mean gate mass * detached assignment fraction)`, with top-k assignment fractions divided by k. Uniform mass/utilization gives one; full collapse gives N. Soft routing uses top-1 occupancy for this diagnostic. This is an adaptation to frozen-score fusion, without token-capacity routing or a claim of computational expert sparsity: all experts were already scored.
+
+Every run compares the selected router, each expert alone, arithmetic mean, the repository's scalar geometric mean, normalized binary geometric fusion, and L2 logistic stacking fitted on `val_fit`. Every threshold is selected on `val_select` by the shared Youden/balanced-accuracy optimizer. Each comparison has its own method artifact, calibration and certified predictions. Routing entropy, average weights, occupancy and expert score correlations are recorded in `comparison.json`. A router win on the same development selection subset is exploratory evidence only.
+
+Feature and prediction files are checked against their certificates, then joined by sample ID. Labels, group IDs, image paths and hashes must agree. Checkpoint, feature dimension, preprocessing, extraction-code/package identities and expert order must match the fitted artifact. Inference also verifies the actual image bytes against each cached row. Missing rows, changed bytes or provenance mismatches fail without inner joins or score-orientation selection. Evaluation labels remain outside router features.
+
+`data.expert_seed_policy` distinguishes scientific conditions from checkpoint realizations. Its default `fixed` binds exact expert checkpoints and source caches in the condition, suitable for repeated router seeds with identical experts. Server soft/top-2 configurations use `matched`: each source expert seed must equal the router seed. Verified legacy checkpoint/run configs and reconstruction bundle descriptions supply seed-independent architecture, training, input, code and population policies for aggregation. Exact checkpoints, cache identities and observed seeds remain in the artifact and realization metadata, with unchanged inference guards. Matched fitting requires those source assets and verified metadata; arbitrary prediction experts use `fixed` until they expose an audited comparable policy. Different source regimes or budgets cannot silently aggregate.
+
+Train with the shared experimental CLI or standalone entry point:
+
+```bash
+python research_cli.py experimental train --family moe --config configs/experimental/moe_frozen_soft.yaml --execute
+python -m src.experimental.moe configs/experimental/moe_frozen_top2.yaml
+```
+
+Set the output variable used by the chosen YAML (`TCC_RUN_DIR` in the portable campaign) plus `TCC_FEATURE_SRM_VAL`, `TCC_FEATURE_RGB_VAL`, `TCC_RECON_VAL_PREDICTIONS` and `TCC_RECON_CALIBRATION`. The feature variables point at complete cache directories, not indexes. The reconstruction variables point at certified CSV and calibration files. `moe_mobilenet_twoexpert_pilot.yaml` reproduces the cheaper SRM/RGB-only ablation and explicitly removes the reconstruction requirement. Refit with seeds 42, 123, 2024, 7 and 2025 for the server campaign while keeping the split seed fixed across comparisons. CPU fitting uses two threads, no loader workers, and streaming minibatches of memory-mapped expert features. Resume is at completed epochs; completed artifacts and calibrations stay frozen.
+
+`moe_mobilenet_reconstruction_pilot.yaml` adds the mandatory reconstruction expert under the same six-epoch, 32-hidden-unit development budget and fixed source split, with output `TCC_RUN_DIR`. Degraded min-val proxy comparisons use the identical clean `val_select` IDs and frozen per-method thresholds. New caches and reconstruction predictions bind the degraded image bytes; no degraded labels fit the router, stacker, standardizer or threshold.
+
+`inference.describe_run(run_dir, method='router')` is read-only and supplies the shared suite with the artifact checkpoint path, input contract and exact `val_select` calibration identity. `validate_sources(run_dir, sources, frame, root)` verifies target caches without constructing a network. `load_predictor(run_dir, sources, device, method)` supplies the suite's canonical callback. Sources may be an ordered list of cache/CSV paths or full named source specifications. Methods are `router`, `mean`, `geometric`, `geometric_binary`, `logistic` or `expert_<name>`.
+
+The audited four-target suite takes separate source lists for Test, Test-D, DF-40 and Celeb-DF v2. Extract each expert with the same frozen checkpoint and preprocessing on each certified target manifest. Test-D caches must contain the degraded bytes despite sharing logical Test sample IDs. Celeb-DF uses the suite's mean-of-frame `p_fake` aggregation; DF-40 uses its explicit real-reference policy. Calibration requires the exact emitted `val_select.csv`, and neither target labels nor target thresholds are used for fitting. No full external benchmark is available locally.
+
+Tests exercise nonzero classification gradients in soft/top-2 training, blocked top-1 training, finite dropout routing, frozen inputs, hand-computed fusion/balance values, temperature, reorder-stable splits, key alignment, leakage rejection, complete three-expert fit/calibration, all mandatory comparison exports, score-equivalent checkpoint reload, dry metadata/source verification and image/artifact tampering rejection. These fixtures establish implementation behavior, not pretrained detector quality.
+
+## Actual MobileNet plus reconstruction pilot, 2026-10-03
+
+[Clean three-expert evidence](pilots/moe_mobilenet_reconstruction_seed42.json), [degraded three-expert evidence](pilots/moe_mobilenet_reconstruction_degraded_seed42.json), and [the two-expert degraded control](pilots/moe_mobilenet_twoexpert_degraded_seed42.json) record the same 494 `val_fit` and 506 `val_select` images. The source min-val population has 1,000 images. All degraded results use those exact 506 selection IDs and unchanged clean calibrations; degraded labels never train or tune any component. The complete three-expert router trained 82,147 parameters for 96 updates in 0.53 seconds on CPU, with peak RSS 952,480 KiB. Reload score error was 1.11e-16.
+
+| Frozen method | Clean val_select AUC | Degraded val_select AUC |
+| --- | ---: | ---: |
+| SRM alone | 0.9489 | 0.8347 |
+| RGB alone | 0.9595 | 0.6594 |
+| Reconstruction alone | 0.6544 | 0.5721 |
+| Three-expert mean | 0.9620 | 0.7886 |
+| Three-expert scalar geometric | 0.9681 | 0.7292 |
+| Three-expert binary geometric | 0.9666 | 0.7538 |
+| Three-expert logistic stacking | 0.9720 | 0.8093 |
+| Three-expert router | 0.9763 | 0.7932 |
+| Two-expert mean | 0.9721 | 0.8107 |
+| Two-expert router | 0.9745 | 0.7939 |
+
+The clean router-minus-three-expert-mean interval is positive, but the weak reconstruction expert depresses that mean. Clean gain over the two-expert router is 0.00175, with paired 95% interval [-0.00321, 0.00660]; gain over logistic stacking also includes zero. On the degraded proxy, router-minus-SRM is -0.04145, with interval [-0.07425, -0.00906]. The three-expert router loses 0.1830 AUC under degradation. This pilot demonstrates the full frozen fusion path and an unfavorable robustness result; it does not establish added value from reconstruction.
+
+Intervals use 1,000 paired image-group bootstrap draws, conditional on selected checkpoints. HF experts were selected using source validation, and router epoch and thresholds use the reported selection subset. Identity/video dependence is unresolved. Clean validation ceilings and this single deterministic degradation recipe limit interpretation; these are development proxies, not external Test-D or untouched-test evidence. No min-test was accessed.

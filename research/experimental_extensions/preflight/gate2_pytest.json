@@ -1,0 +1,11 @@
+{
+  "purpose": "Gate 2 integrated test suite",
+  "date_local": "2026-10-03T09:55:03-03:00",
+  "commit": "d831dd4",
+  "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 HIP_VISIBLE_DEVICES='' CUDA_VISIBLE_DEVICES='' .venv/bin/python -m pytest -q",
+  "passed": 432,
+  "subtests_passed": 20,
+  "seconds": 66.84,
+  "exit_code": 0,
+  "log_outside_git": "local/logs/gate2-main-pytest.log"
+}

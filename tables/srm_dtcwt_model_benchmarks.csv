@@ -1,0 +1,4 @@
+architecture,seeds,rgb_fps_mean,rgb_fps_std,srm_6c_fps_mean,srm_6c_fps_std,dtcwt_9c_fps_mean,dtcwt_9c_fps_std,overhead_srm_pct,overhead_dtcwt_pct
+RESNET,"5 seeds (42, 123, 2024, 7, 2025)",4182.9,117.2,3974.8,101.2,3760.4,85.5,4.98,10.1
+MOBILENET,"5 seeds (42, 123, 2024, 7, 2025)",5080.7,17.0,4929.6,153.6,5018.5,10.1,2.97,1.22
+XCEPTION,"5 seeds (42, 123, 2024, 7, 2025)",1122.9,6.3,1123.2,4.3,1121.6,3.4,-0.03,0.11

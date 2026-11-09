@@ -1,0 +1,48 @@
+name: Explicability evidence audit
+on:
+  push:
+    branches: [explicability]
+    paths: ['.github/workflows/explicability-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    if: github.ref == 'refs/heads/explicability'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Capture source and public weight metadata (no inference)
+        shell: bash
+        run: |
+          mkdir -p /tmp/evidence
+          git archive HEAD -o /tmp/evidence/source.tar
+          python - <<'PY'
+          import json, pathlib, urllib.request
+          out = pathlib.Path('/tmp/evidence')
+          urls = {
+            'hf_readme.md': 'https://huggingface.co/lucasoc/MFFI-Models/raw/main/README.md',
+            'hf_model.json': 'https://huggingface.co/api/models/lucasoc/MFFI-Models',
+            'hf_tree.json': 'https://huggingface.co/api/models/lucasoc/MFFI-Models/tree/main?recursive=true&expand=false',
+          }
+          status = {}
+          for name, url in urls.items():
+              try:
+                  with urllib.request.urlopen(url, timeout=60) as response:
+                      data = response.read()
+                  (out / name).write_bytes(data)
+                  status[name] = {'ok': True, 'bytes': len(data), 'url': url}
+              except Exception as error:
+                  status[name] = {'ok': False, 'error': str(error), 'url': url}
+          (out / 'access.json').write_text(json.dumps(status, indent=2))
+          print(json.dumps(status, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: explicability-source-audit
+          path: /tmp/evidence/
+          retention-days: 3
+          if-no-files-found: error

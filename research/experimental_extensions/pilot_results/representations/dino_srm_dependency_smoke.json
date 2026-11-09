@@ -1,0 +1,175 @@
+{
+  "scope": "min-data dependency smoke, not method selection",
+  "software": {
+    "commit": "8fd3449c80507809474b92cb067f0987137d51b0",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "train_cache": "fb222e02381d947f066550381202c71ae673620021b8fb22d52c4384e79426cb",
+  "val_cache": "eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+  "seed": 42,
+  "train_n": 1000,
+  "val_n": 1000,
+  "selected_labels": 51,
+  "metric_mask_equals_graph_mask": true,
+  "reload_exact": true,
+  "graph_rebuilds": [
+    {
+      "epoch": 0,
+      "seconds": 0.0628669960001389,
+      "neighbors_sha256": "b5572a3051d261a9f374d52e68de9c7b653747a185152bface337bb0229447d2"
+    },
+    {
+      "epoch": 1,
+      "seconds": 0.05994026600001234,
+      "neighbors_sha256": "5fad7fd4041dcf4f4e77fa10b647db70837179fbacca8364a3f8f917e4836781"
+    }
+  ],
+  "metric": {
+    "n": 1000,
+    "n_real": 408,
+    "n_fake": 592,
+    "auc": 0.9870743905670376,
+    "average_precision": 0.9930014155427371,
+    "balanced_accuracy": 0.9618607578166402,
+    "eer": 0.0456081081081081,
+    "eer_threshold": 0.38908551512537776,
+    "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+    "eer_status": "defined",
+    "f1": 0.9636678200692042,
+    "f1_policy": "fake is positive; zero division returns zero",
+    "accuracy": 0.958,
+    "brier": 0.11888742786982379,
+    "log_loss": 0.4190423037884449,
+    "ece_10_equal_width": 0.28238209879398346,
+    "threshold": 0.40179774165153503,
+    "tn": 401,
+    "fp": 7,
+    "fn": 35,
+    "tp": 557,
+    "confusion_matrix": [
+      [
+        401,
+        7
+      ],
+      [
+        35,
+        557
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9828431372549019,
+        0.01715686274509804
+      ],
+      [
+        0.05912162162162162,
+        0.9408783783783784
+      ]
+    ],
+    "confusion_axes": "rows true, columns predicted; [real, fake]",
+    "fpr": 0.01715686274509804,
+    "tpr": 0.9408783783783784,
+    "auc_status": "defined"
+  },
+  "graph": {
+    "n": 1000,
+    "n_real": 408,
+    "n_fake": 592,
+    "auc": 0.984925642554319,
+    "average_precision": 0.992090594859678,
+    "balanced_accuracy": 0.9644773449920508,
+    "eer": 0.04391891891891902,
+    "eer_threshold": 0.5380894348428056,
+    "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+    "eer_status": "defined",
+    "f1": 0.9673539518900344,
+    "f1_policy": "fake is positive; zero division returns zero",
+    "accuracy": 0.962,
+    "brier": 0.2017135870518333,
+    "log_loss": 0.5951977516442444,
+    "ece_10_equal_width": 0.3466197711825371,
+    "threshold": 0.5407275557518005,
+    "tn": 399,
+    "fp": 9,
+    "fn": 29,
+    "tp": 563,
+    "confusion_matrix": [
+      [
+        399,
+        9
+      ],
+      [
+        29,
+        563
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9779411764705882,
+        0.022058823529411766
+      ],
+      [
+        0.048986486486486486,
+        0.9510135135135135
+      ]
+    ],
+    "confusion_axes": "rows true, columns predicted; [real, fake]",
+    "fpr": 0.022058823529411766,
+    "tpr": 0.9510135135135135,
+    "auc_status": "defined"
+  },
+  "telemetry": {
+    "metric": {
+      "runtime_seconds": 0.7604583280003681,
+      "peak_rss_kib": 895272,
+      "peak_rss_scope": "process lifetime high-water mark",
+      "peak_vram_bytes": 0,
+      "trainable_parameters": 73920,
+      "epochs_completed": 2,
+      "global_step": 6,
+      "best_epoch": 0,
+      "seed": 42,
+      "scope": "cached-feature development"
+    },
+    "graph": {
+      "runtime_seconds": 1.7413653300000078,
+      "peak_rss_kib": 943764,
+      "peak_rss_scope": "process lifetime high-water mark",
+      "peak_vram_bytes": 0,
+      "trainable_parameters": 24866,
+      "epochs_completed": 2,
+      "global_step": 4,
+      "best_epoch": 1,
+      "seed": 42,
+      "scope": "cached-feature development"
+    }
+  }
+}

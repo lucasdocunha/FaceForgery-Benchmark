@@ -1,0 +1,26 @@
+{
+  "status": "unexecuted experiment specification, not measured results",
+  "selection": "Source validation only. Do not choose variants by Test-D/Celeb-DF/DF40 performance.",
+  "pilot_seed": 42,
+  "confirmatory_seeds": [42, 123, 2024, 987, 7],
+  "variants": [
+    {"name": "rgb_basic", "kind": "rgb", "recipe": "basic_v1", "paired_training": false, "consistency_weight": 0.0},
+    {"name": "rgb_robust", "kind": "rgb", "recipe": "robust_v1", "paired_training": false, "consistency_weight": 0.0},
+    {"name": "rgb_paired_ce", "kind": "rgb", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.0},
+    {"name": "rgb_paired_js", "kind": "rgb", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.1},
+    {"name": "spectral", "kind": "spectral", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.0},
+    {"name": "early_concat", "kind": "early_concat", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.0},
+    {"name": "late_mean", "kind": "late_mean", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.0},
+    {"name": "adaptive_ce", "kind": "adaptive", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.0},
+    {"name": "adaptive_js", "kind": "adaptive", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.1},
+    {"name": "spatial_control_js", "kind": "spatial_control", "recipe": "robust_v1", "paired_training": true, "consistency_weight": 0.1}
+  ],
+  "stages": [
+    "Audit labels, identities, checkpoints and existing predictions before training.",
+    "Run rgb_basic and rgb_robust with paired seeds; inspect validation error complementarity with existing spectral checkpoints.",
+    "Only if justified, run the bounded remaining pilot variants under identical budgets.",
+    "Predeclare finalists before complete five-seed replication and untouched confirmation.",
+    "Distillation is conditional on a verified teacher; compare no teacher and standard KL under identical student budgets."
+  ],
+  "limits": "The learned gate and Jensen-Shannon objective are research baselines, not claims of novelty or calibrated reliability. Spatial control has an equally sized auxiliary luminance encoder; measure full end-to-end cost separately."
+}

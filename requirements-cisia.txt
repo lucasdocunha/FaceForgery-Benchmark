@@ -1,0 +1,12 @@
+# Install matched torch/torchvision CUDA 12.8 wheels first (docs/cisia-hpc.md).
+# CPU CI uses the same versions from the CPU index. Do not combine this file
+# with requirements.txt/uv.lock, which preserve the older workstation stack.
+# Direct-dependency pins, not a complete transitive lockfile.
+torch==2.10.0
+torchvision==0.25.0
+-r requirements-research.txt
+
+# Modulos forenses experimentais (opcional):
+# Para o modo experimental DTCWT (dual-tree wavelets), instale sem resolver dependencias
+# transitivas (devido a metadata legada numpy<2.0.0 em dtcwt==0.14.0):
+#   python -m pip install dtcwt==0.14.0 --no-deps

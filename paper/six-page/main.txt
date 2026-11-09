@@ -1,0 +1,353 @@
+   Explaining Spatial and Spectral Face Forgery
+                    Detectors:
+Controlled Comparisons and Shared Failure Analysis
+                                   Lucas Cunha∗ , Lucas Sotomaior∗ , Lucas Gasperin∗ ,
+                                Beatriz Caldas∗ , Eduardo Pianovski∗ , and Rayson Laroca∗
+                                    ∗ Pontifical Catholic University of Paraná, Curitiba, Brazil
+                 ∗ {c.oliveira25,lucas.sotomaior,lucas.gasperin,beatriz.caldas,eduardo.pianovski}@pucpr.edu.br
+                                                      ∗ rayson@ppgia.pucpr.br
+
+
+
+
+   Abstract—Strong face-forgery detection scores do not identify consistent architectural behavior or identify causes of shared
+the visual evidence a detector uses or explain why different     errors.
+architectures fail on the same image. We extend a spatial–spectral  We address that methodological gap rather than proposing
+MFFI benchmark with three controlled explainability protocols:
+a reproducible 64-image cohort shared across architectures,      another detector. Our first protocol fixes the images before
+matched RGB–frequency comparisons in native coordinates,         comparing explanations. Our second separates two questions
+and complete-roster shared-error analysis with label-matched     that are often conflated: where evidence occurs in a photograph
+controls. The implementation supports twelve attribution and     and which spatial frequencies influence a frequency-input
+perturbation methods, freezes validation-selected thresholds and detector. Our third examines the intersection of errors across
+explanation targets, preserves checkpoint and image provenance,
+and records numerical diagnostics alongside raw maps. The        an explicitly declared model roster, rather than presenting
+earlier benchmark reports a clean-to-degraded ROC-AUC change     independently selected failures from each model. Together,
+from 0.884 to 0.609 for RGB Xception and from 0.809 to           these protocols make comparisons less sensitive to sample
+0.726 for its frozen DINOv3 configuration. These previously      selection, changing targets, and ambiguous coordinate systems.
+reported results motivate, but do not establish, hypotheses about   The extension rests on three distinctions. First, the same
+localized shortcuts, complementary spectral evidence, and shared
+vulnerabilities. We distinguish spatial location from frequency  image need not occupy the same confusion-matrix stratum
+index, attribution agreement from causal evidence, and a balancedfor different models. An identical cohort can be exactly
+diagnostic sample from a representative population sample. This  balanced for a reference checkpoint, not generally for every
+revision delivers the methodology, implementation, and evidence- checkpoint simultaneously. Second, a coefficient of a global
+grounded interpretation before execution of the new image        Fourier transform is not located at a facial landmark. Third,
+experiments; it does not report newly observed heatmaps, new
+detector performance, or demographic effects.                    an association between a heatmap and a nuisance condition
+                                                                 does not establish why a model failed. The implementation
+                      I. I NTRODUCTION                           makes these distinctions operational through frozen manifests,
+   Face forgery detection is a classification problem with an native-coordinate figures, explicit method support, and complete
+unusually demanding interpretation requirement: a correct coverage accounting.
+decision may depend on an acquisition artifact rather than          Our contributions are a deterministic matched-instance expla-
+a manipulation trace, and a convincing explanation may reflect nation protocol; a validation-only selection rule for comparable
+the explanation algorithm more than the detector. Robustness RGB–frequency checkpoints; and a reproducible shared-failure
+therefore cannot be established by a clean-set ranking or workflow with raw attribution, numerical checks, perturbation
+by selecting a small number of visually attractive heatmaps. controls, and resumable execution. The known working training
+A useful analysis must connect the exact source image, and evaluation paths are retained. The new contribution at this
+preprocessing, checkpoint, decision threshold, and scalar output stage is the analysis design and software extension. Previously
+to an explanation whose limitations are explicit.                reported benchmark results are identified as such, while new
+   The Multi-Dimensional Face Forgery Image dataset (MFFI) image-dependent observations are reserved for execution rather
+supports evaluation across heterogeneous face-forgery sources than inferred from code.
+and image degradations [1]. The preceding benchmark of
+                                                                                       II. R ELATED WORK
+Cunha et al. [2] compares six model families across spatial,
+spectral, and hybrid representations. Its reported ranking A. Frequency evidence and shortcut learning
+changes after degradation: the strongest clean RGB detector         Spectral discrepancies can expose regularities introduced
+is not the strongest degraded RGB detector. However, the by image generation [3]. Their presence does not imply
+preceding qualitative analysis uses only four shared images. robustness to acquisition changes or unseen generators. Fre-
+Such examples can motivate hypotheses but cannot establish qDebias explicitly addresses frequency-dependent shortcuts
+using frequency diversification and consistency regularization      loader and original run configuration. It does not replace fine-
+[4]. This motivates a controlled comparison rather than an          tuned architectures with scratch defaults or interpret the two
+assumption that moving into frequency space reveals inherently      collections as a controlled pretraining ablation.
+superior forensic evidence. A frequency cluster could be
+informative, spurious, or partly caused by preprocessing.           B. Preprocessing and identity
+                                                                      The implementation follows the evaluation dataset’s RGB
+B. Attribution methods have different semantics                    normalization and Fourier helpers. The latter compute a
+   Integrated Gradients (IG) measures a fixed output difference centered FFT of luminance, then form log-magnitude, phase,
+relative to a baseline along a path [5]. Grad-CAM uses gradients complex, or masked-magnitude representations. The current
+to weight an intermediate activation map [6]. LIME fits a local hybrid encoding contains RGB plus magnitude, phase, high-
+surrogate [7], while Kernel SHAP estimates feature-coalition pass, and low-pass channels. Because historical checkpoints
+contributions using a Shapley-oriented weighting scheme [8]. can expect six rather than seven channels, the recorded channel
+Attention rollout aggregates attention connectivity and is not count is honored explicitly. The standalone legacy visualization
+equivalent to a class-specific gradient attribution [9]. Comparing helper additionally rescales phase; the new analysis instead
+these methods is useful precisely because they answer different follows the evaluation dataset so that visualization does not
+questions; their agreement is not a collection of independent silently change the model input.
+confirmations.                                                        Legacy prediction IDs are interpreted as original CSV row
+                                                                   positions only after an explicit acknowledgement. The complete
+C. Evaluation requires more than visual plausibility               manifest is hashed; labels and ID sets must match exactly.
+   Parameter-randomization tests can reveal explanations that Missing or unreadable images are never replaced with a
+are insensitive to learned parameters [10]. Perturbation-based neighboring image. A documented earlier export audit identified
+evaluation can itself introduce distribution shift, motivating duplicated and missing validation IDs. The implementation
+stronger controls such as remove-and-retrain protocols [11]. defaults to rejecting such defects. An opt-in derived calibration
+Quantus organizes explanation evaluation around multiple view can remove only identical duplicates, retain a record
+properties rather than a single visual criterion [12]. More recent of missing observations without imputing them, and require a
+work examines off-manifold paths [13], the consequences of common observed population across models. This is a disclosed
+grouping variables into coalitions [14], and formal certification curation operation, not a repair of the original export.
+rather than empirical smoothing [15]. FocusViT uses class-            For each selected image, execution compares the freshly
+specific gradients and validation-based layer aggregation for      computed     fake probability and decision with the frozen
+transformer explanations [16]. These studies inform the present    exported  prediction   before accepting its attribution. A mismatch
+safeguards; manifold IG, certified explanations, FocusViT, and     raises an  error  instead  of silently changing the cohort. Model
+remove-and-retrain evaluation are not implemented or claimed       weights,  configuration,    source images, raw arrays, software
+as completed experiments here.                                     versions,  and   source   code   are hashed. This separates code-
+                                                                   level compatibility from successful reproduction of a particular
+         III. B ENCHMARK SCOPE AND PROVENANCE                      checkpoint–image prediction.
+A. Data and checkpoints                                                   IV. C ONTROLLED EXPLAINABILITY PROTOCOLS
+   The preceding study reports official MFFI partitions con- A. Calibration and a common explanation target
+taining 524,429 training, 147,363 validation, and 181,947 test
+images, with a corresponding degraded test partition termed            Let pmi be the fake-class probability for model m and image
+Test-Hard or Test-D [2]. The proposed analysis reuses existing      i, and let yi = 1 denote a fake image. Each model’s threshold
+checkpoints and predictions and does not require retraining. Its    is selected on its validation predictions and frozen for all test
+primary roster is one RGB checkpoint, seed 42, from each of         analyses:
+ResNet, Xception, MobileNet, ViT, CLIP, and DINO. An 18-
+                                                                                                                    
+                                                                                   tm = arg max BA y, 1[pm ≥ t] ,
+                                                                                              t∈Tm
+checkpoint RGB roster using seeds 42, 123, and 2024 provides                                                                      (1)
+                                                                                          1
+a separate shared-error sensitivity analysis. The roster is part of               BA   =  2 (TPR  + TNR).
+the saved experiment contract, not an implicit claim to cover The candidate set contains observed probabilities and 0, 0.5,
+every trained model.                                                and 1; ties select the smallest candidate. Threshold-free ROC-
+   The original paper and the current checkpoint release are sep- AUC is retained separately. Changing this calibration policy
+arate sources of evidence. The former describes predominantly can change confusion strata and shared-error membership even
+scratch-trained detectors and a frozen DINOv3 configuration; when AUC is unchanged, so the policy is included in the
+the supplied release and current builders include fine-tuned experiment identity.
+configurations. The current DINO builder uses a ConvNeXt               For every class-specific explanation, the target is the fake-
+backbone. Architecture labels alone therefore cannot establish versus-real logit margin
+that a released checkpoint reproduces a row in the original
+paper. The extension retains the existing strict checkpoint                           sm (x) = zm,1 (x) − zm,0 (x).               (2)
+The target is fixed during interpolation and perturbation; it does                             TABLE I
+not switch to whichever class is currently predicted. Signed         I MPLEMENTED EXPLANATION METHODS AND THEIR INTERPRETATION . A
+                                                                       METHOD NAME IS NOT A GUARANTEE OF APPLICABILITY TO EVERY
+input contributions are retained where the method supports              ARCHITECTURE . U NSUPPORTED COMBINATIONS ARE EXPLICITLY
+them. Positive contributions support the fake margin and nega-                                 RECORDED .
+tive contributions support the real margin. A signed derivative,
+rectified Grad-CAM map, and class-agnostic attention map             Methods               Interpretation and important boundary
+retain their distinct meanings rather than being relabeled as        IG; Gradient          Fixed-margin input attribution relative to the
+interchangeable evidence.                                            SHAP                  declared baseline. Numerical residuals are
+                                                                                           recorded; baseline choice remains
+B. Task 1: the same 64 images across architectures                                         consequential.
+                                                                     Kernel SHAP;          Group-level perturbation surrogate. Raw
+   We select ResNet/RGB/seed 42 as the reference checkpoint LIME                           coefficients and the feature mask are
+independently of its heatmaps. A global sampling seed of 42                                retained; display densities are not
+determines four without-replacement draws: 16 true positives,                              individual-pixel Shapley values.
+16 false negatives, 16 true negatives, and 16 false positives. Saliency; input ×           Local or smoothed gradient information.
+                                                                   gradient;               SmoothGrad does not confer formal
+Sorting candidates by identity before sampling makes the SmoothGrad                        robustness certification.
+selected cohort insensitive to prediction-file row order. If a Occlusion; feature          Effects of replacing declared windows or
+stratum contains fewer than 16 images, preparation fails rather ablation; Shapley          feature groups. Ablation effects need not add
+than changing the requested size, introducing duplicates, or sampling                      to a total output difference.
+selecting a more convenient reference.                             Grad-CAM                Rectified gradient-weighted layer localization.
+                                                                                           CNN layers or pre-final-attention token
+   The resulting 64 identities and order are immutable and                                 layers are declared and recorded.
+reused for all primary models. Each model’s own decision and Attention rollout             Residual attention connectivity for supported
+confusion stratum are stored alongside the reference stratum.                              ViT/CLIP models; explicitly class-agnostic.
+Thus the comparison holds instances constant without claiming
+that all models share the reference’s 16×4 confusion matrix. A
+different reference-model sensitivity study must use a separately sampling uses 32 permutations. These are declared starting
+named cohort, not replace unfavorable examples in the primary budgets, not empirically established convergence guarantees.
+one.                                                              A surrogate run is rejected when its sample budget is too
+   This is a diagnostic, case-control-style sample. It intention- small relative to its number of groups. Baseline, sample-
+ally overrepresents errors and is not an unbiased sample of budget, and stochastic-repeat sensitivity analyses use new
+population accuracy, error prevalence, or average explanation frozen configurations.
+faithfulness. Aggregate claims from these images must be
+                                                                     Two controls accompany the primary configuration. First,
+described as conditional on this cohort. Population-level
+                                                                  the binary classifier head is randomized, the explanation recom-
+explanation statistics require a separate random sample or
+                                                                  puted, and the original parameters restored. This checks head
+an explicit sampling-weight analysis.
+                                                                  dependence only; it is not a full cascading-parameter sanity test.
+C. Attribution implementations and controls                       Class-agnostic rollout may appropriately remain unchanged
+                                                                  under head-only randomization, which is not interpreted as a
+   Table I summarizes the supported method families. All inputs
+                                                                  failed class-specific explanation. Second, group deletion and
+are encoded using the checkpoint’s evaluation representation
+                                                                  insertion curves are compared with random group order using
+before attribution. The default baseline is zero in that encoded
+                                                                  the same encoded baseline. Curves explain sensitivity to this
+space; it is not described as a black photograph. A separately
+                                                                  perturbation mechanism, not a causal intervention on image
+frozen configuration can use an encoded blurred-RGB reference
+                                                                  generation, and are not a substitute for remove-and-retrain
+to assess baseline sensitivity. Gradient SHAP currently uses the
+                                                                  evaluation [11]. Constant maps and numerical failures remain
+declared single reference, a degenerate baseline distribution,
+                                                                  visible in the output audit.
+rather than claiming an empirical background distribution.
+   The default patch partition groups RGB channels jointly,
+keeps hybrid RGB and spectral channels separate, and groups D. Task 2: matched spatial–frequency comparisons
+complex real/imaginary components at the same bins. Edge
+patches are included even when dimensions are not divisible          This protocol compares separately trained RGB and pure-
+by the patch size. An optional radial partition groups frequency  frequency    checkpoints of the same architecture, training regime,
+bins by radius. Group-level methods save one coefficient per      and  seed.  Feeding   a Fourier map into an RGB-only checkpoint
+group and a display-density map that distributes that coefficient would   instead  be  an out-of-distribution input intervention and is
+uniformly over its members. Changing the partition changes        not  the  primary  comparison.    DCT is not added to the existing
+the attribution question [14].                                    weight   collection:  a meaningful   DCT-trained comparison would
+   IG uses 64 Gauss–Legendre integration steps and records        require   suitable  checkpoints  and   a separate experiment.
+its completeness residual. Stochastic gradient methods use 32        Selection uses validation evidence only. Eligible RGB–
+samples; surrogate methods use 512 perturbations; Shapley frequency pairs must contain the same three seeds and attain
+AUC of at least 0.60 in both domains for every seed. For                                     TABLE II
+architecture m, frequency representation r, and seed s, define     P REVIOUSLY REPORTED RGB ROC-AUC FROM C UNHA ET AL . [2]. T HE
+                                                                   FINAL COLUMN IS ARITHMETIC SUBTRACTION OF THE REPORTED ROUNDED
+                      1 X                                             MEANS . T HESE ARE THE EARLIER STUDY ’ S CONFIGURATIONS , NOT A
+          R(m, r) =         min{am,RGB,s , am,r,s },                       RE - EVALUATION OF THE CURRENT RELEASED WEIGHTS .
+                     |S|                                   (3)
+                         s∈S
+           am,r,s = AUCval (m, r, s).                                        Earlier configuration   Clean   Test-Hard   Drop
+                                                                             Xception                0.884      0.609    0.275
+We maximize R, break ties by the smaller mean positive RGB-                  ResNet-18               0.846      0.635    0.211
+to-frequency AUC loss, then by deterministic configuration                   MobileNetV3             0.839      0.594    0.245
+names. This prevents a nearly random detector from winning                   ViT, scratch            0.624      0.608    0.016
+                                                                             CLIP-style, scratch     0.750      0.619    0.131
+solely because it has little performance left to lose. It is                 DINOv3, frozen          0.809      0.726    0.083
+a declared analysis rule for existing artifacts, not a claim
+of historical preregistration. Representation robustness and
+robustness to image degradation are reported as separate
+                                                                   The accompanying annotation workflow conceals hard/control
+concepts.
+                                                                   membership and model predictions from reviewers, records
+   The selected seed-42 pair receives the Task 1 cohort. For
+                                                                   uncertain or unassessable observations, and recommends in-
+each supported method and image, a two-column board shows
+                                                                   dependent raters. It does not automatically infer demographic
+the RGB image with its spatial map on the left and the actual
+                                                                   attributes from faces. A quantitative subgroup analysis must
+encoded frequency representation with its own attribution on
+                                                                   report coverage, disagreement, class-conditional errors, source
+the right. Complex spectra retain separate real and imaginary
+                                                                   confounding, and multiplicity handling. Causal language re-
+views in the frequency column. Axes label image pixels and
+                                                                   quires additional controlled interventions; attribution alone
+shifted frequency bins explicitly; independent display scaling
+                                                                   cannot establish a cause.
+is disclosed and raw values remain available.
+   Different clusters across these columns do not by them-            V. E XISTING EVIDENCE AND JUSTIFIED INFERENCES
+selves prove that the frequency model discovered an invisible
+                                                                   A. Previously reported benchmark results
+manipulation artifact. A frequency bin encodes a global spatial-
+frequency component, not an eye or mouth. Consequently, cross-        Table II preserves a compact set of results from the earlier
+domain pixel-overlap scores and facial-localization claims are     paper [2]. They are reported means from that study, not new
+inappropriate. Radial-band concentration can instead motivate      runs of this extension or a claim about the supplied fine-
+further controlled band interventions. Post-encoding perturba-     tuned checkpoints. The table provides the empirical motivation
+tions may not correspond to a realizable image spectrum; any       for explanation experiments without filling their unmeasured
+later inverse-transform experiment must preserve conjugate         outcomes with estimates.
+symmetry and document normalization effects.                          The ranking changes under degradation. That observation
+                                                                   supports evaluating degraded data, but does not isolate the
+E. Task 3: shared failures and matched controls                    influence of pretraining, architecture, or particular visual cues.
+  For a fixed roster M, the hard-sample set is                     The small drop of the earlier ViT is not evidence that it is the
+                                                                   best robust detector: its initial AUC is already substantially
+       H(M) = {i : ∀m ∈ M, 1[pmi ≥ tm ] ̸= yi }.            (4)
+                                                                   lower. This floor effect motivates the minimum-competence
+Computing this intersection requires complete predictions,         constraint in Task 2.
+unique identities, and label agreement on exactly the same            The earlier study also reports degraded AUC of 0.650 for
+population. Missing predictions are neither counted as failures    Xception with RGB plus magnitude, compared with 0.609
+nor removed through an implicit inner join. The empty              for RGB; 0.648 for ResNet with a hybrid frequency stack,
+intersection is a valid result. An image in H(M) is a shared       compared with 0.635 for RGB; and 0.612 for MobileNet
+failure of the declared checkpoints, not a universal adversarial   with RGB plus magnitude, compared with 0.594 for RGB
+example against all architectures or future systems.               [2]. These reported differences are consistent with potential
+   Every image in the six-model primary intersection is retained   complementarity. Without a controlled ablation and uncertainty
+for attribution; no hidden cap or visually selected subset is      analysis, however, they do not prove that spectral channels carry
+applied. The 18-checkpoint intersection is exported separately     a particular manipulation artifact or that the benefit generalizes
+as a seed-roster sensitivity result. A label-matched control set   outside MFFI.
+of equal size is drawn without replacement from outside the
+primary intersection. Controls need not be correct for every       B. Research questions for the new outputs
+model: they are specifically images that do not fail across the       1) Architectural evidence allocation: Task 1 asks whether
+entire roster. This distinction determines the comparison being    apparent localization differences persist when images, targets,
+made.                                                              and preprocessing are controlled. Localized CNN maps or
+   Lighting, occlusion, compression, manipulation source, and      diffuse transformer maps are hypotheses to examine, not
+skin-tone-related hypotheses require suitable annotations and      anticipated findings to write into a results table. Layer
+denominators. Label matching does not balance these factors.       resolution, rectification, baseline choice, and class-agnostic
+attention can themselves change map appearance. A convincing the generated artifacts. A working base branch is evidence
+architectural interpretation should survive appropriate controls of an existing integration path, not a proof that every new
+and distinguish true positives from false positives and false architecture–method combination works on every checkpoint
+negatives.                                                       or software installation.
+   2) Complementary spectral evidence: Task 2 asks whether         MFFI degradation robustness is not equivalent to cross-
+the validation-selected frequency model emphasizes coherent dataset or unseen-generator generalization. The earlier paper’s
+spectral bands or orientations and whether those groups affect architecture and pretraining factors are not fully controlled,
+its fixed margin under the specified perturbation. A positive and its reported means do not provide enough information to
+result would justify more targeted forensic experiments; a establish statistical superiority here. Three seed realizations
+negative or unstable result would weaken the claim of useful characterize those runs, not the full distribution of training un-
+complementary frequency evidence. Neither outcome is prede- certainty. Image bootstrap intervals, if subsequently computed,
+termined by converting an image to a Fourier representation. should account for repeated identities or correlated sources
+   3) Shared vulnerabilities: Task 3 asks which conditions are where such metadata exists.
+enriched among shared failures relative to declared controls,      The balanced 64-image cohort conditions on a reference
+and whether explanations remain informative after numerical model’s outcomes. Shared-error membership also conditions
+and randomization checks. Shared-error prevalence can be on the roster and its thresholds. Both designs can change
+computed from complete existing predictions without retraining. the observed distribution of nuisance conditions. Baseline
+Explanations for that prevalence require source images and substitution and Fourier-channel perturbations may leave the
+appropriate nuisance annotations. The implementation exports data manifold, while head-only randomization tests only a
+the population, thresholds, and roster needed to report the narrow aspect of parameter dependence. Different explanation
+number honestly; this manuscript does not substitute unaudited methods share these limitations and are not independent
+earlier draft counts for those generated artifacts.              replications. No new fairness, demographic, localization, causal,
+    VI. R EPRODUCIBILITY AND COMPUTATIONAL SCOPE                 or state-of-the-art claim is made from unmeasured outcomes.
+   The entry point separates preparation, description, execution,
+rendering, and reporting. Preparation reads existing prediction                              VIII. C ONCLUSION
+and metadata files and freezes cohorts without importing models        We provide a controlled extension for explaining spatial
+or accessing images. A dry run describes requested cells rather     and spectral face-forgery detectors and studying their shared
+than claiming measured runtime. The default Task 1 design           failures. The central design choices are an immutable matched-
+requests 64×6×12 = 4,608 method–model–image cells before            instance cohort, a fixed fake-versus-real target, validation-only
+unsupported combinations and controls; Task 3 scales with           selection of a competent RGB–frequency pair, native-coordinate
+the actual intersection size. No wall-clock estimate is inferred    visualization, and complete-roster error analysis with explicitly
+from these counts.                                                  defined controls. Existing benchmark evidence motivates these
+   Execution can be split by model, method, and deterministic       questions but does not answer them. The implementation
+image-ID shard. Each completed cell contains raw attribution ar-    and manuscript establish what can be inferred from current
+rays, feature masks, estimator metadata, image and checkpoint       artifacts and what must be measured, allowing later experiment
+hashes, fresh prediction checks, and rendered maps. Resume          execution to supply results without changing the scientific
+verifies identities and artifact checksums. A failed cell, an       meaning of the protocol.
+unsupported method, and an unexecuted cell are distinct states.
+Coverage over all requested cells is reported independently                       D ISCLOSURE AND AUTHOR REVIEW
+of explanation validity. The default configuration retains the
+working ICLR training, model-building, and evaluation code             AI assistance was used for literature retrieval, methodological
+and adds Captum as an opt-in dependency.                            critique, programming, and manuscript drafting. Human authors
+   Synthetic unit checks test mathematical and software con-        must review the implementation, citations, experimental outputs,
+tracts using small generated tensors: deterministic sampling,       and interpretation before submission. The listed authors are
+strict population alignment, analytic IG behavior, feature-group    carried forward from the supplied earlier manuscript and do not
+conservation, and parity with existing encoding helpers. They       imply their approval of this revision. The accepted SIBGRAPI
+are not detector benchmarks, trained-checkpoint evaluations, or     study is cited as prior work; this extension is not presented
+evidence that a real-image explanation is faithful. The current     as an accepted or submitted ICLR paper. Venue eligibility,
+scope does not schedule GPU experiments, launch a training          substantive overlap, and the final disclosure remain subject to
+matrix, or require new compute access. Full instructions and the    author review.
+machine-readable configuration accompany the source revision.
+                                                                                                 R EFERENCES
+  VII. L IMITATIONS AND RESPONSIBLE INTERPRETATION
+  This extension has not executed the new full-cohort image          [1] C. Miao et al., “MFFI: Multi-dimensional face forgery image dataset
+                                                                         for real-world scenarios,” in Proceedings of the ACM International
+experiments. Its software can be reviewed and tested inde-               Conference on Multimedia, 2025, pp. 13 235–13 242. [Online]. Available:
+pendently, but a final empirical results section depends on              https://arxiv.org/abs/2509.05592
+[2] L. Cunha, L. Sotomaior, L. Gasperin, B. Caldas, E. Pianovski, and                 in Proceedings of the Annual Meeting of the Association for
+    R. Laroca, “Benchmarking spatial, spectral, and self-supervised cues              Computational Linguistics, 2020, pp. 4190–4197. [Online]. Available:
+    for face forgery detection under realistic degradation,” arXiv preprint           https://aclanthology.org/2020.acl-main.385/
+    arXiv:2609.01511, 2026, the manuscript states acceptance for presentation    [10] J. Adebayo, J. Gilmer, M. Muelly, I. Goodfellow, M. Hardt, and
+    at SIBGRAPI 2026. [Online]. Available: https://arxiv.org/abs/2609.01511           B. Kim, “Sanity checks for saliency maps,” in Advances in Neural
+[3] J. Frank, T. Eisenhofer, L. Schoenherr, A. Fischer, D. Kolossa, and               Information Processing Systems, vol. 31, 2018. [Online]. Available:
+    T. Holz, “Leveraging frequency analysis for deep fake image recognition,”         https://arxiv.org/abs/1810.03292
+    in International Conference on Machine Learning, ser. Proceedings of         [11] S. Hooker, D. Erhan, P.-J. Kindermans, and B. Kim, “A benchmark
+    Machine Learning Research, vol. 119, 2020, pp. 3247–3258. [Online].               for interpretability methods in deep neural networks,” in Advances
+    Available: https://proceedings.mlr.press/v119/frank20a.html                       in Neural Information Processing Systems, vol. 32, 2019. [Online].
+[4] H. Kashiani, N. A. Talemi, and F. Afghah, “FreqDebias: Towards                    Available: https://arxiv.org/abs/1806.10758
+    generalizable deepfake detection via consistency-driven frequency            [12] A. Hedström, L. Weber, D. Krakowczyk, D. Bareeva, F. Motzkus,
+    debiasing,” in Proceedings of the IEEE/CVF Conference on Computer                 W. Samek, S. Lapuschkin, and M. M.-C. Höhne, “Quantus:
+    Vision and Pattern Recognition, 2025, pp. 8775–8785. [Online]. Available:         An explainable AI toolkit for responsible evaluation of neural
+    https://openaccess.thecvf.com/content/CVPR2025/html/Kashiani_                     network explanations and beyond,” Journal of Machine Learning
+    FreqDebias_Towards_Generalizable_Deepfake_Detection_via_                          Research, vol. 24, no. 34, pp. 1–11, 2023. [Online]. Available:
+    Consistency-Driven_Frequency_Debiasing_CVPR_2025_paper.html                       https://jmlr.org/papers/v24/22-0142.html
+[5] M. Sundararajan, A. Taly, and Q. Yan, “Axiomatic attribution for             [13] E. Zaher, M. Trzaskowski, Q. Nguyen, and F. Roosta, “Manifold
+    deep networks,” in International Conference on Machine Learning,                  integrated gradients: Riemannian geometry for feature attribution,” in
+    ser. Proceedings of Machine Learning Research, vol. 70, 2017,                     International Conference on Machine Learning, ser. Proceedings of
+    pp. 3319–3328. [Online]. Available: https://proceedings.mlr.press/v70/            Machine Learning Research, vol. 235, 2024, pp. 58 090–58 104. [Online].
+    sundararajan17a.html                                                              Available: https://proceedings.mlr.press/v235/zaher24a.html
+[6] R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and            [14] X. Zheng, H. Deng, and Q. Zhang, “Towards attributions of
+    D. Batra, “Grad-CAM: Visual explanations from deep networks via                   input variables in a coalition,” in International Conference on
+    gradient-based localization,” in Proceedings of the IEEE International            Machine Learning, ser. Proceedings of Machine Learning Research,
+    Conference on Computer Vision, 2017, pp. 618–626. [Online]. Avail-                vol. 267, 2025, pp. 78 115–78 138. [Online]. Available: https:
+    able: https://openaccess.thecvf.com/content_iccv_2017/html/Selvaraju_             //proceedings.mlr.press/v267/zheng25d.html
+    Grad-CAM_Visual_Explanations_ICCV_2017_paper.html                            [15] A. Anani, T. Lorenz, M. Fritz, and B. Schiele, “Pixel-level
+[7] M. T. Ribeiro, S. Singh, and C. Guestrin, ““Why Should I Trust You?”:             certified explanations via randomized smoothing,” in International
+    Explaining the predictions of any classifier,” in Proceedings of the ACM          Conference on Machine Learning, ser. Proceedings of Machine
+    SIGKDD International Conference on Knowledge Discovery and Data                   Learning Research, vol. 267, 2025, pp. 1505–1533. [Online]. Available:
+    Mining, 2016, pp. 1135–1144.                                                      https://proceedings.mlr.press/v267/anani25a.html
+[8] S. M. Lundberg and S.-I. Lee, “A unified approach to interpreting            [16] M. Ali, H. Raza, J. Q. Gan, and M. H. Khan, “FocusViT: Faithful
+    model predictions,” in Advances in Neural Information Processing                  explanations for vision transformers via gradient-guided layer-skipping,”
+    Systems, vol. 30, 2017. [Online]. Available: https://papers.nips.cc/paper/        in International Conference on Artificial Intelligence and Statistics, ser.
+    7062-a-unified-approach-to-interpreting-model-predictions                         Proceedings of Machine Learning Research, vol. 300, 2026, pp. 1522–
+[9] S. Abnar and W. Zuidema, “Quantifying attention flow in transformers,”            1530. [Online]. Available: https://proceedings.mlr.press/v300/ali26a.html
+

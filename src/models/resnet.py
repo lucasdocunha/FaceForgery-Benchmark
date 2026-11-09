@@ -26,8 +26,18 @@ def resnet(
 
     if pretrained and not allow_pretrained:
         raise ValueError("External pretrained ResNet weights are disabled for this project.")
+
+    from src.data.paths import pretrained_root
+    local_resnet = pretrained_root() / "resnet" / f"{architecture}.pth"
     builder = _ARCHITECTURES[architecture]
-    model = builder(weights="DEFAULT" if pretrained else None)
+    if pretrained and local_resnet.exists():
+        import torch
+        print(f"[resnet] Carregando pesos pré-treinados locais de: {local_resnet}", flush=True)
+        model = builder(weights=None)
+        state = torch.load(local_resnet, map_location="cpu", weights_only=True)
+        model.load_state_dict(state)
+    else:
+        model = builder(weights="DEFAULT" if pretrained else None)
 
     model.conv1 = adapt_conv2d_channels(model.conv1, in_channels)
 
@@ -56,8 +66,11 @@ def unfreeze_last_blocks(model: nn.Module, train_layer3: bool = False) -> None:
         param.requires_grad = True
 
 
+from src.models._regime import uses_pretraining
+
+
 def build(config) -> nn.Module:
-    return resnet(2, config.regime == "finetune", config.architecture,
+    return resnet(2, uses_pretraining(config, "resnet"), config.architecture,
                   config.dropout, config.in_channels, config.allow_pretrained)
 
 

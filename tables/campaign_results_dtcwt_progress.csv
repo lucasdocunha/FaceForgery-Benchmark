@@ -1,0 +1,2 @@
+model_family,fourier_mode,seed,test_auc,test_acc,test_d_auc,test_d_acc,df40_auc,celeb_video_auc,elapsed_min,cached
+mobilenet,dtcwt,42,0.7969,0.7055,0.721,0.6483,0.6913,0.5776,733.3,False

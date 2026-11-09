@@ -1,0 +1,42 @@
+task: vlm
+name: qwen25vl3b_bf16_lora
+scope: benchmark-server
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  train_manifest: ${TCC_TRAIN_MANIFEST}
+  val_manifest: ${TCC_VAL_MANIFEST}
+  train_root: ${TCC_TRAIN_ROOT}
+  val_root: ${TCC_VAL_ROOT}
+  train_limit: 64
+  val_limit: 64
+model:
+  model_id: Qwen/Qwen2.5-VL-3B-Instruct
+  model_type: qwen2_5_vl
+  pretrained_path: ${TCC_PRETRAINED_ROOT}/Qwen2.5-VL-3B-Instruct
+  dtype: bfloat16
+  quantization: none
+  attention: sdpa
+  gradient_checkpointing: true
+  max_length: 512
+  processor:
+    min_pixels: 65536
+    max_pixels: 262144
+  lora:
+    rank: 16
+    alpha: 32
+    dropout: 0.05
+    projections: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+training:
+  device: cuda:1
+  amp: true
+  cpu_threads: 2
+  workers: 0
+  batch_size: 1
+  eval_batch_size: 1
+  grad_accum_steps: 8
+  epochs: 2
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  threshold_policy: youden

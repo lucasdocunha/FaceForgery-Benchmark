@@ -1,0 +1,5 @@
+# Runtime outputs can contain dataset images and private annotation linkages.
+# Publish only explicitly reviewed, permitted research artifacts.
+*
+!.gitignore
+!README.md

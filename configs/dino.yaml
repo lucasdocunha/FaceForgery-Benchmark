@@ -5,5 +5,5 @@ model_size: base
 threshold_strategy: f1
 mixup_alpha: 0.2
 use_class_weights: true
-lr_head: 0.0005
-lr_backbone: 0.00005
+lr_head: 0.0002
+lr_backbone: 0.00002

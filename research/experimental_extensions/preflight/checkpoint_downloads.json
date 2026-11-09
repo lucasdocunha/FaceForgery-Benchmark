@@ -1,0 +1,47 @@
+{
+  "repo_id": "lucasoc/MFFI-Models",
+  "revision": "f2dee3c52c665053f06182307841f8cd68be3916",
+  "runtime_seconds": 52.20056918899991,
+  "files": [
+    {
+      "path": "clip/none/finetune/seed_42/weights/best.pth",
+      "bytes": 343267129,
+      "sha256": "3dcb9760e84edadc8789ec29808e4ff203d3eb5c56f6e4643a19cd7bc25353c0"
+    },
+    {
+      "path": "clip/srm/finetune_robust/seed_42/weights/best.pth",
+      "bytes": 345640660,
+      "sha256": "ac4e747513156c17b4fef4c961e1049f025cb855bcc6638db453de59352adc93"
+    },
+    {
+      "path": "dino/none/finetune/seed_42/weights/best.pth",
+      "bytes": 350399844,
+      "sha256": "de1d1a2669fb15e33a290ccd6cb647873aaeac5c5c07f23c1bb4443874ff9d70"
+    },
+    {
+      "path": "dino/srm/finetune_robust/seed_42/weights/best.pth",
+      "bytes": 350448950,
+      "sha256": "58823151fc12c9aba9155e53be3b61490932416fab72761fdf3b8f7db0e9c4c6"
+    },
+    {
+      "path": "mobilenet/none/finetune/seed_42/weights/best.pth",
+      "bytes": 17011278,
+      "sha256": "b194cff45b8ce0995fe24ae9b8b1bef2c1ff2b6d2c57f0bb164de52946e407f5"
+    },
+    {
+      "path": "mobilenet/srm/finetune_robust/seed_42/weights/best.pth",
+      "bytes": 17026418,
+      "sha256": "0e3e69811b32d1dc07467734ff517518cc90039efa8d2b7488aac97be48da15f"
+    },
+    {
+      "path": "resnet/none/finetune/seed_42/weights/best.pth",
+      "bytes": 44782212,
+      "sha256": "aad7d0b088b47ffc87fb1ce67299b3c1eb29eb4f6f958a08e36067b01fd33177"
+    },
+    {
+      "path": "resnet/srm/finetune_robust/seed_42/weights/best.pth",
+      "bytes": 44827190,
+      "sha256": "5b19985e95fe0bca235c87eb65c7243e3348eba9ecefdfc4072c1238823bf29e"
+    }
+  ]
+}

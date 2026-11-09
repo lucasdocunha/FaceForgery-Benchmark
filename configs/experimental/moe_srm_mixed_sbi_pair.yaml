@@ -1,0 +1,53 @@
+# One unadapted SRM checkpoint and its mixed-SBI adaptation, matched by seed.
+# Read TCC_SBI_INIT_CHECKPOINT_SHA256 from the mixed run's
+# run.json config.provenance.initialization_sha256, not from a seed label.
+# Mean and scalar geometric comparisons are calibrated on val_select only.
+# Router and logistic fits are incidental to the existing fusion artifact API.
+task: moe
+name: srm_original_mixed_sbi_pair
+scope: server-experimental
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  expert_seed_policy: matched
+  experts:
+  - name: unadapted_srm
+    role: srm
+    kind: feature_cache
+    path: ${TCC_FEATURE_SRM_VAL}
+    checkpoint_sha256: ${TCC_SBI_INIT_CHECKPOINT_SHA256}
+  - name: mixed_sbi
+    role: sbi
+    kind: predictions
+    path: ${TCC_SBI_MIXED_RUN_DIR}/validation_predictions.csv
+    calibration: ${TCC_SBI_MIXED_RUN_DIR}/calibration.json
+  required_roles:
+  - srm
+  - sbi
+  split_seed: 42
+  fit_fraction: 0.5
+model:
+  hidden_dim: 64
+  temperature: 1.0
+  train_routing: soft
+  train_top_k: 2
+  inference_routing: soft
+  inference_top_k: 1
+  expert_dropout: 0.1
+training:
+  device: cpu
+  amp: false
+  cpu_threads: 2
+  workers: 0
+  epochs: 10
+  batch_size: 32
+  eval_batch_size: 512
+  grad_accum_steps: 1
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 1.0
+  load_balance_weight: 0.01
+  stacking_c: 1.0
+  stacking_max_iter: 1000
+  threshold_policy: youden
+  early_stop_patience: 4

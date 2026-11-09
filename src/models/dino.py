@@ -13,13 +13,38 @@ class DINOVisionClassifier(nn.Module):
         elif features.ndim == 3: features = features[:, 0]
         return self.classifier(features)
 
+from src.models._regime import uses_pretraining
+
+
 def build(config) -> nn.Module:
     import timm
     names = {"tiny":"convnext_tiny.dinov3_lvd1689m", "small":"convnext_small.dinov3_lvd1689m",
              "base":"convnext_base.dinov3_lvd1689m", "large":"convnext_large.dinov3_lvd1689m"}
-    pretrained = config.regime == "finetune"
-    if pretrained and not config.allow_pretrained: raise ValueError("External pretrained DINO weights are disabled")
-    backbone = timm.create_model(names[config.model_size], pretrained=pretrained, num_classes=0)
+    pretrained = uses_pretraining(config, "dino")
+    if pretrained and not config.allow_pretrained:
+        raise ValueError("External pretrained DINO weights are disabled")
+    if pretrained:
+        from src.models._pretrained import get_candidate_pretrained_dirs
+        candidate_dirs = get_candidate_pretrained_dirs("dino")
+        backbone = None
+        for d in candidate_dirs:
+            p1 = d / f"{config.model_size}.pth"
+            p2 = d / f"convnext_{config.model_size}.pth"
+            target_path = p1 if p1.exists() else (p2 if p2.exists() else None)
+            if target_path and target_path.is_file() and target_path.stat().st_size > 10 * 1024 * 1024:
+                try:
+                    print(f"[dino] Carregando pesos pré-treinados locais de: {target_path}", flush=True)
+                    m = timm.create_model(names[config.model_size], pretrained=False, num_classes=0)
+                    state = torch.load(target_path, map_location="cpu", weights_only=True)
+                    m.load_state_dict(state)
+                    backbone = m
+                    break
+                except Exception as e:
+                    print(f"[dino] ⚠️ Falha ao carregar pesos de {target_path}: {e}. Tentando outros caminhos...", flush=True)
+        if backbone is None:
+            backbone = timm.create_model(names[config.model_size], pretrained=True, num_classes=0)
+    else:
+        backbone = timm.create_model(names[config.model_size], pretrained=False, num_classes=0)
     if config.in_channels != 3:
         path = "stem.0" if hasattr(backbone, "stem") else "patch_embed.proj"
         replace_conv2d(backbone, path, config.in_channels)

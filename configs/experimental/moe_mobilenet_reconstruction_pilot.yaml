@@ -1,0 +1,32 @@
+# Complete three-expert development pilot, matching the two-expert budget.
+task: moe
+name: mobilenet_srm_rgb_reconstruction_soft_pilot
+scope: min-dataset-development-threeexpert-pilot
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  experts:
+    - {name: srm, role: srm, kind: feature_cache, path: '${TCC_FEATURE_SRM_VAL}'}
+    - {name: rgb, role: rgb, kind: feature_cache, path: '${TCC_FEATURE_RGB_VAL}'}
+    - name: reconstruction
+      role: reconstruction
+      kind: predictions
+      path: ${TCC_RECON_VAL_PREDICTIONS}
+      calibration: ${TCC_RECON_CALIBRATION}
+  required_roles: [srm, rgb, reconstruction]
+  expert_seed_policy: matched
+  split_seed: 42
+  fit_fraction: 0.5
+model:
+  hidden_dim: 32
+  train_routing: soft
+  expert_dropout: 0.1
+training:
+  device: cpu
+  amp: false
+  cpu_threads: 2
+  workers: 0
+  epochs: 6
+  batch_size: 32
+  lr: 0.001
+  early_stop_patience: 4

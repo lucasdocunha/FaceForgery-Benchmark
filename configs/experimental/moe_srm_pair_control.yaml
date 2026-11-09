@@ -1,0 +1,46 @@
+# Original strong-pair control on the same val_fit/val_select split.
+task: moe
+name: srm_pair_control
+scope: server-experimental
+seed: 42
+output_dir: ${TCC_RUN_DIR}
+data:
+  expert_seed_policy: matched
+  experts:
+  - name: dino_srm
+    role: srm
+    kind: feature_cache
+    path: ${TCC_FEATURE_DINO_SRM_VAL}
+  - name: clip_srm
+    role: srm
+    kind: feature_cache
+    path: ${TCC_FEATURE_CLIP_SRM_VAL}
+  required_roles:
+  - srm
+  split_seed: 42
+  fit_fraction: 0.5
+model:
+  hidden_dim: 64
+  temperature: 1.0
+  train_routing: soft
+  train_top_k: 2
+  inference_routing: soft
+  inference_top_k: 1
+  expert_dropout: 0.1
+training:
+  device: cpu
+  amp: false
+  cpu_threads: 2
+  workers: 0
+  epochs: 10
+  batch_size: 32
+  eval_batch_size: 512
+  grad_accum_steps: 1
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 1.0
+  load_balance_weight: 0.01
+  stacking_c: 1.0
+  stacking_max_iter: 1000
+  threshold_policy: youden
+  early_stop_patience: 4

@@ -1,0 +1,22 @@
+Modelo / Config,Família,Modo,DF-40 AUC,Acerto Geral Fakes (%),commercial_avatar,diffusion,editing_t2i,face_swap,gan,talking_reenactment
+DINO (SRM + RGB),dino,srm,82.28,81.76,33.2,68.0,97.39,95.2,80.2,93.8
+CLIP (SRM + RGB),clip,srm,82.49,76.12,30.4,68.17,90.48,82.96,78.41,74.6
+ResNet-18 (SRM + RGB),resnet,srm,70.12,70.12,31.2,60.46,79.46,85.44,62.19,88.6
+MobileNet (SRM + RGB),mobilenet,srm,74.72,73.76,28.0,69.09,87.27,84.72,60.83,94.8
+Xception (SRM + RGB),xception,srm,69.47,87.8,92.4,87.6,95.39,92.0,75.05,96.2
+ViT (SRM + RGB),vit,srm,75.81,84.12,66.4,80.34,90.98,91.76,77.48,92.0
+DINO (Only RGB Robusto),dino,none,79.26,79.49,38.8,62.17,96.59,94.0,77.41,95.8
+CLIP (Only RGB Robusto),clip,none,83.68,79.44,63.2,69.6,90.98,88.0,77.91,81.8
+ResNet-18 (Only RGB Robusto),resnet,none,69.32,70.88,23.6,60.86,75.55,88.88,65.33,90.8
+MobileNet (Only RGB Robusto),mobilenet,none,72.32,70.51,23.6,62.8,85.07,82.0,59.83,93.0
+DINO (Only RGB Padrão),dino,none,73.6,64.44,32.0,41.43,99.8,75.44,62.62,68.2
+ResNet-18 (Only RGB Padrão),resnet,none,70.33,61.12,15.2,46.17,91.58,69.12,57.04,67.0
+DINO (SRM Only),dino,srm_only,61.6,84.37,73.2,75.83,95.79,95.2,75.27,95.4
+MobileNet (SRM Only),mobilenet,srm_only,68.7,72.49,64.0,62.86,85.47,83.44,61.54,87.8
+ResNet-18 (SRM Only),resnet,srm_only,65.67,78.02,62.8,65.89,88.88,94.8,67.05,95.2
+Xception (SRM Only),xception,srm_only,64.99,88.5,97.2,87.14,94.89,93.36,76.84,96.6
+DINO (FFT Concat Mag),dino,concat,76.66,73.78,68.8,62.91,97.39,82.8,63.47,73.4
+ResNet-18 (FFT Concat Mag),resnet,concat,80.05,81.63,91.6,73.89,86.67,93.12,72.69,90.0
+DINO (FFT Concat Multi-Freq),dino,concat_frequency,74.57,90.47,92.4,89.66,84.47,97.12,87.42,96.2
+ResNet-18 (FFT Concat Multi-Freq),resnet,concat_frequency,72.93,88.22,94.0,88.0,77.96,92.88,88.78,93.4
+ResNet-18 (FFT Passa-Alta Pura),resnet,frequency_3,44.01,66.99,76.0,61.37,87.58,49.84,81.92,42.2

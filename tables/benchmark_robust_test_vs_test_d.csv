@@ -1,0 +1,7 @@
+model_family,fourier_mode,regime,num_seeds,test_auc_mean,test_auc_std,test_acc_mean,test_acc_std,test_f1_mean,test_f1_std,test_d_auc_mean,test_d_auc_std,test_d_acc_mean,test_d_acc_std,test_d_f1_mean,test_d_f1_std,delta_auc_mean,delta_auc_std,final_score,grade_concept
+dino,none,finetune_robust,1,0.9242,0.0,0.8454,0.0,0.8541,0.0,0.8483,0.0,0.7656,0.0,0.772,0.0,-0.0759,0.0,8.9,A+
+clip,none,finetune_robust,4,0.9077,0.0017,0.8169,0.003,0.823,0.0046,0.8462,0.0024,0.7447,0.0051,0.7399,0.0084,-0.0615,0.0018,8.86,A+
+resnet,none,finetune_robust,1,0.8366,0.0,0.7369,0.0,0.7379,0.0,0.7587,0.0,0.6622,0.0,0.6535,0.0,-0.0779,0.0,8.19,A+
+vit,none,finetune_robust,3,0.821,0.0039,0.7359,0.0026,0.7451,0.0026,0.7621,0.0026,0.6835,0.002,0.6928,0.0018,-0.0589,0.0014,8.18,A+
+mobilenet,none,finetune_robust,1,0.8373,0.0,0.737,0.0,0.7345,0.0,0.7493,0.0,0.6646,0.0,0.6635,0.0,-0.088,0.0,8.13,A+
+xception,none,finetune_robust,1,0.7605,0.0,0.6965,0.0,0.7419,0.0,0.6838,0.0,0.6514,0.0,0.7095,0.0,-0.0767,0.0,7.59,A

@@ -1,0 +1,16 @@
+{
+  "kind": "lpips",
+  "python": "3.12.13",
+  "status": "passed",
+  "torch": "2.10.0+rocm7.1",
+  "hip": "7.1.25424",
+  "gpu_available": true,
+  "gpu": "_CudaDeviceProperties(name='AMD Radeon Graphics', major=12, minor=0, gcnArchName='gfx1200', total_memory=16304MB, multi_processor_count=16, uuid=65643437-3666-3565-3132-343733636335, pci_bus_id=7, pci_device_id=0, pci_domain_id=0, L2_cache_size=4MB)",
+  "bf16_supported": true,
+  "lpips": "0.1.4",
+  "loss": 1.16017484664917,
+  "peak_vram_bytes": 10967552,
+  "seconds": 7.952859883999736,
+  "max_rss_kib": 1390140,
+  "memory_pressure_after": "some avg10=0.00 avg60=0.00 avg300=0.00 total=1270524\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=1230938\n"
+}

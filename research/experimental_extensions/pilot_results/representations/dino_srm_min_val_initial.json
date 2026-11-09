@@ -1,0 +1,2078 @@
+{
+  "scope": "min-data source-validation development, not final benchmark results",
+  "limitations": [
+    "HF backbone already uses full MFFI training labels and full-val model selection",
+    "validation is reused for selection and reported development metrics",
+    "one seed; no Test, Test-D, DF-40 or Celeb-DF evaluation"
+  ],
+  "software": {
+    "commit": "35695e0884749a9ff96c076ae5e9c1e5942dc16d",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "seed": 42,
+  "train_cache": "fb222e02381d947f066550381202c71ae673620021b8fb22d52c4384e79426cb",
+  "val_cache": "eb2a244ae10fad97cd01dc7e4ddf122052f93398d7a29417c264ce941e52e601",
+  "train_n": 1000,
+  "val_n": 1000,
+  "runs": [
+    {
+      "family": "metric",
+      "kind": "raw_centroid",
+      "label_fraction": 1.0,
+      "run_dir": "local/pilots/representations-dino-srm/metric-raw_centroid-fraction1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9939926139374669,
+        "average_precision": 0.996279281725993,
+        "balanced_accuracy": 0.9687003179650238,
+        "eer": 0.033783783783783695,
+        "eer_threshold": 0.48957576703380895,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9717707442258341,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.967,
+        "brier": 0.19570282606129916,
+        "log_loss": 0.5838777163330297,
+        "ece_10_equal_width": 0.40415070670843123,
+        "threshold": 0.4923294484615326,
+        "tn": 399,
+        "fp": 9,
+        "fn": 24,
+        "tp": 568,
+        "confusion_matrix": [
+          [
+            399,
+            9
+          ],
+          [
+            24,
+            568
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9779411764705882,
+            0.022058823529411766
+          ],
+          [
+            0.04054054054054054,
+            0.9594594594594594
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.022058823529411766,
+        "tpr": 0.9594594594594594,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.16335952400004317,
+        "peak_rss_kib": 773948,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 1000,
+      "wall_seconds": 0.16526194200014288,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 4,
+        "regressed_by_other": 7,
+        "both_wrong": 26,
+        "both_correct": 963,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.4923294484615326,
+        "other_correct_given_reference_wrong": 0.13333333333333333,
+        "oracle_accuracy_upper_bound_not_deployable": 0.974,
+        "score_pearson": 0.9802976359199433
+      }
+    },
+    {
+      "family": "metric",
+      "kind": "raw_knn",
+      "label_fraction": 1.0,
+      "run_dir": "local/pilots/representations-dino-srm/metric-raw_knn-fraction1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9579006856120827,
+        "average_precision": 0.94708708819456,
+        "balanced_accuracy": 0.9501854795972443,
+        "eer": 0.07220193881405011,
+        "eer_threshold": 1.0,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9625312239800167,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.955,
+        "brier": 0.06502000000000001,
+        "log_loss": 1.247565492353741,
+        "ece_10_equal_width": 0.07620000000000005,
+        "threshold": 1.0,
+        "tn": 377,
+        "fp": 31,
+        "fn": 14,
+        "tp": 578,
+        "confusion_matrix": [
+          [
+            377,
+            31
+          ],
+          [
+            14,
+            578
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9240196078431373,
+            0.07598039215686274
+          ],
+          [
+            0.02364864864864865,
+            0.9763513513513513
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.07598039215686274,
+        "tpr": 0.9763513513513513,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.1677863879999677,
+        "peak_rss_kib": 792084,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 1000,
+      "wall_seconds": 0.16959329600013007,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 3,
+        "regressed_by_other": 18,
+        "both_wrong": 27,
+        "both_correct": 952,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 1.0,
+        "other_correct_given_reference_wrong": 0.1,
+        "oracle_accuracy_upper_bound_not_deployable": 0.973,
+        "score_pearson": 0.8764103228540767
+      }
+    },
+    {
+      "family": "metric",
+      "kind": "linear",
+      "label_fraction": 1.0,
+      "run_dir": "local/pilots/representations-dino-srm/metric-linear-fraction1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.95334028881823,
+        "average_precision": 0.9312889477267678,
+        "balanced_accuracy": 0.9492580816110228,
+        "eer": 0.0661764705882353,
+        "eer_threshold": 0.8629199897541721,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9606694560669456,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.953,
+        "brier": 0.04552128923759362,
+        "log_loss": 0.22650772394056964,
+        "ece_10_equal_width": 0.020126392207744398,
+        "threshold": 0.7694572806358337,
+        "tn": 379,
+        "fp": 29,
+        "fn": 18,
+        "tp": 574,
+        "confusion_matrix": [
+          [
+            379,
+            29
+          ],
+          [
+            18,
+            574
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.928921568627451,
+            0.07107843137254902
+          ],
+          [
+            0.030405405405405407,
+            0.9695945945945946
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.07107843137254902,
+        "tpr": 0.9695945945945946,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.8021259919999011,
+        "peak_rss_kib": 886848,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 2050,
+        "epochs_completed": 6,
+        "global_step": 96,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 1000,
+      "wall_seconds": 0.8031767429999945,
+      "selected_training_loss": 0.20011228200793266,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 4,
+        "regressed_by_other": 21,
+        "both_wrong": 26,
+        "both_correct": 949,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.7694572806358337,
+        "other_correct_given_reference_wrong": 0.13333333333333333,
+        "oracle_accuracy_upper_bound_not_deployable": 0.974,
+        "score_pearson": 0.9179945397921238
+      }
+    },
+    {
+      "family": "metric",
+      "kind": "mlp",
+      "label_fraction": 1.0,
+      "run_dir": "local/pilots/representations-dino-srm/metric-mlp-fraction1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9909744303126656,
+        "average_precision": 0.9934363215370943,
+        "balanced_accuracy": 0.9589460784313726,
+        "eer": 0.04656862745098039,
+        "eer_threshold": 0.980833976876502,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.961038961038961,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.955,
+        "brier": 0.05327492832584167,
+        "log_loss": 0.22114105306078324,
+        "ece_10_equal_width": 0.061579010763652194,
+        "threshold": 0.9924314022064209,
+        "tn": 400,
+        "fp": 8,
+        "fn": 37,
+        "tp": 555,
+        "confusion_matrix": [
+          [
+            400,
+            8
+          ],
+          [
+            37,
+            555
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9803921568627451,
+            0.0196078431372549
+          ],
+          [
+            0.0625,
+            0.9375
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0196078431372549,
+        "tpr": 0.9375,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.4104165749999993,
+        "peak_rss_kib": 900996,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 65730,
+        "epochs_completed": 8,
+        "global_step": 128,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 1000,
+      "wall_seconds": 0.41165162199990846,
+      "selected_training_loss": 0.022792692970484495,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 5,
+        "regressed_by_other": 21,
+        "both_wrong": 25,
+        "both_correct": 949,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.9924314022064209,
+        "other_correct_given_reference_wrong": 0.16666666666666666,
+        "oracle_accuracy_upper_bound_not_deployable": 0.975,
+        "score_pearson": 0.9017683180936894
+      }
+    },
+    {
+      "family": "metric",
+      "kind": "supcon",
+      "label_fraction": 1.0,
+      "run_dir": "local/pilots/representations-dino-srm/metric-supcon-fraction1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9897986221515633,
+        "average_precision": 0.9929831338212624,
+        "balanced_accuracy": 0.9679385267620562,
+        "eer": 0.03547297297297299,
+        "eer_threshold": 0.6669587009661907,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9718670076726342,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.967,
+        "brier": 0.12118106243310342,
+        "log_loss": 0.4250183526433869,
+        "ece_10_equal_width": 0.2879127404987812,
+        "threshold": 0.6688669323921204,
+        "tn": 397,
+        "fp": 11,
+        "fn": 22,
+        "tp": 570,
+        "confusion_matrix": [
+          [
+            397,
+            11
+          ],
+          [
+            22,
+            570
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9730392156862745,
+            0.02696078431372549
+          ],
+          [
+            0.037162162162162164,
+            0.9628378378378378
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.02696078431372549,
+        "tpr": 0.9628378378378378,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 3.030677518999937,
+        "peak_rss_kib": 926716,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 73920,
+        "epochs_completed": 8,
+        "global_step": 128,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 1000,
+      "wall_seconds": 3.0319404279998707,
+      "selected_training_loss": 3.460701823234558,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 3,
+        "regressed_by_other": 6,
+        "both_wrong": 27,
+        "both_correct": 964,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.6688669323921204,
+        "other_correct_given_reference_wrong": 0.1,
+        "oracle_accuracy_upper_bound_not_deployable": 0.973,
+        "score_pearson": 0.9347787433180299
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "linear",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-linear-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9818329358770534,
+        "average_precision": 0.9864588844630856,
+        "balanced_accuracy": 0.9471051934287229,
+        "eer": 0.058823529411764705,
+        "eer_threshold": 0.9088741505847259,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.957983193277311,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.95,
+        "brier": 0.04655140888861293,
+        "log_loss": 0.20126598882013577,
+        "ece_10_equal_width": 0.03578882420488572,
+        "threshold": 0.7527289390563965,
+        "tn": 380,
+        "fp": 28,
+        "fn": 22,
+        "tp": 570,
+        "confusion_matrix": [
+          [
+            380,
+            28
+          ],
+          [
+            22,
+            570
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9313725490196079,
+            0.06862745098039216
+          ],
+          [
+            0.037162162162162164,
+            0.9628378378378378
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.06862745098039216,
+        "tpr": 0.9628378378378378,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.30373529899998175,
+        "peak_rss_kib": 955304,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 0.30531796800005395,
+      "selected_training_loss": 0.003738479110156659,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 5,
+        "regressed_by_other": 25,
+        "both_wrong": 25,
+        "both_correct": 945,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.7527289390563965,
+        "other_correct_given_reference_wrong": 0.16666666666666666,
+        "oracle_accuracy_upper_bound_not_deployable": 0.975,
+        "score_pearson": 0.9294331943835313
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "mlp",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-mlp-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9937814652888182,
+        "average_precision": 0.9961082098606834,
+        "balanced_accuracy": 0.9673920243773184,
+        "eer": 0.03547297297297299,
+        "eer_threshold": 0.430161560709412,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9699570815450643,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.965,
+        "brier": 0.09996015302981141,
+        "log_loss": 0.36278690209883796,
+        "ece_10_equal_width": 0.24826062703132631,
+        "threshold": 0.44173285365104675,
+        "tn": 400,
+        "fp": 8,
+        "fn": 27,
+        "tp": 565,
+        "confusion_matrix": [
+          [
+            400,
+            8
+          ],
+          [
+            27,
+            565
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9803921568627451,
+            0.0196078431372549
+          ],
+          [
+            0.04560810810810811,
+            0.9543918918918919
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0196078431372549,
+        "tpr": 0.9543918918918919,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.4450671170000078,
+        "peak_rss_kib": 957420,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 32866,
+        "epochs_completed": 10,
+        "global_step": 20,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 0.4461580329998469,
+      "selected_training_loss": 0.32517193287026647,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 6,
+        "regressed_by_other": 12,
+        "both_wrong": 24,
+        "both_correct": 958,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.44173285365104675,
+        "other_correct_given_reference_wrong": 0.2,
+        "oracle_accuracy_upper_bound_not_deployable": 0.976,
+        "score_pearson": 0.9636754422101673
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "knn",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-knn-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9850519177265502,
+        "average_precision": 0.9873705647655004,
+        "balanced_accuracy": 0.9669283253842077,
+        "eer": 0.043950361944157273,
+        "eer_threshold": 0.30062047569803485,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9690189328743546,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.03464,
+        "log_loss": 0.37475095745090525,
+        "ece_10_equal_width": 0.028999999999999956,
+        "threshold": 0.4,
+        "tn": 401,
+        "fp": 7,
+        "fn": 29,
+        "tp": 563,
+        "confusion_matrix": [
+          [
+            401,
+            7
+          ],
+          [
+            29,
+            563
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9828431372549019,
+            0.01715686274509804
+          ],
+          [
+            0.048986486486486486,
+            0.9510135135135135
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01715686274509804,
+        "tpr": 0.9510135135135135,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.35387241799980984,
+        "peak_rss_kib": 959424,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 0.35551329600002646,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 6,
+        "regressed_by_other": 12,
+        "both_wrong": 24,
+        "both_correct": 958,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.4,
+        "other_correct_given_reference_wrong": 0.2,
+        "oracle_accuracy_upper_bound_not_deployable": 0.976,
+        "score_pearson": 0.9938816377764779
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "lp",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-lp-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9888298224695284,
+        "average_precision": 0.9937103720856473,
+        "balanced_accuracy": 0.9680710121886593,
+        "eer": 0.047297297297297314,
+        "eer_threshold": 0.9217518787856684,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9688581314878892,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.05040334268647445,
+        "log_loss": 0.18503896560089833,
+        "ece_10_equal_width": 0.046877012505176174,
+        "threshold": 0.9448090570935626,
+        "tn": 404,
+        "fp": 4,
+        "fn": 32,
+        "tp": 560,
+        "confusion_matrix": [
+          [
+            404,
+            4
+          ],
+          [
+            32,
+            560
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9901960784313726,
+            0.00980392156862745
+          ],
+          [
+            0.05405405405405406,
+            0.9459459459459459
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.00980392156862745,
+        "tpr": 0.9459459459459459,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.355056599999898,
+        "peak_rss_kib": 959424,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 0.3568226309998863,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 9,
+        "regressed_by_other": 15,
+        "both_wrong": 21,
+        "both_correct": 955,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.9448090570935626,
+        "other_correct_given_reference_wrong": 0.3,
+        "oracle_accuracy_upper_bound_not_deployable": 0.979,
+        "score_pearson": 0.9290481770367189
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "correct_smooth",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-correct_smooth-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9898979862215156,
+        "average_precision": 0.9939311799897574,
+        "balanced_accuracy": 0.9665474297827239,
+        "eer": 0.04411764705882353,
+        "eer_threshold": 0.8396467359865176,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9690721649484536,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.04037498554282914,
+        "log_loss": 0.14893299408072808,
+        "ece_10_equal_width": 0.034456823851646716,
+        "threshold": 0.8714594394448232,
+        "tn": 400,
+        "fp": 8,
+        "fn": 28,
+        "tp": 564,
+        "confusion_matrix": [
+          [
+            400,
+            8
+          ],
+          [
+            28,
+            564
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9803921568627451,
+            0.0196078431372549
+          ],
+          [
+            0.0472972972972973,
+            0.9527027027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0196078431372549,
+        "tpr": 0.9527027027027027,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.3500013679999938,
+        "peak_rss_kib": 959424,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 0.3515109190000203,
+      "selected_training_loss": 0.003738479110156659,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 5,
+        "regressed_by_other": 11,
+        "both_wrong": 25,
+        "both_correct": 959,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.8714594394448232,
+        "other_correct_given_reference_wrong": 0.16666666666666666,
+        "oracle_accuracy_upper_bound_not_deployable": 0.975,
+        "score_pearson": 0.9506037005871275
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gcn",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-gcn-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9831577901430842,
+        "average_precision": 0.9917528147975514,
+        "balanced_accuracy": 0.9665474297827239,
+        "eer": 0.038851351351351246,
+        "eer_threshold": 0.41140284570487773,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9690721649484536,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.0641855183142633,
+        "log_loss": 0.2691276450511992,
+        "ece_10_equal_width": 0.17046365383267406,
+        "threshold": 0.47787293791770935,
+        "tn": 400,
+        "fp": 8,
+        "fn": 28,
+        "tp": 564,
+        "confusion_matrix": [
+          [
+            400,
+            8
+          ],
+          [
+            28,
+            564
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9803921568627451,
+            0.0196078431372549
+          ],
+          [
+            0.0472972972972973,
+            0.9527027027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0196078431372549,
+        "tpr": 0.9527027027027027,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 2.3330113170000004,
+        "peak_rss_kib": 970208,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135394,
+        "epochs_completed": 10,
+        "global_step": 20,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 2.333859676999964,
+      "selected_training_loss": 0.22550425926844278,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 7,
+        "regressed_by_other": 14,
+        "both_wrong": 23,
+        "both_correct": 956,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.47787293791770935,
+        "other_correct_given_reference_wrong": 0.23333333333333334,
+        "oracle_accuracy_upper_bound_not_deployable": 0.977,
+        "score_pearson": 0.9953962203281331
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gat",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-gat-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9926636195018548,
+        "average_precision": 0.9955653295853178,
+        "balanced_accuracy": 0.9665474297827239,
+        "eer": 0.03716216216216219,
+        "eer_threshold": 0.46101490790779526,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9690721649484536,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.2090621970477139,
+        "log_loss": 0.6110144533567188,
+        "ece_10_equal_width": 0.39944650062918663,
+        "threshold": 0.46975699067115784,
+        "tn": 400,
+        "fp": 8,
+        "fn": 28,
+        "tp": 564,
+        "confusion_matrix": [
+          [
+            400,
+            8
+          ],
+          [
+            28,
+            564
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9803921568627451,
+            0.0196078431372549
+          ],
+          [
+            0.0472972972972973,
+            0.9527027027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0196078431372549,
+        "tpr": 0.9527027027027027,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 1.6520004229998904,
+        "peak_rss_kib": 971956,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135462,
+        "epochs_completed": 6,
+        "global_step": 12,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 1.652826813000047,
+      "selected_training_loss": 0.6652823417794471,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 7,
+        "regressed_by_other": 14,
+        "both_wrong": 23,
+        "both_correct": 956,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.46975699067115784,
+        "other_correct_given_reference_wrong": 0.23333333333333334,
+        "oracle_accuracy_upper_bound_not_deployable": 0.977,
+        "score_pearson": 0.9949223634587033
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "sage",
+      "label_fraction": 0.05,
+      "run_dir": "local/pilots/representations-dino-srm/graph-sage-fraction0.05-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9915995959194488,
+        "average_precision": 0.9949967466242229,
+        "balanced_accuracy": 0.9666302331743508,
+        "eer": 0.038851351351351246,
+        "eer_threshold": 0.4777167757620683,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9700598802395209,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.965,
+        "brier": 0.2160727945815691,
+        "log_loss": 0.6251145363281243,
+        "ece_10_equal_width": 0.4064786477684975,
+        "threshold": 0.47896289825439453,
+        "tn": 398,
+        "fp": 10,
+        "fn": 25,
+        "tp": 567,
+        "confusion_matrix": [
+          [
+            398,
+            10
+          ],
+          [
+            25,
+            567
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9754901960784313,
+            0.024509803921568627
+          ],
+          [
+            0.04222972972972973,
+            0.9577702702702703
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024509803921568627,
+        "tpr": 0.9577702702702703,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 1.8028568560000622,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 139554,
+        "epochs_completed": 6,
+        "global_step": 12,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 51,
+      "wall_seconds": 1.8041803379999237,
+      "selected_training_loss": 0.6756452567437116,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 5,
+        "regressed_by_other": 11,
+        "both_wrong": 25,
+        "both_correct": 959,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.47896289825439453,
+        "other_correct_given_reference_wrong": 0.16666666666666666,
+        "oracle_accuracy_upper_bound_not_deployable": 0.975,
+        "score_pearson": 0.9811942091435533
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "linear",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-linear-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9555697701377849,
+        "average_precision": 0.9511321521377188,
+        "balanced_accuracy": 0.9385267620561738,
+        "eer": 0.0784313725490196,
+        "eer_threshold": 0.9811796849849177,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9523809523809523,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.943,
+        "brier": 0.07775683993192589,
+        "log_loss": 0.3939085146092102,
+        "ece_10_equal_width": 0.08265560293150336,
+        "threshold": 0.9701499342918396,
+        "tn": 373,
+        "fp": 35,
+        "fn": 22,
+        "tp": 570,
+        "confusion_matrix": [
+          [
+            373,
+            35
+          ],
+          [
+            22,
+            570
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9142156862745098,
+            0.0857843137254902
+          ],
+          [
+            0.037162162162162164,
+            0.9628378378378378
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0857843137254902,
+        "tpr": 0.9628378378378378,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.3132418200000302,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 0.3151175080001849,
+      "selected_training_loss": 0.007002296075838417,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 6,
+        "regressed_by_other": 33,
+        "both_wrong": 24,
+        "both_correct": 937,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.9701499342918396,
+        "other_correct_given_reference_wrong": 0.2,
+        "oracle_accuracy_upper_bound_not_deployable": 0.976,
+        "score_pearson": 0.8513288738304877
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "mlp",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-mlp-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9936779610492846,
+        "average_precision": 0.996058272056049,
+        "balanced_accuracy": 0.9687003179650238,
+        "eer": 0.03716216216216219,
+        "eer_threshold": 0.48132925822928146,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9717707442258341,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.967,
+        "brier": 0.15177604311711634,
+        "log_loss": 0.488744242932706,
+        "ece_10_equal_width": 0.3323476460278034,
+        "threshold": 0.4841550290584564,
+        "tn": 399,
+        "fp": 9,
+        "fn": 24,
+        "tp": 568,
+        "confusion_matrix": [
+          [
+            399,
+            9
+          ],
+          [
+            24,
+            568
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9779411764705882,
+            0.022058823529411766
+          ],
+          [
+            0.04054054054054054,
+            0.9594594594594594
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.022058823529411766,
+        "tpr": 0.9594594594594594,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.4938348080002015,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 32866,
+        "epochs_completed": 8,
+        "global_step": 32,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 0.49522912199995517,
+      "selected_training_loss": 0.5126177152194599,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 5,
+        "regressed_by_other": 8,
+        "both_wrong": 25,
+        "both_correct": 962,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.4841550290584564,
+        "other_correct_given_reference_wrong": 0.16666666666666666,
+        "oracle_accuracy_upper_bound_not_deployable": 0.975,
+        "score_pearson": 0.952919430434088
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "knn",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-knn-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9744944852941176,
+        "average_precision": 0.9718603034397975,
+        "balanced_accuracy": 0.9604199788023318,
+        "eer": 0.04166666666666662,
+        "eer_threshold": 0.9333333333333337,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9649272882805817,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.959,
+        "brier": 0.04963,
+        "log_loss": 0.7429144224587791,
+        "ece_10_equal_width": 0.062299999999999967,
+        "threshold": 1.0,
+        "tn": 395,
+        "fp": 13,
+        "fn": 28,
+        "tp": 564,
+        "confusion_matrix": [
+          [
+            395,
+            13
+          ],
+          [
+            28,
+            564
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9681372549019608,
+            0.031862745098039214
+          ],
+          [
+            0.0472972972972973,
+            0.9527027027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.031862745098039214,
+        "tpr": 0.9527027027027027,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.4109615869999743,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 0.41304563599987887,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 3,
+        "regressed_by_other": 14,
+        "both_wrong": 27,
+        "both_correct": 956,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 1.0,
+        "other_correct_given_reference_wrong": 0.1,
+        "oracle_accuracy_upper_bound_not_deployable": 0.973,
+        "score_pearson": 0.9231265033897235
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "lp",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-lp-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9896661367249603,
+        "average_precision": 0.9940391114122694,
+        "balanced_accuracy": 0.9680710121886593,
+        "eer": 0.047297297297297314,
+        "eer_threshold": 0.9637398473634518,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9688581314878892,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.05785002138435123,
+        "log_loss": 0.2112404499109831,
+        "ece_10_equal_width": 0.05966684360864613,
+        "threshold": 0.9738888204140692,
+        "tn": 404,
+        "fp": 4,
+        "fn": 32,
+        "tp": 560,
+        "confusion_matrix": [
+          [
+            404,
+            4
+          ],
+          [
+            32,
+            560
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9901960784313726,
+            0.00980392156862745
+          ],
+          [
+            0.05405405405405406,
+            0.9459459459459459
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.00980392156862745,
+        "tpr": 0.9459459459459459,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.44056692599997405,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 0,
+        "epochs_completed": 0,
+        "global_step": 0,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 0.4509642169998642,
+      "selected_training_loss": null,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 9,
+        "regressed_by_other": 15,
+        "both_wrong": 21,
+        "both_correct": 955,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.9738888204140692,
+        "other_correct_given_reference_wrong": 0.3,
+        "oracle_accuracy_upper_bound_not_deployable": 0.979,
+        "score_pearson": 0.9080508953094671
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "correct_smooth",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-correct_smooth-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9852485757816641,
+        "average_precision": 0.9874439107167907,
+        "balanced_accuracy": 0.960171568627451,
+        "eer": 0.048986486486486576,
+        "eer_threshold": 0.9751022307277502,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9618717504332756,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.956,
+        "brier": 0.057031820248656884,
+        "log_loss": 0.21924028224092706,
+        "ece_10_equal_width": 0.05943121518984203,
+        "threshold": 0.9838279366609144,
+        "tn": 401,
+        "fp": 7,
+        "fn": 37,
+        "tp": 555,
+        "confusion_matrix": [
+          [
+            401,
+            7
+          ],
+          [
+            37,
+            555
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9828431372549019,
+            0.01715686274509804
+          ],
+          [
+            0.0625,
+            0.9375
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01715686274509804,
+        "tpr": 0.9375,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 0.38564694599995164,
+        "peak_rss_kib": 972104,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 1025,
+        "epochs_completed": 30,
+        "global_step": 30,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 0.38854476199981036,
+      "selected_training_loss": 0.007002296075838417,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 6,
+        "regressed_by_other": 20,
+        "both_wrong": 24,
+        "both_correct": 950,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.9838279366609144,
+        "other_correct_given_reference_wrong": 0.2,
+        "oracle_accuracy_upper_bound_not_deployable": 0.976,
+        "score_pearson": 0.9052352824546109
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gcn",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-gcn-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9857412559618443,
+        "average_precision": 0.9929007759880364,
+        "balanced_accuracy": 0.9674748277689453,
+        "eer": 0.04054054054054054,
+        "eer_threshold": 0.5199529464180405,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9709401709401709,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.966,
+        "brier": 0.12188274287843791,
+        "log_loss": 0.42150823042173424,
+        "ece_10_equal_width": 0.294579337567091,
+        "threshold": 0.5339283347129822,
+        "tn": 398,
+        "fp": 10,
+        "fn": 24,
+        "tp": 568,
+        "confusion_matrix": [
+          [
+            398,
+            10
+          ],
+          [
+            24,
+            568
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9754901960784313,
+            0.024509803921568627
+          ],
+          [
+            0.04054054054054054,
+            0.9594594594594594
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.024509803921568627,
+        "tpr": 0.9594594594594594,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 1.921630131000029,
+        "peak_rss_kib": 972272,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135394,
+        "epochs_completed": 7,
+        "global_step": 28,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 1.9228879010001947,
+      "selected_training_loss": 0.42809680605878925,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 3,
+        "regressed_by_other": 7,
+        "both_wrong": 27,
+        "both_correct": 963,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.5339283347129822,
+        "other_correct_given_reference_wrong": 0.1,
+        "oracle_accuracy_upper_bound_not_deployable": 0.973,
+        "score_pearson": 0.991058319171557
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "gat",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-gat-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.9899600887652359,
+        "average_precision": 0.9943857822679432,
+        "balanced_accuracy": 0.9673092209856916,
+        "eer": 0.03716216216216219,
+        "eer_threshold": 0.4801896883023752,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9689655172413794,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.964,
+        "brier": 0.19947344086473917,
+        "log_loss": 0.5915268533480139,
+        "ece_10_equal_width": 0.4048297076821328,
+        "threshold": 0.49106156826019287,
+        "tn": 402,
+        "fp": 6,
+        "fn": 30,
+        "tp": 562,
+        "confusion_matrix": [
+          [
+            402,
+            6
+          ],
+          [
+            30,
+            562
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9852941176470589,
+            0.014705882352941176
+          ],
+          [
+            0.05067567567567568,
+            0.9493243243243243
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.014705882352941176,
+        "tpr": 0.9493243243243243,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 1.9675006490001579,
+        "peak_rss_kib": 976116,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 135462,
+        "epochs_completed": 6,
+        "global_step": 24,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 1.968504201000087,
+      "selected_training_loss": 0.646917727324042,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 7,
+        "regressed_by_other": 14,
+        "both_wrong": 23,
+        "both_correct": 956,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.49106156826019287,
+        "other_correct_given_reference_wrong": 0.23333333333333334,
+        "oracle_accuracy_upper_bound_not_deployable": 0.977,
+        "score_pearson": 0.9964686892533745
+      }
+    },
+    {
+      "family": "graph",
+      "kind": "sage",
+      "label_fraction": 0.1,
+      "run_dir": "local/pilots/representations-dino-srm/graph-sage-fraction0.1-seed42",
+      "status": "complete",
+      "metrics": {
+        "n": 1000,
+        "n_real": 408,
+        "n_fake": 592,
+        "auc": 0.990655637254902,
+        "average_precision": 0.9946895677619827,
+        "balanced_accuracy": 0.9677729199788023,
+        "eer": 0.03716216216216219,
+        "eer_threshold": 0.4860469078695452,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.9699054170249355,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.965,
+        "brier": 0.12258331216627233,
+        "log_loss": 0.41612315441663394,
+        "ece_10_equal_width": 0.28950937184691433,
+        "threshold": 0.5332072973251343,
+        "tn": 401,
+        "fp": 7,
+        "fn": 28,
+        "tp": 564,
+        "confusion_matrix": [
+          [
+            401,
+            7
+          ],
+          [
+            28,
+            564
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9828431372549019,
+            0.01715686274509804
+          ],
+          [
+            0.0472972972972973,
+            0.9527027027027027
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.01715686274509804,
+        "tpr": 0.9527027027027027,
+        "auc_status": "defined"
+      },
+      "telemetry": {
+        "runtime_seconds": 2.324616601000116,
+        "peak_rss_kib": 976220,
+        "peak_vram_bytes": 0,
+        "trainable_parameters": 139554,
+        "epochs_completed": 9,
+        "global_step": 36,
+        "seed": 42,
+        "scope": "cached-feature development"
+      },
+      "label_count": 101,
+      "wall_seconds": 2.326265843999863,
+      "selected_training_loss": 0.409566728490414,
+      "checkpoint_complementarity": {
+        "n": 1000,
+        "repaired_by_other": 7,
+        "regressed_by_other": 12,
+        "both_wrong": 23,
+        "both_correct": 958,
+        "reference_threshold": 0.1919327825307846,
+        "other_threshold": 0.5332072973251343,
+        "other_correct_given_reference_wrong": 0.23333333333333334,
+        "oracle_accuracy_upper_bound_not_deployable": 0.977,
+        "score_pearson": 0.9960072676168861
+      }
+    }
+  ],
+  "checkpoint_baseline": {
+    "n": 1000,
+    "n_real": 408,
+    "n_fake": 592,
+    "auc": 0.9940133147853736,
+    "average_precision": 0.9963030725445402,
+    "balanced_accuracy": 0.9697105193428723,
+    "eer": 0.031862745098039214,
+    "eer_threshold": 0.19888270018147483,
+    "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+    "eer_status": "defined",
+    "f1": 0.9745762711864406,
+    "f1_policy": "fake is positive; zero division returns zero",
+    "accuracy": 0.97,
+    "brier": 0.03317687891056605,
+    "log_loss": 0.12362702147835465,
+    "ece_10_equal_width": 0.04310667028365426,
+    "threshold": 0.1919327825307846,
+    "tn": 395,
+    "fp": 13,
+    "fn": 17,
+    "tp": 575,
+    "confusion_matrix": [
+      [
+        395,
+        13
+      ],
+      [
+        17,
+        575
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9681372549019608,
+        0.031862745098039214
+      ],
+      [
+        0.028716216216216218,
+        0.9712837837837838
+      ]
+    ],
+    "confusion_axes": "rows true, columns predicted; [real, fake]",
+    "fpr": 0.031862745098039214,
+    "tpr": 0.9712837837837838,
+    "auc_status": "defined"
+  },
+  "threshold_policy": "source-validation Youden, fixed fake-positive polarity",
+  "paired_comparisons": [
+    {
+      "reference": [
+        "metric",
+        "mlp",
+        1.0
+      ],
+      "candidate": [
+        "metric",
+        "supcon",
+        1.0
+      ],
+      "auc_difference": {
+        "estimate": -0.0011758081611022986,
+        "lower": -0.004882135030365856,
+        "upper": 0.0026379190164071216,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 16,
+        "regressed_by_other": 3,
+        "both_wrong": 30,
+        "both_correct": 951,
+        "reference_threshold": 0.9924314022064209,
+        "other_threshold": 0.6688669323921204,
+        "other_correct_given_reference_wrong": 0.34782608695652173,
+        "oracle_accuracy_upper_bound_not_deployable": 0.97
+      }
+    },
+    {
+      "reference": [
+        "metric",
+        "raw_centroid",
+        1.0
+      ],
+      "candidate": [
+        "metric",
+        "supcon",
+        1.0
+      ],
+      "auc_difference": {
+        "estimate": -0.004193991785903517,
+        "lower": -0.0074424383093122486,
+        "upper": -0.0015721164750786584,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 6,
+        "regressed_by_other": 6,
+        "both_wrong": 27,
+        "both_correct": 961,
+        "reference_threshold": 0.4923294484615326,
+        "other_threshold": 0.6688669323921204,
+        "other_correct_given_reference_wrong": 0.18181818181818182,
+        "oracle_accuracy_upper_bound_not_deployable": 0.973
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.05
+      ],
+      "candidate": [
+        "graph",
+        "gcn",
+        0.05
+      ],
+      "auc_difference": {
+        "estimate": -0.010623675145733924,
+        "lower": -0.017300242149520386,
+        "upper": -0.004716027839622997,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 2,
+        "regressed_by_other": 3,
+        "both_wrong": 34,
+        "both_correct": 961,
+        "reference_threshold": 0.44173285365104675,
+        "other_threshold": 0.47787293791770935,
+        "other_correct_given_reference_wrong": 0.05555555555555555,
+        "oracle_accuracy_upper_bound_not_deployable": 0.966
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.05
+      ],
+      "candidate": [
+        "graph",
+        "gat",
+        0.05
+      ],
+      "auc_difference": {
+        "estimate": -0.0011178457869633895,
+        "lower": -0.002484548957710686,
+        "upper": 4.92431701789947e-05,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 2,
+        "regressed_by_other": 3,
+        "both_wrong": 34,
+        "both_correct": 961,
+        "reference_threshold": 0.44173285365104675,
+        "other_threshold": 0.46975699067115784,
+        "other_correct_given_reference_wrong": 0.05555555555555555,
+        "oracle_accuracy_upper_bound_not_deployable": 0.966
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.05
+      ],
+      "candidate": [
+        "graph",
+        "sage",
+        0.05
+      ],
+      "auc_difference": {
+        "estimate": -0.0021818693693693714,
+        "lower": -0.0037730469416027367,
+        "upper": -0.0007713883317043009,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 2,
+        "regressed_by_other": 2,
+        "both_wrong": 34,
+        "both_correct": 962,
+        "reference_threshold": 0.44173285365104675,
+        "other_threshold": 0.47896289825439453,
+        "other_correct_given_reference_wrong": 0.05555555555555555,
+        "oracle_accuracy_upper_bound_not_deployable": 0.966
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.1
+      ],
+      "candidate": [
+        "graph",
+        "gcn",
+        0.1
+      ],
+      "auc_difference": {
+        "estimate": -0.007936705087440377,
+        "lower": -0.0139573708398935,
+        "upper": -0.003034693357420138,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 4,
+        "regressed_by_other": 5,
+        "both_wrong": 29,
+        "both_correct": 962,
+        "reference_threshold": 0.4841550290584564,
+        "other_threshold": 0.5339283347129822,
+        "other_correct_given_reference_wrong": 0.12121212121212122,
+        "oracle_accuracy_upper_bound_not_deployable": 0.971
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.1
+      ],
+      "candidate": [
+        "graph",
+        "gat",
+        0.1
+      ],
+      "auc_difference": {
+        "estimate": -0.00371787228404874,
+        "lower": -0.0067198190966476085,
+        "upper": -0.0013956681749684688,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 4,
+        "regressed_by_other": 8,
+        "both_wrong": 29,
+        "both_correct": 959,
+        "reference_threshold": 0.4841550290584564,
+        "other_threshold": 0.49106156826019287,
+        "other_correct_given_reference_wrong": 0.12121212121212122,
+        "oracle_accuracy_upper_bound_not_deployable": 0.971
+      }
+    },
+    {
+      "reference": [
+        "graph",
+        "mlp",
+        0.1
+      ],
+      "candidate": [
+        "graph",
+        "sage",
+        0.1
+      ],
+      "auc_difference": {
+        "estimate": -0.0030223237943826087,
+        "lower": -0.005532642128965006,
+        "upper": -0.0010780095111736113,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 1000,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "complementarity": {
+        "n": 1000,
+        "repaired_by_other": 2,
+        "regressed_by_other": 4,
+        "both_wrong": 31,
+        "both_correct": 963,
+        "reference_threshold": 0.4841550290584564,
+        "other_threshold": 0.5332072973251343,
+        "other_correct_given_reference_wrong": 0.06060606060606061,
+        "oracle_accuracy_upper_bound_not_deployable": 0.969
+      }
+    }
+  ],
+  "analysis_software": {
+    "commit": "efc4372b031a8305d864a6d289abd437b3e89d82",
+    "code_sha256": {
+      "__init__.py": "06b7673f9cd37a46eba43765a9fbb5739f97905e17c2c6d2fab097104adc5b76",
+      "analysis.py": "ea6036e85890ff701ba32aef1d45c0356c5e3cc71cddc1a68fae7fa8e1328cd3",
+      "artifacts.py": "ed7954cf3fc543e3d465d6cf514c9490021dae674d2782825fd6995927e9ebe5",
+      "commands.py": "4a7b9af68d80b3b1b7f08a03b5f06062dd8e196cdf7bc9a725959c5b50b525ba",
+      "df40.py": "4ff0ad3e58c1ac03f8e02c0b3236b51eba5924f2bb9cc7813d99888d4e37c531",
+      "engine.py": "86092cd36b804861caa0d5bc8b1d68852375aeba72effdfacdca31940c21a888",
+      "experiments.py": "966774916842b805d61a3ad482b99c154187c94e41dd9e0aad49ee85a9001ea4",
+      "explain.py": "1ca8986dce87fa8d82655c05ef546144af3a6f09a201200d0033f773334694a5",
+      "identity.py": "bc9d30e294d3ca44a2f81f2eb5571b1ccc487de4d000eb04b481811e8f214d78",
+      "imaging.py": "2f0a9b6456057c0599284d85238c4d12594f6caedd49f26762f6944a2e7c0047",
+      "inference.py": "78c0293bd94c682a2c871f6557e00f2851b79423ef4cd6ea0e8e6f262ae3bbfb",
+      "legacy_encoding.py": "847b77cf0f539251cf9f652b47f88856eb605ab292768b062de44bbd8092ce47",
+      "manifests.py": "6220098294f1f1db884acf4a313bec99d8880bb671f588d0b29e131c5309f7d9",
+      "models.py": "eb14ecb797588b5e02aba990213c5ee199f56ded3c5bafcea82fb59aa09f7bf2",
+      "plots.py": "1a07fb7ea4e1f6ebf426e1c680adb6bb06748455a593eaeb022e5527ae37a4b7",
+      "provenance.py": "b9e898300051604d3331ba8ace429298993ec2521b15f6f739c4a14417fb5b5f",
+      "statistics.py": "ba6ca309f3899b7291f59cc458f0b4185588f954b63219ca4b22da6e4569c3d8"
+    },
+    "python": "3.12.13",
+    "packages": {
+      "torch": "2.10.0+rocm7.1",
+      "torchvision": "0.25.0+rocm7.1",
+      "timm": "1.0.27",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "Pillow": "12.2.0"
+    }
+  },
+  "uncertainty_limitations": "Image-only supplied groups; conditional on fitted and validation-selected checkpoints, not independent confirmation or across-seed uncertainty.",
+  "rss_scope": "Process lifetime high-water mark; not an isolated per-model peak."
+}

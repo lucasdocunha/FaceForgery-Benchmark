@@ -1,0 +1,84 @@
+{
+  "built_commit": "5e970bd264f342733aa39193f0a60b29fdb7e07f",
+  "build_run_id": 34695303971,
+  "pages": 6,
+  "page_size": "612 x 792 pts (letter)",
+  "format": "IEEEtran conference, two columns, 10pt, US Letter",
+  "source_sha256": "9b3755698f968b745398a37f622b2a4744d3c0ec08aaa750b72b851778336961",
+  "pdf_sha256": "ee983c7b5d0ba6e6c88e4f1f111c93f6f2a8078193ba624da8fa485766bb424c",
+  "bibliography_sha256": "0da057d6c4f48a8032e256ad90dcfe9963e302ee410fce9e6375e365c57a4a48",
+  "preserved_reference_sha256": {
+    "paper/explicability/main.pdf": "b564b9b71acef0d2b9720eaee857d9b15b39e49134fca1f4caf8ea5e7d839238",
+    "paper/explicability/main.tex": "29a05124c6ac4a67058e11a193405825f8aaa1a37884c97a80b9fb7654b0d97c",
+    "paper/explicability/references.bib": "0da057d6c4f48a8032e256ad90dcfe9963e302ee410fce9e6375e365c57a4a48",
+    "paper/original-sibgrapi.pdf": "476a53c84598496e4fddac4c0337ae021e18d2513060dd2543bae1e77dfe5d56"
+  },
+  "reference_pages": 10,
+  "layout_warnings": [],
+  "page_layout": [
+    {
+      "page": 1,
+      "word_count": 670,
+      "text_bounds_pt": [
+        48.605,
+        54.924817,
+        564.78037,
+        718.596922
+      ]
+    },
+    {
+      "page": 2,
+      "word_count": 814,
+      "text_bounds_pt": [
+        48.605,
+        52.155357,
+        564.774392,
+        719.291917
+      ]
+    },
+    {
+      "page": 3,
+      "word_count": 802,
+      "text_bounds_pt": [
+        48.217,
+        52.155357,
+        564.78037,
+        718.596922
+      ]
+    },
+    {
+      "page": 4,
+      "word_count": 840,
+      "text_bounds_pt": [
+        48.496,
+        52.155357,
+        564.776713,
+        718.596922
+      ]
+    },
+    {
+      "page": 5,
+      "word_count": 813,
+      "text_bounds_pt": [
+        48.605,
+        52.155357,
+        564.6925,
+        718.596922
+      ]
+    },
+    {
+      "page": 6,
+      "word_count": 564,
+      "text_bounds_pt": [
+        52.949,
+        53.506272,
+        564.453835,
+        383.421542
+      ]
+    }
+  ],
+  "primary_fonts": "name                                 type              encoding         emb sub uni object ID\n------------------------------------ ----------------- ---------------- --- --- --- ---------\nTPRYZW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes    107  0\nFRNIHB+CMSY8                         Type 1            Builtin          yes yes yes    108  0\nQVCFWU+NimbusRomNo9L-MediItal        Type 1            Custom           yes yes yes    110  0\nQOKSHW+NimbusRomNo9L-Medi            Type 1            Custom           yes yes yes    111  0\nQOPPCD+NimbusRomNo9L-ReguItal        Type 1            Custom           yes yes yes    112  0\nNAWZIE+CMMI10                        Type 1            Builtin          yes yes yes    134  0\nYDARJD+CMMI7                         Type 1            Builtin          yes yes yes    135  0\nEUIJBC+CMR10                         Type 1            Builtin          yes yes yes    136  0\nWFGZZR+CMSY7                         Type 1            Builtin          yes yes yes    138  0\nDBUDYM+CMMI5                         Type 1            Builtin          yes yes yes    139  0\nGSXYAU+CMEX10                        Type 1            Builtin          yes yes yes    140  0\nUAGOMC+CMBX10                        Type 1            Builtin          yes yes yes    141  0\nNEKVHZ+CMSY10                        Type 1            Builtin          yes yes yes    142  0\nUXMMGC+CMR7                          Type 1            Builtin          yes yes yes    143  0\nOPEKTB+CMSY9                         Type 1            Builtin          yes yes yes    166  0\n",
+  "original_fonts": "name                                 type              encoding         emb sub uni object ID\n------------------------------------ ----------------- ---------------- --- --- --- ---------\nCMTMJR+CMSY8                         Type 1            Builtin          yes yes yes    295  0\nVVVGNA+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes    294  0\nNZZRKM+NimbusMonL-Regu               Type 1            Custom           yes yes yes    296  0\nOAQTFF+NimbusRomNo9L-MediItal        Type 1            Custom           yes yes yes    297  0\nQJOXUL+NimbusRomNo9L-Medi            Type 1            Custom           yes yes yes    298  0\nWGPVWO+NimbusRomNo9L-ReguItal        Type 1            Custom           yes yes yes    302  0\nGZMGIO+CMR10                         Type 1            Builtin          yes yes yes    299  0\nVSNIYM+CMMI10                        Type 1            Builtin          yes yes yes    300  0\nJAVMIH+CMSY7                         Type 1            Builtin          yes yes yes    301  0\nHXRQYU+CMR8                          Type 1            Builtin          yes yes yes    322  0\nEAAUWX+CMMI8                         Type 1            Builtin          yes yes yes    323  0\nSOSCBV+CMSY10                        Type 1            Builtin          yes yes yes    324  0\nIWMBRZ+CMR7                          Type 1            Builtin          yes yes yes    332  0\nEVICAO+DejaVuSans-Bold               Type 3            Custom           yes yes no     476  0\nBMQQDV+DejaVuSans                    Type 3            Custom           yes yes no     478  0\nEUPODS+STIXNonUnicode-Italic         Type 3            Custom           yes yes no     200  0\nGCWXDV+DejaVuSans-Oblique            Type 3            Custom           yes yes no     477  0\nQPLLIX+CMSY6                         Type 1            Builtin          yes yes yes    333  0\nEJVIGL+LiberationSerif               Type 3            Custom           yes yes no     235  0\n",
+  "research_status": "pre-execution revision; no new experiments",
+  "branch": "explicability"
+}

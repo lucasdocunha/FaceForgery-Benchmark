@@ -1,3 +1,0 @@
-id,img_name,y_true,y_pred,prob_pos,correct,heatmap_group,heatmap_path,label_from_dataset
-159795,fb62fda66faa77f225c683caeb14b19f.jpg,0,1,0.9257014989852904,0,false_positive,heatmaps_same_image/vit/id_159795_true0_pred1_prob0.93.png,0
-181946,dd7a223b76d9f848bbd2a9fabb0069d9.jpg,1,1,0.8158934712409973,1,true_positive,heatmaps_same_image/vit/id_181946_true1_pred1_prob0.82.png,1

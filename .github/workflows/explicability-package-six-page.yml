@@ -1,0 +1,156 @@
+name: Package primary six-page paper
+on:
+  push:
+    branches: [explicability]
+    paths: ['.github/workflows/explicability-package-six-page.yml']
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: Successful six-page manuscript build
+        required: true
+        default: '34695303971'
+      built_commit:
+        description: Exact source commit for that build
+        required: true
+        default: '5e970bd264f342733aa39193f0a60b29fdb7e07f'
+permissions:
+  contents: read
+concurrency:
+  group: explicability-package-six-page
+  cancel-in-progress: false
+jobs:
+  package:
+    if: github.ref == 'refs/heads/explicability'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: write
+      actions: read
+    env:
+      BUILD_RUN: ${{ inputs.build_run_id || '34695303971' }}
+      BUILT_COMMIT: ${{ inputs.built_commit || '5e970bd264f342733aa39193f0a60b29fdb7e07f' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: explicability
+          fetch-depth: 0
+      - name: Validate successful source build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, re, urllib.request
+          run, commit = os.environ['BUILD_RUN'], os.environ['BUILT_COMMIT']
+          if not run.isdigit() or not re.fullmatch('[0-9a-f]{40}', commit):
+              raise ValueError('Invalid build identifiers')
+          url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{run}"
+          request = urllib.request.Request(url, headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'], 'Accept':'application/vnd.github+json'})
+          with urllib.request.urlopen(request, timeout=30) as response: build = json.load(response)
+          if (build['head_sha'] != commit or build['head_branch'] != 'explicability'
+              or build['conclusion'] != 'success' or build['path'] != '.github/workflows/explicability-six-page.yml'):
+              raise ValueError('Unexpected build source')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: six-page-paper-review
+          run-id: ${{ env.BUILD_RUN }}
+          github-token: ${{ github.token }}
+          path: /tmp/six-page-review
+      - name: Install PDF metadata inspection only
+        run: |
+          sudo apt-get update -qq > /tmp/apt-update.txt 2>&1
+          sudo apt-get install -y -qq --no-install-recommends poppler-utils > /tmp/apt-install.txt 2>&1
+      - name: Enforce page count, original format and preserved references
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess, xml.etree.ElementTree as ET
+          root, bundle = pathlib.Path('paper/six-page'), pathlib.Path('/tmp/six-page-review')
+          root.mkdir(parents=True, exist_ok=True)
+          def h(data): return hashlib.sha256(data).hexdigest()
+          def git_file(commit, path): return subprocess.check_output(['git','show',f'{commit}:{path}'])
+          source_commit = os.environ['BUILT_COMMIT']
+          manifest = json.loads((bundle/'provenance.json').read_text())
+          if manifest['source_commit'] != source_commit: raise ValueError('Artifact provenance differs')
+          preserved = ['paper/explicability/main.pdf','paper/explicability/main.tex','paper/explicability/references.bib','paper/original-sibgrapi.pdf']
+          preserved_hashes = {}
+          for name in preserved:
+              data = pathlib.Path(name).read_bytes()
+              if h(data) != manifest['files'][name] or data != git_file(source_commit, name):
+                  raise ValueError('A reference or bibliography changed since build: '+name)
+              preserved_hashes[name] = h(data)
+          source = (bundle/'main.tex').read_text()
+          if h(source.encode()) != manifest['files']['paper/six-page/main.tex']:
+              raise ValueError('Generated source checksum differs')
+          if (root/'main.tex').exists():
+              if (root/'main.tex').read_text() != source: raise ValueError('Six-page source changed since build')
+          else:
+              generator = 'scripts/prepare_six_page_manuscript.py'
+              if pathlib.Path(generator).read_bytes() != git_file(source_commit, generator):
+                  raise ValueError('Generator changed since build')
+          pdf = bundle/'main.pdf'
+          info = subprocess.check_output(['pdfinfo',str(pdf)], text=True)
+          old_info = subprocess.check_output(['pdfinfo','paper/original-sibgrapi.pdf'], text=True)
+          reference_info = subprocess.check_output(['pdfinfo','paper/explicability/main.pdf'], text=True)
+          def count(info): return int(re.search(r'^Pages:\s+(\d+)', info, re.M)[1])
+          def size(info): return re.search(r'^Page size:\s+(.+)', info, re.M)[1]
+          if count(info) != 6: raise ValueError(f'Primary manuscript must have exactly six pages; found {count(info)}')
+          if count(reference_info) != 10: raise ValueError('Ten-page reference was not preserved')
+          if size(info) != size(old_info): raise ValueError('Primary page dimensions differ from original')
+          if r'\documentclass[conference,10pt,letterpaper]{IEEEtran}' not in source:
+              raise ValueError('Primary source is not the original IEEE conference format')
+          log = (bundle/'main.log').read_text()
+          errors = re.findall(r'^.*(?:Overfull|undefined references|Citation .* undefined|There were undefined citations).*$' , log, re.M)
+          if errors: raise ValueError('Layout/citation errors: '+str(errors))
+          text = subprocess.check_output(['pdftotext','-layout',str(pdf),'-'], text=True)
+          pages = [p for p in text.split('\f') if p.strip()]
+          if len(pages) != 6 or min(len(p.split()) for p in pages) < 100:
+              raise ValueError('Empty or near-empty page')
+          if 'publishedasaconferencepaper' in re.sub('[^a-z0-9]', '', text.lower()):
+              raise ValueError('Incorrect publication-status boilerplate')
+          xml = subprocess.check_output(['pdftotext','-bbox-layout',str(pdf),'-'])
+          # Some TeX math glyphs become XML-1.0-invalid control characters in
+          # Poppler's text extraction. Remove only those characters from the
+          # inspection metadata; keep every bounding box and the PDF unchanged.
+          xml = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', xml)
+          doc = ET.fromstring(xml)
+          ns = {'x':'http://www.w3.org/1999/xhtml'}
+          layout = []
+          for i, page in enumerate(doc.findall('.//x:page',ns),1):
+              words = page.findall('.//x:word',ns)
+              xs = [float(w.attrib['xMin']) for w in words]
+              xe = [float(w.attrib['xMax']) for w in words]
+              ys = [float(w.attrib['yMin']) for w in words]
+              ye = [float(w.attrib['yMax']) for w in words]
+              if min(xs) < 30 or max(xe) > 582 or min(ys) < 25 or max(ye) > 767:
+                  raise ValueError('Text exceeds safe letter-page bounds')
+              layout.append({'page':i,'word_count':len(words),'text_bounds_pt':[min(xs),min(ys),max(xe),max(ye)]})
+          if len(layout) != 6: raise ValueError('Could not inspect all six pages')
+          data = pdf.read_bytes()
+          (root/'main.tex').write_text(source)
+          (root/'main.pdf').write_bytes(data)
+          (root/'main.txt').write_text(text)
+          pathlib.Path('paper.pdf').write_bytes(data)
+          report = {'built_commit':source_commit,'build_run_id':int(os.environ['BUILD_RUN']),
+                    'pages':6,'page_size':size(info),'format':'IEEEtran conference, two columns, 10pt, US Letter',
+                    'source_sha256':h(source.encode()),'pdf_sha256':h(data),
+                    'bibliography_sha256':preserved_hashes['paper/explicability/references.bib'],
+                    'preserved_reference_sha256':preserved_hashes,'reference_pages':10,
+                    'layout_warnings':errors,'page_layout':layout,
+                    'primary_fonts':subprocess.check_output(['pdffonts',str(pdf)],text=True),
+                    'original_fonts':subprocess.check_output(['pdffonts','paper/original-sibgrapi.pdf'],text=True),
+                    'research_status':'pre-execution revision; no new experiments','branch':'explicability'}
+          (root/'build.json').write_text(json.dumps(report,indent=2)+'\n')
+          for name, expected in preserved_hashes.items():
+              if h(pathlib.Path(name).read_bytes()) != expected: raise ValueError('Reference changed during packaging')
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Commit primary manuscript only on explicability
+        run: |
+          test "$GITHUB_REF" = refs/heads/explicability
+          test "$(git branch --show-current)" = explicability
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- paper.pdf paper/six-page/main.tex paper/six-page/main.pdf paper/six-page/main.txt paper/six-page/build.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'paper: restore six-page IEEE manuscript and retain the ten-page reference unchanged'
+          git push origin HEAD:refs/heads/explicability

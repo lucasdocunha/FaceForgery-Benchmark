@@ -1,0 +1,25 @@
+paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+Difusão,DiT,31885,25694,80.58,46.41,0.4871,57.1
+Difusão,SiT,31885,27959,87.69,57.7,0.5621,55.8
+Difusão,ddim,31885,4418,13.86,5.38,0.0923,56.5
+Difusão,sd2.1,53474,53386,99.84,99.32,0.9569,215.9
+Difusão,pixart,31885,31791,99.71,96.54,0.8792,376.6
+Difusão,RDDM,17738,9746,54.94,24.94,0.337,28.7
+Difusão,CollabDiff,1000,379,37.9,20.3,0.2429,5.1
+Síntese GAN,StyleGAN2,31885,31873,99.96,97.98,0.8304,59.9
+Síntese GAN,StyleGAN3,31885,31885,100.0,98.98,0.7733,54.8
+Síntese GAN,StyleGANXL,31885,31303,98.17,76.75,0.6467,54.9
+Síntese GAN,VQGAN,31885,19645,61.61,36.31,0.3928,56.8
+Síntese GAN,stargan,1984,1496,75.4,52.52,0.508,3.5
+Síntese GAN,starganv2,2000,205,10.25,4.8,0.0706,3.5
+Troca Facial,deepfacelab,3122,2690,86.16,65.66,0.6163,5.6
+Troca Facial,faceswap,24634,22116,89.78,62.37,0.5868,39.3
+Troca Facial,mobileswap,47522,44848,94.37,79.93,0.7253,73.4
+Troca Facial,blendface,24790,23363,94.24,80.45,0.7304,38.0
+Troca Facial,uniface,24346,23515,96.59,89.26,0.7973,37.6
+Edição / T2I,MidJourney,635,615,96.85,83.62,0.7638,8.5
+Edição / T2I,whichfaceisreal,1001,992,99.1,97.7,0.9114,11.7
+Edição / T2I,styleclip,2824,2638,93.41,86.12,0.8007,14.0
+Edição / T2I,e4e,60123,56979,94.77,87.33,0.7912,275.1
+Avatares & Reencenação,heygen,1605,529,32.96,20.69,0.2174,3.7
+Avatares & Reencenação,cdf_reenactment,128671,115916,90.09,69.09,0.6533,189.8

@@ -1,0 +1,2 @@
+model_family,seed,regime,val_auc,test_auc,test_acc,test_f1,test_d_auc,test_d_acc,test_d_f1,df40_auc,delta_auc,elapsed_min,cached
+resnet,42,finetune_robust,0.4907,0.4592,0.55,0.7097,0.496,0.5735,0.7289,0.4752,0.0368,2.6,False

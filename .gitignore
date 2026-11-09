@@ -1,39 +1,37 @@
 /.venv
-
+/.venv-research
 *.pyc
 */__pycache__/
-
-*.pth
-
 min_dataset
 *.zip
-
 *.pth
 *.pt
 *.npz
 *.npy
 .env
 .env.*
-
+.hf_token
+.hf_token*
 /models/**
 !/models/
 !/models/.gitkeep
-
 /models_legacy_backup/**
 !/models_legacy_backup/
 !/models_legacy_backup/.gitkeep
-
 /models_finetuned/**
 !/models_finetuned/
 !/models_finetuned/.gitkeep
-
 /data/**
 !/data/
 !/data/.gitkeep
-
 .cache/
 .hf_token
 *.log
 logs/
 *.lock
+# Research outputs may contain faces, predictions and private annotation linkage.
+/outputs/
+.pytest_cache/
 
+# CISIA job reports and per-job predictions stay out of version control.
+/saidas/

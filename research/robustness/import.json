@@ -1,0 +1,11 @@
+{
+  "upstream_repository_read_only": "lucasdocunha/FaceForgery-Benchmark",
+  "upstream_branch": "ICLR",
+  "upstream_commit": "f00475116eb350aca8d6dbd08df999ab6f21991a",
+  "upstream_tree": "08440582235751250ff31733b492935fc1b7c9e7",
+  "preserved_fork_research_commit": "ca0766e3fcd1c94f10d05b1b020361db74352f59",
+  "destination_repository": "Lucas-PG/FaceForgery-Benchmark",
+  "destination_branch": "robust-generalization",
+  "base_branch_for_review": "ICLR",
+  "policy": "No writes to upstream, main, ICLR or explicability. No force push. No GPU experiments."
+}

@@ -1,0 +1,38 @@
+{
+  "idioma": "pt-BR",
+  "titulo": "Detecção de falsificações faciais",
+  "subtitulo": "Resultados do benchmark e extensão de explicabilidade",
+  "autores": ["Lucas Cunha", "Lucas Sotomaior", "Lucas Gasperin", "Beatriz Caldas", "Eduardo Pianovski", "Rayson Laroca"],
+  "instituicao": "Pontifícia Universidade Católica do Paraná",
+  "source_commit": "e9beb4e212b7e3f749f65e84d27ef7f10b52de99",
+  "proveniencia": "Médias arredondadas do estudo anterior, reproduzidas na seção V-A da edição de seis páginas. Não são uma reavaliação dos pesos fine-tuned atuais. As diferenças são subtrações das médias reportadas; não são testes de significância.",
+  "dataset": {"nome": "MFFI", "treino": 524429, "validacao": 147363, "teste": 181947, "sementes": 3},
+  "rgb": [
+    {"modelo": "Xception", "regime": "do zero", "limpo": 0.884, "degradado": 0.609},
+    {"modelo": "ResNet-18", "regime": "do zero", "limpo": 0.846, "degradado": 0.635},
+    {"modelo": "MobileNetV3", "regime": "do zero", "limpo": 0.839, "degradado": 0.594},
+    {"modelo": "ViT", "regime": "do zero", "limpo": 0.624, "degradado": 0.608},
+    {"modelo": "CLIP-style", "regime": "do zero; sem pesos CLIP", "limpo": 0.750, "degradado": 0.619},
+    {"modelo": "DINOv3", "regime": "configuração congelada do estudo anterior", "limpo": 0.809, "degradado": 0.726}
+  ],
+  "hibridos": [
+    {"modelo": "Xception", "representacao": "RGB + magnitude", "rgb_degradado": 0.609, "hibrido_degradado": 0.650},
+    {"modelo": "ResNet-18", "representacao": "RGB + pilha de frequência", "rgb_degradado": 0.635, "hibrido_degradado": 0.648},
+    {"modelo": "MobileNetV3", "representacao": "RGB + magnitude", "rgb_degradado": 0.594, "hibrido_degradado": 0.612}
+  ],
+  "metodos": {
+    "Gradientes e localização": ["Grad-CAM", "Integrated Gradients", "Gradient SHAP", "Saliency", "Input × Gradient", "SmoothGrad"],
+    "Perturbação e aproximação local": ["Kernel SHAP", "LIME", "Occlusion", "Feature Ablation", "Shapley Value Sampling"],
+    "Atenção": ["Attention Rollout"]
+  },
+  "fontes": [
+    {"id": "A", "titulo": "Cunha et al. — estudo anterior", "localizacao": "paper/original-sibgrapi.pdf, Tabela III e seção IV", "url": "https://github.com/Lucas-PG/FaceForgery-Benchmark/blob/e9beb4e212b7e3f749f65e84d27ef7f10b52de99/paper/original-sibgrapi.pdf"},
+    {"id": "B", "titulo": "Manuscrito principal — seis páginas", "localizacao": "paper/six-page/main.tex, seções III–VI", "url": "https://github.com/Lucas-PG/FaceForgery-Benchmark/blob/e9beb4e212b7e3f749f65e84d27ef7f10b52de99/paper/six-page/main.tex"},
+    {"id": "C", "titulo": "Guia de execução e configuração", "localizacao": "docs/explicability.md; configs/explicability.yaml", "url": "https://github.com/Lucas-PG/FaceForgery-Benchmark/blob/e9beb4e212b7e3f749f65e84d27ef7f10b52de99/docs/explicability.md"},
+    {"id": "D", "titulo": "Sundararajan et al. — Integrated Gradients", "localizacao": "ICML, 2017", "url": "https://proceedings.mlr.press/v70/sundararajan17a.html"},
+    {"id": "E", "titulo": "Selvaraju et al. — Grad-CAM", "localizacao": "ICCV, 2017", "url": "https://openaccess.thecvf.com/content_iccv_2017/html/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.html"},
+    {"id": "F", "titulo": "Adebayo et al. — Sanity Checks for Saliency Maps", "localizacao": "NeurIPS, 2018", "url": "https://arxiv.org/abs/1810.03292"},
+    {"id": "G", "titulo": "Hedström et al. — Quantus", "localizacao": "JMLR, 2023", "url": "https://jmlr.org/papers/v24/22-0142.html"}
+  ],
+  "limites": ["Nenhum novo experimento de explicabilidade foi executado para esta apresentação.", "ROC-AUC não é porcentagem de acerto; quedas e ganhos estão em unidades de AUC.", "Os gráficos exibem médias arredondadas, sem intervalos inferidos ou significância presumida.", "Falhas compartilhadas são relativas ao conjunto de checkpoints declarado, não universais.", "Atribuições não estabelecem causas nem permitem inferir atributos demográficos."]
+}

@@ -1,0 +1,40 @@
+{
+  "zip_sha256": "0833132036001692f14ed1e9472abd8151b0279e58c89a18c26a7f55178f6620",
+  "archive_bytes": 108205401,
+  "archive_entries": 3004,
+  "splits": {
+    "train": {
+      "n": 1000,
+      "counts": {
+        "1": 798,
+        "0": 202
+      },
+      "unique_ids": 1000,
+      "missing": 0,
+      "manifest_sha256": "dc2c2d370f62c92dd597fe289be2572de290f9fa1dd9d07f0e30e215b3422789",
+      "archive_image_count": 1000
+    },
+    "val": {
+      "n": 1000,
+      "counts": {
+        "1": 592,
+        "0": 408
+      },
+      "unique_ids": 1000,
+      "missing": 0,
+      "manifest_sha256": "c4f4afb1e34b3dd05b3ca4f2940fbd7bef2de29dd8c58259c31dbbaf1a137f0b",
+      "archive_image_count": 1000
+    },
+    "test": {
+      "n": 1000,
+      "counts": {
+        "0": 423,
+        "1": 577
+      },
+      "unique_ids": 1000,
+      "missing": 0,
+      "manifest_sha256": "0b61d6744eecdb66e878862effbecfe01f336c7a2dd40f4d716c98e334c1a735",
+      "archive_image_count": 1000
+    }
+  }
+}

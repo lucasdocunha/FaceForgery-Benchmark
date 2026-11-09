@@ -1,0 +1,56 @@
+{
+  "kind": "train",
+  "python": "3.12.13",
+  "status": "passed",
+  "torch": "2.10.0+rocm7.1",
+  "hip": "7.1.25424",
+  "gpu_available": true,
+  "gpu": "_CudaDeviceProperties(name='AMD Radeon Graphics', major=12, minor=0, gcnArchName='gfx1200', total_memory=16304MB, multi_processor_count=16, uuid=65643437-3666-3565-3132-343733636335, pci_bus_id=7, pci_device_id=0, pci_domain_id=0, L2_cache_size=4MB)",
+  "bf16_supported": true,
+  "training": [
+    {
+      "model": "resnet18",
+      "batch_size": 4,
+      "warmup_steps": 2,
+      "measured_steps": 5,
+      "seconds": 0.1302385779999895,
+      "images_per_second": 153.5643302248095,
+      "losses": [
+        0.7001953125,
+        0.10693359375,
+        0.027740478515625,
+        0.010650634765625,
+        0.005218505859375,
+        0.00293731689453125,
+        0.0018405914306640625
+      ],
+      "total_seconds_including_warmup": 17.105411036000078,
+      "peak_vram_bytes": 390521856,
+      "trainable_parameters": 11177538
+    },
+    {
+      "model": "mobilenet_v3_large",
+      "batch_size": 4,
+      "warmup_steps": 2,
+      "measured_steps": 5,
+      "seconds": 0.27302068900007725,
+      "images_per_second": 73.254521747963,
+      "losses": [
+        0.6904296875,
+        0.66015625,
+        0.625,
+        0.5830078125,
+        0.52880859375,
+        0.474609375,
+        0.4111328125
+      ],
+      "total_seconds_including_warmup": 9.083191126000202,
+      "peak_vram_bytes": 316616704,
+      "trainable_parameters": 4204594
+    }
+  ],
+  "peak_vram_bytes": 316616704,
+  "seconds": 28.381190959999913,
+  "max_rss_kib": 2131804,
+  "memory_pressure_after": "some avg10=0.02 avg60=0.05 avg300=0.01 total=811631\nfull avg10=0.02 avg60=0.05 avg300=0.01 total=777040\n"
+}

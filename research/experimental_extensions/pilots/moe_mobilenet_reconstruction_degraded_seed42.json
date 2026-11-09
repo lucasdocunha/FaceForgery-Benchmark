@@ -1,0 +1,769 @@
+{
+  "scope": "min-val-degraded-proxy",
+  "run_dir": "/home/lucas/ffb-research/local/pilots/moe-mobilenet-reconstruction-soft-seed42",
+  "training_performed": false,
+  "clean_artifact_sha256": "862865ebf3758a3b4605f26c999f50e1e4949fc5dd94782f91aaf3e98fa898bf",
+  "full_degraded_manifest_sha256": "00e20e4e12a35964c96fd816e78c2dd694282a7ea631ae04aac2711f3109acda",
+  "clean_val_select_manifest_sha256": "f2e1c915eceb650828d8d1d3d17f884d2b0dac52761f180b2c095060da58aee3",
+  "evaluated_sample_ids_sha256": "9b55d8d7469bda9bf63feffedda9847f521ff456bbe2e946adaac4716015cb84",
+  "rows": 506,
+  "methods": {
+    "router": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.7932420387326797,
+        "average_precision": 0.8596677361556905,
+        "balanced_accuracy": 0.7106312292358804,
+        "eer": 0.3073170731707317,
+        "eer_threshold": 0.40727034850818356,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.7069943289224953,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6936758893280632,
+        "brier": 0.2011697130928531,
+        "log_loss": 0.5951087865383765,
+        "ece_10_equal_width": 0.12719687441217375,
+        "threshold": 0.48598071932792664,
+        "tn": 164,
+        "fp": 41,
+        "fn": 114,
+        "tp": 187,
+        "confusion_matrix": [
+          [
+            164,
+            41
+          ],
+          [
+            114,
+            187
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8,
+            0.2
+          ],
+          [
+            0.3787375415282392,
+            0.6212624584717608
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.2,
+        "tpr": 0.6212624584717608,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "71df30833c52eaacf94a78fbed59877481a950efadd168f0ee4d3cbc1c655e9f",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.7932420387326797,
+        "lower": 0.7538860497654015,
+        "upper": 0.8311327616773484,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.1830159630499959,
+        "lower": -0.21946856893413674,
+        "upper": -0.14703365792639161,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "mean": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.7886070820841099,
+        "average_precision": 0.8572924630429801,
+        "balanced_accuracy": 0.691516084596062,
+        "eer": 0.29235880398671105,
+        "eer_threshold": 0.4839517670216354,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6359832635983264,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6561264822134387,
+        "brier": 0.18684634566888506,
+        "log_loss": 0.5417118580113055,
+        "ece_10_equal_width": 0.06829754854349987,
+        "threshold": 0.5960282683372498,
+        "tn": 180,
+        "fp": 25,
+        "fn": 149,
+        "tp": 152,
+        "confusion_matrix": [
+          [
+            180,
+            25
+          ],
+          [
+            149,
+            152
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8780487804878049,
+            0.12195121951219512
+          ],
+          [
+            0.4950166112956811,
+            0.5049833887043189
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.12195121951219512,
+        "tpr": 0.5049833887043189,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "d56be4ccfcba98f633b0cddc1dc00449317407cdedf28c381b55c3080a628950",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.7886070820841099,
+        "lower": 0.7480809107858633,
+        "upper": 0.8272494239498543,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.1733733084839153,
+        "lower": -0.21063518734122788,
+        "upper": -0.13474771998855667,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "geometric": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.7292115711854792,
+        "average_precision": 0.8215127052566853,
+        "balanced_accuracy": 0.6535612997325987,
+        "eer": 0.36544850498338877,
+        "eer_threshold": 0.14371586553876187,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.5280373831775701,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6007905138339921,
+        "brier": 0.29486395055214004,
+        "log_loss": 0.8855152179135988,
+        "ece_10_equal_width": 0.2697696266603829,
+        "threshold": 0.5458498001098633,
+        "tn": 191,
+        "fp": 14,
+        "fn": 188,
+        "tp": 113,
+        "confusion_matrix": [
+          [
+            191,
+            14
+          ],
+          [
+            188,
+            113
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9317073170731708,
+            0.06829268292682927
+          ],
+          [
+            0.6245847176079734,
+            0.3754152823920266
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.06829268292682927,
+        "tpr": 0.3754152823920266,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "6837cbd1575ce8fcc07c67f4a4ad28d0085d1254c36f34cb69a8b3c1bfd4fe4b",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.7292115711854792,
+        "lower": 0.6861838712893544,
+        "upper": 0.7721825261343868,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.23889474110687958,
+        "lower": -0.2811837360759773,
+        "upper": -0.19583304046419694,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "geometric_binary": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.7537962887934528,
+        "average_precision": 0.8341985430487633,
+        "balanced_accuracy": 0.685438781298112,
+        "eer": 0.3463414634146341,
+        "eer_threshold": 0.32782454984944037,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6103896103896104,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6442687747035574,
+        "brier": 0.23605670372153728,
+        "log_loss": 0.6973025187187483,
+        "ece_10_equal_width": 0.17074921972710977,
+        "threshold": 0.7291341423988342,
+        "tn": 185,
+        "fp": 20,
+        "fn": 160,
+        "tp": 141,
+        "confusion_matrix": [
+          [
+            185,
+            20
+          ],
+          [
+            160,
+            141
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.9024390243902439,
+            0.0975609756097561
+          ],
+          [
+            0.53156146179402,
+            0.4684385382059801
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.0975609756097561,
+        "tpr": 0.4684385382059801,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "29158069cb4033bbd548a641719c5712e399fc6fb7044588a2180238eadc5744",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.7537962887934528,
+        "lower": 0.7085319603374695,
+        "upper": 0.7942611924669339,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.21280285228101425,
+        "lower": -0.2554951071653994,
+        "upper": -0.17201069543863742,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "logistic": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.8092537071550117,
+        "average_precision": 0.8659489034409028,
+        "balanced_accuracy": 0.6956162385544121,
+        "eer": 0.2682926829268293,
+        "eer_threshold": 0.3267713931347774,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.6401673640167364,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.6600790513833992,
+        "brier": 0.20642348359617246,
+        "log_loss": 0.5944682902112097,
+        "ece_10_equal_width": 0.16012302584137922,
+        "threshold": 0.5656001507259846,
+        "tn": 181,
+        "fp": 24,
+        "fn": 148,
+        "tp": 153,
+        "confusion_matrix": [
+          [
+            181,
+            24
+          ],
+          [
+            148,
+            153
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8829268292682927,
+            0.11707317073170732
+          ],
+          [
+            0.49169435215946844,
+            0.5083056478405316
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.11707317073170732,
+        "tpr": 0.5083056478405316,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "abd7f42bfadc74b41efcecaf6be9a635520d40c06d4525c799cff106c679a447",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.8092537071550117,
+        "lower": 0.7709506440974127,
+        "upper": 0.8479268575874014,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.1627096669637793,
+        "lower": -0.19909466066028375,
+        "upper": -0.12524779275201461,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "expert_srm": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.8346892472246981,
+        "average_precision": 0.8927986520872897,
+        "balanced_accuracy": 0.7567214974475326,
+        "eer": 0.2624584717607974,
+        "eer_threshold": 0.4573647871960041,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.7560521415270018,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.741106719367589,
+        "brier": 0.17014035814297185,
+        "log_loss": 0.5047354045790636,
+        "ece_10_equal_width": 0.07581884050355274,
+        "threshold": 0.5474640727043152,
+        "tn": 172,
+        "fp": 33,
+        "fn": 98,
+        "tp": 203,
+        "confusion_matrix": [
+          [
+            172,
+            33
+          ],
+          [
+            98,
+            203
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8390243902439024,
+            0.16097560975609757
+          ],
+          [
+            0.32558139534883723,
+            0.6744186046511628
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.16097560975609757,
+        "tpr": 0.6744186046511628,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "858f5e5f35b7664a235dc2906e104e0ed58699ca9752615d5ff9123449628c06",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.8346892472246981,
+        "lower": 0.8023853144630778,
+        "upper": 0.8685170613902689,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.11424519893039464,
+        "lower": -0.1441269055641519,
+        "upper": -0.08511801717331235,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "expert_rgb": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.6593793047565026,
+        "average_precision": 0.7725559691274678,
+        "balanced_accuracy": 0.6243983469735029,
+        "eer": 0.3735177865612648,
+        "eer_threshold": 0.00989269005804665,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.5213483146067416,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.5790513833992095,
+        "brier": 0.3890074907737126,
+        "log_loss": 2.2140028648740393,
+        "ece_10_equal_width": 0.37443485331893567,
+        "threshold": 0.4856911301612854,
+        "tn": 177,
+        "fp": 28,
+        "fn": 185,
+        "tp": 116,
+        "confusion_matrix": [
+          [
+            177,
+            28
+          ],
+          [
+            185,
+            116
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.8634146341463415,
+            0.13658536585365855
+          ],
+          [
+            0.6146179401993356,
+            0.3853820598006645
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.13658536585365855,
+        "tpr": 0.3853820598006645,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "66d169bebf5cb002e59d2e71bf891e31b7b576a29e2855f3961f90093a8ccfd8",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.6593793047565026,
+        "lower": 0.6136251225097712,
+        "upper": 0.7060606707138942,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.3000891337817033,
+        "lower": -0.3446019454674337,
+        "upper": -0.24959095010149163,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    },
+    "expert_reconstruction": {
+      "metrics": {
+        "n": 506,
+        "n_real": 205,
+        "n_fake": 301,
+        "auc": 0.5721335386111336,
+        "average_precision": 0.6613589812551542,
+        "balanced_accuracy": 0.5474839964346487,
+        "eer": 0.42857142857142866,
+        "eer_threshold": 0.8703921692711966,
+        "eer_method": "piecewise-linear ROC crossing FPR=FNR; diagnostic only",
+        "eer_status": "defined",
+        "f1": 0.4503311258278146,
+        "f1_policy": "fake is positive; zero division returns zero",
+        "accuracy": 0.5079051383399209,
+        "brier": 0.3045487111241548,
+        "log_loss": 1.0433539191164751,
+        "ece_10_equal_width": 0.258486189154297,
+        "threshold": 0.9536217451095581,
+        "tn": 155,
+        "fp": 50,
+        "fn": 199,
+        "tp": 102,
+        "confusion_matrix": [
+          [
+            155,
+            50
+          ],
+          [
+            199,
+            102
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.7560975609756098,
+            0.24390243902439024
+          ],
+          [
+            0.6611295681063123,
+            0.3388704318936877
+          ]
+        ],
+        "confusion_axes": "rows true, columns predicted; [real, fake]",
+        "fpr": 0.24390243902439024,
+        "tpr": 0.3388704318936877,
+        "auc_status": "defined",
+        "threshold_policy": "frozen source-validation youden"
+      },
+      "clean_calibration_sha256": "3199d0757dfc111e4b8fdbe10ed333339f909362ccda835ab91e81e7dbb95137",
+      "threshold_status": "unchanged clean val_select calibration",
+      "degraded_auc_interval": {
+        "estimate": 0.5721335386111336,
+        "lower": 0.5234687807929999,
+        "upper": 0.6223010320837526,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      },
+      "degraded_minus_clean_auc_interval": {
+        "estimate": -0.08224617129892242,
+        "lower": -0.13185182230084114,
+        "upper": -0.03161611916617004,
+        "confidence": 0.95,
+        "requested_draws": 1000,
+        "valid_draws": 1000,
+        "groups": 506,
+        "seed": 42,
+        "quantity": "other_minus_reference_auc",
+        "method": "paired percentile cluster bootstrap",
+        "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+      }
+    }
+  },
+  "interpretation": "Inference-only degradation on the identical development val_select population. All clean thresholds and learned states remain frozen. Conditional group intervals do not establish external robustness.",
+  "routing": {
+    "mean_weight": {
+      "srm": 0.42968764901161194,
+      "rgb": 0.3982661962509155,
+      "reconstruction": 0.1720462292432785
+    },
+    "nonzero_fraction": {
+      "srm": 1.0,
+      "rgb": 1.0,
+      "reconstruction": 1.0
+    },
+    "top1_fraction": {
+      "srm": 0.3932806324110672,
+      "rgb": 0.5118577075098815,
+      "reconstruction": 0.09486166007905138
+    },
+    "mean_entropy": 0.8005344271659851
+  },
+  "query_sources": [
+    {
+      "name": "srm",
+      "role": "srm",
+      "kind": "feature_cache",
+      "path": "/home/lucas/ffb-research/local/features/proxy-val/66fb61c01b9ad22a83d483f2f2efc4bff7e59fdff6ba777e7e2fb8f99d4d7da2"
+    },
+    {
+      "name": "rgb",
+      "role": "rgb",
+      "kind": "feature_cache",
+      "path": "/home/lucas/ffb-research/local/features/proxy-val/653c229ef724289bddc184c6849cff16ef4368e082fba787d1be1cf891bff1f3"
+    },
+    {
+      "name": "reconstruction",
+      "role": "reconstruction",
+      "kind": "predictions",
+      "path": "/home/lucas/ffb-research/local/reconstruction-proxy/residual-full/min-val-degraded-proxy/predictions.csv",
+      "calibration": "/home/lucas/ffb-research/local/reconstruction-pilot/residual-full/calibration.json"
+    }
+  ],
+  "query_source_identities": [
+    "66fb61c01b9ad22a83d483f2f2efc4bff7e59fdff6ba777e7e2fb8f99d4d7da2",
+    "653c229ef724289bddc184c6849cff16ef4368e082fba787d1be1cf891bff1f3",
+    "0fb2abbc8a7cc1634b0ed1f1a67fe2d0cb31d1a08afcac83795d70a5e026dc9a"
+  ],
+  "query_source_file_sha256": "3969a5f1e3cb73be0efb11e75f618b8673e8844e9f949dd5ff835c457ba80dda",
+  "degradation": {
+    "recipe": {
+      "operator": "src.data.augmentations.RandomizedRobustAugment.transform_to_tensor",
+      "operator_sha256": "be17f3882a6aa6d87a0e983409567350e6270f302ac2172a225563075cae6e77",
+      "image_size": 224,
+      "seed": 42,
+      "sample_seed": "int(SHA256(canonical JSON {seed,sample_id})[:16],16) modulo 2**32",
+      "random_streams": [
+        "python random",
+        "torch CPU default generator"
+      ],
+      "normalization": "none; operator returns RGB tensor in [0,1]",
+      "encoding": "torchvision to_pil_image RGB8 truncation; lossless PNG with original img_name retained",
+      "selection": "one draw per sample, no severity or label-based selection"
+    },
+    "recipe_sha256": "9c99d6ba69c622db9a2dd842d819d038f49b12cd965bc607cdc44102448ec660",
+    "image_inventory_sha256": "3a1f181e3afc77820f89d28aafaa1ab3ab1d9bd2d6426fe1852a47e649f03dae",
+    "source_image_inventory_sha256": "d076dfe28daf44b800c391125a63884a3384c5742436494536ea057fa2eea6f9",
+    "warning": "Deterministic min-population proxy, not the original Test-D distribution or untouched validation."
+  },
+  "router_minus_controls_auc_intervals": {
+    "three_expert_logistic": {
+      "estimate": -0.016011668422331926,
+      "lower": -0.03649462997382248,
+      "upper": 0.004640378332599743,
+      "confidence": 0.95,
+      "requested_draws": 1000,
+      "valid_draws": 1000,
+      "groups": 506,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    },
+    "single_srm": {
+      "estimate": -0.04144720849201833,
+      "lower": -0.07425284174983647,
+      "upper": -0.009062569589699521,
+      "confidence": 0.95,
+      "requested_draws": 1000,
+      "valid_draws": 1000,
+      "groups": 506,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    },
+    "three_expert_mean": {
+      "estimate": 0.004634956648569832,
+      "lower": -0.018176951389909414,
+      "upper": 0.0283642679023761,
+      "confidence": 0.95,
+      "requested_draws": 1000,
+      "valid_draws": 1000,
+      "groups": 506,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    },
+    "two_expert_mean": {
+      "estimate": -0.017502633498095777,
+      "lower": -0.037791453985517746,
+      "upper": 0.003481604553411794,
+      "confidence": 0.95,
+      "requested_draws": 1000,
+      "valid_draws": 1000,
+      "groups": 506,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    },
+    "two_expert_router": {
+      "estimate": -0.0006968641114981633,
+      "lower": -0.015807948109724506,
+      "upper": 0.013577469392971353,
+      "confidence": 0.95,
+      "requested_draws": 1000,
+      "valid_draws": 1000,
+      "groups": 506,
+      "seed": 42,
+      "quantity": "other_minus_reference_auc",
+      "method": "paired percentile cluster bootstrap",
+      "limitation": "Conditional on these trained checkpoints and supplied groups; not across-seed uncertainty or causal evidence."
+    }
+  }
+}
