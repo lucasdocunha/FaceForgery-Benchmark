@@ -145,7 +145,7 @@
 % =====================================================================
 \begin{abstract}
 % TODO: substituir pela nova versão do resumo (150 palavras)
-resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo
+resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo
 \end{abstract}
 % ===================== fim de 0-abstract.tex ========================
 
@@ -165,12 +165,11 @@ resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo res
 
 \glsresetall
 \glsunset{rgb}
-
 A disseminação de \gls*{aigc} tornou faces sintéticas e manipulações de identidade cada vez mais realistas e fáceis de gerar~\cite{lyu_theconversation_2025,milmo_2024,theconversation_2026}.
 Redes adversárias generativas (GANs)\glsunset{gan}~\cite{goodfellow2020generative} e modelos de difusão produzem conteúdo facial fotorrealista que ameaça a privacidade, a segurança biométrica e a integridade da informação~\cite{ivanovska2024vulnerability}.
 Detectores atingem \gls{auc} acima de $0{,}99$ em testes controlados~\cite{ref_generalization_gap}, mas esse desempenho não se mantém quando as imagens de teste vêm de outros geradores ou passam por compressão, ruído e desfoque~\cite{ref_sota_detection}, problemas que são muito comuns no compartilhamento de imagens online.
 
-Em trabalho anterior~\cite{cunha2026benchmarking}, foram avaliadas seis famílias de arquiteturas e sete representações espaciais e espectrais no \gls*{mffi}~\cite{ref_mffi}, com partições limpa (Test) e degradada (Test-Hard), e concluiu-se que:
+O \textit{benchmark} apresentado em~\cite{cunha2026benchmarking} avaliou seis famílias de arquiteturas e sete representações espaciais e espectrais no \gls*{mffi}~\cite{ref_mffi}, com partições limpa (Test) e degradada (Test-Hard), e concluiu-se que:
 (i)~o melhor modelo no conjunto limpo não é o mais robusto (o Xception treinado do zero caiu de $0{,}884$ para $0{,}609$);
 (ii)~o DINOv3 congelado foi o mais robusto ($0{,}726$ no Test-Hard); e
 (iii)~a informação de Fourier só ajudava combinada ao \gls*{rgb}.
@@ -254,14 +253,18 @@ Celeb-DF v2 & \makecell[l]{Teste oficial\\(15 quadros/vídeo)} & \gls*{auc} por 
 \let\footnotesize\scriptsize % legenda um pouco menor
 \centering
 \newlength{\amw}\setlength{\amw}{0.215\columnwidth}%
-\hspace*{\dimexpr\fontcharht\font`A+\fontchardp\font`g\relax}\makebox[\dimexpr2\amw+1pt][c]{\tiny Reais}\hspace{4pt}\makebox[\dimexpr2\amw+1pt][c]{\tiny Falsas}\\[1pt]
-\rotatebox{90}{\makebox[\amw][c]{\tiny MFFI}}\hspace{2pt}%
+\newcommand{\amlabel}[1]{\rotatebox{90}{\makebox[\amw][c]{\tiny\vphantom{Ag}#1}}\hspace{2pt}}%
+\newlength{\amlw}\settowidth{\amlw}{\amlabel{}}%
+\hspace*{\amlw}\makebox[\dimexpr2\amw+1pt][c]{\tiny Reais}\hspace{4pt}\makebox[\dimexpr2\amw+1pt][c]{\tiny Falsas}\\[1pt]
+\amlabel{MFFI}%
 \includegraphics[width=\amw]{figs/amostras/mffi_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/mffi_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/mffi_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/mffi_fake_2.jpg}\\[2pt]
-\rotatebox{90}{\makebox[\amw][c]{\tiny Celeb-DF v2}}\hspace{2pt}%
+\amlabel{MFFI Degradado}%
+\includegraphics[width=\amw]{figs/amostras/imagem_mffi_degraded_real_1.png}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/imagem_mffi_degraded_real_2.png}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/imagem_mffi_degraded_fake_1.png}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/imagem_mffi_degraded_fake_2.png}\\[2pt]
+\amlabel{Celeb-DF v2}%
 \includegraphics[width=\amw]{figs/amostras/celeb_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/celeb_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/celeb_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/celeb_fake_2.jpg}\\[2pt]
-\rotatebox{90}{\makebox[\amw][c]{\tiny DF-40}}\hspace{2pt}%
+\amlabel{DF-40}%
 \includegraphics[width=\amw]{figs/amostras/df40_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/df40_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/df40_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/df40_fake_2.jpg}
-\caption{Exemplos de faces reais e falsas de cada base.}
+\caption{Exemplos de faces reais e falsas de cada base. A linha \emph{MFFI Degradado} mostra amostras da MFFI após as degradações aplicadas.}
 \label{fig:amostras}
 \end{figure}
 
@@ -308,12 +311,23 @@ São avaliadas as variantes \textit{RGB+SRM} (seis canais) e \textit{SRM-only} (
 
 \subsection{Ensembles}
 
-As probabilidades de modelos já treinados são combinadas (fusão tardia) com oito estratégias: médias aritmética, geométrica e harmônica, máximo, voto majoritário, média ponderada pela \gls*{auc} de validação, pesos ótimos (mínima entropia cruzada na validação) e \textit{stacking} (regressão logística na validação).
-São reportados comitês Top-2 a Top-5, com membros e fusão escolhidos pela \gls*{auc} na validação do \gls*{mffi}, em três grupos:
-\textit{espaciais}, só com \gls*{rgb} robusto;
-\textit{híbridos}, com \gls*{rgb} robusto e \gls*{rgb}+magnitude de Fourier; e
-\textit{sem \gls*{rgb} puro}, só com \gls*{rgb}+\gls*{srm} e \gls*{rgb}+Fourier, pois nos híbridos o \gls*{rgb} puro domina a validação.
-Nos dois últimos grupos, cada membro é um checkpoint (avaliação única).
+Também avaliamos comitês (\textit{ensembles}): em vez de usar um único modelo, combinamos as probabilidades de vários modelos já treinados (fusão tardia). Testamos oito formas de combinar essas probabilidades:
+
+\begin{itemize}
+    \item \textbf{médias simples:} aritmética, geométrica e harmônica;
+    \item \textbf{máximo} e \textbf{voto majoritário};
+    \item \textbf{média ponderada}, em que cada modelo pesa conforme sua ROC-AUC na validação;
+    \item \textbf{pesos ótimos}, escolhidos para minimizar a entropia cruzada na validação;
+    \item \textbf{\textit{stacking}}, em que uma regressão logística treinada na validação aprende a combinar os modelos.
+\end{itemize}
+
+Montamos comitês de 2 a 5 modelos (Top-2 a Top-5). Tanto os modelos escolhidos quanto o método de fusão são os que obtêm a maior ROC-AUC na validação do MFFI. Para que cada grupo responda a uma pergunta diferente, os comitês foram formados em três grupos:
+
+\begin{enumerate}
+    \item \textbf{Espacial:} apenas modelos RGB. Serve de referência e mostra o que a imagem sozinha consegue;
+    \item \textbf{Híbrido:} modelos RGB+SRM e RGB+magnitude de Fourier. Mostra se juntar imagem e frequência no mesmo modelo ajuda;
+    \item \textbf{Frequência:} apenas modelos SRM e apenas magnitude de Fourier, sem RGB na entrada. Mostra se a informação de frequência sozinha se sustenta.
+\end{enumerate}
 
 \subsection{Métricas}
 
@@ -321,6 +335,20 @@ A métrica principal é a \gls*{auc}, independente de limiar; os valores apresen
 
 \section{Resultados e Discussão}
 \label{sec:results}
+
+
+\subsection{\textit{Finetuning} e treinamento robusto no MFFI}
+\label{sec:mffi}
+
+A \cref{tab:mffi_rgb_fine} compara, no \gls*{mffi}, o melhor cenário \gls*{rgb} do estudo anterior~\cite{cunha2026benchmarking} com o \textit{finetuning} convencional e o robusto deste trabalho.
+O \textit{finetuning} eleva a \gls*{auc} limpa de cinco das seis famílias: o DINOv3 passa de $0{,}809$ (congelado) para $0{,}936$, o CLIP de $0{,}750$ para $0{,}920$ e o \gls*{vit} de $0{,}624$ para $0{,}814$.
+A exceção é o Xception, que cai de $0{,}884$ para $0{,}773$, o que sugere que parte de sua vantagem anterior vinha da combinação específica de arquitetura e treino do zero.
+
+No Test-Hard, o ganho do \textit{finetuning} convencional é pequeno: o melhor valor é o do CLIP ($0{,}749$), e o DINOv3 ajustado ($0{,}715$) fica abaixo do congelado ($0{,}726$), com $\Delta$ entre $0{,}121$ e $0{,}221$.
+Uma explicação plausível é que o ajuste especializa o backbone em pistas frágeis do conjunto limpo.
+O treinamento robusto corrige esse efeito: a \gls*{auc} no Test-Hard aumenta em todas as famílias, de $+0{,}055$ (Xception) a $+0{,}130$ (DINOv3), o $\Delta$ cai para $0{,}059$--$0{,}083$, e o custo no Test fica entre $-0{,}036$ e $+0{,}008$.
+CLIP ($0{,}845$) e DINOv3 ($0{,}844$) robustos superam em cerca de $0{,}12$ o melhor resultado degradado do estudo anterior.
+
 
 \begin{table}[!htb]
 \centering
@@ -347,7 +375,7 @@ DINOv3 & 0,809 & \textbf{0,726} & 0,083 & \pmsd{\textbf{0,936}}{0,006} & \pmsd{0
 
 \begin{table*}[!t]
 \centering
-\caption{\gls*{auc} (média\,$\pm$\,desvio-padrão) por família e representação; c/DA: treino robusto. DF-40 P1: \gls*{auc} no protocolo~1; P2: revocação (\%) no protocolo~2 ($650.549$ falsas, 3 sementes). $\Delta$ = Test$-$Test-Hard, em negrito só para Test $\geq 0{,}6$. $^\ddagger$Classificador degenerado por colapso de limiar ($\tau = 0{,}0$ na validação, predizendo trivialmente $100\%$ falsos com $\text{AUC} \approx 0{,}50$; sob limiar padrão $0{,}5$, a taxa é $0{,}0\%$).}
+\caption{\gls*{auc} (média\,$\pm$\,desvio-padrão) por família e representação; c/DA: treino robusto. DF-40 P1: \gls*{auc} no protocolo~1; P2: revocação (\%) no protocolo~2. $\Delta$ = Test$-$Test-Hard, em negrito só para Test $\geq 0{,}6$. $^\ddagger$Classificador degenerado por colapso de limiar ($\tau = 0{,}0$ na validação, predizendo trivialmente $100\%$ falsos com $\text{AUC} \approx 0{,}50$; sob limiar padrão $0{,}5$, a taxa é $0{,}0\%$).}
 \label{tab:familias_representacoes}
 \vspace{-2mm}
 \scriptsize\renewcommand{\arraystretch}{0.88}
@@ -481,19 +509,6 @@ Top-5 & \makecell[l]{DINOv3 \gls*{srm} + CLIP \gls*{srm} + ResNet-18 Fourier\\+ 
 \end{table*}
 % ===================== fim de 4-tables.tex ========================
 
-
-\subsection{\textit{Finetuning} e treinamento robusto no MFFI}
-\label{sec:mffi}
-
-A \cref{tab:mffi_rgb_fine} compara, no \gls*{mffi}, o melhor cenário \gls*{rgb} do estudo anterior~\cite{cunha2026benchmarking} com o \textit{finetuning} convencional e o robusto deste trabalho.
-O \textit{finetuning} eleva a \gls*{auc} limpa de cinco das seis famílias: o DINOv3 passa de $0{,}809$ (congelado) para $0{,}936$, o CLIP de $0{,}750$ para $0{,}920$ e o \gls*{vit} de $0{,}624$ para $0{,}814$.
-A exceção é o Xception, que cai de $0{,}884$ para $0{,}773$, o que sugere que parte de sua vantagem anterior vinha da combinação específica de arquitetura e treino do zero.
-
-No Test-Hard, o ganho do \textit{finetuning} convencional é pequeno: o melhor valor é o do CLIP ($0{,}749$), e o DINOv3 ajustado ($0{,}715$) fica abaixo do congelado ($0{,}726$), com $\Delta$ entre $0{,}121$ e $0{,}221$.
-Uma explicação plausível é que o ajuste especializa o backbone em pistas frágeis do conjunto limpo.
-O treinamento robusto corrige esse efeito: a \gls*{auc} no Test-Hard aumenta em todas as famílias, de $+0{,}055$ (Xception) a $+0{,}130$ (DINOv3), o $\Delta$ cai para $0{,}059$--$0{,}083$, e o custo no Test fica entre $-0{,}036$ e $+0{,}008$.
-CLIP ($0{,}845$) e DINOv3 ($0{,}844$) robustos superam em cerca de $0{,}12$ o melhor resultado degradado do estudo anterior.
-
 \subsection{Representações de entrada: Fourier e SRM}
 \label{sec:srm}
 
@@ -509,7 +524,6 @@ Esse padrão é consistente com os resíduos funcionando como complemento da apa
 Sem o \gls*{rgb}, o desempenho no \gls*{mffi} cai em todas as famílias.
 As \glspl*{cnn} SRM-only mantêm resultados razoáveis (ResNet-18 com $0{,}818$ no Test e $0{,}723$ no Test-Hard), enquanto os transformers colapsam no DF-40 ($0{,}408$ no \gls*{vit} e $0{,}333$ no CLIP), possivelmente porque, pré-treinados em imagens naturais, dependem da aparência e não se adaptam a entradas só de ruído com poucas épocas.
 No Celeb-DF v2, porém, as \glspl*{cnn} SRM-only chegam a $0{,}731$--$0{,}745$, acima de suas versões \gls*{rgb}+\gls*{srm}, e o DINOv3 SRM-only tem o melhor valor individual da base ($0{,}763$).
-Esse último resultado é parcial, pois o SRM-only ainda não tem todas as sementes.
 
 \subsection{Ensembles}
 \label{sec:ensembles}
@@ -532,49 +546,47 @@ No protocolo~1, a \gls*{auc} dos detectores \gls*{rgb}+\gls*{srm} treinados no \
 Na fusão CLIP+DINOv3, vai de $0{,}988$ (SD~2.1) a $0{,}588$ (DDIM) entre os modelos de difusão e de $0{,}941$ (StyleGAN3) a $0{,}574$ (StarGAN~v2) entre as \glspl*{gan}, e o HeyGen ($0{,}566$) também fica perto do acaso, enquanto as técnicas de troca facial e de edição ficam todas acima de $0{,}84$.
 Os dois backbones se complementam: o CLIP é melhor em DDIM, CollabDiff, StarGAN~v2, VQGAN e HeyGen, e o DINOv3, na maioria das técnicas de troca facial.
 
-% Fonte: tables/df40_srm_breakdown_by_technique.csv
 \begin{table}[!htb]
 \centering
-\caption{\gls*{auc} por técnica no protocolo~1 do DF-40 (modelos \gls*{rgb}+\gls*{srm}). Em itálico, técnicas abaixo de 0,65 na fusão.}
-\label{tab:tecnicas}
+\caption{Revocação (\%) por técnica no protocolo~2 do DF-40 ($650.549$ imagens falsas, média de 3 sementes) para os três melhores modelos do benchmark. Em negrito, o maior valor entre os três modelos top.}
+\label{tab:tecnicas_top3_revocacao}
 \vspace{-2mm}
 \resizebox{\linewidth}{!}{
-\begin{tabular}{@{}llr ccc@{}}
+\begin{tabular}{@{}llr ccc c@{}}
 \toprule
-Paradigma & Técnica & $N$ & CLIP & DINOv3 & \makecell{CLIP+\\DINOv3} \\
+Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{DINOv3\\(RGB+SRM)} \\
 \midrule
-\multirow{7}{*}{Difusão}
- & SD 2.1 & 250 & 0,963 & \textbf{0,988} & \textbf{0,988} \\
- & PixArt-$\alpha$ & 250 & 0,933 & 0,957 & \textbf{0,962} \\
- & SiT & 250 & 0,810 & 0,820 & \textbf{0,831} \\
- & DiT & 250 & 0,798 & 0,787 & \textbf{0,806} \\
- & RDDM & 250 & \textbf{0,759} & 0,712 & 0,745 \\
- & \textit{CollabDiff} & 250 & \textbf{0,666} & 0,588 & 0,641 \\
- & \textit{DDIM} & 250 & \textbf{0,635} & 0,526 & 0,588 \\
+\multirow{7}{*}{Difusão} & SD 2.1 & 53.474 & 98,6 & \textbf{99,6} & 99,5 & 99,8 \\
+ & PixArt-alpha & 31.885 & 98,5 & 98,7 & \textbf{99,9} & 99,6 \\
+ & SiT & 31.885 & \textbf{93,1} & 90,4 & 92,9 & 85,5 \\
+ & DiT & 31.885 & \textbf{92,4} & 87,8 & 90,5 & 75,7 \\
+ & RDDM & 17.738 & \textbf{99,0} & 94,3 & 97,0 & 44,2 \\
+ & CollabDiff & 1.000 & \textbf{76,4} & 74,8 & 67,8 & 37,0 \\
+ & DDIM & 31.885 & 61,5 & \textbf{75,8} & 57,7 & 21,2 \\
 \midrule
-\multirow{6}{*}{\gls*{gan}}
- & StyleGAN3 & 250 & 0,919 & 0,932 & \textbf{0,941} \\
- & StyleGAN2 & 250 & 0,914 & 0,922 & \textbf{0,934} \\
- & StyleGAN-XL & 250 & 0,837 & \textbf{0,899} & 0,888 \\
- & VQGAN & 250 & \textbf{0,884} & 0,738 & 0,831 \\
- & StarGAN & 200 & 0,772 & \textbf{0,801} & 0,798 \\
- & \textit{StarGAN v2} & 199 & \textbf{0,619} & 0,472 & 0,574 \\
+\multirow{6}{*}{\gls*{gan}} & StyleGAN3 & 31.885 & 98,9 & 99,0 & \textbf{99,9} & 100,0 \\
+ & StyleGAN2 & 31.885 & 97,7 & 94,3 & \textbf{99,4} & 100,0 \\
+ & StyleGAN-XL & 31.885 & \textbf{98,8} & 96,3 & 94,3 & 98,9 \\
+ & VQGAN & 31.885 & \textbf{95,5} & 70,4 & 67,5 & 65,0 \\
+ & StarGAN & 1.984 & \textbf{74,2} & 42,7 & 53,8 & 71,1 \\
+ & StarGAN v2 & 2.000 & 38,4 & \textbf{46,1} & 23,0 & 16,4 \\
 \midrule
-\multirow{5}{*}{\makecell[l]{Troca\\facial}}
- & UniFace & 250 & 0,882 & \textbf{0,931} & 0,926 \\
- & FaceSwap & 250 & \textbf{0,892} & 0,855 & 0,887 \\
- & BlendFace & 250 & 0,817 & \textbf{0,898} & 0,877 \\
- & MobileSwap & 250 & 0,803 & \textbf{0,891} & 0,864 \\
- & DeepFaceLab & 250 & 0,813 & 0,844 & \textbf{0,847} \\
+\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 24.346 & 94,0 & \textbf{96,0} & 95,7 & 97,3 \\
+ & FaceSwap & 24.634 & \textbf{95,1} & 91,1 & 94,7 & 90,0 \\
+ & BlendFace & 24.790 & \textbf{96,0} & 92,1 & 92,5 & 94,6 \\
+ & MobileSwap & 47.522 & \textbf{97,1} & 93,1 & 94,5 & 92,8 \\
+ & DeepFaceLab & 3.122 & \textbf{95,1} & 93,0 & 83,5 & 84,7 \\
 \midrule
-\multirow{4}{*}{\makecell[l]{Edição/\\T2I}}
- & WhichFaceIsReal & 250 & 0,930 & 0,944 & \textbf{0,951} \\
- & MidJourney & 248 & 0,875 & \textbf{0,934} & 0,922 \\
- & e4e & 250 & \textbf{0,923} & 0,879 & 0,915 \\
- & StyleCLIP & 250 & 0,872 & 0,893 & \textbf{0,901} \\
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 1.001 & 60,9 & \textbf{92,5} & 91,4 & 99,0 \\
+ & MidJourney & 635 & 97,4 & \textbf{99,7} & 95,2 & 98,3 \\
+ & e4e & 60.123 & 93,7 & \textbf{98,7} & 97,4 & 94,0 \\
+ & StyleCLIP & 2.824 & 67,2 & \textbf{90,3} & 87,8 & 92,9 \\
 \midrule
-Misto & Celeb-DF (misto) & 500 & 0,826 & \textbf{0,876} & 0,867 \\
-Avatar & \textit{HeyGen} & 250 & \textbf{0,601} & 0,530 & 0,566 \\
+Misto & Celeb-DF (misto) & 128.671 & 92,6 & \textbf{94,7} & 94,4 & 90,6 \\
+\midrule
+Avatar & HeyGen & 1.605 & 93,2 & \textbf{96,5} & 85,2 & 30,5 \\
+\midrule[\heavyrulewidth]
+\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (650.549)}} & & \textbf{93,4} & 92,6 & 92,1 & 86,6 \\
 \bottomrule
 \end{tabular}
 }
@@ -605,7 +617,7 @@ Detectores treinados no FF++ transferem mal para o \gls*{mffi} ($0{,}556$--$0{,}
 Só os modelos multifonte que incluem o próprio \gls*{mffi} no treino superam esses resultados, como o Venus-DefakerOne2, com mais de 24 milhões de imagens ($0{,}973$ e $0{,}901$), mas eles não são diretamente comparáveis.
 No Celeb-DF v2, os melhores resultados por vídeo deste trabalho ($0{,}755$--$0{,}764$) ficam acima de todos os detectores oficiais treinados no \gls*{mffi} ($0{,}560$--$0{,}703$), embora a \gls*{auc} absoluta siga modesta.
 
-\begin{table*}[!t]
+\begin{table*}[!htb]
 \centering
 \caption{\gls*{auc} relatada na literatura e neste trabalho, por base de treino; Celeb-DF v2 só para treino no \gls*{mffi} (deste trabalho: por vídeo). --: não reportado. $^\P$Nível não especificado. $^a$Só reais do FF++ e pseudofalsas. $^\dagger$Provavelmente o Test. $^\ddagger$Partição não declarada. $^\S$Test e Test-Hard juntos. $^\ast$Relatado em~\cite{qu2026defakerone2}.}
 \label{tab:literature}
