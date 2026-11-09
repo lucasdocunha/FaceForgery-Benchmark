@@ -347,7 +347,7 @@ DINOv3 & 0,809 & \textbf{0,726} & 0,083 & \pmsd{\textbf{0,936}}{0,006} & \pmsd{0
 
 \begin{table*}[!t]
 \centering
-\caption{\gls*{auc} (média\,$\pm$\,desvio-padrão) por família e representação; c/DA: treino robusto. DF-40 P1: \gls*{auc} no protocolo~1; P2: revocação (\%) no protocolo~2 ($650.549$ falsas, 3 sementes). $\Delta$ = Test$-$Test-Hard, em negrito só para Test $\geq 0{,}6$.}
+\caption{\gls*{auc} (média\,$\pm$\,desvio-padrão) por família e representação; c/DA: treino robusto. DF-40 P1: \gls*{auc} no protocolo~1; P2: revocação (\%) no protocolo~2 ($650.549$ falsas, 3 sementes). $\Delta$ = Test$-$Test-Hard, em negrito só para Test $\geq 0{,}6$. $^\ddagger$Classificador degenerado por colapso de limiar ($\tau = 0{,}0$ na validação, predizendo trivialmente $100\%$ falsos com $\text{AUC} \approx 0{,}50$; sob limiar padrão $0{,}5$, a taxa é $0{,}0\%$).}
 \label{tab:familias_representacoes}
 \vspace{-2mm}
 \scriptsize\renewcommand{\arraystretch}{0.88}
@@ -397,7 +397,7 @@ MobileNetV3~\cite{howard2019searching} & \textit{RGB} & \pmsd{0,845}{0,005} & \p
 ViT~\cite{ref_vit} & \textit{RGB} & \pmsd{0,815}{0,009} & \pmsd{0,704}{0,028} & \pmsd{0,111}{0,027} & \pmsd{0,704}{0,016} & \pmsd{77,6}{4,0} & \pmsd{0,694}{0,042} \\
  & \textit{Log-Magnitude} & \pmsd{0,724}{0,009} & \pmsd{0,535}{0,009} & \pmsd{0,189}{0,009} & \pmsd{0,445}{0,020} & \pmsd{87,9}{2,2} & \pmsd{0,553}{0,027} \\
  & \textit{Phase} & \pmsd{0,602}{0,005} & \pmsd{0,496}{0,003} & \pmsd{0,106}{0,002} & \pmsd{0,526}{0,018} & \pmsd{99,4}{0,7} & \pmsd{0,539}{0,012} \\
- & \textit{Complex Spectrum} & \pmsd{0,570}{0,009} & \pmsd{0,554}{0,006} & \pmsd{0,016}{0,006} & \pmsd{0,509}{0,011} & \pmsd{100,0}{0,0} & \pmsd{0,501}{0,019} \\
+ & \textit{Complex Spectrum} & \pmsd{0,570}{0,009} & \pmsd{0,554}{0,006} & \pmsd{0,016}{0,006} & \pmsd{0,509}{0,011} & \pmsd{0,0}{0,0}$^\ddagger$ & \pmsd{0,501}{0,019} \\
  & \textit{RGB+Mag} & \pmsd{0,826}{0,003} & \pmsd{0,712}{0,006} & \pmsd{0,114}{0,004} & \pmsd{0,632}{0,024} & \pmsd{82,9}{1,9} & \pmsd{0,588}{0,023} \\
  & \textit{High-Pass Spectrum} & \pmsd{0,724}{0,007} & \pmsd{0,528}{0,007} & \pmsd{0,196}{0,002} & \pmsd{0,472}{0,030} & \pmsd{85,4}{2,0} & \pmsd{0,557}{0,020} \\
  & \textit{RGB+Freq} & \pmsd{0,791}{0,007} & \pmsd{0,676}{0,006} & \pmsd{0,116}{0,007} & \pmsd{0,542}{0,022} & \pmsd{86,0}{3,2} & \pmsd{0,452}{0,014} \\

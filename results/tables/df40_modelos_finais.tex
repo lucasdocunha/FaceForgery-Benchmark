@@ -1,0 +1,38 @@
+% =====================================================================
+% Tabela Definitiva: Comparativo dos Melhores Modelos no DF-40
+% Protocolo 2 Exaustivo (650.549 imagens falsas em 24 técnicas)
+% =====================================================================
+\providecommand{\pmsd}[2]{#1\,{\scriptsize$\pm$#2}}
+
+\begin{table*}[!t]
+\centering
+\caption{Desempenho dos melhores modelos no benchmark DF-40 ($650.549$ imagens falsas em 24 técnicas, média das 3 sementes).
+A coluna \textbf{Revocação ($\tau_{val}$)} reflete o Protocolo~2 oficial com o limiar ótimo calibrado no MFFI.
+A coluna \textbf{Revocação ($\tau=0{,}5$)} aplica o limiar neutro fixo, comprovando a robustez intrínseca do detector.
+$\bar{P}_{fake}$ indica a probabilidade média predita para imagens falsas (certeza da rede).
+$^*$No ViT Complex Spectrum, o valor aparente de $100{,}0\%$ sob $\tau_{val}=0{,}0$ é reportado como $0{,}0\%$ pois trata-se de um classificador degenerado sem capacidade discriminativa (AUC $\approx 0{,}50$).}
+\label{tab:df40_melhores_modelos}
+\vspace{-2mm}
+\scriptsize\renewcommand{\arraystretch}{0.92}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lll cc c cccc l@{}}
+\toprule
+ & & & \multicolumn{2}{c}{Revocação Geral (\%)} & & \multicolumn{4}{c}{Desempenho por Paradigma (\%)} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){7-10}
+Família & Representação & Prot. & $\tau_{val}$ (oficial) & $\tau=0{,}50$ & $\bar{P}_{fake}$ & Difusão & Síntese GAN & Troca Facial & Avatares & Perfil / Destaque Metodológico \\
+\midrule
+\textbf{DINOv3} & \textit{RGB+Freq} & P1 & \textbf{\pmsd{93,4}{0,3}} & \textbf{94,1\%} & \textbf{0,92} & 90,7\% & \textbf{96,5\%} & \textbf{95,9\%} & 92,6\% & \textbf{Campeão Geral Absoluto} \\
+Xception & \textit{SRM-only}$^\dagger$ & P2 & \pmsd{92,6}{1,4} & 76,3\% & 0,66 & \textbf{91,7\%} & 88,6\% & 93,1\% & \textbf{94,8\%} & Campeão Filtragem Residual \\
+Xception & \textit{RGB+SRM} & P2 & \pmsd{92,1}{0,8} & 80,0\% & 0,72 & 90,0\% & 88,7\% & 94,1\% & 94,3\% & Melhor Híbrido CNN \\
+Xception & \textit{RGB base} & P1 & \pmsd{88,5}{0,4} & 84,0\% & 0,82 & 80,9\% & 87,9\% & 92,4\% & 92,7\% & Baseline Clássico mais Forte \\
+DINOv3 & \textit{RGB+SRM} & P2 & \pmsd{86,6}{0,1} & 73,0\% & 0,68 & 75,9\% & 89,5\% & 93,3\% & 89,9\% & Campeão c/DA (Domina GANs) \\
+ResNet-18 & \textit{RGB+Freq} & P1 & \pmsd{86,6}{2,5} & 91,1\% & 0,91 & 86,4\% & 92,9\% & 86,9\% & 81,8\% & Melhor Arquitetura Leve CNN \\
+ViT & \textit{RGB+SRM} & P2 & \pmsd{85,4}{1,6} & 63,6\% & 0,62 & 82,9\% & 89,5\% & 86,6\% & 85,4\% & Melhor Configuração ViT \\
+MobileNetV3 & \textit{RGB+SRM} & P2 & \pmsd{81,7}{0,8} & 82,9\% & 0,79 & 77,8\% & 74,9\% & 85,9\% & 89,2\% & Melhor Modelo Ultraleve \\
+CLIP & \textit{RGB}$^\dagger$ & P2 & \pmsd{33,3}{30,8} & 33,4\% & 0,00 & 32,0\% & 33,3\% & 36,0\% & 32,5\% & Instabilidade de Limiar \\
+\midrule[\heavyrulewidth]
+\multicolumn{11}{@{}l}{\textit{Caso Patológico de Controle (Ilusão Estatística por Colapso de Limiar)}} \\
+ViT & \textit{Complex Spectrum} & P1 & 0,0\%$^*$ & 0,0\% & 0,22 & 0,0\% & 0,0\% & 0,0\% & 0,0\% & Degenerado (Limiar $\tau=0$) \\
+\bottomrule
+\end{tabular}
+\end{table*}
