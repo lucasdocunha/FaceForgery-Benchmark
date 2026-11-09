@@ -1,0 +1,45 @@
+\begin{table}[!htb]
+\centering
+\caption{Revocação (\%) por técnica no protocolo~2 do DF-40 ($650.549$ imagens falsas, média de 3 sementes) para os três melhores modelos no DF-40 e o melhor modelo individual no geral (\gls*{dino} \gls*{rgb}+\gls*{srm}). Em negrito, o maior valor por técnica.}
+\label{tab:tecnicas}
+\vspace{-2mm}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}llr cccc@{}}
+\toprule
+Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{DINOv3\\(RGB+SRM)} \\
+\midrule
+\multirow{7}{*}{Difusão} & SD 2.1 & 53.474 & 98,6 & 99,6 & 99,5 & \textbf{99,8} \\
+ & PixArt-$\alpha$ & 31.885 & 98,5 & 98,7 & \textbf{99,9} & 99,6 \\
+ & SiT & 31.885 & \textbf{93,1} & 90,4 & 92,9 & 85,5 \\
+ & DiT & 31.885 & \textbf{92,4} & 87,8 & 90,5 & 75,7 \\
+ & RDDM & 17.738 & \textbf{99,0} & 94,3 & 97,0 & 44,2 \\
+ & CollabDiff & 1.000 & \textbf{76,4} & 74,8 & 67,8 & 37,0 \\
+ & DDIM & 31.885 & 61,5 & \textbf{75,8} & 57,7 & 21,2 \\
+\midrule
+\multirow{6}{*}{\gls*{gan}} & StyleGAN3 & 31.885 & 98,9 & 99,0 & 99,9 & \textbf{100,0} \\
+ & StyleGAN2 & 31.885 & 97,7 & 94,3 & 99,4 & \textbf{100,0} \\
+ & StyleGAN-XL & 31.885 & 98,8 & 96,3 & 94,3 & \textbf{98,9} \\
+ & VQGAN & 31.885 & \textbf{95,5} & 70,4 & 67,5 & 65,0 \\
+ & StarGAN & 1.984 & \textbf{74,2} & 42,7 & 53,8 & 71,1 \\
+ & StarGAN v2 & 2.000 & 38,4 & \textbf{46,1} & 23,0 & 16,4 \\
+\midrule
+\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 24.346 & 94,0 & 96,0 & 95,7 & \textbf{97,3} \\
+ & FaceSwap & 24.634 & \textbf{95,1} & 91,1 & 94,7 & 90,0 \\
+ & BlendFace & 24.790 & \textbf{96,0} & 92,1 & 92,5 & 94,6 \\
+ & MobileSwap & 47.522 & \textbf{97,1} & 93,1 & 94,5 & 92,8 \\
+ & DeepFaceLab & 3.122 & \textbf{95,1} & 93,0 & 83,5 & 84,7 \\
+\midrule
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 1.001 & 60,9 & 92,5 & 91,4 & \textbf{99,0} \\
+ & MidJourney & 635 & 97,4 & \textbf{99,7} & 95,2 & 98,3 \\
+ & e4e & 60.123 & 93,7 & \textbf{98,7} & 97,4 & 94,0 \\
+ & StyleCLIP & 2.824 & 67,2 & 90,3 & 87,8 & \textbf{92,9} \\
+\midrule
+Misto & Celeb-DF (misto) & 128.671 & 92,6 & \textbf{94,7} & 94,4 & 90,6 \\
+\midrule
+Avatar & HeyGen & 1.605 & 93,2 & \textbf{96,5} & 85,2 & 30,5 \\
+\midrule[\heavyrulewidth]
+\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (650.549)}} & & \textbf{93,4} & 92,6 & 92,1 & 86,6 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

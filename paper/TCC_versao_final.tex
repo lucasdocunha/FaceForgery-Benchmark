@@ -542,60 +542,61 @@ Como a validação do \gls*{mffi} está saturada ($0{,}991$--$0{,}998$) e mal se
 \subsection{Generalização para o DF-40}
 \label{sec:df40}
 
-No protocolo~2 oficial do DF-40, com avaliação exaustiva em todas as $650.549$ imagens falsas distribuídas nas 24 técnicas de manipulação facial, a taxa de detecção dos melhores modelos treinados no \gls*{mffi} varia expressivamente entre arquiteturas (\cref{tab:tecnicas}).
-Os três modelos individuais com maior revocação global são o DINOv3 com \gls*{rgb}+Fourier ($93{,}4\%$), o Xception com \gls*{srm}-only ($92{,}6\%$) e o Xception com \gls*{rgb}+\gls*{srm} ($92{,}1\%$).
-Ao combiná-los no comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}, atinge-se $95{,}1\%$ de revocação ponderada global, superando todos os detectores individuais e alcançando $100{,}0\%$ em SD~2.1, RDDM e StyleGAN3, além de taxas entre $96{,}4\%$ e $99{,}1\%$ em todas as cinco técnicas de troca facial.
-Os modelos se complementam: o DINOv3 com \gls*{rgb}+Fourier domina em \glspl*{gan} (VQGAN com $95{,}5\%$) e trocas faciais, enquanto a filtragem residual (\gls*{srm}) do Xception resgata falhas críticas de edição text-to-image (WhichFaceIsReal salta de $60{,}9\%$ para $86{,}8\%$ e StyleCLIP de $67{,}2\%$ para $83{,}6\%$), embora geradores fortemente regularizados como StarGAN~v2 ($26{,}0\%$) e DDIM ($58{,}8\%$) permaneçam os maiores gargalos.
+No protocolo~2 oficial do DF-40, com avaliação exaustiva em todas as $650.549$ imagens falsas distribuídas nas 24 técnicas de manipulação facial, a taxa de detecção dos detectores treinados no \gls*{mffi} varia expressivamente entre arquiteturas (\cref{tab:tecnicas}).
+A \cref{tab:tecnicas} contrasta os três modelos individuais com maior revocação global no DF-40 --- DINOv3 com \gls*{rgb}+Fourier ($93{,}4\%$), Xception com \gls*{srm}-only ($92{,}6\%$) e Xception com \gls*{rgb}+\gls*{srm} ($92{,}1\%$) --- com o DINOv3 \gls*{rgb}+\gls*{srm}, que é o melhor detector individual no geral no benchmark (\gls*{auc} de validação de $99{,}5\%$ e $85{,}2\%$ no Test-Hard).
+O DINOv3 com \gls*{rgb}+Fourier atinge a maior revocação média global ($93{,}4\%$) e lidera em dez técnicas, dominando geradores de difusão (RDDM com $99{,}0\%$, SiT com $93{,}1\%$, DiT com $92{,}4\%$, CollabDiff com $76{,}4\%$) e todas as técnicas de troca facial (entre $94{,}0\%$ e $97{,}1\%$), além de capturar artefatos de grade em \glspl*{gan} (VQGAN com $95{,}5\%$).
+Por sua vez, os modelos Xception baseados em \gls*{srm} apresentam maior resiliência em geradores de edição e síntese realista, onde o domínio de Fourier sofre quedas acentuadas: o Xception \gls*{srm}-only atinge $92{,}5\%$ em WhichFaceIsReal (contra $60{,}9\%$ do DINOv3 Fourier) e $90{,}3\%$ em StyleCLIP (contra $67{,}2\%$), além de resgatar geradores altamente desafiadores como DDIM ($75{,}8\%$) e StarGAN~v2 ($46{,}1\%$).
 
-% Fonte: tables/tabela6_top3_e_ensemble_mffi_val.csv
+% Fonte: tables/tabela6_top3_e_dino_srm.csv
 \begin{table}[!htb]
 \centering
-\caption{Revocação (\%) por técnica no protocolo~2 do DF-40 ($650.549$ imagens falsas, média de 3 sementes) para os três melhores modelos do benchmark e o comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}. Em negrito, o melhor resultado por técnica.}
+\caption{Revocação (\%) por técnica no protocolo~2 do DF-40 ($650.549$ imagens falsas, média de 3 sementes) para os três detectores com maior revocação global e o melhor modelo individual no geral (\gls*{dino} \gls*{rgb}+\gls*{srm}). Em negrito, o maior valor por técnica.}
 \label{tab:tecnicas}
 \vspace{-2mm}
 \resizebox{\linewidth}{!}{
-\begin{tabular}{@{}llr ccc c@{}}
+\begin{tabular}{@{}llr cccc@{}}
 \toprule
-Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{\textbf{Ensemble Top-3}\\\textbf{(Val.\ MFFI)}} \\
+Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{DINOv3\\(RGB+SRM)} \\
 \midrule
-\multirow{7}{*}{Difusão} & SD 2.1 & 53.474 & 98,6 & 99,6 & 99,5 & \textbf{100,0} \\
- & PixArt-$\alpha$ & 31.885 & 98,5 & 98,7 & \textbf{99,9} & \textbf{99,9} \\
- & SiT & 31.885 & 93,1 & 90,4 & 92,9 & \textbf{93,9} \\
- & DiT & 31.885 & 92,4 & 87,8 & 90,5 & \textbf{92,8} \\
- & RDDM & 17.738 & 99,0 & 94,3 & 97,0 & \textbf{100,0} \\
- & CollabDiff & 1.000 & \textbf{76,4} & 74,8 & 67,8 & 71,2 \\
- & DDIM & 31.885 & 61,5 & \textbf{75,8} & 57,7 & 58,8 \\
+\multirow{7}{*}{Difusão} & SD 2.1 & 53.474 & 98,6 & 99,6 & 99,5 & \textbf{99,8} \\
+ & PixArt-$\alpha$ & 31.885 & 98,5 & 98,7 & \textbf{99,9} & 99,6 \\
+ & SiT & 31.885 & \textbf{93,1} & 90,4 & 92,9 & 85,5 \\
+ & DiT & 31.885 & \textbf{92,4} & 87,8 & 90,5 & 75,7 \\
+ & RDDM & 17.738 & \textbf{99,0} & 94,3 & 97,0 & 44,2 \\
+ & CollabDiff & 1.000 & \textbf{76,4} & 74,8 & 67,8 & 37,0 \\
+ & DDIM & 31.885 & 61,5 & \textbf{75,8} & 57,7 & 21,2 \\
 \midrule
 \multirow{6}{*}{\gls*{gan}} & StyleGAN3 & 31.885 & 98,9 & 99,0 & 99,9 & \textbf{100,0} \\
- & StyleGAN2 & 31.885 & 97,7 & 94,3 & \textbf{99,4} & 98,9 \\
- & StyleGAN-XL & 31.885 & 98,8 & 96,3 & 94,3 & \textbf{99,2} \\
- & VQGAN & 31.885 & \textbf{95,5} & 70,4 & 67,5 & 94,7 \\
- & StarGAN & 1.984 & \textbf{74,2} & 42,7 & 53,8 & 61,2 \\
- & StarGAN v2 & 2.000 & 38,4 & \textbf{46,1} & 23,0 & 26,0 \\
+ & StyleGAN2 & 31.885 & 97,7 & 94,3 & 99,4 & \textbf{100,0} \\
+ & StyleGAN-XL & 31.885 & 98,8 & 96,3 & 94,3 & \textbf{98,9} \\
+ & VQGAN & 31.885 & \textbf{95,5} & 70,4 & 67,5 & 65,0 \\
+ & StarGAN & 1.984 & \textbf{74,2} & 42,7 & 53,8 & 71,1 \\
+ & StarGAN v2 & 2.000 & 38,4 & \textbf{46,1} & 23,0 & 16,4 \\
 \midrule
-\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 24.346 & 94,0 & 96,0 & 95,7 & \textbf{97,1} \\
- & FaceSwap & 24.634 & 95,1 & 91,1 & 94,7 & \textbf{96,7} \\
- & BlendFace & 24.790 & 96,0 & 92,1 & 92,5 & \textbf{99,1} \\
- & MobileSwap & 47.522 & 97,1 & 93,1 & 94,5 & \textbf{98,0} \\
- & DeepFaceLab & 3.122 & 95,1 & 93,0 & 83,5 & \textbf{96,4} \\
+\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 24.346 & 94,0 & 96,0 & 95,7 & \textbf{97,3} \\
+ & FaceSwap & 24.634 & \textbf{95,1} & 91,1 & 94,7 & 90,0 \\
+ & BlendFace & 24.790 & \textbf{96,0} & 92,1 & 92,5 & 94,6 \\
+ & MobileSwap & 47.522 & \textbf{97,1} & 93,1 & 94,5 & 92,8 \\
+ & DeepFaceLab & 3.122 & \textbf{95,1} & 93,0 & 83,5 & 84,7 \\
 \midrule
-\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 1.001 & 60,9 & \textbf{92,5} & 91,4 & 86,8 \\
- & MidJourney & 635 & 97,4 & \textbf{99,7} & 95,2 & \textbf{99,7} \\
- & e4e & 60.123 & 93,7 & \textbf{98,7} & 97,4 & 97,3 \\
- & StyleCLIP & 2.824 & 67,2 & \textbf{90,3} & 87,8 & 83,6 \\
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 1.001 & 60,9 & 92,5 & 91,4 & \textbf{99,0} \\
+ & MidJourney & 635 & 97,4 & \textbf{99,7} & 95,2 & 98,3 \\
+ & e4e & 60.123 & 93,7 & \textbf{98,7} & 97,4 & 94,0 \\
+ & StyleCLIP & 2.824 & 67,2 & 90,3 & 87,8 & \textbf{92,9} \\
 \midrule
-Misto & Celeb-DF (misto) & 128.671 & 92,6 & 94,7 & 94,4 & \textbf{96,7} \\
+Misto & Celeb-DF (misto) & 128.671 & 92,6 & \textbf{94,7} & 94,4 & 90,6 \\
 \midrule
-Avatar & HeyGen & 1.605 & 93,2 & \textbf{96,5} & 85,2 & 95,2 \\
+Avatar & HeyGen & 1.605 & 93,2 & \textbf{96,5} & 85,2 & 30,5 \\
 \midrule[\heavyrulewidth]
-\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (650.549)}} & & 93,4 & 92,6 & 92,1 & \textbf{95,1} \\
+\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (650.549)}} & & \textbf{93,4} & 92,6 & 92,1 & 86,6 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-Em contraste com os modelos com enriquecimento espectral e residual da \cref{tab:tecnicas}, os detectores puramente espaciais sofrem degradação expressiva sob o limiar do \gls*{mffi}: o CLIP \gls*{rgb} robusto, apesar da maior \gls*{auc} no subset balanceado ($0{,}814$), obtém apenas $33{,}3\%$ de revocação no protocolo exaustivo, enquanto o DINOv3 \gls*{rgb}+\gls*{srm} atinge $86{,}6\%$.
-A contradição do CLIP indica que o limiar calibrado no \gls*{mffi} é altamente sensível à representação de entrada: a ordenação dos escores se mantém, mas a escala absoluta sofre desvio.
+O DINOv3 \gls*{rgb}+\gls*{srm}, apesar de alcançar o melhor desempenho global no \gls*{mffi} e liderar em sete técnicas individuais no DF-40 --- incluindo SD~2.1 ($99{,}8\%$), StyleGAN3 ($100{,}0\%$), StyleGAN2 ($100{,}0\%$), UniFace ($97{,}3\%$), WhichFaceIsReal ($99{,}0\%$) e StyleCLIP ($92{,}9\%$) ---, obtém uma revocação agregada de $86{,}6\%$.
+Essa redução decorre de colapsos específicos de sensibilidade sob o limiar calibrado no \gls*{mffi} diante de geradores de difusão fortemente regularizados (DDIM com $21{,}2\%$, CollabDiff com $37{,}0\%$, RDDM com $44{,}2\%$), avatares (HeyGen com $30{,}5\%$) e StarGAN~v2 ($16{,}4\%$), evidenciando que a sensibilidade de limiar de representações profundas de ruído varia conforme o paradigma gerativo.
+Ainda assim, o DINOv3 \gls*{rgb}+\gls*{srm} supera substancialmente detectores puramente espaciais: o CLIP \gls*{rgb} robusto, embora alcance $0{,}814$ de \gls*{auc} no subconjunto balanceado do protocolo~1, obtém apenas $33{,}3\%$ de revocação no protocolo~2, demonstrando que sem filtragem espectral ou residual os modelos tornam-se excessivamente dependentes de calibrações restritas ao domínio de treinamento.
 Nos dois protocolos, os pontos cegos estruturais coincidem (geradores fortemente regularizados como StarGAN~v2 e DDIM), evidenciando distribuições estatísticas que se afastam dos padrões presentes no \gls*{mffi}.
 
 \subsection{Celeb-DF v2}
