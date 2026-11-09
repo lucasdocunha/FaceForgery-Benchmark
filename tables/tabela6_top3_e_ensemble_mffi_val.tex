@@ -1,0 +1,46 @@
+\begin{table}[!htb]
+\centering
+\caption{Revocação (\%) por técnica no DF-40 ($6.147$ imagens falsas, média de 3 sementes) para os três melhores modelos do benchmark e o comitê com a melhor calibração na validação do MFFI. Em negrito, o melhor resultado por técnica.}
+\label{tab:tecnicas}
+\vspace{-2mm}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}llr ccc c@{}}
+\toprule
+Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{\textbf{Ensemble Top-3}\\\textbf{(Val.\ MFFI)}} \\
+\midrule
+\multirow{7}{*}{Difusão} & SD 2.1 & 250 & 99,2 & 99,9 & 99,6 & \textbf{100,0} \\
+ & PixArt-alpha & 250 & 99,1 & 98,0 & \textbf{99,9} & \textbf{99,9} \\
+ & SiT & 250 & 90,5 & 86,9 & 90,9 & \textbf{93,9} \\
+ & DiT & 250 & 92,3 & 85,3 & 90,3 & \textbf{92,8} \\
+ & RDDM & 250 & 98,9 & 91,7 & 96,5 & \textbf{100,0} \\
+ & CollabDiff & 250 & \textbf{72,5} & 71,2 & 66,8 & 71,2 \\
+ & DDIM & 250 & 57,3 & \textbf{68,8} & 58,4 & 58,8 \\
+\midrule
+\multirow{6}{*}{\gls*{gan}} & StyleGAN3 & 250 & 99,3 & 98,7 & \textbf{100,0} & \textbf{100,0} \\
+ & StyleGAN2 & 250 & 97,3 & 95,2 & \textbf{99,1} & 98,9 \\
+ & StyleGAN-XL & 250 & 99,1 & 95,6 & 93,9 & \textbf{99,2} \\
+ & VQGAN & 250 & \textbf{96,3} & 71,2 & 71,1 & 94,7 \\
+ & StarGAN & 200 & \textbf{74,3} & 37,5 & 50,5 & 61,2 \\
+ & StarGAN v2 & 199 & 39,4 & \textbf{42,2} & 24,6 & 26,0 \\
+\midrule
+\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 250 & 94,8 & 93,5 & 94,3 & \textbf{97,1} \\
+ & FaceSwap & 250 & 94,8 & 89,3 & 92,8 & \textbf{96,7} \\
+ & BlendFace & 250 & 98,1 & 94,5 & 94,1 & \textbf{99,1} \\
+ & MobileSwap & 250 & 97,3 & 90,1 & 91,9 & \textbf{98,0} \\
+ & DeepFaceLab & 250 & 94,4 & 89,3 & 83,3 & \textbf{96,4} \\
+\midrule
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 250 & 60,7 & 90,9 & \textbf{93,1} & 86,8 \\
+ & MidJourney & 248 & 97,0 & 99,6 & 95,8 & \textbf{99,7} \\
+ & e4e & 250 & 92,5 & \textbf{97,9} & 96,3 & 97,3 \\
+ & StyleCLIP & 250 & 64,4 & \textbf{89,2} & 86,3 & 83,6 \\
+\midrule
+Misto & Celeb-DF (misto) & 500 & 92,3 & 94,7 & 95,3 & \textbf{96,7} \\
+\midrule
+Avatar & HeyGen & 250 & 89,7 & \textbf{96,8} & 83,5 & 95,2 \\
+\midrule[\heavyrulewidth]
+\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (Revocação)}} & 6.147 & 87,9 & 87,3 & 86,5 & \textbf{90,3} \\
+\multicolumn{2}{@{}l}{\textit{Especificidade em Reais}} & 4.999 & 91,2 & 88,4 & 89,1 & 40,4 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
