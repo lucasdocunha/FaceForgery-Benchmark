@@ -56,9 +56,12 @@ class TrainingConfig:
     projection_dim: int = 128
     variant: str = "large"
     model_size: str = "base"
+    in_channels_override: int | None = None
 
     @property
     def in_channels(self) -> int:
+        if self.in_channels_override is not None:
+            return self.in_channels_override
         return FOURIER_CHANNELS[self.fourier_mode]
 
     @property

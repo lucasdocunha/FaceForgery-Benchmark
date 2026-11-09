@@ -1,0 +1,696 @@
+\documentclass[10pt,conference]{IEEEtran}
+
+% =====================================================================
+% Versão em português (pt-BR) -- extensão do artigo SIBGRAPI 2026
+% Compilar no Overleaf com pdfLaTeX + BibTeX.
+% Preâmbulo enxuto para caber no tempo de compilação do plano gratuito.
+% =====================================================================
+
+\newif\iffinal
+% \finalfalse
+\finaltrue
+
+% *** IDIOMA E CODIFICAÇÃO ***
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+
+% *** CITAÇÕES ***
+\usepackage{cite}
+
+% *** GRÁFICOS ***
+\usepackage{graphicx}
+\graphicspath{{figs/}}
+
+% *** MATEMÁTICA E TABELAS ***
+\usepackage[cmex10]{amsmath}
+\interdisplaylinepenalty=2500
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{icomma} % separador decimal em modo matemático: $0,926$
+
+\iffinal
+\else
+\usepackage[switch]{lineno}
+\fi
+
+\usepackage[hyphens]{url}
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+\usepackage[capitalise]{cleveref} % depois do hyperref
+\crefname{table}{Tabela}{Tabelas}
+\Crefname{table}{Tabela}{Tabelas}
+\crefname{figure}{Figura}{Figuras}
+\Crefname{figure}{Figura}{Figuras}
+\crefname{section}{Seção}{Seções}
+\Crefname{section}{Seção}{Seções}
+\crefname{subsection}{Seção}{Seções}
+\Crefname{subsection}{Seção}{Seções}
+
+% ---------------------------------------------------------------------
+% Acrônimos: substituto leve do pacote glossaries (que carrega o datatool
+% e deixa a compilação lenta). Mesma interface usada no texto:
+%   \newacronym[plural longo]{chave}{SIGLA}{forma longa}
+%   \gls{k} / \gls*{k}     -> 1º uso: "forma longa (SIGLA)"; depois: "SIGLA"
+%   \glspl{k} / \glspl*{k} -> plural (SIGLA + "s")
+%   \glsresetall, \glsunset{k}
+% ---------------------------------------------------------------------
+\makeatletter
+\def\acr@list{}
+\newcommand{\newacronym}[4][]{%
+  \expandafter\def\csname acr@short@#2\endcsname{#3}%
+  \expandafter\def\csname acr@long@#2\endcsname{#4}%
+  \if\relax\detokenize{#1}\relax
+    \expandafter\def\csname acr@longpl@#2\endcsname{#4s}%
+  \else
+    \expandafter\def\csname acr@longpl@#2\endcsname{#1}%
+  \fi
+  \g@addto@macro\acr@list{\do{#2}}%
+}
+\newcommand{\acr@use}[2]{% #1 = chave, #2 = 0 singular / 1 plural
+  \@ifundefined{acr@short@#1}{\textbf{??#1??}}{%
+    \@ifundefined{acr@used@#1}{%
+      \ifnum#2=0 \csname acr@long@#1\endcsname\else\csname acr@longpl@#1\endcsname\fi
+      ~(\csname acr@short@#1\endcsname\ifnum#2=1 s\fi)%
+      \expandafter\gdef\csname acr@used@#1\endcsname{}%
+    }{%
+      \csname acr@short@#1\endcsname\ifnum#2=1 s\fi
+    }}%
+}
+\DeclareRobustCommand{\gls}{\@ifstar{\acr@use@s}{\acr@use@s}}
+\newcommand{\acr@use@s}[1]{\acr@use{#1}{0}}
+\DeclareRobustCommand{\glspl}{\@ifstar{\acr@use@p}{\acr@use@p}}
+\newcommand{\acr@use@p}[1]{\acr@use{#1}{1}}
+\newcommand{\glsunset}[1]{\expandafter\gdef\csname acr@used@#1\endcsname{}}
+\newcommand{\glsresetall}{%
+  \begingroup
+  \def\do##1{\global\expandafter\let\csname acr@used@##1\endcsname\@undefined}%
+  \acr@list
+  \endgroup
+}
+\makeatother
+
+% notação compacta para média ± desvio-padrão nas tabelas
+\newcommand{\pmsd}[2]{#1\,{\scriptsize$\pm$#2}}
+
+\hyphenation{Test-Hard Celeb-DF Media-Pipe}
+
+\sloppy
+\begin{document}
+
+\title{Além do Conjunto Limpo: Resíduos de Ruído, Treinamento Robusto e Generalização entre Bases na Detecção de Faces Manipuladas}
+
+\iffinal
+    \author{
+    \IEEEauthorblockN{Lucas Cunha\IEEEauthorrefmark{1}, Lucas Gasperin\IEEEauthorrefmark{1}, Lucas Sotomaior\IEEEauthorrefmark{1},\\Beatriz Caldas\IEEEauthorrefmark{1}, Eduardo Pianovski\IEEEauthorrefmark{1} e Júlio~Nievola\IEEEauthorrefmark{1}\\[0.75ex]}
+    \IEEEauthorblockA{
+        \IEEEauthorrefmark{1}\hspace{0.15mm}Pontifícia Universidade Católica do Paraná, Curitiba, Brasil\\[0.75ex]
+            \hspace{-0.75mm}\IEEEauthorrefmark{1}\hspace{-0.35mm}\tt{\small{\{c.oliveira25,lucas.gasperin,lucas.sotomaior,beatriz.caldas,eduardo.pianovski\}}@pucpr.edu.br}} % TODO: e-mail do prof. Júlio Nievola
+    }
+\else
+  \author{Artigo em revisão \\[7ex]}
+  \linenumbers
+\fi
+
+\maketitle
+
+% ===================== início de 0-variables.tex =====================
+\iffinal
+    \newcommand{\urlSupplementary}{\url{https://github.com/lucasdocunha/FaceForgery-Benchmark/}}
+\else
+    \newcommand{\urlSupplementary}{\textit{[omitido para revisão]}}
+\fi
+% ===================== fim de 0-variables.tex ========================
+
+% ===================== início de 0-acronyms.tex =====================
+% \newacronym[plural da forma longa]{chave}{SIGLA}{forma longa}
+\newacronym{acc}{ACC}{acurácia}
+\newacronym{aigc}{AIGC}{conteúdo gerado por inteligência artificial}
+\newacronym{auc}{ROC-AUC}{área sob a curva ROC}
+\newacronym[redes neurais convolucionais]{cnn}{CNN}{rede neural convolucional}
+\newacronym{fft}{FFT}{transformada rápida de Fourier}
+\newacronym[redes adversárias generativas]{gan}{GAN}{rede adversária generativa}
+\newacronym{mffi}{MFFI}{Multi-Dimensional Face Forgery Image}
+\newacronym{rgb}{RGB}{vermelho-verde-azul}
+\newacronym[Spatial Rich Models]{srm}{SRM}{Spatial Rich Models}
+\newacronym[Self-Blended Images]{sbi}{SBI}{Self-Blended Images}
+\newacronym{dtcwt}{DTCWT}{transformada wavelet complexa de árvore dupla}
+\newacronym{vit}{ViT}{Vision Transformer}
+% ===================== fim de 0-acronyms.tex ========================
+
+
+% ===================== início de 0-abstract.tex =====================
+% =====================================================================
+% RESUMO
+% =====================================================================
+\begin{abstract}
+% TODO: substituir pela nova versão do resumo (150 palavras)
+resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo resumo
+\end{abstract}
+% ===================== fim de 0-abstract.tex ========================
+
+
+\IEEEpeerreviewmaketitle
+
+% ===================== início de 1-intro.tex =====================
+\section{Introdução}
+\label{sec:intro}
+% ===================== início de 4-table-familias.tex =====================
+% ---------------------------------------------------------------------
+% Fonte: Obsidian, MFFI - Parte 2 / 1.2 Finetuning.md (regime finetune, 5-6 sementes)
+% ---------------------------------------------------------------------
+
+% ===================== fim de 4-table-familias.tex ========================
+
+
+\glsresetall
+\glsunset{rgb}
+
+A disseminação de \gls*{aigc} tornou faces sintéticas e manipulações de identidade cada vez mais realistas e fáceis de gerar~\cite{lyu_theconversation_2025,milmo_2024,theconversation_2026}.
+Redes adversárias generativas (GANs)\glsunset{gan}~\cite{goodfellow2020generative} e modelos de difusão produzem conteúdo facial fotorrealista que ameaça a privacidade, a segurança biométrica e a integridade da informação~\cite{ivanovska2024vulnerability}.
+Detectores atingem \gls{auc} acima de $0{,}99$ em testes controlados~\cite{ref_generalization_gap}, mas esse desempenho não se mantém quando as imagens de teste vêm de outros geradores ou passam por compressão, ruído e desfoque~\cite{ref_sota_detection}, problemas que são muito comuns no compartilhamento de imagens online.
+
+Em trabalho anterior~\cite{cunha2026benchmarking}, foram avaliadas seis famílias de arquiteturas e sete representações espaciais e espectrais no \gls*{mffi}~\cite{ref_mffi}, com partições limpa (Test) e degradada (Test-Hard), e concluiu-se que:
+(i)~o melhor modelo no conjunto limpo não é o mais robusto (o Xception treinado do zero caiu de $0{,}884$ para $0{,}609$);
+(ii)~o DINOv3 congelado foi o mais robusto ($0{,}726$ no Test-Hard); e
+(iii)~a informação de Fourier só ajudava combinada ao \gls*{rgb}.
+O estudo usou uma única base, treinou cinco das seis famílias do zero e não tinha como ponto central a robustez dos modelos.
+
+Este artigo ataca essas limitações.
+Mantiveram-se as seis famílias (Xception, ResNet-18, MobileNetV3, ViT, CLIP e DINOv3) e a base de treino; realizou-se o \textit{finetuning} dos \textit{backbones} pré-treinados, introduziu-se um regime de treino robusto com degradações aleatórias, acrescentaram-se resíduos de ruído \gls*{srm}~\cite{fridrich2012rich} às representações de entrada, combinaram-se os modelos em ensembles e mediu-se a generalização no DF-40~\cite{yan2024df40} e no Celeb-DF v2~\cite{li2020celeb}.
+A investigação foi organizada em quatro questões de pesquisa (QP):
+\begin{itemize}
+    \item \textbf{QP1:} o \textit{finetuning} e o treino com degradações reduzem a diferença entre o desempenho limpo e o degradado?
+    \item \textbf{QP2:} resíduos \gls*{srm} são um sinal complementar mais útil que as representações de Fourier?
+    \item \textbf{QP3:} quais combinações de modelos produzem ensembles eficientes, e combinar mais modelos sempre ajuda?
+    \item \textbf{QP4:} o que é aprendido no \gls*{mffi} transfere para outras bases e manipulações?
+\end{itemize}
+% ===================== fim de 1-intro.tex ========================
+
+% ===================== início de 2-related.tex =====================
+\section{Trabalhos Relacionados}
+\label{sec:related}
+
+\subsection{Robustez e generalização de detectores}
+
+Classificadores treinados de ponta a ponta atingem desempenho quase perfeito dentro da distribuição de treino e, com aumentos de dados adequados, podem generalizar para geradores não vistos~\cite{ref_faceforensics,ref_generalization_gap}, mas o desempenho cai quando a distribuição de teste muda.
+Eles tendem a aprender características de um gerador ou de um pós-processamento específico, que se transferem mal entre bases~\cite{ref_sota_detection}, e ataques baseados em difusão podem suprimir esses indícios sem alterações visíveis~\cite{ivanovska2024vulnerability}.
+Em~\cite{cunha2026benchmarking}, mostrou-se no \gls*{mffi} que o desempenho limpo não indica robustez; aqui, a avaliação é estendida a outras bases para separar robustez a degradações de generalização entre fontes de falsificação.
+
+\subsection{Aumento de dados e pseudofalsificações}
+
+Outra linha busca robustez mudando os dados de treino: aumentos com desfoque e JPEG~\cite{ref_generalization_gap} e as \gls*{sbi}~\cite{shiohara2022detecting}, que misturam faces reais consigo mesmas para simular artefatos de fronteira.
+O regime robusto deste trabalho segue a primeira abordagem.
+
+\subsection{Resíduos de ruído e pistas de baixo nível}
+
+Os \gls*{srm}~\cite{fridrich2012rich}, propostos para esteganálise, são filtros passa-alta fixos que suprimem o conteúdo semântico e evidenciam o ruído local; o próprio \gls*{mffi} inclui um detector baseado neles~\cite{ref_mffi}.
+No estudo anterior, foram investigadas pistas espectrais via \gls*{fft}~\cite{frank2020leveraging,dzanic2020fourier,qian2020thinking}; aqui, testa-se se resíduos espaciais são um complemento mais estável.
+
+\subsection{Ensembles}
+
+Os ensembles são comuns em competições como o DFDC~\cite{dolhansky2020deepfake}, mas costumam ser relatados como um bloco único; este trabalho estuda quais combinações contribuem para o ganho, dentro e fora do domínio de treino.
+% ===================== fim de 2-related.tex ========================
+
+% ===================== início de 3-setup.tex =====================
+\section{Configuração Experimental}
+\label{sec:setup}
+
+Descreve-se a seguir o que mudou em relação ao estudo anterior~\cite{cunha2026benchmarking}; partições, limiar e métricas do \gls*{mffi} seguem aquele protocolo.
+
+\subsection{Bases de dados}
+Todos os modelos são treinados apenas no \gls*{mffi}, e o limiar de decisão, escolhido na sua validação, é mantido fixo em todas as bases; DF-40 e Celeb-DF v2 são usados só na avaliação, sem retreino (\cref{tab:bases}).
+
+As três bases usadas são:
+\begin{itemize}
+    \item \gls*{mffi}~\cite{ref_mffi}: reúne mais de 50 técnicas de manipulação, aplicadas a pessoas de diferentes origens e a imagens de qualidade variada. São usadas as partições oficiais, e a versão degradada do teste é chamada de \emph{Test-Hard} (Test-D em~\cite{ref_mffi}).
+    \item DF-40~\cite{yan2024df40}: o split oficial contém apenas imagens falsas, o que impede calcular a \gls*{auc} sobre ele; por isso, são usados dois protocolos. O \textit{protocolo~1}, não oficial, acrescenta imagens reais a uma amostra das falsas e permite calcular a \gls*{auc}, comparável à das demais bases: até 250 falsas por técnica (200 para StarGAN e StarGAN~v2) e 500 quadros derivados do Celeb-DF, somando $6.147$ falsas, e $5.000$ reais de seis fontes (WhichFaceIsReal, CollabDiff, MidJourney, StarGAN~v2, StyleCLIP e HeyGen), com semente~42. O \textit{protocolo~2}, oficial, usa todas as $650.549$ falsas das 24 técnicas (troca facial, \gls*{gan}, difusão, edição/\textit{text-to-image} e o avatar comercial HeyGen); sem imagens reais, reporta-se a revocação no limiar do \gls*{mffi}. Como o protocolo~1 não é oficial, seus resultados não devem ser diretamente comparados aos da literatura, sendo utilizados apenas para comparações internas deste experimento.
+    \item Celeb-DF v2~\cite{li2020celeb}: reúne vídeos de celebridades com trocas de face com poucos artefatos visíveis. São usados os 518 vídeos da lista oficial de teste (178 reais e 340 falsos), com 15 quadros uniformemente espaçados por vídeo e a maior face recortada pelo detector Haar do OpenCV; a probabilidade atribuída ao vídeo corresponde à média das probabilidades de seus quadros, e a métrica principal é a \gls*{auc} por vídeo.
+\end{itemize}
+
+\begin{table}[!htb]
+\centering
+\caption{Divisão dos dados. Só o \gls*{mffi} é usado no treino.}
+\label{tab:bases}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lllr@{}}
+\toprule
+Base & Partição & Uso & Amostras \\
+\midrule
+\multirow{3}{*}{MFFI} & Treino & Treino & $524.429$ img. \\
+ & Validação & Limiar & $147.363$ img. \\
+ & Test / Test-Hard & Avaliação & $181.947$ img. \\
+\midrule
+\multirow{2}{*}{DF-40} & \makecell[l]{Protocolo 1 (não\\oficial, balanceado)} & \gls*{auc} & \makecell[r]{$5.000$ reais\\$6.147$ falsas} \\
+ & \makecell[l]{Protocolo 2 (oficial,\\todas as técnicas)} & Revocação & $650.549$ falsas \\
+\midrule
+Celeb-DF v2 & \makecell[l]{Teste oficial\\(15 quadros/vídeo)} & \gls*{auc} por vídeo & \makecell[r]{178 vídeos reais\\340 vídeos falsos} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htb]
+\let\footnotesize\scriptsize % legenda um pouco menor
+\centering
+\newlength{\amw}\setlength{\amw}{0.215\columnwidth}%
+\hspace*{\dimexpr\fontcharht\font`A+\fontchardp\font`g\relax}\makebox[\dimexpr2\amw+1pt][c]{\tiny Reais}\hspace{4pt}\makebox[\dimexpr2\amw+1pt][c]{\tiny Falsas}\\[1pt]
+\rotatebox{90}{\makebox[\amw][c]{\tiny MFFI}}\hspace{2pt}%
+\includegraphics[width=\amw]{figs/amostras/mffi_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/mffi_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/mffi_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/mffi_fake_2.jpg}\\[2pt]
+\rotatebox{90}{\makebox[\amw][c]{\tiny Celeb-DF v2}}\hspace{2pt}%
+\includegraphics[width=\amw]{figs/amostras/celeb_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/celeb_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/celeb_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/celeb_fake_2.jpg}\\[2pt]
+\rotatebox{90}{\makebox[\amw][c]{\tiny DF-40}}\hspace{2pt}%
+\includegraphics[width=\amw]{figs/amostras/df40_real_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/df40_real_2.jpg}\hspace{4pt}\includegraphics[width=\amw]{figs/amostras/df40_fake_1.jpg}\hspace{1pt}\includegraphics[width=\amw]{figs/amostras/df40_fake_2.jpg}
+\caption{Exemplos de faces reais e falsas de cada base.}
+\label{fig:amostras}
+\end{figure}
+
+\subsection{Modelos e regimes de treino}
+
+Todas as famílias partem de pesos pré-treinados e sofreram \textit{finetuning}: Xception, ResNet-18, MobileNetV3-Large e \gls*{vit}-B/16 (ImageNet), CLIP ViT-B/16~\cite{ref_clip} e DINOv3 ConvNeXt-B~\cite{simeoni2025dinov3,liu2022convnet}.
+Os dois últimos estágios do backbone são descongelados, com taxas de aprendizado distintas para cabeça e backbone (no DINOv3, $2\times10^{-4}$ e $2\times10^{-5}$), e são usados AdamW, amostragem balanceada, parada antecipada, entrada de $224\times224$ e 5 sementes (42, 123, 2024, 7 e 2025).
+No \emph{\textit{finetuning} convencional}, são usados os aumentos leves do estudo anterior (recorte, espelhamento e cor); no \emph{robusto}, cada imagem de treino recebe ainda degradações sorteadas independentemente (\cref{tab:aug}), que aproximam as do Test-Hard.
+
+\begin{table}[!htb]
+\centering
+\caption{Degradações do treino robusto e suas probabilidades.}
+\label{tab:aug}
+\vspace{-2mm}
+\resizebox{0.8\linewidth}{!}{
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Degradação & Prob. & Faixa \\
+\midrule
+Rotação & 0,5 & $\pm30^\circ$ \\
+Contraste & 0,5 & fator 0,4--1,8 \\
+Brilho & 0,5 & fator 0,5--1,8 \\
+Nitidez & 0,3 & fator 0,2--2,0 \\
+Desfoque gaussiano & 0,3 & raio 0,5--2,0 \\
+Compressão JPEG & 0,5 & qualidade 25--90 \\
+Ruído gaussiano aditivo & 0,5 & $\sigma$ 0,01--0,08 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Resíduos de ruído SRM}
+
+Sobre a luminância $Y$, aplicam-se três filtros \gls*{srm}~\cite{fridrich2012rich} fixos de $5\times5$: derivada horizontal de primeira ordem, Laplaciano de segunda ordem e o filtro KV de terceira ordem (\cref{fig:srm}); cada resíduo é truncado em $\pm3$ e dividido por~3.
+São avaliadas as variantes \textit{RGB+SRM} (seis canais) e \textit{SRM-only} (três), ambas no regime robusto; com mais de três canais, os pesos da primeira camada são replicados e reescalados por $3/C_{\text{in}}$.
+
+\begin{figure}[!htb]
+\let\footnotesize\scriptsize % legenda um pouco menor
+\centering
+\includegraphics[width=\columnwidth]{figs/srm_noise_residuals.jpg}
+\caption{Resíduos \gls*{srm} de uma face real (acima) e de uma falsa (abaixo) do Celeb-DF v2.}
+\label{fig:srm}
+\end{figure}
+
+\subsection{Ensembles}
+
+As probabilidades de modelos já treinados são combinadas (fusão tardia) com oito estratégias: médias aritmética, geométrica e harmônica, máximo, voto majoritário, média ponderada pela \gls*{auc} de validação, pesos ótimos (mínima entropia cruzada na validação) e \textit{stacking} (regressão logística na validação).
+São reportados comitês Top-2 a Top-5, com membros e fusão escolhidos pela \gls*{auc} na validação do \gls*{mffi}, em três grupos:
+\textit{espaciais}, só com \gls*{rgb} robusto;
+\textit{híbridos}, com \gls*{rgb} robusto e \gls*{rgb}+magnitude de Fourier; e
+\textit{sem \gls*{rgb} puro}, só com \gls*{rgb}+\gls*{srm} e \gls*{rgb}+Fourier, pois nos híbridos o \gls*{rgb} puro domina a validação.
+Nos dois últimos grupos, cada membro é um checkpoint (avaliação única).
+
+\subsection{Métricas}
+
+A métrica principal é a \gls*{auc}, independente de limiar; os valores apresentados com $\pm$ representam a média e o desvio-padrão dos resultados obtidos entre as sementes. A métrica de revocação é utilizada apenas no protocolo~2 do DF-40.
+
+\section{Resultados e Discussão}
+\label{sec:results}
+
+\begin{table}[!htb]
+\centering
+\caption{\gls*{auc} no \gls*{mffi} (média\,$\pm$\,desvio-padrão). Anterior: melhor cenário \gls*{rgb} de~\cite{cunha2026benchmarking}. $\Delta$ = Test$-$Test-Hard (menor é melhor).}
+\label{tab:mffi_rgb_fine}
+\vspace{-2mm}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}l ccc ccc ccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Anterior~\cite{cunha2026benchmarking}} & \multicolumn{3}{c}{Ajuste fino \gls*{rgb}} & \multicolumn{3}{c}{\gls*{rgb} robusto} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+Família & Test & Test-Hard & $\Delta$ & Test & Test-Hard & $\Delta$ & Test & Test-Hard & $\Delta$ \\
+\midrule
+Xception & \textbf{0,884} & 0,609 & 0,275 & \pmsd{0,773}{0,004} & \pmsd{0,630}{0,001} & 0,143 & \pmsd{0,755}{0,001} & \pmsd{0,685}{0,004} & 0,070 \\
+ResNet-18 & 0,846 & 0,635 & 0,211 & \pmsd{0,885}{0,011} & \pmsd{0,665}{0,009} & 0,220 & \pmsd{0,849}{0,008} & \pmsd{0,769}{0,007} & 0,080 \\
+MobileNetV3 & 0,839 & 0,594 & 0,245 & \pmsd{0,847}{0,002} & \pmsd{0,670}{0,005} & 0,177 & \pmsd{0,831}{0,007} & \pmsd{0,749}{0,006} & 0,082 \\
+\gls*{vit} & 0,624 & 0,608 & \textbf{0,016} & \pmsd{0,814}{0,009} & \pmsd{0,693}{0,008} & \textbf{0,121} & \pmsd{0,823}{0,005} & \pmsd{0,764}{0,005} & \textbf{0,059} \\
+CLIP & 0,750 & 0,619 & 0,131 & \pmsd{0,920}{0,004} & \pmsd{\textbf{0,749}}{0,010} & 0,171 & \pmsd{0,908}{0,002} & \pmsd{\textbf{0,845}}{0,002} & 0,063 \\
+DINOv3 & 0,809 & \textbf{0,726} & 0,083 & \pmsd{\textbf{0,936}}{0,006} & \pmsd{0,715}{0,012} & 0,221 & \pmsd{\textbf{0,927}}{0,010} & \pmsd{0,844}{0,020} & 0,083 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table*}[!t]
+\centering
+\caption{\gls*{auc} (média\,$\pm$\,desvio-padrão) por família e representação; c/DA: treino robusto. DF-40 P1: \gls*{auc} no protocolo~1; P2: revocação (\%) no protocolo~2 ($650.549$ falsas). $\Delta$ = Test$-$Test-Hard, em negrito só para Test $\geq 0{,}6$.}
+\label{tab:familias_representacoes}
+\vspace{-2mm}
+\scriptsize\renewcommand{\arraystretch}{0.88}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}ll ccc ccc@{}}
+\toprule
+ & & \multicolumn{3}{c}{MFFI} & \multicolumn{3}{c}{Entre bases (sem retreino)} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Família & Representação & Test & Test-Hard & $\Delta$ & \makecell{DF-40 P1\\(\gls*{auc})} & \makecell{DF-40 P2\\(rev., \%)} & \makecell{Celeb-DF v2\\(vídeo)} \\
+\midrule
+Xception~\cite{chollet2017xception} & \textit{RGB} & \pmsd{0,771}{0,006} & \pmsd{0,639}{0,022} & \pmsd{0,132}{0,027} & \pmsd{0,730}{0,024} & \pmsd{88,5}{0,4} & \pmsd{0,656}{0,024} \\
+ & \textit{Log-Magnitude} & \pmsd{0,704}{0,008} & \pmsd{0,533}{0,008} & \pmsd{0,171}{0,004} & \pmsd{0,418}{0,027} & \pmsd{68,9}{3,5} & \pmsd{0,533}{0,016} \\
+ & \textit{Phase} & \pmsd{0,589}{0,006} & \pmsd{0,511}{0,005} & \pmsd{0,078}{0,003} & \pmsd{0,481}{0,025} & \pmsd{91,3}{5,7} & \pmsd{0,561}{0,007} \\
+ & \textit{Complex Spectrum} & \pmsd{0,562}{0,004} & \pmsd{0,517}{0,004} & \pmsd{0,045}{0,005} & \pmsd{0,489}{0,014} & \pmsd{99,7}{0,1} & \pmsd{0,563}{0,015} \\
+ & \textit{RGB+Mag} & \pmsd{0,733}{0,004} & \pmsd{0,612}{0,003} & \pmsd{0,121}{0,003} & \pmsd{0,734}{0,011} & \pmsd{88,5}{0,6} & \pmsd{0,584}{0,019} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,699}{0,013} & \pmsd{0,533}{0,011} & \pmsd{0,166}{0,004} & \pmsd{0,456}{0,032} & \pmsd{68,6}{2,4} & \pmsd{0,552}{0,013} \\
+ & \textit{RGB+Freq} & \pmsd{0,659}{0,006} & \pmsd{0,575}{0,005} & \pmsd{0,085}{0,004} & \pmsd{0,597}{0,016} & \pmsd{87,2}{1,2} & \pmsd{0,458}{0,021} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,756}{0,003} & \pmsd{0,685}{0,004} & \pmsd{0,071}{0,005} & \pmsd{0,673}{0,010} & \pmsd{89,2}{1,4} & \pmsd{0,590}{0,030} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,753}{0,005} & \pmsd{0,682}{0,005} & \pmsd{0,071}{0,002} & \pmsd{0,686}{0,014} & \pmsd{91,6}{1,2} & \pmsd{0,582}{0,027} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,720}{0,007} & \pmsd{0,636}{0,002} & \pmsd{0,085}{0,005} & \pmsd{0,645}{0,015} & \pmsd{92,6}{1,4} & \pmsd{0,745}{0,019} \\
+\midrule
+ResNet-18~\cite{ref_resnet} & \textit{RGB} & \pmsd{0,876}{0,022} & \pmsd{0,680}{0,039} & \pmsd{0,196}{0,058} & \pmsd{0,691}{0,032} & \pmsd{70,5}{0,6} & \pmsd{0,724}{0,038} \\
+ & \textit{Log-Magnitude} & \pmsd{0,750}{0,009} & \pmsd{0,541}{0,013} & \pmsd{0,209}{0,005} & \pmsd{0,451}{0,049} & \pmsd{60,7}{1,7} & \pmsd{0,531}{0,025} \\
+ & \textit{Phase} & \pmsd{0,647}{0,007} & \pmsd{0,521}{0,002} & \pmsd{0,126}{0,006} & \pmsd{0,505}{0,012} & \pmsd{57,9}{3,4} & \pmsd{0,637}{0,013} \\
+ & \textit{Complex Spectrum} & \pmsd{0,699}{0,035} & \pmsd{0,544}{0,009} & \pmsd{0,156}{0,026} & \pmsd{0,476}{0,048} & \pmsd{59,1}{12,1} & \pmsd{0,589}{0,059} \\
+ & \textit{RGB+Mag} & \pmsd{0,872}{0,011} & \pmsd{0,666}{0,023} & \pmsd{0,206}{0,017} & \pmsd{0,780}{0,016} & \pmsd{80,2}{5,5} & \pmsd{0,649}{0,027} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,750}{0,006} & \pmsd{0,536}{0,005} & \pmsd{0,213}{0,006} & \pmsd{0,442}{0,010} & \pmsd{58,9}{2,4} & \pmsd{0,529}{0,021} \\
+ & \textit{RGB+Freq} & \pmsd{0,834}{0,007} & \pmsd{0,687}{0,010} & \pmsd{0,147}{0,005} & \pmsd{0,707}{0,032} & \pmsd{87,5}{2,7} & \pmsd{0,386}{0,019} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,847}{0,009} & \pmsd{0,767}{0,008} & \pmsd{0,079}{0,002} & \pmsd{0,674}{0,026} & \pmsd{76,1}{3,3} & \pmsd{0,651}{0,033} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,837}{0,009} & \pmsd{0,754}{0,011} & \pmsd{0,083}{0,002} & \pmsd{0,680}{0,036} & \pmsd{76,1}{2,4} & \pmsd{0,657}{0,038} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,818}{0,004} & \pmsd{0,723}{0,001} & \pmsd{0,095}{0,004} & \pmsd{0,647}{0,010} & \pmsd{81,9}{4,2} & \pmsd{0,735}{0,007} \\
+\midrule
+MobileNetV3~\cite{howard2019searching} & \textit{RGB} & \pmsd{0,845}{0,005} & \pmsd{0,683}{0,033} & \pmsd{0,162}{0,037} & \pmsd{0,704}{0,014} & \pmsd{70,0}{1,2} & \pmsd{0,673}{0,019} \\
+ & \textit{Log-Magnitude} & \pmsd{0,718}{0,006} & \pmsd{0,542}{0,003} & \pmsd{0,176}{0,005} & \pmsd{0,451}{0,018} & \pmsd{46,9}{5,5} & \pmsd{0,551}{0,013} \\
+ & \textit{Phase} & \pmsd{0,629}{0,005} & \pmsd{0,523}{0,003} & \pmsd{0,105}{0,002} & \pmsd{0,510}{0,019} & \pmsd{24,6}{3,9} & \pmsd{0,551}{0,014} \\
+ & \textit{Complex Spectrum} & \pmsd{0,687}{0,004} & \pmsd{0,534}{0,003} & \pmsd{0,153}{0,002} & \pmsd{0,598}{0,045} & \pmsd{37,9}{1,2} & \pmsd{0,561}{0,013} \\
+ & \textit{RGB+Mag} & \pmsd{0,805}{0,007} & \pmsd{0,630}{0,003} & \pmsd{0,175}{0,007} & \pmsd{0,668}{0,018} & \pmsd{64,2}{3,0} & \pmsd{0,569}{0,019} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,713}{0,007} & \pmsd{0,545}{0,009} & \pmsd{0,168}{0,003} & \pmsd{0,426}{0,030} & \pmsd{40,4}{2,5} & \pmsd{0,577}{0,020} \\
+ & \textit{RGB+Freq} & \pmsd{0,708}{0,002} & \pmsd{0,603}{0,003} & \pmsd{0,105}{0,002} & \pmsd{0,564}{0,025} & \pmsd{49,8}{4,0} & \pmsd{0,415}{0,022} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,832}{0,006} & \pmsd{0,749}{0,006} & \pmsd{0,083}{0,004} & \pmsd{0,706}{0,019} & \pmsd{77,5}{2,8} & \pmsd{0,686}{0,014} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,828}{0,005} & \pmsd{0,740}{0,007} & \pmsd{0,088}{0,005} & \pmsd{0,736}{0,010} & \pmsd{82,1}{0,9} & \pmsd{0,707}{0,025} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,777}{0,013} & \pmsd{0,666}{0,007} & \pmsd{0,111}{0,007} & \pmsd{0,665}{0,032} & \pmsd{78,0}{0,7} & \pmsd{0,731}{0,041} \\
+\midrule
+ViT~\cite{ref_vit} & \textit{RGB} & \pmsd{0,815}{0,009} & \pmsd{0,704}{0,028} & \pmsd{0,111}{0,027} & \pmsd{0,704}{0,016} & \pmsd{78,7}{3,9} & \pmsd{0,694}{0,042} \\
+ & \textit{Log-Magnitude} & \pmsd{0,724}{0,009} & \pmsd{0,535}{0,009} & \pmsd{0,189}{0,009} & \pmsd{0,445}{0,020} & \pmsd{87,9}{2,2} & \pmsd{0,553}{0,027} \\
+ & \textit{Phase} & \pmsd{0,602}{0,005} & \pmsd{0,496}{0,003} & \pmsd{0,106}{0,002} & \pmsd{0,526}{0,018} & \pmsd{99,4}{0,7} & \pmsd{0,539}{0,012} \\
+ & \textit{Complex Spectrum} & \pmsd{0,570}{0,009} & \pmsd{0,554}{0,006} & \pmsd{0,016}{0,006} & \pmsd{0,509}{0,011} & \pmsd{100,0}{0,0} & \pmsd{0,501}{0,019} \\
+ & \textit{RGB+Mag} & \pmsd{0,826}{0,003} & \pmsd{0,712}{0,006} & \pmsd{0,114}{0,004} & \pmsd{0,632}{0,024} & \pmsd{83,7}{2,2} & \pmsd{0,588}{0,023} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,724}{0,007} & \pmsd{0,528}{0,007} & \pmsd{0,196}{0,002} & \pmsd{0,472}{0,030} & \pmsd{86,0}{2,0} & \pmsd{0,557}{0,020} \\
+ & \textit{RGB+Freq} & \pmsd{0,791}{0,007} & \pmsd{0,676}{0,006} & \pmsd{0,116}{0,007} & \pmsd{0,542}{0,022} & \pmsd{85,9}{2,6} & \pmsd{0,452}{0,014} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,822}{0,005} & \pmsd{0,763}{0,005} & \pmsd{0,059}{0,001} & \pmsd{0,724}{0,018} & \pmsd{80,7}{1,0} & \pmsd{0,671}{0,019} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,818}{0,006} & \pmsd{0,765}{0,006} & \pmsd{0,054}{0,005} & \pmsd{0,746}{0,009} & \pmsd{85,7}{1,5} & \pmsd{0,628}{0,019} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,659}{0,001} & \pmsd{0,610}{0,007} & \pmsd{\textbf{0,048}}{0,007} & \pmsd{0,408}{0,067} & \pmsd{98,4}{1,1} & \pmsd{0,496}{0,013} \\
+\midrule
+DINOv3~\cite{simeoni2025dinov3} & \textit{RGB} & \pmsd{\textbf{0,934}}{0,007} & \pmsd{0,737}{0,055} & \pmsd{0,197}{0,060} & \pmsd{0,721}{0,029} & \pmsd{77,4}{3,9} & \pmsd{0,724}{0,077} \\
+ & \textit{Log-Magnitude} & \pmsd{0,761}{0,003} & \pmsd{0,536}{0,004} & \pmsd{0,225}{0,004} & \pmsd{0,484}{0,026} & \pmsd{81,3}{0,9} & \pmsd{0,517}{0,023} \\
+ & \textit{Phase} & \pmsd{0,713}{0,007} & \pmsd{0,533}{0,009} & \pmsd{0,180}{0,007} & \pmsd{0,521}{0,026} & \pmsd{79,2}{4,5} & \pmsd{0,625}{0,018} \\
+ & \textit{Complex Spectrum} & \pmsd{0,499}{0,001} & \pmsd{0,498}{0,005} & \pmsd{0,002}{0,004} & \pmsd{0,500}{0,000} & \pmsd{99,9}{0,2} & \pmsd{0,504}{0,024} \\
+ & \textit{RGB+Mag} & \pmsd{0,917}{0,007} & \pmsd{0,683}{0,010} & \pmsd{0,233}{0,009} & \pmsd{0,756}{0,021} & \pmsd{81,3}{2,9} & \pmsd{0,696}{0,021} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,763}{0,017} & \pmsd{0,537}{0,006} & \pmsd{0,226}{0,014} & \pmsd{0,500}{0,027} & \pmsd{83,8}{4,7} & \pmsd{0,547}{0,029} \\
+ & \textit{RGB+Freq} & \pmsd{0,860}{0,008} & \pmsd{0,682}{0,010} & \pmsd{0,178}{0,004} & \pmsd{0,705}{0,039} & \pmsd{\textbf{92,8}}{1,1} & \pmsd{0,366}{0,019} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,927}{0,009} & \pmsd{0,845}{0,018} & \pmsd{0,081}{0,011} & \pmsd{0,775}{0,034} & \pmsd{86,2}{3,4} & \pmsd{0,656}{0,022} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,923}{0,008} & \pmsd{\textbf{0,852}}{0,007} & \pmsd{0,071}{0,011} & \pmsd{0,808}{0,025} & \pmsd{84,4}{3,5} & \pmsd{0,755}{0,045} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,792}{0,013} & \pmsd{0,708}{0,012} & \pmsd{0,084}{0,001} & \pmsd{0,614}{0,024} & \pmsd{79,0}{21,8} & \pmsd{\textbf{0,763}}{0,029} \\
+\midrule
+CLIP~\cite{ref_clip} & \textit{RGB} & \pmsd{0,917}{0,006} & \pmsd{0,765}{0,041} & \pmsd{0,152}{0,046} & \pmsd{0,764}{0,046} & \pmsd{78,1}{3,2} & \pmsd{0,713}{0,028} \\
+ & \textit{Log-Magnitude} & \pmsd{0,734}{0,001} & \pmsd{0,530}{0,004} & \pmsd{0,204}{0,004} & \pmsd{0,483}{0,024} & \pmsd{77,0}{4,0} & \pmsd{0,516}{0,014} \\
+ & \textit{Phase} & \pmsd{0,627}{0,010} & \pmsd{0,499}{0,002} & \pmsd{0,127}{0,009} & \pmsd{0,518}{0,033} & \pmsd{57,7}{8,7} & \pmsd{0,559}{0,029} \\
+ & \textit{Complex Spectrum} & \pmsd{0,527}{0,038} & \pmsd{0,520}{0,025} & \pmsd{0,007}{0,013} & \pmsd{0,472}{0,055} & \pmsd{50,0}{57,7} & \pmsd{0,470}{0,060} \\
+ & \textit{RGB+Mag} & \pmsd{0,894}{0,004} & \pmsd{0,726}{0,012} & \pmsd{0,168}{0,015} & \pmsd{0,765}{0,032} & \pmsd{78,0}{4,7} & \pmsd{0,639}{0,030} \\
+ & \textit{High-Pass Spectrum} & \pmsd{0,732}{0,006} & \pmsd{0,533}{0,007} & \pmsd{0,199}{0,010} & \pmsd{0,473}{0,027} & \pmsd{72,5}{2,8} & \pmsd{0,573}{0,011} \\
+ & \textit{RGB+Freq} & \pmsd{0,779}{0,007} & \pmsd{0,650}{0,006} & \pmsd{0,128}{0,011} & \pmsd{0,594}{0,021} & \pmsd{74,2}{1,6} & \pmsd{0,430}{0,028} \\
+ \cmidrule(l){2-8}
+ & \textit{RGB} c/DA & \pmsd{0,907}{0,001} & \pmsd{0,845}{0,002} & \pmsd{0,062}{0,002} & \pmsd{\textbf{0,814}}{0,013} & \pmsd{25,2}{29,9} & \pmsd{0,670}{0,014} \\
+ & \textit{RGB+SRM} c/DA & \pmsd{0,896}{0,004} & \pmsd{0,835}{0,003} & \pmsd{0,061}{0,005} & \pmsd{0,810}{0,018} & \pmsd{78,9}{3,8} & \pmsd{0,653}{0,037} \\
+ & \textit{SRM-only} c/DA & \pmsd{0,655}{0,012} & \pmsd{0,603}{0,012} & \pmsd{0,052}{0,003} & \pmsd{0,333}{0,017} & \pmsd{71,7}{36,1} & \pmsd{0,552}{0,011} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+
+% ---------------------------------------------------------------------
+% Fontes (GitHub lucasdocunha/FaceForgery-Benchmark):
+%  - Híbridos: scripts/benchmark_top_ensembles_all_methods.py
+%      -> tables/benchmark_top_ensembles_all_methods.csv
+%  - Sem RGB puro: scripts/benchmark_top_non_rgb_ensembles.py
+%      -> tables/benchmark_non_rgb_ensembles_all_methods.csv
+%    (branch feat/tabela-familias-representacoes, commit dfe085b)
+%  - Fusão reportada = maior AUC na validação entre as 8 estratégias
+%  - Espaciais, média±dp de 5 sementes: tables/ensemble_robust_canonical_5seeds.csv
+% ---------------------------------------------------------------------
+\begin{table*}[!htb]
+\centering
+\caption{Ensembles Top-2 a Top-5 (\gls*{auc}), com membros e fusão escolhidos na validação do \gls*{mffi}. Espaciais: média\,$\pm$\,desvio-padrão de cinco sementes; demais: avaliação única. DF-40: protocolo~1; Celeb-DF v2: por vídeo.}
+\label{tab:ensembles}
+\vspace{-2mm}
+\resizebox{0.95\textwidth}{!}{
+\begin{tabular}{@{}lllccccc@{}}
+\toprule
+Comitê & Membros & Fusão & Val & Test & Test-Hard & DF-40 & Celeb-DF (vídeo) \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Melhor modelo individual}} \\
+-- & DINOv3 (\gls*{rgb}+\gls*{srm}) & -- & -- & \pmsd{0,923}{0,008} & \pmsd{0,852}{0,007} & \pmsd{0,808}{0,025} & \pmsd{0,755}{0,045} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Ensembles espaciais (\gls*{rgb} robusto, 5 sementes)}} \\
+Top-2 & CLIP + DINOv3 & geométrica & 0,996 & \pmsd{0,940}{0,006} & \pmsd{\textbf{0,878}}{0,011} & \pmsd{0,825}{0,018} & 0,718 \\
+Top-3 & CLIP + DINOv3 + ResNet-18 & geométrica & 0,996 & \pmsd{0,935}{0,005} & \pmsd{0,870}{0,010} & \pmsd{0,801}{0,014} & 0,715 \\
+Top-4 & CLIP + DINOv3 + ResNet-18 + \gls*{vit} & geométrica & 0,995 & \pmsd{0,929}{0,005} & \pmsd{0,865}{0,009} & \pmsd{0,797}{0,012} & 0,719 \\
+Top-5 & CLIP + DINOv3 + ResNet-18 + \gls*{vit} + MobileNetV3 & \textit{stacking} & 0,996 & \pmsd{0,932}{0,003} & \pmsd{0,860}{0,007} & \pmsd{0,806}{0,015} & 0,721 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Ensembles híbridos, com \gls*{rgb} puro (\gls*{rgb} robusto + \gls*{rgb}+Fourier, avaliação única)}} \\
+Top-2 & CLIP rob. + ResNet-18 Fourier & \textit{stacking} & 0,991 & 0,927 & 0,814 & 0,860 & 0,699 \\
+Top-3 & CLIP rob. + CLIP Fourier + ResNet-18 Fourier & \textit{stacking} & 0,992 & 0,932 & 0,808 & \textbf{0,865} & 0,707 \\
+Top-4 & CLIP rob. + CLIP Fourier + ResNet-18 Fourier + DINOv3 Fourier & \textit{stacking} & 0,996 & 0,942 & 0,787 & 0,857 & 0,748 \\
+Top-5 & \makecell[l]{CLIP rob. + DINOv3 rob. + ResNet-18 Fourier\\+ DINOv3 Fourier + Xception Fourier} & pesos ótimos & \textbf{0,998} & \textbf{0,946} & 0,839 & 0,821 & 0,729 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Ensembles sem \gls*{rgb} puro (\gls*{rgb}+\gls*{srm} e \gls*{rgb}+Fourier, avaliação única)}} \\
+Top-2 & DINOv3 \gls*{srm} + CLIP \gls*{srm} & pesos ótimos & 0,997 & 0,933 & 0,865 & 0,833 & 0,762 \\
+Top-3 & DINOv3 \gls*{srm} + CLIP \gls*{srm} + ResNet-18 Fourier & pesos ótimos & 0,997 & 0,938 & 0,850 & 0,839 & \textbf{0,764} \\
+Top-4 & \makecell[l]{DINOv3 \gls*{srm} + CLIP \gls*{srm} + ResNet-18 Fourier\\+ MobileNetV3 \gls*{srm}} & pesos ótimos & 0,997 & 0,938 & 0,850 & 0,839 & \textbf{0,764} \\
+Top-5 & \makecell[l]{DINOv3 \gls*{srm} + CLIP \gls*{srm} + ResNet-18 Fourier\\+ MobileNetV3 \gls*{srm} + \gls*{vit} \gls*{srm}} & pesos ótimos & 0,997 & 0,938 & 0,850 & 0,839 & \textbf{0,764} \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+% ===================== fim de 4-tables.tex ========================
+
+
+\subsection{\textit{Finetuning} e treinamento robusto no MFFI}
+\label{sec:mffi}
+
+A \cref{tab:mffi_rgb_fine} compara, no \gls*{mffi}, o melhor cenário \gls*{rgb} do estudo anterior~\cite{cunha2026benchmarking} com o \textit{finetuning} convencional e o robusto deste trabalho.
+O \textit{finetuning} eleva a \gls*{auc} limpa de cinco das seis famílias: o DINOv3 passa de $0{,}809$ (congelado) para $0{,}936$, o CLIP de $0{,}750$ para $0{,}920$ e o \gls*{vit} de $0{,}624$ para $0{,}814$.
+A exceção é o Xception, que cai de $0{,}884$ para $0{,}773$, o que sugere que parte de sua vantagem anterior vinha da combinação específica de arquitetura e treino do zero.
+
+No Test-Hard, o ganho do \textit{finetuning} convencional é pequeno: o melhor valor é o do CLIP ($0{,}749$), e o DINOv3 ajustado ($0{,}715$) fica abaixo do congelado ($0{,}726$), com $\Delta$ entre $0{,}121$ e $0{,}221$.
+Uma explicação plausível é que o ajuste especializa o backbone em pistas frágeis do conjunto limpo.
+O treinamento robusto corrige esse efeito: a \gls*{auc} no Test-Hard aumenta em todas as famílias, de $+0{,}055$ (Xception) a $+0{,}130$ (DINOv3), o $\Delta$ cai para $0{,}059$--$0{,}083$, e o custo no Test fica entre $-0{,}036$ e $+0{,}008$.
+CLIP ($0{,}845$) e DINOv3 ($0{,}844$) robustos superam em cerca de $0{,}12$ o melhor resultado degradado do estudo anterior.
+
+\subsection{Representações de entrada: Fourier e SRM}
+\label{sec:srm}
+
+A \cref{tab:familias_representacoes} reúne as sete representações do estudo anterior, com \textit{finetuning} convencional, e as três variantes robustas, no \gls*{mffi}, no DF-40 e no Celeb-DF v2.
+As representações puramente espectrais ficam perto do acaso fora do conjunto limpo: entre $0{,}496$ e $0{,}554$ no Test-Hard e, salvo o MobileNetV3 com \textit{Complex Spectrum} ($0{,}598$), entre $0{,}418$ e $0{,}526$ no DF-40.
+Combinada ao \gls*{rgb}, a magnitude de Fourier tem efeito misto: no DF-40, sobe no ResNet-18 ($0{,}691\rightarrow0{,}780$) e no DINOv3 ($0{,}721\rightarrow0{,}756$), mas cai no MobileNetV3 e no \gls*{vit}; no Celeb-DF v2, cai em todas as famílias, e a variante \textit{RGB+Freq} tem os piores valores nessa base ($0{,}366$--$0{,}458$).
+
+Os resíduos \gls*{srm} se comportam de forma mais estável.
+Concatenados ao \gls*{rgb} no regime robusto, mudam pouco o Test-Hard ($+0{,}007$ no DINOv3 e perdas de até $0{,}013$ nas demais famílias), mas melhoram o DF-40 em cinco das seis famílias, com os maiores ganhos no DINOv3 ($+0{,}033$), no MobileNetV3 ($+0{,}030$) e no \gls*{vit} ($+0{,}022$).
+No Celeb-DF v2, o DINOv3 passa de $0{,}656$ para $0{,}755$ de \gls*{auc} por vídeo.
+Esse padrão é consistente com os resíduos funcionando como complemento da aparência, e não como substituto.
+
+Sem o \gls*{rgb}, o desempenho no \gls*{mffi} cai em todas as famílias.
+As \glspl*{cnn} SRM-only mantêm resultados razoáveis (ResNet-18 com $0{,}818$ no Test e $0{,}723$ no Test-Hard), enquanto os transformers colapsam no DF-40 ($0{,}408$ no \gls*{vit} e $0{,}333$ no CLIP), possivelmente porque, pré-treinados em imagens naturais, dependem da aparência e não se adaptam a entradas só de ruído com poucas épocas.
+No Celeb-DF v2, porém, as \glspl*{cnn} SRM-only chegam a $0{,}731$--$0{,}745$, acima de suas versões \gls*{rgb}+\gls*{srm}, e o DINOv3 SRM-only tem o melhor valor individual da base ($0{,}763$).
+Esse último resultado é parcial, pois o SRM-only ainda não tem todas as sementes.
+
+\subsection{Ensembles}
+\label{sec:ensembles}
+
+A \cref{tab:ensembles} compara comitês Top-2 a Top-5 em três grupos.
+Entre os espaciais, o Top-2 CLIP+DINOv3 com média geométrica é o melhor no \gls*{mffi} e no DF-40, com $0{,}940$ no Test, $0{,}878$ no Test-Hard, o maior valor da tabela, e $0{,}825$ no DF-40, e cada família acrescentada reduz o Test-Hard, até $0{,}860$ no Top-5.
+CLIP e DINOv3 são os dois modelos individuais mais fortes e partem de pré-treinamentos distintos (imagem-texto e autossupervisão), o que favorece erros complementares; modelos mais fracos acrescentam mais ruído do que diversidade.
+
+Os ensembles híbridos, que incluem modelos \gls*{rgb}+Fourier, têm a maior \gls*{auc} no Test ($0{,}946$, Top-5) e no DF-40 ($0{,}865$, Top-3), mas ficam entre $0{,}787$ e $0{,}839$ no Test-Hard, abaixo de todos os comitês espaciais e do melhor modelo individual ($0{,}852$).
+A informação de Fourier traz, portanto, uma diversidade útil contra novos geradores, mas frágil sob degradação, como na \cref{sec:srm}, e esses modelos não passaram pelo treino robusto.
+
+Sem o \gls*{rgb} puro, que domina a seleção na validação, o Top-2 com DINOv3 e CLIP \gls*{srm} chega a $0{,}865$ no Test-Hard, o segundo maior valor da tabela, e os comitês desse grupo têm a maior \gls*{auc} no Celeb-DF v2 ($0{,}762$--$0{,}764$), no nível do melhor modelo individual.
+Do Top-3 ao Top-5, os resultados não mudam, pois os pesos ótimos praticamente zeram os membros acrescentados.
+Como a validação do \gls*{mffi} está saturada ($0{,}991$--$0{,}998$) e mal separa os comitês, a escolha depende do alvo: o Top-2 espacial para robustez, os híbridos para novos geradores e os comitês sem \gls*{rgb} puro para o Celeb-DF.
+
+\subsection{Generalização para o DF-40}
+\label{sec:df40}
+
+No protocolo~1, a \gls*{auc} dos detectores \gls*{rgb}+\gls*{srm} treinados no \gls*{mffi} varia muito entre técnicas (\cref{tab:tecnicas}).
+Na fusão CLIP+DINOv3, vai de $0{,}988$ (SD~2.1) a $0{,}588$ (DDIM) entre os modelos de difusão e de $0{,}941$ (StyleGAN3) a $0{,}574$ (StarGAN~v2) entre as \glspl*{gan}, e o HeyGen ($0{,}566$) também fica perto do acaso, enquanto as técnicas de troca facial e de edição ficam todas acima de $0{,}84$.
+Os dois backbones se complementam: o CLIP é melhor em DDIM, CollabDiff, StarGAN~v2, VQGAN e HeyGen, e o DINOv3, na maioria das técnicas de troca facial.
+
+% Fonte: tables/df40_srm_breakdown_by_technique.csv
+\begin{table}[!htb]
+\centering
+\caption{\gls*{auc} por técnica no protocolo~1 do DF-40 (modelos \gls*{rgb}+\gls*{srm}). Em itálico, técnicas abaixo de 0,65 na fusão.}
+\label{tab:tecnicas}
+\vspace{-2mm}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}llr ccc@{}}
+\toprule
+Paradigma & Técnica & $N$ & CLIP & DINOv3 & \makecell{CLIP+\\DINOv3} \\
+\midrule
+\multirow{7}{*}{Difusão}
+ & SD 2.1 & 250 & 0,963 & \textbf{0,988} & \textbf{0,988} \\
+ & PixArt-$\alpha$ & 250 & 0,933 & 0,957 & \textbf{0,962} \\
+ & SiT & 250 & 0,810 & 0,820 & \textbf{0,831} \\
+ & DiT & 250 & 0,798 & 0,787 & \textbf{0,806} \\
+ & RDDM & 250 & \textbf{0,759} & 0,712 & 0,745 \\
+ & \textit{CollabDiff} & 250 & \textbf{0,666} & 0,588 & 0,641 \\
+ & \textit{DDIM} & 250 & \textbf{0,635} & 0,526 & 0,588 \\
+\midrule
+\multirow{6}{*}{\gls*{gan}}
+ & StyleGAN3 & 250 & 0,919 & 0,932 & \textbf{0,941} \\
+ & StyleGAN2 & 250 & 0,914 & 0,922 & \textbf{0,934} \\
+ & StyleGAN-XL & 250 & 0,837 & \textbf{0,899} & 0,888 \\
+ & VQGAN & 250 & \textbf{0,884} & 0,738 & 0,831 \\
+ & StarGAN & 200 & 0,772 & \textbf{0,801} & 0,798 \\
+ & \textit{StarGAN v2} & 199 & \textbf{0,619} & 0,472 & 0,574 \\
+\midrule
+\multirow{5}{*}{\makecell[l]{Troca\\facial}}
+ & UniFace & 250 & 0,882 & \textbf{0,931} & 0,926 \\
+ & FaceSwap & 250 & \textbf{0,892} & 0,855 & 0,887 \\
+ & BlendFace & 250 & 0,817 & \textbf{0,898} & 0,877 \\
+ & MobileSwap & 250 & 0,803 & \textbf{0,891} & 0,864 \\
+ & DeepFaceLab & 250 & 0,813 & 0,844 & \textbf{0,847} \\
+\midrule
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}}
+ & WhichFaceIsReal & 250 & 0,930 & 0,944 & \textbf{0,951} \\
+ & MidJourney & 248 & 0,875 & \textbf{0,934} & 0,922 \\
+ & e4e & 250 & \textbf{0,923} & 0,879 & 0,915 \\
+ & StyleCLIP & 250 & 0,872 & 0,893 & \textbf{0,901} \\
+\midrule
+Misto & Celeb-DF (misto) & 500 & 0,826 & \textbf{0,876} & 0,867 \\
+Avatar & \textit{HeyGen} & 250 & \textbf{0,601} & 0,530 & 0,566 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+No protocolo~2, oficial, com as $650.549$ falsas e o limiar da validação do \gls*{mffi}, a revocação média entre sementes varia de $92{,}8\%$ (DINOv3 com \gls*{rgb}+Fourier) a $25{,}2\%$ (CLIP \gls*{rgb} robusto), embora o CLIP robusto tenha a maior \gls*{auc} individual no protocolo~1 ($0{,}814$).
+Os modelos com filtragem residual espacial também exibem alta detecção (Xception SRM com $92{,}6\%$ e DINOv3 RGB+SRM com $84{,}4\%$), e no StarGAN~v2 nenhum checkpoint passa de $48{,}6\%$.
+A contradição do CLIP robusto indica que o limiar calibrado no \gls*{mffi} não transfere para outra base: a ordenação dos escores se mantém, mas a escala muda.
+Nos dois protocolos, os pontos cegos coincidem (avatares comerciais, parte dos geradores de difusão e StarGAN~v2), o que sugere técnicas ausentes ou sub-representadas no \gls*{mffi}.
+
+\subsection{Celeb-DF v2}
+\label{sec:celeb}
+
+O Celeb-DF v2 é o alvo mais difícil.
+Nenhum modelo individual passa de $0{,}763$ de \gls*{auc} por vídeo (\cref{tab:familias_representacoes}), e a variância entre sementes é alta, como no DINOv3 \gls*{rgb}+\gls*{srm} ($0{,}755\pm0{,}045$).
+Ao contrário do que ocorre no \gls*{mffi}, o treinamento robusto \gls*{rgb} reduz a \gls*{auc} por vídeo em cinco das seis famílias, possivelmente porque as degradações, desenhadas para o Test-Hard, também suprimem os artefatos sutis de mistura que caracterizam essa base.
+Os resíduos \gls*{srm} amenizam essa perda: os melhores ensembles são os sem \gls*{rgb} puro, com DINOv3 e CLIP \gls*{srm} ($0{,}762$--$0{,}764$), enquanto os híbridos ficam entre $0{,}699$ e $0{,}748$ e os espaciais, entre $0{,}715$ e $0{,}721$.
+
+\subsection{Comparação com a literatura}
+\label{sec:literature}
+
+A \cref{tab:literature} compara os resultados deste trabalho com os publicados no \gls*{mffi}.
+Entre os métodos treinados somente nessa base, este trabalho chega a $0{,}934$ no Test com um modelo e a $0{,}946$ com ensemble, contra $0{,}877$ do melhor resultado oficial (\gls*{srm}); no Test-Hard, chega a $0{,}852$ e $0{,}878$, contra $0{,}720$ do RFM.
+O ganho é maior justamente no Test-Hard, onde o \gls*{srm} oficial é o mais frágil ($0{,}580$): somado ao \gls*{rgb} com treino robusto, o mesmo tipo de resíduo gera o melhor modelo individual nessa partição.
+Nenhuma configuração lidera nas duas partições, já que o melhor ensemble no Test perde $0{,}039$ no Test-Hard para o Top-2 espacial.
+
+Detectores treinados no FF++ transferem mal para o \gls*{mffi} ($0{,}556$--$0{,}779$ no Test), o que mostra que a transferência depende da proximidade entre as bases.
+Só os modelos multifonte que incluem o próprio \gls*{mffi} no treino superam esses resultados, como o Venus-DefakerOne2, com mais de 24 milhões de imagens ($0{,}973$ e $0{,}901$), mas eles não são diretamente comparáveis.
+No Celeb-DF v2, os melhores resultados por vídeo deste trabalho ($0{,}755$--$0{,}764$) ficam acima de todos os detectores oficiais treinados no \gls*{mffi} ($0{,}560$--$0{,}703$), embora a \gls*{auc} absoluta siga modesta.
+
+\begin{table*}[!t]
+\centering
+\caption{\gls*{auc} relatada na literatura e neste trabalho, por base de treino; Celeb-DF v2 só para treino no \gls*{mffi} (deste trabalho: por vídeo). --: não reportado. $^\P$Nível não especificado. $^a$Só reais do FF++ e pseudofalsas. $^\dagger$Provavelmente o Test. $^\ddagger$Partição não declarada. $^\S$Test e Test-Hard juntos. $^\ast$Relatado em~\cite{qu2026defakerone2}.}
+\label{tab:literature}
+\vspace{-2mm}
+\resizebox{0.78\textwidth}{!}{
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Método & Treino & Test & Test-Hard & Celeb-DF v2 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Treino no \gls*{mffi}}} \\
+Xception~\cite{ref_mffi} & \gls*{mffi} & 0,852 & 0,708 & 0,670$^\P$ \\
+RFM~\cite{ref_mffi} & \gls*{mffi} & 0,849 & 0,720 & 0,635$^\P$ \\
+SRM~\cite{ref_mffi} & \gls*{mffi} & 0,877 & 0,580 & 0,560$^\P$ \\
+SPSL~\cite{ref_mffi} & \gls*{mffi} & 0,846 & 0,714 & 0,703$^\P$ \\
+Xception \gls*{rgb}~\cite{cunha2026benchmarking} & \gls*{mffi} & 0,884 & 0,609 & -- \\
+ResNet-18 \gls*{rgb}~\cite{cunha2026benchmarking} & \gls*{mffi} & 0,846 & 0,635 & -- \\
+DINOv3 congelado~\cite{cunha2026benchmarking} & \gls*{mffi} & 0,809 & 0,726 & -- \\
+DINOv3, \textit{finetuning} \gls*{rgb} (este trabalho) & \gls*{mffi} & 0,934 & 0,737 & 0,724 \\
+DINOv3, \gls*{rgb}+\gls*{srm} robusto (este trabalho) & \gls*{mffi} & 0,923 & 0,852 & 0,755 \\
+DINOv3, SRM-only robusto (este trabalho) & \gls*{mffi} & 0,792 & 0,708 & 0,763 \\
+Top-2 espacial, CLIP+DINOv3 (este trabalho) & \gls*{mffi} & 0,940 & \textbf{0,878} & 0,718 \\
+Top-2 sem \gls*{rgb} puro, DINOv3+CLIP \gls*{srm} (este trabalho) & \gls*{mffi} & 0,933 & 0,865 & 0,762 \\
+Top-3 sem \gls*{rgb} puro (este trabalho) & \gls*{mffi} & 0,938 & 0,850 & \textbf{0,764} \\
+Top-5 híbrido, \gls*{rgb} robusto + Fourier (este trabalho) & \gls*{mffi} & \textbf{0,946} & 0,839 & 0,729 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Treino no FF++ (c23)}} \\
+Xception~\cite{ref_mffi} & FF++ & 0,625 & 0,512 & -- \\
+RFM~\cite{ref_mffi} & FF++ & 0,618 & 0,580 & -- \\
+SRM~\cite{ref_mffi} & FF++ & 0,655 & 0,591 & -- \\
+SPSL~\cite{ref_mffi} & FF++ & 0,556 & 0,543 & -- \\
+MAP-Mamba~\cite{ref_mapmamba} & FF++$^a$ & 0,668$^\dagger$ & -- & -- \\
+ReCLIP-SFD~\cite{qiu2026reclipsfd} & FF++ & 0,779$^\dagger$ & -- & -- \\
+FMSD~\cite{zhang2026fmsd} & FF++ & 0,759$^\ddagger$ & -- & -- \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Treino multifonte (inclui o \gls*{mffi})}} \\
+UCF-Net~\cite{zou2026ucfnet} & 6 bases & 0,909$^\S$ & 0,909$^\S$ & -- \\
+DefakerOne~\cite{guangjian2026venusdefakerone} & 12,5\,M imagens & 0,961 & 0,764$^\ast$ & -- \\
+DefakerOne2~\cite{qu2026defakerone2} & $>$24\,M imagens & 0,973 & 0,901 & -- \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+\subsection{Discussão}
+\label{sec:discussion}
+
+Quanto à QP1, o \textit{finetuning} convencional melhora o conjunto limpo, mas não o degradado; só o regime robusto reduz a diferença Test$-$Test-Hard, para $0{,}06$--$0{,}08$ em todas as famílias, contra $0{,}12$--$0{,}22$ no \textit{finetuning} convencional (\cref{tab:mffi_rgb_fine}).
+Quanto à QP2, os resíduos \gls*{srm} são um complemento mais útil que a magnitude de Fourier: somados ao \gls*{rgb}, melhoram o DF-40 em cinco famílias e o Celeb-DF no DINOv3, enquanto a magnitude de Fourier tem efeito inconsistente; sozinhos, ambos são insuficientes no domínio de treino.
+
+Quanto à QP3, combinar mais modelos não ajuda sempre: dois ou três modelos de pré-treinamentos distintos concentram o ganho, e o comitê mais eficiente depende do alvo, como discutido na \cref{sec:ensembles}.
+Quanto à QP4, a transferência é parcial: os detectores chegam a $0{,}814$ de \gls*{auc} no protocolo~1 do DF-40 com um modelo e a $0{,}865$ com ensemble, mas têm pontos cegos em avatares comerciais, parte dos geradores de difusão e StarGAN~v2, não passam de $0{,}764$ no Celeb-DF v2, e o limiar calibrado no \gls*{mffi} não transfere.
+
+Esses resultados sugerem três práticas de avaliação: reportar sempre uma partição degradada e uma base externa, pois o melhor modelo limpo (DINOv3 com \textit{finetuning}, $0{,}936$) fica mais de $0{,}12$ abaixo das versões robustas no Test-Hard; reportar a \gls*{auc} por técnica, pois médias escondem técnicas próximas do acaso; e tratar o limiar como dependente do domínio.
+
+\subsection{Limitações}
+\label{sec:limitations}
+
+A principal limitação deste estudo está nos próprios modelos, cuja generalização entre bases continua insuficiente: nenhum detector passa de $0{,}764$ de \gls*{auc} por vídeo no Celeb-DF v2, todos têm pontos cegos no DF-40 (avatares comerciais, parte dos geradores de difusão e StarGAN~v2), e o limiar calibrado no \gls*{mffi} não transfere para outras bases, o que também penaliza a \gls*{acc} fora do domínio de treino.
+Além disso, todos os modelos foram treinados em um único protocolo, com o \gls*{mffi} como única base de treino, o que impede separar o que é limitação das arquiteturas do que é viés dessa base e dificulta a comparação com a literatura, que costuma treinar no FF++.
+% ===================== fim de 4-results.tex ========================
+
+% ===================== início de 5-conclusions.tex =====================
+\section{Conclusões}
+\label{sec:conclusions}
+
+Este trabalho estendeu o benchmark anterior no \gls*{mffi}~\cite{cunha2026benchmarking} com \textit{finetuning}, treinamento robusto, resíduos \gls*{srm}, ensembles e avaliação no DF-40 e no Celeb-DF v2.
+O treinamento robusto fecha a maior parte da lacuna entre os conjuntos limpo e degradado, e os resíduos \gls*{srm} ajudam como complemento ao \gls*{rgb}, sobretudo fora do domínio de treino.
+O ensemble Top-2 CLIP+DINOv3 eleva o Test-Hard de $0{,}726$ para $0{,}878$; ensembles híbridos com Fourier levam o Test a $0{,}946$ e o DF-40 a $0{,}865$, ao custo de robustez; e, sem o \gls*{rgb} puro, o par DINOv3+CLIP com \gls*{srm} alia robustez ($0{,}865$) a um dos melhores resultados no Celeb-DF v2 ($0{,}762$).
+A generalização entre bases segue como o principal gargalo.
+Como trabalhos futuros, pretende-se investigar outros protocolos de treino, em especial treinar no FF++~\cite{ref_faceforensics} e testar no \gls*{mffi}, no DF-40 e no Celeb-DF v2, o que permitiria comparar os resultados diretamente com a maior parte da literatura; além disso, pretende-se concluir as rodadas de SRM-only, medir a \gls*{auc} sobre todo o split oficial do DF-40 com um conjunto padronizado de reais, calibrar limiares por domínio e avaliar abordagens voltadas a artefatos de mistura, como \gls*{sbi}.
+% ===================== fim de 5-conclusions.tex ========================
+
+% ===================== início de 0-acknowledgments.tex =====================
+\section*{\uppercase{Agradecimentos}}
+
+\iffinal
+    Os autores agradecem à Pontifícia Universidade Católica do Paraná~(PUCPR) pelo apoio e pela infraestrutura computacional do cluster CISIA, utilizada nos experimentos. % TODO: revisar a forma oficial de agradecimento ao CISIA
+\else
+    \noindent\textit{Agradecimentos omitidos para revisão.}
+    \vspace{2\baselineskip}
+\fi
+% ===================== fim de 0-acknowledgments.tex ========================
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibtex}
+
+\end{document}
