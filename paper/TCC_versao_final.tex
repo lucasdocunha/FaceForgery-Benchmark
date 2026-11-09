@@ -542,14 +542,15 @@ Como a validação do \gls*{mffi} está saturada ($0{,}991$--$0{,}998$) e mal se
 \subsection{Generalização para o DF-40}
 \label{sec:df40}
 
-No protocolo~1 do DF-40, a taxa de detecção dos melhores modelos treinados no \gls*{mffi} varia expressivamente entre técnicas (\cref{tab:tecnicas}).
-No comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}, atinge-se $90{,}3\%$ de revocação global, alcançando $100{,}0\%$ em SD~2.1, RDDM e StyleGAN3, e acima de $96\%$ em todas as técnicas de troca facial.
-Os modelos se complementam: o DINOv3 com \gls*{rgb}+Fourier domina em \glspl*{gan} (VQGAN com $94{,}7\%$) e trocas faciais, enquanto a filtragem residual (\gls*{srm}) do Xception resgata falhas críticas de edição text-to-image (WhichFaceIsReal salta de $60{,}7\%$ para $86{,}8\%$ e StyleCLIP de $64{,}4\%$ para $83{,}6\%$), embora geradores fortemente regularizados como StarGAN~v2 ($26{,}0\%$) e DDIM ($58{,}8\%$) permaneçam os maiores gargalos.
+No protocolo~2 oficial do DF-40, com avaliação exaustiva em todas as $650.549$ imagens falsas distribuídas nas 24 técnicas de manipulação facial, a taxa de detecção dos melhores modelos treinados no \gls*{mffi} varia expressivamente entre arquiteturas (\cref{tab:tecnicas}).
+Os três modelos individuais com maior revocação global são o DINOv3 com \gls*{rgb}+Fourier ($93{,}4\%$), o Xception com \gls*{srm}-only ($92{,}6\%$) e o Xception com \gls*{rgb}+\gls*{srm} ($92{,}1\%$).
+Ao combiná-los no comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}, atinge-se $95{,}1\%$ de revocação ponderada global, superando todos os detectores individuais e alcançando $100{,}0\%$ em SD~2.1, RDDM e StyleGAN3, além de taxas entre $96{,}4\%$ e $99{,}1\%$ em todas as cinco técnicas de troca facial.
+Os modelos se complementam: o DINOv3 com \gls*{rgb}+Fourier domina em \glspl*{gan} (VQGAN com $95{,}5\%$) e trocas faciais, enquanto a filtragem residual (\gls*{srm}) do Xception resgata falhas críticas de edição text-to-image (WhichFaceIsReal salta de $60{,}9\%$ para $86{,}8\%$ e StyleCLIP de $67{,}2\%$ para $83{,}6\%$), embora geradores fortemente regularizados como StarGAN~v2 ($26{,}0\%$) e DDIM ($58{,}8\%$) permaneçam os maiores gargalos.
 
 % Fonte: tables/tabela6_top3_e_ensemble_mffi_val.csv
 \begin{table}[!htb]
 \centering
-\caption{Revocação (\%) por técnica no DF-40 ($6.147$ imagens falsas, média de 3 sementes) para os três melhores modelos do benchmark e o comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}. Em negrito, o melhor resultado por técnica.}
+\caption{Revocação (\%) por técnica no protocolo~2 do DF-40 ($650.549$ imagens falsas, média de 3 sementes) para os três melhores modelos do benchmark e o comitê Top-3 calibrado com limiar ótimo da validação do \gls*{mffi}. Em negrito, o melhor resultado por técnica.}
 \label{tab:tecnicas}
 \vspace{-2mm}
 \resizebox{\linewidth}{!}{
@@ -557,49 +558,45 @@ Os modelos se complementam: o DINOv3 com \gls*{rgb}+Fourier domina em \glspl*{ga
 \toprule
 Paradigma & Técnica & $N$ & \makecell{DINOv3\\(RGB+Freq)} & \makecell{Xception\\(SRM-only)} & \makecell{Xception\\(RGB+SRM)} & \makecell{\textbf{Ensemble Top-3}\\\textbf{(Val.\ MFFI)}} \\
 \midrule
-\multirow{7}{*}{Difusão}
- & SD 2.1 & 250 & 99,2 & 99,9 & 99,6 & \textbf{100,0} \\
- & PixArt-$\alpha$ & 250 & 99,1 & 98,0 & \textbf{99,9} & \textbf{99,9} \\
- & SiT & 250 & 90,5 & 86,9 & 90,9 & \textbf{93,9} \\
- & DiT & 250 & 92,3 & 85,3 & 90,3 & \textbf{92,8} \\
- & RDDM & 250 & 98,9 & 91,7 & 96,5 & \textbf{100,0} \\
- & CollabDiff & 250 & \textbf{72,5} & 71,2 & 66,8 & 71,2 \\
- & DDIM & 250 & 57,3 & \textbf{68,8} & 58,4 & 58,8 \\
+\multirow{7}{*}{Difusão} & SD 2.1 & 53.474 & 98,6 & 99,6 & 99,5 & \textbf{100,0} \\
+ & PixArt-$\alpha$ & 31.885 & 98,5 & 98,7 & \textbf{99,9} & \textbf{99,9} \\
+ & SiT & 31.885 & 93,1 & 90,4 & 92,9 & \textbf{93,9} \\
+ & DiT & 31.885 & 92,4 & 87,8 & 90,5 & \textbf{92,8} \\
+ & RDDM & 17.738 & 99,0 & 94,3 & 97,0 & \textbf{100,0} \\
+ & CollabDiff & 1.000 & \textbf{76,4} & 74,8 & 67,8 & 71,2 \\
+ & DDIM & 31.885 & 61,5 & \textbf{75,8} & 57,7 & 58,8 \\
 \midrule
-\multirow{6}{*}{\gls*{gan}}
- & StyleGAN3 & 250 & 99,3 & 98,7 & \textbf{100,0} & \textbf{100,0} \\
- & StyleGAN2 & 250 & 97,3 & 95,2 & \textbf{99,1} & 98,9 \\
- & StyleGAN-XL & 250 & 99,1 & 95,6 & 93,9 & \textbf{99,2} \\
- & VQGAN & 250 & \textbf{96,3} & 71,2 & 71,1 & 94,7 \\
- & StarGAN & 200 & \textbf{74,3} & 37,5 & 50,5 & 61,2 \\
- & StarGAN v2 & 199 & 39,4 & \textbf{42,2} & 24,6 & 26,0 \\
+\multirow{6}{*}{\gls*{gan}} & StyleGAN3 & 31.885 & 98,9 & 99,0 & 99,9 & \textbf{100,0} \\
+ & StyleGAN2 & 31.885 & 97,7 & 94,3 & \textbf{99,4} & 98,9 \\
+ & StyleGAN-XL & 31.885 & 98,8 & 96,3 & 94,3 & \textbf{99,2} \\
+ & VQGAN & 31.885 & \textbf{95,5} & 70,4 & 67,5 & 94,7 \\
+ & StarGAN & 1.984 & \textbf{74,2} & 42,7 & 53,8 & 61,2 \\
+ & StarGAN v2 & 2.000 & 38,4 & \textbf{46,1} & 23,0 & 26,0 \\
 \midrule
-\multirow{5}{*}{\makecell[l]{Troca\\facial}}
- & UniFace & 250 & 94,8 & 93,5 & 94,3 & \textbf{97,1} \\
- & FaceSwap & 250 & 94,8 & 89,3 & 92,8 & \textbf{96,7} \\
- & BlendFace & 250 & 98,1 & 94,5 & 94,1 & \textbf{99,1} \\
- & MobileSwap & 250 & 97,3 & 90,1 & 91,9 & \textbf{98,0} \\
- & DeepFaceLab & 250 & 94,4 & 89,3 & 83,3 & \textbf{96,4} \\
+\multirow{5}{*}{\makecell[l]{Troca\\facial}} & UniFace & 24.346 & 94,0 & 96,0 & 95,7 & \textbf{97,1} \\
+ & FaceSwap & 24.634 & 95,1 & 91,1 & 94,7 & \textbf{96,7} \\
+ & BlendFace & 24.790 & 96,0 & 92,1 & 92,5 & \textbf{99,1} \\
+ & MobileSwap & 47.522 & 97,1 & 93,1 & 94,5 & \textbf{98,0} \\
+ & DeepFaceLab & 3.122 & 95,1 & 93,0 & 83,5 & \textbf{96,4} \\
 \midrule
-\multirow{4}{*}{\makecell[l]{Edição/\\T2I}}
- & WhichFaceIsReal & 250 & 60,7 & 90,9 & \textbf{93,1} & 86,8 \\
- & MidJourney & 248 & 97,0 & 99,6 & 95,8 & \textbf{99,7} \\
- & e4e & 250 & 92,5 & \textbf{97,9} & 96,3 & 97,3 \\
- & StyleCLIP & 250 & 64,4 & \textbf{89,2} & 86,3 & 83,6 \\
+\multirow{4}{*}{\makecell[l]{Edição/\\T2I}} & WhichFaceIsReal & 1.001 & 60,9 & \textbf{92,5} & 91,4 & 86,8 \\
+ & MidJourney & 635 & 97,4 & \textbf{99,7} & 95,2 & \textbf{99,7} \\
+ & e4e & 60.123 & 93,7 & \textbf{98,7} & 97,4 & 97,3 \\
+ & StyleCLIP & 2.824 & 67,2 & \textbf{90,3} & 87,8 & 83,6 \\
 \midrule
-Misto & Celeb-DF (misto) & 500 & 92,3 & 94,7 & 95,3 & \textbf{96,7} \\
-Avatar & HeyGen & 250 & 89,7 & \textbf{96,8} & 83,5 & 95,2 \\
+Misto & Celeb-DF (misto) & 128.671 & 92,6 & 94,7 & 94,4 & \textbf{96,7} \\
+\midrule
+Avatar & HeyGen & 1.605 & 93,2 & \textbf{96,5} & 85,2 & 95,2 \\
 \midrule[\heavyrulewidth]
-\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (6.147)}} & & 87,9 & 87,3 & 86,5 & \textbf{90,3} \\
+\multicolumn{2}{@{}l}{\textbf{TOTAL GERAL (650.549)}} & & 93,4 & 92,6 & 92,1 & \textbf{95,1} \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-No protocolo~2, oficial, com as $650.549$ falsas e o limiar da validação do \gls*{mffi}, a revocação média entre as 3 primeiras sementes varia de $93{,}4\%$ (DINOv3 com \gls*{rgb}+Fourier) a $33{,}3\%$ (CLIP \gls*{rgb} robusto), embora o CLIP robusto tenha a maior \gls*{auc} individual no protocolo~1 ($0{,}814$).
-Os modelos com filtragem residual espacial também exibem alta detecção (Xception SRM com $92{,}6\%$ e DINOv3 RGB+SRM com $86{,}6\%$), e no StarGAN~v2 nenhum checkpoint passa de $48{,}6\%$.
-A contradição do CLIP robusto indica que o limiar calibrado no \gls*{mffi} não transfere para outra base: a ordenação dos escores se mantém, mas a escala muda.
-Nos dois protocolos, os pontos cegos coincidem (avatares comerciais, parte dos geradores de difusão e StarGAN~v2), o que sugere técnicas ausentes ou sub-representadas no \gls*{mffi}.
+Em contraste com os modelos com enriquecimento espectral e residual da \cref{tab:tecnicas}, os detectores puramente espaciais sofrem degradação expressiva sob o limiar do \gls*{mffi}: o CLIP \gls*{rgb} robusto, apesar da maior \gls*{auc} no subset balanceado ($0{,}814$), obtém apenas $33{,}3\%$ de revocação no protocolo exaustivo, enquanto o DINOv3 \gls*{rgb}+\gls*{srm} atinge $86{,}6\%$.
+A contradição do CLIP indica que o limiar calibrado no \gls*{mffi} é altamente sensível à representação de entrada: a ordenação dos escores se mantém, mas a escala absoluta sofre desvio.
+Nos dois protocolos, os pontos cegos estruturais coincidem (geradores fortemente regularizados como StarGAN~v2 e DDIM), evidenciando distribuições estatísticas que se afastam dos padrões presentes no \gls*{mffi}.
 
 \subsection{Celeb-DF v2}
 \label{sec:celeb}
