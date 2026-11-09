@@ -1,19 +1,25 @@
 \begin{table*}[!htb]
 \centering
 \small
-\caption{Comparação dos Ensembles Top-2 ao Top-5 por Paradigma de Representação (Espacial, Híbrido e Frequência), sempre selecionando o melhor comitê e a melhor estratégia de fusão na validação do MFFI.}
-\label{tab:ensembles_3grupos}
+\caption{Comparação dos Ensembles Top-2 ao Top-5 por Paradigma de Representação (Espacial Robusto, Espacial Convencional, Híbrido e Frequência), sempre selecionando o melhor comitê e a melhor estratégia de fusão na validação do MFFI.}
+\label{tab:ensembles_paradigmas}
 \vspace{-2mm}
 \resizebox{0.95\textwidth}{!}{
 \begin{tabular}{@{}ll l c c c c c@{}}
 \toprule
-\textbf{Grupo} & \textbf{Comitê} & \textbf{Fusão} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Test-Hard (\%)} & \textbf{DF-40 (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\
+\textbf{Comitê} & \textbf{Membros} & \textbf{Fusão} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Test-Hard (\%)} & \textbf{DF-40 (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\
 \midrule
-\multicolumn{8}{@{}l}{\textit{\textbf{Espacial (só RGB)}}} \\
-Top-2 & DINOv3 RGB + CLIP RGB & \texttt{média geométrica} & 99.77 & 94.85 & 83.15 & 78.54 & 66.13 \\
-Top-3 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB & \texttt{média geométrica} & 99.79 & 94.72 & 77.36 & 74.75 & 68.80 \\
-Top-4 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB & \texttt{stacking (reg. log.)} & 99.78 & 94.48 & 80.26 & 76.29 & 70.06 \\
-Top-5 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB + ViT RGB & \texttt{stacking (reg. log.)} & 99.78 & 94.28 & 80.57 & 76.28 & 71.14 \\
+\multicolumn{8}{@{}l}{\textit{\textbf{Espacial Robusto (RGB Robusto)}}} \\
+Top-2 & DINOv3 RGB + CLIP RGB & \texttt{média geométrica} & 99.73 & 94.72 & 88.98 & 81.16 & 67.31 \\
+Top-3 & DINOv3 RGB + CLIP RGB + MobileNetV3 RGB & \texttt{pesos ótimos (SLSQP)} & 99.71 & 94.20 & 87.30 & 80.62 & 65.59 \\
+Top-4 & DINOv3 RGB + CLIP RGB + MobileNetV3 RGB + Xception RGB & \texttt{pesos ótimos (SLSQP)} & 99.71 & 94.20 & 87.30 & 80.62 & 65.58 \\
+Top-5 & DINOv3 RGB + CLIP RGB + ViT RGB + MobileNetV3 RGB + Xception RGB & \texttt{pesos ótimos (SLSQP)} & 99.71 & 94.20 & 87.31 & 80.61 & 65.58 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\textbf{Espacial Convencional (RGB Convencional)}}} \\
+Top-2 & DINOv3 RGB + CLIP RGB & \texttt{média geométrica} & 99.77 & 94.87 & 83.40 & 78.71 & 65.41 \\
+Top-3 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB & \texttt{stacking (reg. log.)} & 99.79 & 94.56 & 80.89 & 77.09 & 70.58 \\
+Top-4 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB & \texttt{stacking (reg. log.)} & 99.80 & 94.55 & 80.57 & 77.22 & 70.76 \\
+Top-5 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB + ViT RGB & \texttt{stacking (reg. log.)} & 99.79 & 94.44 & 80.83 & 76.97 & 71.18 \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\textbf{Híbrido (RGB+SRM e RGB+Fourier)}}} \\
 Top-2 & DINOv3 RGB+SRM + DINOv3 RGB+Fourier & \texttt{stacking (reg. log.)} & 99.81 & 94.56 & 80.07 & 77.42 & 73.23 \\

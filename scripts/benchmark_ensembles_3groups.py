@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Benchmark e Seleção Exaustiva de Ensembles Top-2 a Top-5 para os três conjuntos:
-1. Espacial: só RGB (mostra o que a imagem sozinha consegue).
-2. Híbrido: RGB+SRM e RGB+Fourier (mostra se juntar imagem e frequência no mesmo modelo ajuda).
-3. Frequência: só SRM e só Fourier (mostra se a frequência sozinha se sustenta).
+"""Benchmark e Seleção Exaustiva de Ensembles Top-2 a Top-5 para os conjuntos:
+1. Espacial Robusto: só RGB com augmentations robustas (avalia o teto anti-degradação).
+2. Espacial Convencional: só RGB padrão (mostra o que a imagem sozinha sem robustez consegue).
+3. Híbrido: RGB+SRM e RGB+Fourier (mostra se juntar imagem e frequência no mesmo modelo ajuda).
+4. Frequência: só SRM e só Fourier (mostra se a frequência sozinha se sustenta).
 
 Metodologia:
 - Seleção estrita guiada pela Validação (MFFI Val):
@@ -244,10 +245,13 @@ def run_benchmark():
     df_all = scan_all_models()
 
     # 1. Definição das candidaturas
-    # Espacial: só RGB (mode == "none")
-    # Para diversidade arquitetural, selecionar o melhor modelo (por Val AUC) de cada uma das 6 famílias
-    df_esp = df_all[df_all["mode"] == "none"].sort_values("val_auc", ascending=False)
-    esp_candidates = df_esp.drop_duplicates(subset=["family"]).head(6)
+    # Espacial Robusto: só RGB com regime finetune_robust
+    df_esp_rob = df_all[(df_all["mode"] == "none") & (df_all["regime"] == "finetune_robust")].sort_values("val_auc", ascending=False)
+    esp_rob_candidates = df_esp_rob.drop_duplicates(subset=["family"]).head(6)
+
+    # Espacial Convencional: só RGB com regime finetune
+    df_esp_conv = df_all[(df_all["mode"] == "none") & (df_all["regime"] == "finetune")].sort_values("val_auc", ascending=False)
+    esp_conv_candidates = df_esp_conv.drop_duplicates(subset=["family"]).head(6)
 
     # Híbrido: RGB+SRM e RGB+Fourier (mode in ["srm", "concat", "concat_frequency"])
     # Selecionar os melhores representantes por família e modo
@@ -258,8 +262,12 @@ def run_benchmark():
     df_freq = df_all[df_all["mode"].isin(["srm_only", "magnitude", "phase", "complex", "frequency_3"])].sort_values("val_auc", ascending=False)
     freq_candidates = df_freq.drop_duplicates(subset=["family", "mode"]).head(10)
 
-    print("\n--- Candidatos Espaciais Selecionados (Top por Família) ---")
-    for _, r in esp_candidates.iterrows():
+    print("\n--- Candidatos Espacial Robusto Selecionados (Top por Família) ---")
+    for _, r in esp_rob_candidates.iterrows():
+        print(f"  {r['family']:12s} | Val AUC: {r['val_auc']:.4f} | {r['id']}")
+
+    print("\n--- Candidatos Espacial Convencional Selecionados (Top por Família) ---")
+    for _, r in esp_conv_candidates.iterrows():
         print(f"  {r['family']:12s} | Val AUC: {r['val_auc']:.4f} | {r['id']}")
 
     print("\n--- Candidatos Híbridos Selecionados (Top por Família + Modo) ---")
@@ -271,7 +279,7 @@ def run_benchmark():
         print(f"  {r['family']:12s} | {r['mode']:15s} | Val AUC: {r['val_auc']:.4f} | {r['id']}")
 
     # Pré-carregar em memória os modelos necessários
-    all_needed_paths = set(esp_candidates["path"]).union(hib_candidates["path"]).union(freq_candidates["path"])
+    all_needed_paths = set(esp_rob_candidates["path"]).union(esp_conv_candidates["path"]).union(hib_candidates["path"]).union(freq_candidates["path"])
     print(f"\nCarregando dados de {len(all_needed_paths)} modelos distintos...")
     cache = {}
     path_to_id = {}
@@ -284,7 +292,8 @@ def run_benchmark():
 
     # Processar cada grupo para K = 2, 3, 4, 5
     groups = [
-        ("Espacial (só RGB)", esp_candidates["id"].tolist()),
+        ("Espacial Robusto (RGB Robusto)", esp_rob_candidates["id"].tolist()),
+        ("Espacial Convencional (RGB Convencional)", esp_conv_candidates["id"].tolist()),
         ("Híbrido (RGB+SRM e RGB+Fourier)", hib_candidates["id"].tolist()),
         ("Frequência (só SRM e só Fourier)", freq_candidates["id"].tolist()),
     ]
@@ -367,13 +376,13 @@ def generate_latex_table(df: pd.DataFrame):
         r"\begin{table*}[!htb]",
         r"\centering",
         r"\small",
-        r"\caption{Comparação dos Ensembles Top-2 ao Top-5 por Paradigma de Representação (Espacial, Híbrido e Frequência), sempre selecionando o melhor comitê e a melhor estratégia de fusão na validação do MFFI.}",
-        r"\label{tab:ensembles_3grupos}",
+        r"\caption{Comparação dos Ensembles Top-2 ao Top-5 por Paradigma de Representação (Espacial Robusto, Espacial Convencional, Híbrido e Frequência), sempre selecionando o melhor comitê e a melhor estratégia de fusão na validação do MFFI.}",
+        r"\label{tab:ensembles_paradigmas}",
         r"\vspace{-2mm}",
         r"\resizebox{0.95\textwidth}{!}{",
         r"\begin{tabular}{@{}ll l c c c c c@{}}",
         r"\toprule",
-        r"\textbf{Grupo} & \textbf{Comitê} & \textbf{Fusão} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Test-Hard (\%)} & \textbf{DF-40 (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\",
+        r"\textbf{Comitê} & \textbf{Membros} & \textbf{Fusão} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Test-Hard (\%)} & \textbf{DF-40 (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\",
         r"\midrule",
     ]
 
@@ -394,7 +403,6 @@ def generate_latex_table(df: pd.DataFrame):
         df40 = f"{r['DF40_AUC']:.2f}"
         celeb = f"{r['Celeb_Video_AUC']:.2f}"
 
-        # Destaques em negrito por coluna se for o melhor do grupo
         lines.append(f"{k_str} & {r['Membros']} & \\texttt{{{fusao_str}}} & {val} & {test} & {hard} & {df40} & {celeb} \\\\")
 
     lines.extend([
@@ -411,12 +419,13 @@ def generate_latex_table(df: pd.DataFrame):
 def generate_markdown_table(df: pd.DataFrame):
     md_path = TABLES_DIR / "benchmark_ensembles_espacial_hibrido_frequencia.md"
     lines = [
-        "# Benchmark de Ensembles: Espacial vs. Híbrido vs. Frequência (Top-2 a Top-5)",
+        "# Benchmark de Ensembles: Espacial Robusto vs. Espacial Convencional vs. Híbrido vs. Frequência (Top-2 a Top-5)",
         "",
-        "Esta tabela consolida os ensembles otimizados na validação do **MFFI** para responder às três hipóteses formuladas:",
-        "1. **Espacial (só RGB):** Mostra o limite de desempenho que a aparência e os artefatos visuais diretos conseguem alcançar.",
-        "2. **Híbrido (RGB+SRM e RGB+Fourier):** Avalia se a fusão explícita de aparência espacial com pistas espectrais no mesmo detector melhora a generalização.",
-        "3. **Frequência (só SRM e só Fourier):** Testa se os resíduos espectrais e de ruído conseguem se sustentar isoladamente, sem qualquer informação de cor RGB.",
+        "Esta tabela consolida os ensembles otimizados na partição de validação do **MFFI** para responder às hipóteses centrais da pesquisa:",
+        "1. **Espacial Robusto (RGB Robusto):** Avalia o teto da representação espacial quando submetida a data augmentation robusta (anti-degradação).",
+        "2. **Espacial Convencional (RGB Convencional):** Mede o comportamento dos modelos puramente espaciais sem aumento de robustez sob degradações do mundo real.",
+        "3. **Híbrido (RGB+SRM e RGB+Fourier):** Avalia se a fusão explícita de aparência espacial com pistas espectrais no mesmo detector melhora a generalização.",
+        "4. **Frequência (só SRM e só Fourier):** Testa se os resíduos espectrais e de ruído conseguem se sustentar isoladamente, sem qualquer informação de cor RGB.",
         "",
         "| Grupo | Comitê | Membros | Estratégia de Fusão | Val AUC (%) | Test AUC (%) | Test-Hard AUC (%) | DF-40 AUC (%) | Celeb-DF v2 Vídeo (%) |",
         "| :--- | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |",
