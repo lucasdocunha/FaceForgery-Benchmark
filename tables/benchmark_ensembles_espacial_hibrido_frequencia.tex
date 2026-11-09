@@ -1,0 +1,32 @@
+\begin{table*}[!htb]
+\centering
+\small
+\caption{Comparação dos Ensembles Top-2 ao Top-5 por Paradigma de Representação (Espacial, Híbrido e Frequência), sempre selecionando o melhor comitê e a melhor estratégia de fusão na validação do MFFI.}
+\label{tab:ensembles_3grupos}
+\vspace{-2mm}
+\resizebox{0.95\textwidth}{!}{
+\begin{tabular}{@{}ll l c c c c c@{}}
+\toprule
+\textbf{Grupo} & \textbf{Comitê} & \textbf{Fusão} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Test-Hard (\%)} & \textbf{DF-40 (\%)} & \textbf{Celeb-DF Vídeo (\%)} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\textbf{Espacial (só RGB)}}} \\
+Top-2 & DINOv3 RGB + CLIP RGB & \texttt{média geométrica} & 99.77 & 94.85 & 83.15 & 78.54 & 66.13 \\
+Top-3 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB & \texttt{média geométrica} & 99.79 & 94.72 & 77.36 & 74.75 & 68.80 \\
+Top-4 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB & \texttt{stacking (reg. log.)} & 99.78 & 94.48 & 80.26 & 76.29 & 70.06 \\
+Top-5 & DINOv3 RGB + CLIP RGB + ResNet-18 RGB + MobileNetV3 RGB + ViT RGB & \texttt{stacking (reg. log.)} & 99.78 & 94.28 & 80.57 & 76.28 & 71.14 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\textbf{Híbrido (RGB+SRM e RGB+Fourier)}}} \\
+Top-2 & DINOv3 RGB+SRM + DINOv3 RGB+Fourier & \texttt{stacking (reg. log.)} & 99.81 & 94.56 & 80.07 & 77.42 & 73.23 \\
+Top-3 & DINOv3 RGB+SRM + DINOv3 RGB+Fourier + CLIP RGB+SRM & \texttt{média geométrica} & 99.83 & 95.12 & 82.82 & 81.80 & 73.85 \\
+Top-4 & DINOv3 RGB+SRM + DINOv3 RGB+Fourier + CLIP RGB+SRM + ResNet-18 RGB+Fourier & \texttt{pesos ótimos (SLSQP)} & 99.84 & 94.84 & 82.64 & 79.70 & 74.03 \\
+Top-5 & DINOv3 RGB+SRM + DINOv3 RGB+Fourier + CLIP RGB+SRM + ResNet-18 RGB+Fourier + MobileNetV3 RGB+SRM & \texttt{stacking (reg. log.)} & 99.84 & 94.58 & 82.06 & 81.10 & 75.25 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{\textbf{Frequência (só SRM e só Fourier)}}} \\
+Top-2 & ResNet-18 SRM-only + DINOv3 Fourier 3-Bandas & \texttt{stacking (reg. log.)} & 96.42 & 85.27 & 68.87 & 63.67 & 72.40 \\
+Top-3 & ResNet-18 SRM-only + DINOv3 SRM-only + DINOv3 Magnitude & \texttt{stacking (reg. log.)} & 96.77 & 84.78 & 70.59 & 63.96 & 78.40 \\
+Top-4 & ResNet-18 SRM-only + DINOv3 SRM-only + DINOv3 Magnitude + DINOv3 Fourier 3-Bandas & \texttt{stacking (reg. log.)} & 96.91 & 85.54 & 69.87 & 63.68 & 77.41 \\
+Top-5 & ResNet-18 SRM-only + DINOv3 SRM-only + DINOv3 Magnitude + DINOv3 Fourier 3-Bandas + ResNet-18 Magnitude & \texttt{stacking (reg. log.)} & 96.94 & 85.53 & 69.56 & 63.32 & 77.58 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
