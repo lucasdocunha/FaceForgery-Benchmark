@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,DiT,31885,27043,84.81,63.22,0.606,128.0
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,SiT,31885,27247,85.45,64.12,0.6121,124.5
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,ddim,31885,17149,53.78,28.61,0.3051,123.2
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,sd2.1,53474,53330,99.73,98.52,0.9501,205.4
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,pixart,31885,31289,98.13,94.91,0.9232,127.7
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,RDDM,17738,17478,98.53,90.64,0.842,71.1
+vit_concat_freq_seed_7,vit,concat_frequency,Difusão,CollabDiff,1000,648,64.8,41.9,0.4227,6.4
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,StyleGAN2,31885,28384,89.02,69.37,0.6535,124.4
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,StyleGAN3,31885,28533,89.49,71.91,0.6829,125.1
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,StyleGANXL,31885,29285,91.85,79.92,0.7641,123.6
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,VQGAN,31885,27625,86.64,69.58,0.6673,126.1
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,stargan,1984,1833,92.39,79.94,0.7528,10.6
+vit_concat_freq_seed_7,vit,concat_frequency,Síntese GAN,starganv2,2000,796,39.8,21.5,0.2285,10.5
+vit_concat_freq_seed_7,vit,concat_frequency,Troca Facial,deepfacelab,3122,2599,83.25,60.54,0.5736,16.6
+vit_concat_freq_seed_7,vit,concat_frequency,Troca Facial,faceswap,24634,23206,94.2,82.17,0.7672,98.4
+vit_concat_freq_seed_7,vit,concat_frequency,Troca Facial,mobileswap,47522,43684,91.92,75.68,0.7107,183.3
+vit_concat_freq_seed_7,vit,concat_frequency,Troca Facial,blendface,24790,20919,84.38,64.57,0.6229,96.5
+vit_concat_freq_seed_7,vit,concat_frequency,Troca Facial,uniface,24346,19470,79.97,59.31,0.5799,94.9
+vit_concat_freq_seed_7,vit,concat_frequency,Edição / T2I,MidJourney,635,626,98.58,94.49,0.8965,8.3
+vit_concat_freq_seed_7,vit,concat_frequency,Edição / T2I,whichfaceisreal,1001,674,67.33,48.85,0.4817,10.5
+vit_concat_freq_seed_7,vit,concat_frequency,Edição / T2I,styleclip,2824,1810,64.09,41.64,0.4117,17.7
+vit_concat_freq_seed_7,vit,concat_frequency,Edição / T2I,e4e,60123,49743,82.74,58.38,0.5635,231.9
+vit_concat_freq_seed_7,vit,concat_frequency,Avatares & Reencenação,heygen,1605,1395,86.92,65.73,0.6215,8.3
+vit_concat_freq_seed_7,vit,concat_frequency,Avatares & Reencenação,cdf_reenactment,128671,101192,78.64,55.78,0.5447,486.9

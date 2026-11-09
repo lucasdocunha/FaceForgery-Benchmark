@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_rgb_robust_seed_7,dino,none,Difusão,DiT,31885,27805,87.2,47.88,0.473,258.3
+dino_rgb_robust_seed_7,dino,none,Difusão,SiT,31885,29694,93.13,53.18,0.5121,259.7
+dino_rgb_robust_seed_7,dino,none,Difusão,ddim,31885,7180,22.52,5.38,0.0792,259.9
+dino_rgb_robust_seed_7,dino,none,Difusão,sd2.1,53474,53349,99.77,98.84,0.9112,435.4
+dino_rgb_robust_seed_7,dino,none,Difusão,pixart,31885,31876,99.97,96.88,0.8667,264.4
+dino_rgb_robust_seed_7,dino,none,Difusão,RDDM,17738,9627,54.27,26.45,0.2783,144.8
+dino_rgb_robust_seed_7,dino,none,Difusão,CollabDiff,1000,189,18.9,8.8,0.0956,10.1
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,StyleGAN2,31885,31885,100.0,98.16,0.8053,258.3
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,StyleGAN3,31885,31885,100.0,99.91,0.9274,259.3
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,StyleGANXL,31885,31885,100.0,97.51,0.7891,259.0
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,VQGAN,31885,20741,65.05,30.9,0.308,257.6
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,stargan,1984,1542,77.72,37.55,0.3797,17.1
+dino_rgb_robust_seed_7,dino,none,Síntese GAN,starganv2,2000,143,7.15,2.65,0.0333,17.1
+dino_rgb_robust_seed_7,dino,none,Troca Facial,deepfacelab,3122,2926,93.72,70.4,0.6204,26.7
+dino_rgb_robust_seed_7,dino,none,Troca Facial,faceswap,24634,24268,98.51,74.77,0.6849,200.2
+dino_rgb_robust_seed_7,dino,none,Troca Facial,mobileswap,47522,46877,98.64,87.04,0.7808,384.2
+dino_rgb_robust_seed_7,dino,none,Troca Facial,blendface,24790,24374,98.32,87.95,0.8142,200.8
+dino_rgb_robust_seed_7,dino,none,Troca Facial,uniface,24346,24156,99.22,93.71,0.8524,197.7
+dino_rgb_robust_seed_7,dino,none,Edição / T2I,MidJourney,635,632,99.53,78.9,0.721,10.3
+dino_rgb_robust_seed_7,dino,none,Edição / T2I,whichfaceisreal,1001,961,96.0,85.61,0.7066,14.0
+dino_rgb_robust_seed_7,dino,none,Edição / T2I,styleclip,2824,2156,76.35,57.86,0.5303,27.9
+dino_rgb_robust_seed_7,dino,none,Edição / T2I,e4e,60123,42999,71.52,36.5,0.3511,488.8
+dino_rgb_robust_seed_7,dino,none,Avatares & Reencenação,heygen,1605,643,40.06,16.82,0.1909,14.1
+dino_rgb_robust_seed_7,dino,none,Avatares & Reencenação,cdf_reenactment,128671,126340,98.19,86.63,0.8136,1037.0

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,DiT,31885,8958,28.09,36.21,0.3829,122.6
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,SiT,31885,10668,33.46,41.38,0.4302,120.1
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,ddim,31885,28256,88.62,91.67,0.9121,119.0
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,sd2.1,53474,46870,87.65,92.34,0.9129,198.4
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,pixart,31885,31267,98.06,98.81,0.9856,129.7
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,RDDM,17738,1944,10.96,12.82,0.1488,68.4
+resnet_magnitude_seed_123,resnet,magnitude,Difusão,CollabDiff,1000,592,59.2,65.6,0.6567,6.5
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,StyleGAN2,31885,24080,75.52,82.25,0.821,119.4
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,StyleGAN3,31885,30926,96.99,98.43,0.9793,119.4
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,StyleGANXL,31885,25633,80.39,84.56,0.8451,119.6
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,VQGAN,31885,17718,55.57,65.07,0.658,119.0
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,stargan,1984,1948,98.19,99.29,0.9882,10.0
+resnet_magnitude_seed_123,resnet,magnitude,Síntese GAN,starganv2,2000,1892,94.6,96.6,0.9645,9.8
+resnet_magnitude_seed_123,resnet,magnitude,Troca Facial,deepfacelab,3122,1527,48.91,56.69,0.5787,14.9
+resnet_magnitude_seed_123,resnet,magnitude,Troca Facial,faceswap,24634,7884,32.0,39.6,0.4186,93.4
+resnet_magnitude_seed_123,resnet,magnitude,Troca Facial,mobileswap,47522,15441,32.49,40.19,0.4268,176.8
+resnet_magnitude_seed_123,resnet,magnitude,Troca Facial,blendface,24790,14926,60.21,68.0,0.6848,94.0
+resnet_magnitude_seed_123,resnet,magnitude,Troca Facial,uniface,24346,18059,74.18,79.97,0.7991,92.3
+resnet_magnitude_seed_123,resnet,magnitude,Edição / T2I,MidJourney,635,561,88.35,91.65,0.9084,8.7
+resnet_magnitude_seed_123,resnet,magnitude,Edição / T2I,whichfaceisreal,1001,692,69.13,74.23,0.7448,10.9
+resnet_magnitude_seed_123,resnet,magnitude,Edição / T2I,styleclip,2824,2438,86.33,89.55,0.892,18.1
+resnet_magnitude_seed_123,resnet,magnitude,Edição / T2I,e4e,60123,58668,97.58,98.55,0.9827,229.2
+resnet_magnitude_seed_123,resnet,magnitude,Avatares & Reencenação,heygen,1605,990,61.68,73.4,0.7251,8.1
+resnet_magnitude_seed_123,resnet,magnitude,Avatares & Reencenação,cdf_reenactment,128671,49775,38.68,46.44,0.4822,470.4

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,DiT,31885,6933,21.74,59.14,0.6114,138.6
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,SiT,31885,6802,21.33,59.31,0.6124,136.1
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,ddim,31885,5229,16.4,47.66,0.5161,134.8
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,sd2.1,53474,31429,58.77,84.48,0.834,225.9
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,pixart,31885,9308,29.19,66.75,0.672,177.9
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,RDDM,17738,4249,23.95,66.42,0.6554,77.7
+mobilenet_phase_seed_2025,mobilenet,phase,Difusão,CollabDiff,1000,297,29.7,60.0,0.6241,6.9
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,StyleGAN2,31885,4778,14.99,51.86,0.5559,135.4
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,StyleGAN3,31885,4593,14.4,51.9,0.5585,134.8
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,StyleGANXL,31885,6924,21.72,61.53,0.627,140.4
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,VQGAN,31885,5056,15.86,51.74,0.5567,140.6
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,stargan,1984,175,8.82,46.52,0.4981,10.6
+mobilenet_phase_seed_2025,mobilenet,phase,Síntese GAN,starganv2,2000,177,8.85,32.2,0.4041,11.2
+mobilenet_phase_seed_2025,mobilenet,phase,Troca Facial,deepfacelab,3122,680,21.78,68.48,0.674,17.5
+mobilenet_phase_seed_2025,mobilenet,phase,Troca Facial,faceswap,24634,4164,16.9,53.6,0.5664,106.8
+mobilenet_phase_seed_2025,mobilenet,phase,Troca Facial,mobileswap,47522,7115,14.97,51.41,0.5524,201.4
+mobilenet_phase_seed_2025,mobilenet,phase,Troca Facial,blendface,24790,4549,18.35,56.88,0.5916,107.8
+mobilenet_phase_seed_2025,mobilenet,phase,Troca Facial,uniface,24346,3795,15.59,51.86,0.5545,101.1
+mobilenet_phase_seed_2025,mobilenet,phase,Edição / T2I,MidJourney,635,337,53.07,82.99,0.814,8.5
+mobilenet_phase_seed_2025,mobilenet,phase,Edição / T2I,whichfaceisreal,1001,187,18.68,46.45,0.5157,10.6
+mobilenet_phase_seed_2025,mobilenet,phase,Edição / T2I,styleclip,2824,931,32.97,62.32,0.6435,18.3
+mobilenet_phase_seed_2025,mobilenet,phase,Edição / T2I,e4e,60123,17547,29.19,64.57,0.6533,243.6
+mobilenet_phase_seed_2025,mobilenet,phase,Avatares & Reencenação,heygen,1605,59,3.68,27.1,0.3665,8.2
+mobilenet_phase_seed_2025,mobilenet,phase,Avatares & Reencenação,cdf_reenactment,128671,25691,19.97,57.78,0.6009,497.6

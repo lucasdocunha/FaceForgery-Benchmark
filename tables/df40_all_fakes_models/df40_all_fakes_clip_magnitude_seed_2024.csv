@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_magnitude_seed_2024,clip,magnitude,Difusão,DiT,31885,19818,62.15,29.65,0.3503,135.8
+clip_magnitude_seed_2024,clip,magnitude,Difusão,SiT,31885,20234,63.46,29.72,0.3515,133.2
+clip_magnitude_seed_2024,clip,magnitude,Difusão,ddim,31885,30912,96.95,82.77,0.8029,131.5
+clip_magnitude_seed_2024,clip,magnitude,Difusão,sd2.1,53474,52593,98.35,92.68,0.9142,226.1
+clip_magnitude_seed_2024,clip,magnitude,Difusão,pixart,31885,31175,97.77,93.4,0.9249,184.3
+clip_magnitude_seed_2024,clip,magnitude,Difusão,RDDM,17738,3295,18.58,4.94,0.106,76.5
+clip_magnitude_seed_2024,clip,magnitude,Difusão,CollabDiff,1000,812,81.2,56.1,0.5798,7.0
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,StyleGAN2,31885,23950,75.11,51.08,0.5373,133.4
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,StyleGAN3,31885,30898,96.9,88.19,0.8735,132.4
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,StyleGANXL,31885,30398,95.34,83.2,0.8245,137.0
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,VQGAN,31885,24691,77.44,46.11,0.4971,136.9
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,stargan,1984,1963,98.94,91.28,0.8821,10.6
+clip_magnitude_seed_2024,clip,magnitude,Síntese GAN,starganv2,2000,1909,95.45,69.35,0.6727,10.9
+clip_magnitude_seed_2024,clip,magnitude,Troca Facial,deepfacelab,3122,2214,70.92,33.44,0.3867,16.5
+clip_magnitude_seed_2024,clip,magnitude,Troca Facial,faceswap,24634,13856,56.25,26.69,0.3203,103.7
+clip_magnitude_seed_2024,clip,magnitude,Troca Facial,mobileswap,47522,26561,55.89,24.48,0.3024,195.7
+clip_magnitude_seed_2024,clip,magnitude,Troca Facial,blendface,24790,17612,71.04,36.78,0.4163,104.5
+clip_magnitude_seed_2024,clip,magnitude,Troca Facial,uniface,24346,17682,72.63,41.81,0.4588,101.1
+clip_magnitude_seed_2024,clip,magnitude,Edição / T2I,MidJourney,635,597,94.02,73.07,0.7398,9.1
+clip_magnitude_seed_2024,clip,magnitude,Edição / T2I,whichfaceisreal,1001,890,88.91,64.54,0.6536,11.4
+clip_magnitude_seed_2024,clip,magnitude,Edição / T2I,styleclip,2824,2650,93.84,79.39,0.7824,21.4
+clip_magnitude_seed_2024,clip,magnitude,Edição / T2I,e4e,60123,57834,96.19,82.39,0.8109,324.6
+clip_magnitude_seed_2024,clip,magnitude,Avatares & Reencenação,heygen,1605,1152,71.78,33.58,0.3925,10.1
+clip_magnitude_seed_2024,clip,magnitude,Avatares & Reencenação,cdf_reenactment,128671,80912,62.88,29.78,0.3531,523.7

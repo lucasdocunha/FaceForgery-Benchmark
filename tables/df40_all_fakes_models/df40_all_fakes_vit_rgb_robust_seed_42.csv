@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_rgb_robust_seed_42,vit,none,Difusão,DiT,31885,23335,73.18,38.93,0.4109,138.7
+vit_rgb_robust_seed_42,vit,none,Difusão,SiT,31885,24736,77.58,43.7,0.4484,140.8
+vit_rgb_robust_seed_42,vit,none,Difusão,ddim,31885,10786,33.83,13.16,0.1664,142.6
+vit_rgb_robust_seed_42,vit,none,Difusão,sd2.1,53474,52949,99.02,96.5,0.9288,238.7
+vit_rgb_robust_seed_42,vit,none,Difusão,pixart,31885,31009,97.25,87.66,0.8252,147.6
+vit_rgb_robust_seed_42,vit,none,Difusão,RDDM,17738,12451,70.19,20.58,0.2879,79.7
+vit_rgb_robust_seed_42,vit,none,Difusão,CollabDiff,1000,364,36.4,19.0,0.2065,6.5
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,StyleGAN2,31885,30453,95.51,72.26,0.6379,141.1
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,StyleGAN3,31885,31609,99.13,89.67,0.7634,140.9
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,StyleGANXL,31885,20714,64.96,35.66,0.3753,140.7
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,VQGAN,31885,22398,70.25,35.01,0.3753,140.7
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,stargan,1984,877,44.2,18.5,0.2246,12.3
+vit_rgb_robust_seed_42,vit,none,Síntese GAN,starganv2,2000,249,12.45,5.9,0.0729,13.0
+vit_rgb_robust_seed_42,vit,none,Troca Facial,deepfacelab,3122,2558,81.93,50.83,0.5012,18.7
+vit_rgb_robust_seed_42,vit,none,Troca Facial,faceswap,24634,22595,91.72,72.19,0.6753,113.2
+vit_rgb_robust_seed_42,vit,none,Troca Facial,mobileswap,47522,42413,89.25,62.09,0.5927,211.0
+vit_rgb_robust_seed_42,vit,none,Troca Facial,blendface,24790,19991,80.64,48.99,0.4956,110.3
+vit_rgb_robust_seed_42,vit,none,Troca Facial,uniface,24346,20798,85.43,59.08,0.576,109.8
+vit_rgb_robust_seed_42,vit,none,Edição / T2I,MidJourney,635,541,85.2,66.77,0.6403,7.7
+vit_rgb_robust_seed_42,vit,none,Edição / T2I,whichfaceisreal,1001,950,94.91,89.11,0.8062,14.7
+vit_rgb_robust_seed_42,vit,none,Edição / T2I,styleclip,2824,1941,68.73,50.21,0.4828,22.3
+vit_rgb_robust_seed_42,vit,none,Edição / T2I,e4e,60123,52952,88.07,72.19,0.6653,271.1
+vit_rgb_robust_seed_42,vit,none,Avatares & Reencenação,heygen,1605,684,42.62,22.74,0.2497,8.1
+vit_rgb_robust_seed_42,vit,none,Avatares & Reencenação,cdf_reenactment,128671,106420,82.71,58.33,0.5736,562.9

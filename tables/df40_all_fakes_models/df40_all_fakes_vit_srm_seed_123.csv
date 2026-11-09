@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_srm_seed_123,vit,srm,Difusão,DiT,31885,25720,80.66,53.94,0.5411,130.7
+vit_srm_seed_123,vit,srm,Difusão,SiT,31885,26868,84.27,59.6,0.5847,129.2
+vit_srm_seed_123,vit,srm,Difusão,ddim,31885,15004,47.06,26.66,0.2915,129.2
+vit_srm_seed_123,vit,srm,Difusão,sd2.1,53474,52859,98.85,96.92,0.9401,218.2
+vit_srm_seed_123,vit,srm,Difusão,pixart,31885,31538,98.91,93.32,0.8896,147.3
+vit_srm_seed_123,vit,srm,Difusão,RDDM,17738,13625,76.81,38.35,0.4297,72.3
+vit_srm_seed_123,vit,srm,Difusão,CollabDiff,1000,447,44.7,29.1,0.3017,6.0
+vit_srm_seed_123,vit,srm,Síntese GAN,StyleGAN2,31885,30701,96.29,81.16,0.7159,128.5
+vit_srm_seed_123,vit,srm,Síntese GAN,StyleGAN3,31885,31637,99.22,93.67,0.837,129.1
+vit_srm_seed_123,vit,srm,Síntese GAN,StyleGANXL,31885,24133,75.69,46.13,0.4841,128.8
+vit_srm_seed_123,vit,srm,Síntese GAN,VQGAN,31885,24697,77.46,49.1,0.4963,129.6
+vit_srm_seed_123,vit,srm,Síntese GAN,stargan,1984,967,48.74,23.29,0.2758,9.0
+vit_srm_seed_123,vit,srm,Síntese GAN,starganv2,2000,456,22.8,10.85,0.1382,9.0
+vit_srm_seed_123,vit,srm,Troca Facial,deepfacelab,3122,2312,74.06,43.95,0.461,13.7
+vit_srm_seed_123,vit,srm,Troca Facial,faceswap,24634,22675,92.05,77.41,0.7353,99.6
+vit_srm_seed_123,vit,srm,Troca Facial,mobileswap,47522,43079,90.65,71.14,0.6747,192.0
+vit_srm_seed_123,vit,srm,Troca Facial,blendface,24790,21073,85.01,61.63,0.5991,100.7
+vit_srm_seed_123,vit,srm,Troca Facial,uniface,24346,21396,87.88,68.7,0.6624,99.3
+vit_srm_seed_123,vit,srm,Edição / T2I,MidJourney,635,532,83.78,62.36,0.6303,12.9
+vit_srm_seed_123,vit,srm,Edição / T2I,whichfaceisreal,1001,968,96.7,92.91,0.8703,17.9
+vit_srm_seed_123,vit,srm,Edição / T2I,styleclip,2824,2146,75.99,60.09,0.581,22.7
+vit_srm_seed_123,vit,srm,Edição / T2I,e4e,60123,54844,91.22,79.03,0.7389,254.5
+vit_srm_seed_123,vit,srm,Avatares & Reencenação,heygen,1605,870,54.21,32.96,0.3494,7.5
+vit_srm_seed_123,vit,srm,Avatares & Reencenação,cdf_reenactment,128671,112249,87.24,69.91,0.6816,516.6

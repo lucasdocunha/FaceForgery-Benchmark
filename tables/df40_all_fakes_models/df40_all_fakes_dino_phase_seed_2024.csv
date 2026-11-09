@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_phase_seed_2024,dino,phase,Difusão,DiT,31885,22872,71.73,37.77,0.3745,123.3
+dino_phase_seed_2024,dino,phase,Difusão,SiT,31885,23915,75.0,39.62,0.3922,127.0
+dino_phase_seed_2024,dino,phase,Difusão,ddim,31885,16942,53.13,21.42,0.2284,126.6
+dino_phase_seed_2024,dino,phase,Difusão,sd2.1,53474,51626,96.54,86.31,0.8182,207.9
+dino_phase_seed_2024,dino,phase,Difusão,pixart,31885,28819,90.38,70.64,0.6692,165.2
+dino_phase_seed_2024,dino,phase,Difusão,RDDM,17738,8868,49.99,15.68,0.1814,68.6
+dino_phase_seed_2024,dino,phase,Difusão,CollabDiff,1000,707,70.7,46.4,0.4483,6.5
+dino_phase_seed_2024,dino,phase,Síntese GAN,StyleGAN2,31885,26582,83.37,49.2,0.4752,120.0
+dino_phase_seed_2024,dino,phase,Síntese GAN,StyleGAN3,31885,29462,92.4,67.72,0.6444,120.5
+dino_phase_seed_2024,dino,phase,Síntese GAN,StyleGANXL,31885,29241,91.71,65.54,0.6201,119.5
+dino_phase_seed_2024,dino,phase,Síntese GAN,VQGAN,31885,22402,70.26,34.19,0.3445,119.6
+dino_phase_seed_2024,dino,phase,Síntese GAN,stargan,1984,1255,63.26,20.26,0.2267,9.8
+dino_phase_seed_2024,dino,phase,Síntese GAN,starganv2,2000,767,38.35,10.3,0.1249,9.8
+dino_phase_seed_2024,dino,phase,Troca Facial,deepfacelab,3122,2692,86.23,66.78,0.641,14.6
+dino_phase_seed_2024,dino,phase,Troca Facial,faceswap,24634,18765,76.18,42.24,0.4159,92.3
+dino_phase_seed_2024,dino,phase,Troca Facial,mobileswap,47522,34670,72.96,39.98,0.3962,175.9
+dino_phase_seed_2024,dino,phase,Troca Facial,blendface,24790,18881,76.16,42.39,0.4179,93.3
+dino_phase_seed_2024,dino,phase,Troca Facial,uniface,24346,19872,81.62,50.66,0.4888,92.2
+dino_phase_seed_2024,dino,phase,Edição / T2I,MidJourney,635,594,93.54,70.71,0.6723,8.6
+dino_phase_seed_2024,dino,phase,Edição / T2I,whichfaceisreal,1001,710,70.93,38.16,0.3809,10.7
+dino_phase_seed_2024,dino,phase,Edição / T2I,styleclip,2824,2063,73.05,48.12,0.4624,18.5
+dino_phase_seed_2024,dino,phase,Edição / T2I,e4e,60123,48112,80.02,51.56,0.4977,227.8
+dino_phase_seed_2024,dino,phase,Avatares & Reencenação,heygen,1605,1088,67.79,29.1,0.2989,8.1
+dino_phase_seed_2024,dino,phase,Avatares & Reencenação,cdf_reenactment,128671,101732,79.06,46.23,0.451,470.1

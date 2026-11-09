@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,DiT,31885,13287,41.67,69.75,0.6886,128.0
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,SiT,31885,13751,43.13,70.75,0.6986,124.5
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,ddim,31885,4447,13.95,30.61,0.3412,123.2
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,sd2.1,53474,47027,87.94,95.77,0.9479,205.4
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,pixart,31885,23649,74.17,89.28,0.8782,127.7
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,RDDM,17738,1108,6.25,24.21,0.314,71.1
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Difusão,CollabDiff,1000,327,32.7,54.0,0.5556,6.4
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,StyleGAN2,31885,13472,42.25,71.16,0.7046,124.4
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,StyleGAN3,31885,15115,47.4,75.07,0.7383,125.1
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,StyleGANXL,31885,16551,51.91,77.5,0.762,123.6
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,VQGAN,31885,12410,38.92,67.8,0.6744,126.1
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,stargan,1984,576,29.03,51.31,0.5345,10.6
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Síntese GAN,starganv2,2000,115,5.75,16.45,0.2094,10.5
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Troca Facial,deepfacelab,3122,1835,58.78,82.8,0.8057,16.6
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Troca Facial,faceswap,24634,11820,47.98,73.81,0.729,98.4
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Troca Facial,mobileswap,47522,25357,53.36,77.97,0.7644,183.3
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Troca Facial,blendface,24790,12365,49.88,75.75,0.7419,96.5
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Troca Facial,uniface,24346,9426,38.72,66.67,0.6638,94.9
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Edição / T2I,MidJourney,635,405,63.78,82.52,0.8114,8.3
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Edição / T2I,whichfaceisreal,1001,377,37.66,58.34,0.5996,10.5
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Edição / T2I,styleclip,2824,1206,42.71,63.39,0.6427,17.7
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Edição / T2I,e4e,60123,30589,50.88,75.69,0.7467,231.9
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Avatares & Reencenação,heygen,1605,310,19.31,45.55,0.4825,8.3
+mobilenet_concat_freq_seed_7,mobilenet,concat_frequency,Avatares & Reencenação,cdf_reenactment,128671,50776,39.46,67.53,0.6699,486.9

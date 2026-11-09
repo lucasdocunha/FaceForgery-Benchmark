@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_phase_seed_7,clip,phase,Difusão,DiT,31885,18082,56.71,26.88,0.3122,128.7
+clip_phase_seed_7,clip,phase,Difusão,SiT,31885,18065,56.66,26.31,0.3076,121.8
+clip_phase_seed_7,clip,phase,Difusão,ddim,31885,17353,54.42,30.85,0.3287,121.0
+clip_phase_seed_7,clip,phase,Difusão,sd2.1,53474,47476,88.78,73.22,0.7162,201.1
+clip_phase_seed_7,clip,phase,Difusão,pixart,31885,19563,61.35,34.56,0.3714,158.7
+clip_phase_seed_7,clip,phase,Difusão,RDDM,17738,16056,90.52,57.9,0.5656,68.3
+clip_phase_seed_7,clip,phase,Difusão,CollabDiff,1000,703,70.3,47.3,0.4686,6.5
+clip_phase_seed_7,clip,phase,Síntese GAN,StyleGAN2,31885,11949,37.48,13.61,0.1908,119.4
+clip_phase_seed_7,clip,phase,Síntese GAN,StyleGAN3,31885,11369,35.66,11.57,0.1767,119.8
+clip_phase_seed_7,clip,phase,Síntese GAN,StyleGANXL,31885,15594,48.91,19.91,0.2508,118.8
+clip_phase_seed_7,clip,phase,Síntese GAN,VQGAN,31885,10061,31.55,8.2,0.1483,119.2
+clip_phase_seed_7,clip,phase,Síntese GAN,stargan,1984,572,28.83,8.22,0.1389,9.8
+clip_phase_seed_7,clip,phase,Síntese GAN,starganv2,2000,666,33.3,14.8,0.1897,9.8
+clip_phase_seed_7,clip,phase,Troca Facial,deepfacelab,3122,2402,76.94,36.68,0.4047,15.0
+clip_phase_seed_7,clip,phase,Troca Facial,faceswap,24634,14350,58.25,26.54,0.3087,92.3
+clip_phase_seed_7,clip,phase,Troca Facial,mobileswap,47522,26555,55.88,22.97,0.2838,175.6
+clip_phase_seed_7,clip,phase,Troca Facial,blendface,24790,16013,64.59,29.49,0.3391,93.9
+clip_phase_seed_7,clip,phase,Troca Facial,uniface,24346,12874,52.88,21.68,0.2703,92.4
+clip_phase_seed_7,clip,phase,Edição / T2I,MidJourney,635,578,91.02,73.07,0.677,8.8
+clip_phase_seed_7,clip,phase,Edição / T2I,whichfaceisreal,1001,482,48.15,27.97,0.3023,11.0
+clip_phase_seed_7,clip,phase,Edição / T2I,styleclip,2824,1922,68.06,46.07,0.4612,19.6
+clip_phase_seed_7,clip,phase,Edição / T2I,e4e,60123,32566,54.17,30.32,0.3277,248.2
+clip_phase_seed_7,clip,phase,Avatares & Reencenação,heygen,1605,377,23.49,6.6,0.1209,8.4
+clip_phase_seed_7,clip,phase,Avatares & Reencenação,cdf_reenactment,128671,73497,57.12,25.04,0.2986,470.6

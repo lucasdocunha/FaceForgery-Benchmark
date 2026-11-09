@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,DiT,31885,22292,69.91,58.86,0.5643,23.6
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,SiT,31885,23762,74.52,64.7,0.5957,31.8
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,ddim,31885,10813,33.91,28.26,0.3592,30.3
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,sd2.1,53474,52210,97.64,96.43,0.9188,107.9
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,pixart,31885,30584,95.92,93.14,0.8305,127.3
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,RDDM,17738,896,5.05,2.52,0.1937,13.0
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Difusão,CollabDiff,1000,559,55.9,49.6,0.5257,2.4
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,StyleGAN2,31885,26810,84.08,77.0,0.6784,20.5
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,StyleGAN3,31885,31182,97.8,96.15,0.8676,22.8
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,StyleGANXL,31885,22837,71.62,62.97,0.5771,39.4
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,VQGAN,31885,18477,57.95,47.71,0.5068,39.3
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,stargan,1984,394,19.86,14.11,0.2715,3.4
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Síntese GAN,starganv2,2000,243,12.15,8.8,0.1867,3.7
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Troca Facial,deepfacelab,3122,2651,84.91,76.78,0.6902,4.4
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Troca Facial,faceswap,24634,19249,78.14,69.74,0.6303,25.8
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Troca Facial,mobileswap,47522,36245,76.27,67.51,0.6183,48.6
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Troca Facial,blendface,24790,20383,82.22,74.18,0.6627,24.7
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Troca Facial,uniface,24346,21754,89.35,83.4,0.7403,23.4
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Edição / T2I,MidJourney,635,567,89.29,84.41,0.8016,7.2
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Edição / T2I,whichfaceisreal,1001,814,81.32,78.02,0.7459,9.9
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Edição / T2I,styleclip,2824,2009,71.14,66.47,0.6485,12.9
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Edição / T2I,e4e,60123,52061,86.59,82.65,0.773,211.9
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Avatares & Reencenação,heygen,1605,1023,63.74,55.33,0.5506,1.5
+mobilenet_srm_only_seed_42,mobilenet,srm_only,Avatares & Reencenação,cdf_reenactment,128671,107906,83.86,75.8,0.6729,125.7

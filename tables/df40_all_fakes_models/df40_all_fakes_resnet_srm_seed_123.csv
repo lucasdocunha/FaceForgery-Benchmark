@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_srm_seed_123,resnet,srm,Difusão,DiT,31885,19244,60.35,58.72,0.5844,21.8
+resnet_srm_seed_123,resnet,srm,Difusão,SiT,31885,22578,70.81,69.43,0.6736,24.2
+resnet_srm_seed_123,resnet,srm,Difusão,ddim,31885,3228,10.12,9.66,0.1233,24.7
+resnet_srm_seed_123,resnet,srm,Difusão,sd2.1,53474,52290,97.79,97.65,0.9696,82.0
+resnet_srm_seed_123,resnet,srm,Difusão,pixart,31885,30807,96.62,96.35,0.9382,139.5
+resnet_srm_seed_123,resnet,srm,Difusão,RDDM,17738,7240,40.82,39.24,0.4119,13.3
+resnet_srm_seed_123,resnet,srm,Difusão,CollabDiff,1000,290,29.0,28.4,0.3022,3.1
+resnet_srm_seed_123,resnet,srm,Síntese GAN,StyleGAN2,31885,31438,98.6,98.43,0.9661,25.9
+resnet_srm_seed_123,resnet,srm,Síntese GAN,StyleGAN3,31885,31782,99.68,99.63,0.9889,24.4
+resnet_srm_seed_123,resnet,srm,Síntese GAN,StyleGANXL,31885,26510,83.14,82.0,0.7807,23.8
+resnet_srm_seed_123,resnet,srm,Síntese GAN,VQGAN,31885,7029,22.04,20.85,0.2596,22.3
+resnet_srm_seed_123,resnet,srm,Síntese GAN,stargan,1984,711,35.84,34.43,0.3692,1.6
+resnet_srm_seed_123,resnet,srm,Síntese GAN,starganv2,2000,102,5.1,5.1,0.0671,1.7
+resnet_srm_seed_123,resnet,srm,Troca Facial,deepfacelab,3122,2155,69.03,66.98,0.6346,2.5
+resnet_srm_seed_123,resnet,srm,Troca Facial,faceswap,24634,19427,78.86,77.27,0.7344,15.2
+resnet_srm_seed_123,resnet,srm,Troca Facial,mobileswap,47522,42888,90.25,89.34,0.8507,34.1
+resnet_srm_seed_123,resnet,srm,Troca Facial,blendface,24790,19190,77.41,75.71,0.7183,19.1
+resnet_srm_seed_123,resnet,srm,Troca Facial,uniface,24346,21029,86.38,85.39,0.8151,18.0
+resnet_srm_seed_123,resnet,srm,Edição / T2I,MidJourney,635,475,74.8,72.91,0.7254,5.7
+resnet_srm_seed_123,resnet,srm,Edição / T2I,whichfaceisreal,1001,819,81.82,80.82,0.7982,6.7
+resnet_srm_seed_123,resnet,srm,Edição / T2I,styleclip,2824,1775,62.85,62.04,0.6232,8.5
+resnet_srm_seed_123,resnet,srm,Edição / T2I,e4e,60123,43009,71.54,70.49,0.6932,163.3
+resnet_srm_seed_123,resnet,srm,Avatares & Reencenação,heygen,1605,672,41.87,41.12,0.4164,2.5
+resnet_srm_seed_123,resnet,srm,Avatares & Reencenação,cdf_reenactment,128671,107386,83.46,82.31,0.794,115.6

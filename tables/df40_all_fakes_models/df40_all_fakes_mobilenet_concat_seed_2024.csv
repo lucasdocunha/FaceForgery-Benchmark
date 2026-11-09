@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,DiT,31885,16764,52.58,61.32,0.6158,122.9
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,SiT,31885,18733,58.75,67.32,0.6748,120.6
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,ddim,31885,5907,18.53,27.22,0.2822,120.8
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,sd2.1,53474,51646,96.58,97.43,0.9741,200.4
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,pixart,31885,28630,89.79,92.15,0.9222,125.0
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,RDDM,17738,154,0.87,1.69,0.0182,69.0
+mobilenet_concat_seed_2024,mobilenet,concat,Difusão,CollabDiff,1000,219,21.9,30.0,0.3036,6.0
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,StyleGAN2,31885,31045,97.37,98.56,0.985,121.0
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,StyleGAN3,31885,30998,97.22,98.39,0.9832,122.0
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,StyleGANXL,31885,21190,66.46,74.78,0.7477,122.2
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,VQGAN,31885,7284,22.84,30.04,0.3065,120.7
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,stargan,1984,598,30.14,40.17,0.4155,9.0
+mobilenet_concat_seed_2024,mobilenet,concat,Síntese GAN,starganv2,2000,82,4.1,7.1,0.0827,9.3
+mobilenet_concat_seed_2024,mobilenet,concat,Troca Facial,deepfacelab,3122,1712,54.84,63.74,0.6369,14.2
+mobilenet_concat_seed_2024,mobilenet,concat,Troca Facial,faceswap,24634,14339,58.21,67.54,0.6772,93.3
+mobilenet_concat_seed_2024,mobilenet,concat,Troca Facial,mobileswap,47522,32882,69.19,76.46,0.7653,179.4
+mobilenet_concat_seed_2024,mobilenet,concat,Troca Facial,blendface,24790,14865,59.96,68.43,0.687,95.2
+mobilenet_concat_seed_2024,mobilenet,concat,Troca Facial,uniface,24346,17276,70.96,78.25,0.7821,92.3
+mobilenet_concat_seed_2024,mobilenet,concat,Edição / T2I,MidJourney,635,530,83.46,89.13,0.888,8.5
+mobilenet_concat_seed_2024,mobilenet,concat,Edição / T2I,whichfaceisreal,1001,863,86.21,89.91,0.8998,10.2
+mobilenet_concat_seed_2024,mobilenet,concat,Edição / T2I,styleclip,2824,1948,68.98,76.74,0.7679,15.7
+mobilenet_concat_seed_2024,mobilenet,concat,Edição / T2I,e4e,60123,53069,88.27,92.7,0.9254,228.5
+mobilenet_concat_seed_2024,mobilenet,concat,Avatares & Reencenação,heygen,1605,495,30.84,43.49,0.4417,7.7
+mobilenet_concat_seed_2024,mobilenet,concat,Avatares & Reencenação,cdf_reenactment,128671,67840,52.72,61.22,0.6149,477.9

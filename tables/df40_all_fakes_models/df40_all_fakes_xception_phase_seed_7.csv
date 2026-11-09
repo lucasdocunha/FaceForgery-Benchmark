@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_phase_seed_7,xception,phase,Difusão,DiT,31885,29054,91.12,66.5,0.6154,128.7
+xception_phase_seed_7,xception,phase,Difusão,SiT,31885,29127,91.35,66.03,0.6123,121.8
+xception_phase_seed_7,xception,phase,Difusão,ddim,31885,30060,94.28,64.17,0.6022,121.0
+xception_phase_seed_7,xception,phase,Difusão,sd2.1,53474,49989,93.48,80.82,0.7351,201.1
+xception_phase_seed_7,xception,phase,Difusão,pixart,31885,28006,87.83,65.07,0.5977,158.7
+xception_phase_seed_7,xception,phase,Difusão,RDDM,17738,17077,96.27,70.09,0.6288,68.3
+xception_phase_seed_7,xception,phase,Difusão,CollabDiff,1000,952,95.2,67.8,0.6352,6.5
+xception_phase_seed_7,xception,phase,Síntese GAN,StyleGAN2,31885,29147,91.41,58.01,0.5545,119.4
+xception_phase_seed_7,xception,phase,Síntese GAN,StyleGAN3,31885,28546,89.53,55.01,0.5318,119.8
+xception_phase_seed_7,xception,phase,Síntese GAN,StyleGANXL,31885,29112,91.3,61.78,0.5771,118.8
+xception_phase_seed_7,xception,phase,Síntese GAN,VQGAN,31885,28191,88.41,55.49,0.5356,119.2
+xception_phase_seed_7,xception,phase,Síntese GAN,stargan,1984,1841,92.79,57.86,0.5565,9.8
+xception_phase_seed_7,xception,phase,Síntese GAN,starganv2,2000,1879,93.95,59.8,0.5591,9.8
+xception_phase_seed_7,xception,phase,Troca Facial,deepfacelab,3122,2863,91.7,64.73,0.6005,15.0
+xception_phase_seed_7,xception,phase,Troca Facial,faceswap,24634,22384,90.87,64.33,0.5959,92.3
+xception_phase_seed_7,xception,phase,Troca Facial,mobileswap,47522,42478,89.39,58.42,0.5578,175.6
+xception_phase_seed_7,xception,phase,Troca Facial,blendface,24790,22298,89.95,64.31,0.5957,93.9
+xception_phase_seed_7,xception,phase,Troca Facial,uniface,24346,21913,90.01,62.54,0.5841,92.4
+xception_phase_seed_7,xception,phase,Edição / T2I,MidJourney,635,620,97.64,81.42,0.7427,8.8
+xception_phase_seed_7,xception,phase,Edição / T2I,whichfaceisreal,1001,907,90.61,56.24,0.5502,11.0
+xception_phase_seed_7,xception,phase,Edição / T2I,styleclip,2824,2704,95.75,68.7,0.6432,19.6
+xception_phase_seed_7,xception,phase,Edição / T2I,e4e,60123,57096,94.97,67.66,0.6225,248.2
+xception_phase_seed_7,xception,phase,Avatares & Reencenação,heygen,1605,1294,80.62,35.33,0.411,8.4
+xception_phase_seed_7,xception,phase,Avatares & Reencenação,cdf_reenactment,128671,116189,90.3,64.12,0.5961,470.6

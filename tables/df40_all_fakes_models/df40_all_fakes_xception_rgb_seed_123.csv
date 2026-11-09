@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_rgb_seed_123,xception,none,Difusão,DiT,31885,26623,83.5,78.15,0.7475,263.1
+xception_rgb_seed_123,xception,none,Difusão,SiT,31885,28544,89.52,85.34,0.8128,262.5
+xception_rgb_seed_123,xception,none,Difusão,ddim,31885,17044,53.45,43.99,0.4571,262.6
+xception_rgb_seed_123,xception,none,Difusão,sd2.1,53474,52769,98.68,98.26,0.9769,440.9
+xception_rgb_seed_123,xception,none,Difusão,pixart,31885,31755,99.59,99.39,0.9867,267.1
+xception_rgb_seed_123,xception,none,Difusão,RDDM,17738,5780,32.59,26.41,0.2974,146.5
+xception_rgb_seed_123,xception,none,Difusão,CollabDiff,1000,746,74.6,67.3,0.6503,10.2
+xception_rgb_seed_123,xception,none,Síntese GAN,StyleGAN2,31885,31722,99.49,99.12,0.9763,261.1
+xception_rgb_seed_123,xception,none,Síntese GAN,StyleGAN3,31885,31774,99.65,99.48,0.9882,261.5
+xception_rgb_seed_123,xception,none,Síntese GAN,StyleGANXL,31885,29873,93.69,91.61,0.8984,261.1
+xception_rgb_seed_123,xception,none,Síntese GAN,VQGAN,31885,20112,63.08,55.65,0.5477,262.4
+xception_rgb_seed_123,xception,none,Síntese GAN,stargan,1984,835,42.09,31.96,0.3594,17.5
+xception_rgb_seed_123,xception,none,Síntese GAN,starganv2,2000,307,15.35,8.55,0.1472,17.4
+xception_rgb_seed_123,xception,none,Troca Facial,deepfacelab,3122,2916,93.4,90.04,0.854,27.0
+xception_rgb_seed_123,xception,none,Troca Facial,faceswap,24634,22359,90.76,87.23,0.8303,202.8
+xception_rgb_seed_123,xception,none,Troca Facial,mobileswap,47522,42680,89.81,85.86,0.8139,387.9
+xception_rgb_seed_123,xception,none,Troca Facial,blendface,24790,22847,92.16,88.5,0.8427,203.0
+xception_rgb_seed_123,xception,none,Troca Facial,uniface,24346,23285,95.64,93.75,0.9,199.8
+xception_rgb_seed_123,xception,none,Edição / T2I,MidJourney,635,593,93.39,92.91,0.9129,10.2
+xception_rgb_seed_123,xception,none,Edição / T2I,whichfaceisreal,1001,963,96.2,94.31,0.9174,14.8
+xception_rgb_seed_123,xception,none,Edição / T2I,styleclip,2824,2522,89.31,85.09,0.8193,32.5
+xception_rgb_seed_123,xception,none,Edição / T2I,e4e,60123,59573,99.09,98.32,0.9582,496.0
+xception_rgb_seed_123,xception,none,Avatares & Reencenação,heygen,1605,1377,85.79,79.56,0.7608,14.3
+xception_rgb_seed_123,xception,none,Avatares & Reencenação,cdf_reenactment,128671,117896,91.63,88.51,0.8527,1048.3

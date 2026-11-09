@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_concat_seed_123,clip,concat,Difusão,DiT,31885,20074,62.96,73.46,0.7267,122.7
+clip_concat_seed_123,clip,concat,Difusão,SiT,31885,22086,69.27,78.88,0.7808,120.0
+clip_concat_seed_123,clip,concat,Difusão,ddim,31885,11884,37.27,46.11,0.4573,120.0
+clip_concat_seed_123,clip,concat,Difusão,sd2.1,53474,53201,99.49,99.74,0.9971,201.2
+clip_concat_seed_123,clip,concat,Difusão,pixart,31885,31192,97.83,98.79,0.9868,124.4
+clip_concat_seed_123,clip,concat,Difusão,RDDM,17738,17635,99.42,99.67,0.9964,67.9
+clip_concat_seed_123,clip,concat,Difusão,CollabDiff,1000,394,39.4,45.5,0.4526,6.3
+clip_concat_seed_123,clip,concat,Síntese GAN,StyleGAN2,31885,31484,98.74,99.57,0.9943,120.3
+clip_concat_seed_123,clip,concat,Síntese GAN,StyleGAN3,31885,29437,92.32,97.05,0.9635,121.3
+clip_concat_seed_123,clip,concat,Síntese GAN,StyleGANXL,31885,21762,68.25,82.47,0.8122,120.3
+clip_concat_seed_123,clip,concat,Síntese GAN,VQGAN,31885,25350,79.5,86.27,0.8564,121.0
+clip_concat_seed_123,clip,concat,Síntese GAN,stargan,1984,1208,60.89,67.79,0.6781,8.8
+clip_concat_seed_123,clip,concat,Síntese GAN,starganv2,2000,303,15.15,18.75,0.1881,9.0
+clip_concat_seed_123,clip,concat,Troca Facial,deepfacelab,3122,2268,72.65,81.71,0.8086,14.0
+clip_concat_seed_123,clip,concat,Troca Facial,faceswap,24634,19399,78.75,86.86,0.8608,93.8
+clip_concat_seed_123,clip,concat,Troca Facial,mobileswap,47522,28574,60.13,69.86,0.692,178.3
+clip_concat_seed_123,clip,concat,Troca Facial,blendface,24790,13441,54.22,66.94,0.6574,94.4
+clip_concat_seed_123,clip,concat,Troca Facial,uniface,24346,19010,78.08,87.12,0.8613,91.9
+clip_concat_seed_123,clip,concat,Edição / T2I,MidJourney,635,465,73.23,77.17,0.7704,7.8
+clip_concat_seed_123,clip,concat,Edição / T2I,whichfaceisreal,1001,971,97.0,98.4,0.9824,10.0
+clip_concat_seed_123,clip,concat,Edição / T2I,styleclip,2824,2452,86.83,90.37,0.9005,16.2
+clip_concat_seed_123,clip,concat,Edição / T2I,e4e,60123,59122,98.34,98.92,0.9886,227.1
+clip_concat_seed_123,clip,concat,Avatares & Reencenação,heygen,1605,706,43.99,53.77,0.535,7.3
+clip_concat_seed_123,clip,concat,Avatares & Reencenação,cdf_reenactment,128671,78323,60.87,71.43,0.7066,478.0

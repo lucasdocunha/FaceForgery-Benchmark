@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,DiT,31885,8071,25.31,56.79,0.5949,128.7
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,SiT,31885,8148,25.55,58.2,0.6069,121.8
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,ddim,31885,6938,21.76,52.32,0.5566,121.0
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,sd2.1,53474,32634,61.03,84.35,0.8381,201.1
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,pixart,31885,10808,33.9,66.86,0.6803,158.7
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,RDDM,17738,7566,42.65,78.86,0.7733,68.3
+mobilenet_phase_seed_7,mobilenet,phase,Difusão,CollabDiff,1000,398,39.8,67.3,0.6845,6.5
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,StyleGAN2,31885,6502,20.39,54.4,0.5783,119.4
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,StyleGAN3,31885,5973,18.73,53.02,0.5696,119.8
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,StyleGANXL,31885,8246,25.86,60.74,0.6285,118.8
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,VQGAN,31885,6216,19.5,51.84,0.5591,119.2
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,stargan,1984,258,13.0,45.97,0.513,9.8
+mobilenet_phase_seed_7,mobilenet,phase,Síntese GAN,starganv2,2000,324,16.2,43.45,0.4776,9.8
+mobilenet_phase_seed_7,mobilenet,phase,Troca Facial,deepfacelab,3122,1042,33.38,68.71,0.6907,15.0
+mobilenet_phase_seed_7,mobilenet,phase,Troca Facial,faceswap,24634,5173,21.0,51.98,0.555,92.3
+mobilenet_phase_seed_7,mobilenet,phase,Troca Facial,mobileswap,47522,9042,19.03,50.76,0.5485,175.6
+mobilenet_phase_seed_7,mobilenet,phase,Troca Facial,blendface,24790,5817,23.47,55.13,0.5813,93.9
+mobilenet_phase_seed_7,mobilenet,phase,Troca Facial,uniface,24346,4913,20.18,51.99,0.5534,92.4
+mobilenet_phase_seed_7,mobilenet,phase,Edição / T2I,MidJourney,635,404,63.62,87.56,0.8695,8.8
+mobilenet_phase_seed_7,mobilenet,phase,Edição / T2I,whichfaceisreal,1001,277,27.67,55.74,0.5948,11.0
+mobilenet_phase_seed_7,mobilenet,phase,Edição / T2I,styleclip,2824,1107,39.2,68.91,0.7004,19.6
+mobilenet_phase_seed_7,mobilenet,phase,Edição / T2I,e4e,60123,20959,34.86,66.84,0.6785,248.2
+mobilenet_phase_seed_7,mobilenet,phase,Avatares & Reencenação,heygen,1605,138,8.6,34.77,0.4253,8.4
+mobilenet_phase_seed_7,mobilenet,phase,Avatares & Reencenação,cdf_reenactment,128671,31492,24.47,56.24,0.5927,470.6

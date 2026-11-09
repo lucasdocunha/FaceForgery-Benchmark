@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,DiT,31885,24295,76.2,56.57,0.5689,135.1
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,SiT,31885,27023,84.75,67.65,0.6505,130.8
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,ddim,31885,11892,37.3,27.59,0.3176,132.2
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,sd2.1,53474,53172,99.44,98.84,0.9753,219.7
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,pixart,31885,31289,98.13,94.43,0.8922,135.4
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,RDDM,17738,530,2.99,1.13,0.0913,73.5
+resnet_srm_only_seed_2024,resnet,srm_only,Difusão,CollabDiff,1000,467,46.7,36.9,0.4064,6.0
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,StyleGAN2,31885,31006,97.24,92.03,0.8494,130.8
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,StyleGAN3,31885,31660,99.29,98.29,0.952,130.8
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,StyleGANXL,31885,31210,97.88,96.15,0.9004,131.1
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,VQGAN,31885,8253,25.88,14.9,0.2222,131.0
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,stargan,1984,832,41.94,25.35,0.3205,9.1
+resnet_srm_only_seed_2024,resnet,srm_only,Síntese GAN,starganv2,2000,190,9.5,5.45,0.0931,9.2
+resnet_srm_only_seed_2024,resnet,srm_only,Troca Facial,deepfacelab,3122,2878,92.18,78.64,0.732,14.3
+resnet_srm_only_seed_2024,resnet,srm_only,Troca Facial,faceswap,24634,21529,87.4,73.33,0.6847,100.9
+resnet_srm_only_seed_2024,resnet,srm_only,Troca Facial,mobileswap,47522,44092,92.78,81.58,0.7539,194.4
+resnet_srm_only_seed_2024,resnet,srm_only,Troca Facial,blendface,24790,21707,87.56,73.84,0.6941,102.4
+resnet_srm_only_seed_2024,resnet,srm_only,Troca Facial,uniface,24346,23043,94.65,87.62,0.8179,99.7
+resnet_srm_only_seed_2024,resnet,srm_only,Edição / T2I,MidJourney,635,562,88.5,80.79,0.7987,7.5
+resnet_srm_only_seed_2024,resnet,srm_only,Edição / T2I,whichfaceisreal,1001,828,82.72,77.12,0.7682,9.8
+resnet_srm_only_seed_2024,resnet,srm_only,Edição / T2I,styleclip,2824,2142,75.85,67.81,0.6769,17.1
+resnet_srm_only_seed_2024,resnet,srm_only,Edição / T2I,e4e,60123,54631,90.87,84.86,0.8204,249.6
+resnet_srm_only_seed_2024,resnet,srm_only,Avatares & Reencenação,heygen,1605,836,52.09,38.82,0.4183,7.6
+resnet_srm_only_seed_2024,resnet,srm_only,Avatares & Reencenação,cdf_reenactment,128671,117114,91.02,79.06,0.7449,520.6

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,DiT,31885,15686,49.2,51.2,0.5095,121.3
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,SiT,31885,17305,54.27,56.21,0.5462,119.3
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,ddim,31885,30398,95.34,95.87,0.8863,121.2
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,sd2.1,53474,45486,85.06,85.76,0.8216,205.8
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,pixart,31885,29625,92.91,93.42,0.8985,207.6
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,RDDM,17738,1384,7.8,8.42,0.1164,72.0
+xception_frequency_3_seed_7,xception,frequency_3,Difusão,CollabDiff,1000,833,83.3,84.4,0.8013,11.4
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,StyleGAN2,31885,21123,66.25,68.4,0.6427,124.7
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,StyleGAN3,31885,28282,88.7,89.76,0.8334,125.1
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,StyleGANXL,31885,28195,88.43,89.24,0.8234,119.6
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,VQGAN,31885,18945,59.42,61.41,0.5853,120.0
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,stargan,1984,1769,89.16,90.17,0.8105,10.3
+xception_frequency_3_seed_7,xception,frequency_3,Síntese GAN,starganv2,2000,1901,95.05,95.85,0.8435,10.3
+xception_frequency_3_seed_7,xception,frequency_3,Troca Facial,deepfacelab,3122,1636,52.4,53.94,0.5221,15.0
+xception_frequency_3_seed_7,xception,frequency_3,Troca Facial,faceswap,24634,10416,42.28,44.26,0.4541,92.8
+xception_frequency_3_seed_7,xception,frequency_3,Troca Facial,mobileswap,47522,20060,42.21,44.07,0.4516,177.6
+xception_frequency_3_seed_7,xception,frequency_3,Troca Facial,blendface,24790,13018,52.51,54.29,0.5325,94.8
+xception_frequency_3_seed_7,xception,frequency_3,Troca Facial,uniface,24346,13462,55.29,56.99,0.5573,92.9
+xception_frequency_3_seed_7,xception,frequency_3,Edição / T2I,MidJourney,635,612,96.38,96.54,0.9194,9.0
+xception_frequency_3_seed_7,xception,frequency_3,Edição / T2I,whichfaceisreal,1001,903,90.21,91.31,0.845,11.2
+xception_frequency_3_seed_7,xception,frequency_3,Edição / T2I,styleclip,2824,2670,94.55,95.15,0.8954,20.0
+xception_frequency_3_seed_7,xception,frequency_3,Edição / T2I,e4e,60123,57319,95.34,95.94,0.8811,244.1
+xception_frequency_3_seed_7,xception,frequency_3,Avatares & Reencenação,heygen,1605,925,57.63,61.31,0.5901,8.2
+xception_frequency_3_seed_7,xception,frequency_3,Avatares & Reencenação,cdf_reenactment,128671,64316,49.98,51.86,0.5164,471.4

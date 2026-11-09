@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_complex_seed_123,clip,complex,Difusão,DiT,31885,0,0.0,0.0,,122.9
+clip_complex_seed_123,clip,complex,Difusão,SiT,31885,0,0.0,0.0,,120.2
+clip_complex_seed_123,clip,complex,Difusão,ddim,31885,0,0.0,0.0,,120.8
+clip_complex_seed_123,clip,complex,Difusão,sd2.1,53474,0,0.0,0.0,,201.3
+clip_complex_seed_123,clip,complex,Difusão,pixart,31885,0,0.0,0.0,,162.7
+clip_complex_seed_123,clip,complex,Difusão,RDDM,17738,0,0.0,0.0,,69.1
+clip_complex_seed_123,clip,complex,Difusão,CollabDiff,1000,0,0.0,0.0,,6.7
+clip_complex_seed_123,clip,complex,Síntese GAN,StyleGAN2,31885,0,0.0,0.0,,120.0
+clip_complex_seed_123,clip,complex,Síntese GAN,StyleGAN3,31885,0,0.0,0.0,,121.2
+clip_complex_seed_123,clip,complex,Síntese GAN,StyleGANXL,31885,0,0.0,0.0,,119.5
+clip_complex_seed_123,clip,complex,Síntese GAN,VQGAN,31885,0,0.0,0.0,,119.9
+clip_complex_seed_123,clip,complex,Síntese GAN,stargan,1984,0,0.0,0.0,,10.1
+clip_complex_seed_123,clip,complex,Síntese GAN,starganv2,2000,0,0.0,0.0,,10.2
+clip_complex_seed_123,clip,complex,Troca Facial,deepfacelab,3122,0,0.0,0.0,,16.7
+clip_complex_seed_123,clip,complex,Troca Facial,faceswap,24634,0,0.0,0.0,,94.5
+clip_complex_seed_123,clip,complex,Troca Facial,mobileswap,47522,0,0.0,0.0,,177.1
+clip_complex_seed_123,clip,complex,Troca Facial,blendface,24790,0,0.0,0.0,,94.1
+clip_complex_seed_123,clip,complex,Troca Facial,uniface,24346,0,0.0,0.0,,92.5
+clip_complex_seed_123,clip,complex,Edição / T2I,MidJourney,635,0,0.0,0.0,,8.8
+clip_complex_seed_123,clip,complex,Edição / T2I,whichfaceisreal,1001,0,0.0,0.0,,10.9
+clip_complex_seed_123,clip,complex,Edição / T2I,styleclip,2824,0,0.0,0.0,,19.9
+clip_complex_seed_123,clip,complex,Edição / T2I,e4e,60123,0,0.0,0.0,,336.0
+clip_complex_seed_123,clip,complex,Avatares & Reencenação,heygen,1605,0,0.0,0.0,,8.5
+clip_complex_seed_123,clip,complex,Avatares & Reencenação,cdf_reenactment,128671,0,0.0,0.0,,472.4

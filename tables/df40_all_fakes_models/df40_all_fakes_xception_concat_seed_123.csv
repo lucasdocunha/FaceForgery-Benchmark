@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_concat_seed_123,xception,concat,Difusão,DiT,31885,27812,87.23,87.46,0.8612,122.7
+xception_concat_seed_123,xception,concat,Difusão,SiT,31885,28905,90.65,90.87,0.8963,120.0
+xception_concat_seed_123,xception,concat,Difusão,ddim,31885,17230,54.04,54.59,0.5462,120.0
+xception_concat_seed_123,xception,concat,Difusão,sd2.1,53474,52854,98.84,98.86,0.9869,201.2
+xception_concat_seed_123,xception,concat,Difusão,pixart,31885,31690,99.39,99.4,0.9916,124.4
+xception_concat_seed_123,xception,concat,Difusão,RDDM,17738,4404,24.83,25.12,0.2563,67.9
+xception_concat_seed_123,xception,concat,Difusão,CollabDiff,1000,602,60.2,60.8,0.6006,6.3
+xception_concat_seed_123,xception,concat,Síntese GAN,StyleGAN2,31885,31481,98.73,98.76,0.9824,120.3
+xception_concat_seed_123,xception,concat,Síntese GAN,StyleGAN3,31885,31638,99.23,99.24,0.99,121.3
+xception_concat_seed_123,xception,concat,Síntese GAN,StyleGANXL,31885,29879,93.71,93.86,0.9274,120.3
+xception_concat_seed_123,xception,concat,Síntese GAN,VQGAN,31885,23328,73.16,73.51,0.7255,121.0
+xception_concat_seed_123,xception,concat,Síntese GAN,stargan,1984,1017,51.26,51.61,0.5215,8.8
+xception_concat_seed_123,xception,concat,Síntese GAN,starganv2,2000,321,16.05,16.4,0.1856,9.0
+xception_concat_seed_123,xception,concat,Troca Facial,deepfacelab,3122,2853,91.38,91.48,0.9046,14.0
+xception_concat_seed_123,xception,concat,Troca Facial,faceswap,24634,22244,90.3,90.49,0.8934,93.8
+xception_concat_seed_123,xception,concat,Troca Facial,mobileswap,47522,42744,89.95,90.14,0.8887,178.3
+xception_concat_seed_123,xception,concat,Troca Facial,blendface,24790,22042,88.91,89.19,0.8774,94.4
+xception_concat_seed_123,xception,concat,Troca Facial,uniface,24346,22856,93.88,94.05,0.9291,91.9
+xception_concat_seed_123,xception,concat,Edição / T2I,MidJourney,635,593,93.39,93.39,0.9245,7.8
+xception_concat_seed_123,xception,concat,Edição / T2I,whichfaceisreal,1001,872,87.11,87.21,0.8612,10.0
+xception_concat_seed_123,xception,concat,Edição / T2I,styleclip,2824,2241,79.36,79.71,0.786,16.2
+xception_concat_seed_123,xception,concat,Edição / T2I,e4e,60123,57837,96.2,96.31,0.9534,227.1
+xception_concat_seed_123,xception,concat,Avatares & Reencenação,heygen,1605,1337,83.3,83.68,0.8179,7.3
+xception_concat_seed_123,xception,concat,Avatares & Reencenação,cdf_reenactment,128671,115275,89.59,89.81,0.8867,478.0

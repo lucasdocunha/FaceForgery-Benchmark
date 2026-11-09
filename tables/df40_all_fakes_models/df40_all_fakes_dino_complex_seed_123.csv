@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_complex_seed_123,dino,complex,Difusão,DiT,31885,31753,99.59,0.0,0.1929,122.9
+dino_complex_seed_123,dino,complex,Difusão,SiT,31885,31742,99.55,0.0,0.1929,120.2
+dino_complex_seed_123,dino,complex,Difusão,ddim,31885,31765,99.62,0.0,0.1929,120.8
+dino_complex_seed_123,dino,complex,Difusão,sd2.1,53474,53273,99.62,0.0,0.1929,201.3
+dino_complex_seed_123,dino,complex,Difusão,pixart,31885,31775,99.66,0.0,0.1929,162.7
+dino_complex_seed_123,dino,complex,Difusão,RDDM,17738,17602,99.23,0.0,0.1929,69.1
+dino_complex_seed_123,dino,complex,Difusão,CollabDiff,1000,998,99.8,0.0,0.1929,6.7
+dino_complex_seed_123,dino,complex,Síntese GAN,StyleGAN2,31885,31733,99.52,0.0,0.1929,120.0
+dino_complex_seed_123,dino,complex,Síntese GAN,StyleGAN3,31885,31733,99.52,0.0,0.1929,121.2
+dino_complex_seed_123,dino,complex,Síntese GAN,StyleGANXL,31885,31704,99.43,0.0,0.1929,119.5
+dino_complex_seed_123,dino,complex,Síntese GAN,VQGAN,31885,31729,99.51,0.0,0.1929,119.9
+dino_complex_seed_123,dino,complex,Síntese GAN,stargan,1984,1974,99.5,0.0,0.1929,10.1
+dino_complex_seed_123,dino,complex,Síntese GAN,starganv2,2000,1990,99.5,0.0,0.1929,10.2
+dino_complex_seed_123,dino,complex,Troca Facial,deepfacelab,3122,3109,99.58,0.0,0.1929,16.7
+dino_complex_seed_123,dino,complex,Troca Facial,faceswap,24634,24529,99.57,0.0,0.1929,94.5
+dino_complex_seed_123,dino,complex,Troca Facial,mobileswap,47522,47357,99.65,0.0,0.1929,177.1
+dino_complex_seed_123,dino,complex,Troca Facial,blendface,24790,24721,99.72,0.0,0.1929,94.1
+dino_complex_seed_123,dino,complex,Troca Facial,uniface,24346,24283,99.74,0.0,0.1929,92.5
+dino_complex_seed_123,dino,complex,Edição / T2I,MidJourney,635,635,100.0,0.0,0.1929,8.8
+dino_complex_seed_123,dino,complex,Edição / T2I,whichfaceisreal,1001,995,99.4,0.0,0.1929,10.9
+dino_complex_seed_123,dino,complex,Edição / T2I,styleclip,2824,2804,99.29,0.0,0.1929,19.9
+dino_complex_seed_123,dino,complex,Edição / T2I,e4e,60123,59869,99.58,0.0,0.1929,336.0
+dino_complex_seed_123,dino,complex,Avatares & Reencenação,heygen,1605,1604,99.94,0.0,0.1929,8.5
+dino_complex_seed_123,dino,complex,Avatares & Reencenação,cdf_reenactment,128671,128085,99.54,0.0,0.1929,472.4

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_concat_seed_2025,resnet,concat,Difusão,DiT,31885,19437,60.96,82.95,0.8261,122.9
+resnet_concat_seed_2025,resnet,concat,Difusão,SiT,31885,22160,69.5,88.8,0.883,120.4
+resnet_concat_seed_2025,resnet,concat,Difusão,ddim,31885,11125,34.89,60.93,0.612,120.6
+resnet_concat_seed_2025,resnet,concat,Difusão,sd2.1,53474,52514,98.2,99.56,0.9949,201.2
+resnet_concat_seed_2025,resnet,concat,Difusão,pixart,31885,31854,99.9,100.0,0.9999,125.5
+resnet_concat_seed_2025,resnet,concat,Difusão,RDDM,17738,2691,15.17,48.24,0.534,68.1
+resnet_concat_seed_2025,resnet,concat,Difusão,CollabDiff,1000,503,50.3,72.1,0.7181,6.0
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,StyleGAN2,31885,31758,99.6,99.94,0.9993,121.0
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,StyleGAN3,31885,31852,99.9,99.97,0.9996,120.8
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,StyleGANXL,31885,29838,93.58,99.1,0.9886,119.8
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,VQGAN,31885,9048,28.38,49.83,0.5056,120.0
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,stargan,1984,666,33.57,63.81,0.6412,9.5
+resnet_concat_seed_2025,resnet,concat,Síntese GAN,starganv2,2000,171,8.55,20.95,0.2265,9.2
+resnet_concat_seed_2025,resnet,concat,Troca Facial,deepfacelab,3122,1895,60.7,86.71,0.8596,14.3
+resnet_concat_seed_2025,resnet,concat,Troca Facial,faceswap,24634,18244,74.06,91.46,0.9092,95.5
+resnet_concat_seed_2025,resnet,concat,Troca Facial,mobileswap,47522,39427,82.97,94.38,0.9405,179.9
+resnet_concat_seed_2025,resnet,concat,Troca Facial,blendface,24790,18348,74.01,92.07,0.9145,94.2
+resnet_concat_seed_2025,resnet,concat,Troca Facial,uniface,24346,21929,90.07,96.28,0.9613,94.0
+resnet_concat_seed_2025,resnet,concat,Edição / T2I,MidJourney,635,516,81.26,90.87,0.9082,8.0
+resnet_concat_seed_2025,resnet,concat,Edição / T2I,whichfaceisreal,1001,587,58.64,80.42,0.8003,9.9
+resnet_concat_seed_2025,resnet,concat,Edição / T2I,styleclip,2824,1688,59.77,79.14,0.7871,16.0
+resnet_concat_seed_2025,resnet,concat,Edição / T2I,e4e,60123,55278,91.94,97.76,0.9752,229.0
+resnet_concat_seed_2025,resnet,concat,Avatares & Reencenação,heygen,1605,1267,78.94,93.96,0.9314,7.4
+resnet_concat_seed_2025,resnet,concat,Avatares & Reencenação,cdf_reenactment,128671,92288,71.72,90.08,0.8956,477.6

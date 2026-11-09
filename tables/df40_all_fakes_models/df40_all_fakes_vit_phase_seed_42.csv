@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_phase_seed_42,vit,phase,Difusão,DiT,31885,31302,98.17,29.58,0.3415,95.7
+vit_phase_seed_42,vit,phase,Difusão,SiT,31885,31379,98.41,29.06,0.3383,96.4
+vit_phase_seed_42,vit,phase,Difusão,ddim,31885,31759,99.6,25.32,0.3071,97.1
+vit_phase_seed_42,vit,phase,Difusão,sd2.1,53474,52917,98.96,66.34,0.6517,161.9
+vit_phase_seed_42,vit,phase,Difusão,pixart,31885,31459,98.66,44.19,0.4614,177.4
+vit_phase_seed_42,vit,phase,Difusão,RDDM,17738,17698,99.77,89.98,0.8355,58.5
+vit_phase_seed_42,vit,phase,Difusão,CollabDiff,1000,992,99.2,33.2,0.3682,9.2
+vit_phase_seed_42,vit,phase,Síntese GAN,StyleGAN2,31885,31640,99.23,26.83,0.3223,98.5
+vit_phase_seed_42,vit,phase,Síntese GAN,StyleGAN3,31885,31548,98.94,19.76,0.2659,97.2
+vit_phase_seed_42,vit,phase,Síntese GAN,StyleGANXL,31885,31535,98.9,27.16,0.3241,97.4
+vit_phase_seed_42,vit,phase,Síntese GAN,VQGAN,31885,31617,99.16,12.24,0.2077,97.8
+vit_phase_seed_42,vit,phase,Síntese GAN,stargan,1984,1980,99.8,14.77,0.2261,8.5
+vit_phase_seed_42,vit,phase,Síntese GAN,starganv2,2000,1976,98.8,15.0,0.2197,7.9
+vit_phase_seed_42,vit,phase,Troca Facial,deepfacelab,3122,3087,98.88,26.71,0.3325,11.8
+vit_phase_seed_42,vit,phase,Troca Facial,faceswap,24634,24043,97.6,25.29,0.3074,75.9
+vit_phase_seed_42,vit,phase,Troca Facial,mobileswap,47522,46455,97.75,19.52,0.261,142.4
+vit_phase_seed_42,vit,phase,Troca Facial,blendface,24790,24189,97.58,26.88,0.3225,76.5
+vit_phase_seed_42,vit,phase,Troca Facial,uniface,24346,23777,97.66,24.57,0.3018,75.0
+vit_phase_seed_42,vit,phase,Edição / T2I,MidJourney,635,634,99.84,57.32,0.5566,8.0
+vit_phase_seed_42,vit,phase,Edição / T2I,whichfaceisreal,1001,998,99.7,18.28,0.2456,11.9
+vit_phase_seed_42,vit,phase,Edição / T2I,styleclip,2824,2803,99.26,32.01,0.355,20.5
+vit_phase_seed_42,vit,phase,Edição / T2I,e4e,60123,59712,99.32,30.11,0.3418,290.9
+vit_phase_seed_42,vit,phase,Avatares & Reencenação,heygen,1605,1551,96.64,4.55,0.1192,7.1
+vit_phase_seed_42,vit,phase,Avatares & Reencenação,cdf_reenactment,128671,126391,98.23,28.29,0.336,380.5

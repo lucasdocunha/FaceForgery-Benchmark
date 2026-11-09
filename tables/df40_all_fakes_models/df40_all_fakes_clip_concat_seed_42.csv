@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_concat_seed_42,clip,concat,Difusão,DiT,31885,24330,76.31,75.57,0.7411,54.5
+clip_concat_seed_42,clip,concat,Difusão,SiT,31885,25481,79.92,79.35,0.7807,52.9
+clip_concat_seed_42,clip,concat,Difusão,ddim,31885,15128,47.45,46.63,0.4502,58.4
+clip_concat_seed_42,clip,concat,Difusão,sd2.1,53474,53123,99.34,99.32,0.991,129.0
+clip_concat_seed_42,clip,concat,Difusão,pixart,31885,31060,97.41,97.33,0.9703,173.6
+clip_concat_seed_42,clip,concat,Difusão,RDDM,17738,17542,98.9,98.85,0.9858,30.7
+clip_concat_seed_42,clip,concat,Difusão,CollabDiff,1000,475,47.5,46.6,0.4546,3.8
+clip_concat_seed_42,clip,concat,Síntese GAN,StyleGAN2,31885,31433,98.58,98.52,0.9828,56.0
+clip_concat_seed_42,clip,concat,Síntese GAN,StyleGAN3,31885,30267,94.93,94.76,0.9396,54.8
+clip_concat_seed_42,clip,concat,Síntese GAN,StyleGANXL,31885,20743,65.06,64.35,0.6265,64.5
+clip_concat_seed_42,clip,concat,Síntese GAN,VQGAN,31885,22155,69.48,68.89,0.6749,62.2
+clip_concat_seed_42,clip,concat,Síntese GAN,stargan,1984,1083,54.59,53.93,0.526,4.9
+clip_concat_seed_42,clip,concat,Síntese GAN,starganv2,2000,285,14.25,13.75,0.1369,5.1
+clip_concat_seed_42,clip,concat,Troca Facial,deepfacelab,3122,2439,78.12,77.45,0.7605,7.2
+clip_concat_seed_42,clip,concat,Troca Facial,faceswap,24634,19350,78.55,77.96,0.7656,44.8
+clip_concat_seed_42,clip,concat,Troca Facial,mobileswap,47522,30085,63.31,62.6,0.6112,86.3
+clip_concat_seed_42,clip,concat,Troca Facial,blendface,24790,15491,62.49,61.86,0.6046,46.3
+clip_concat_seed_42,clip,concat,Troca Facial,uniface,24346,20525,84.31,83.74,0.8256,43.2
+clip_concat_seed_42,clip,concat,Edição / T2I,MidJourney,635,521,82.05,81.1,0.8061,5.3
+clip_concat_seed_42,clip,concat,Edição / T2I,whichfaceisreal,1001,951,95.0,94.71,0.9443,10.0
+clip_concat_seed_42,clip,concat,Edição / T2I,styleclip,2824,2405,85.16,84.84,0.8424,14.4
+clip_concat_seed_42,clip,concat,Edição / T2I,e4e,60123,59026,98.18,98.1,0.9775,255.8
+clip_concat_seed_42,clip,concat,Avatares & Reencenação,heygen,1605,850,52.96,51.9,0.5059,4.0
+clip_concat_seed_42,clip,concat,Avatares & Reencenação,cdf_reenactment,128671,91506,71.12,70.53,0.6957,241.4

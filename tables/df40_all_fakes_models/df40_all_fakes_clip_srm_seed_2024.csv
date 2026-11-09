@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_srm_seed_2024,clip,srm,Difusão,DiT,31885,20038,62.84,63.85,0.6365,133.6
+clip_srm_seed_2024,clip,srm,Difusão,SiT,31885,22181,69.57,70.65,0.6967,128.2
+clip_srm_seed_2024,clip,srm,Difusão,ddim,31885,11796,37.0,37.65,0.3939,128.5
+clip_srm_seed_2024,clip,srm,Difusão,sd2.1,53474,53032,99.17,99.24,0.9871,216.8
+clip_srm_seed_2024,clip,srm,Difusão,pixart,31885,30776,96.52,96.73,0.9531,134.3
+clip_srm_seed_2024,clip,srm,Difusão,RDDM,17738,10765,60.69,62.74,0.6206,71.8
+clip_srm_seed_2024,clip,srm,Difusão,CollabDiff,1000,322,32.2,32.7,0.3511,6.4
+clip_srm_seed_2024,clip,srm,Síntese GAN,StyleGAN2,31885,29983,94.03,94.34,0.9252,128.2
+clip_srm_seed_2024,clip,srm,Síntese GAN,StyleGAN3,31885,30845,96.74,96.93,0.9528,128.9
+clip_srm_seed_2024,clip,srm,Síntese GAN,StyleGANXL,31885,23137,72.56,73.54,0.7231,131.9
+clip_srm_seed_2024,clip,srm,Síntese GAN,VQGAN,31885,29023,91.02,91.4,0.8977,131.7
+clip_srm_seed_2024,clip,srm,Síntese GAN,stargan,1984,1116,56.25,56.8,0.5827,11.3
+clip_srm_seed_2024,clip,srm,Síntese GAN,starganv2,2000,536,26.8,27.0,0.2917,11.2
+clip_srm_seed_2024,clip,srm,Troca Facial,deepfacelab,3122,2216,70.98,72.1,0.7067,16.0
+clip_srm_seed_2024,clip,srm,Troca Facial,faceswap,24634,21784,88.43,88.87,0.8721,102.1
+clip_srm_seed_2024,clip,srm,Troca Facial,mobileswap,47522,35099,73.86,74.86,0.7317,190.5
+clip_srm_seed_2024,clip,srm,Troca Facial,blendface,24790,18386,74.17,75.17,0.733,100.2
+clip_srm_seed_2024,clip,srm,Troca Facial,uniface,24346,21596,88.7,89.2,0.8719,98.4
+clip_srm_seed_2024,clip,srm,Edição / T2I,MidJourney,635,440,69.29,69.61,0.6871,7.5
+clip_srm_seed_2024,clip,srm,Edição / T2I,whichfaceisreal,1001,883,88.21,88.71,0.879,9.6
+clip_srm_seed_2024,clip,srm,Edição / T2I,styleclip,2824,2017,71.42,71.85,0.7203,16.8
+clip_srm_seed_2024,clip,srm,Edição / T2I,e4e,60123,55795,92.8,93.06,0.9187,242.4
+clip_srm_seed_2024,clip,srm,Avatares & Reencenação,heygen,1605,392,24.42,25.17,0.2761,7.6
+clip_srm_seed_2024,clip,srm,Avatares & Reencenação,cdf_reenactment,128671,92528,71.91,72.67,0.7219,513.0

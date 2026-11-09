@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,DiT,31885,26741,83.87,87.45,0.8662,127.7
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,SiT,31885,26891,84.34,87.99,0.8709,126.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,ddim,31885,15479,48.55,54.13,0.5408,125.3
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,sd2.1,53474,52362,97.92,98.66,0.9824,204.2
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,pixart,31885,31485,98.75,99.04,0.9889,130.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,RDDM,17738,17559,98.99,99.54,0.99,71.5
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Difusão,CollabDiff,1000,652,65.2,70.1,0.6922,6.6
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,StyleGAN2,31885,30060,94.28,95.84,0.9524,123.7
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,StyleGAN3,31885,30851,96.76,97.66,0.9724,124.2
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,StyleGANXL,31885,30598,95.96,97.04,0.9662,125.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,VQGAN,31885,29046,91.1,93.54,0.9267,123.4
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,stargan,1984,1652,83.27,87.7,0.8618,10.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Síntese GAN,starganv2,2000,657,32.85,39.95,0.4019,10.1
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Troca Facial,deepfacelab,3122,2637,84.47,88.69,0.8761,15.4
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Troca Facial,faceswap,24634,19862,80.63,84.81,0.8383,96.2
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Troca Facial,mobileswap,47522,43319,91.16,93.28,0.9257,182.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Troca Facial,blendface,24790,21654,87.35,90.3,0.894,97.0
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Troca Facial,uniface,24346,20147,82.75,86.25,0.8541,95.6
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Edição / T2I,MidJourney,635,506,79.69,84.41,0.835,8.3
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Edição / T2I,whichfaceisreal,1001,623,62.24,68.13,0.6829,10.3
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Edição / T2I,styleclip,2824,1384,49.01,54.21,0.5542,17.5
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Edição / T2I,e4e,60123,47704,79.34,83.42,0.8268,234.6
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Avatares & Reencenação,heygen,1605,1501,93.52,95.02,0.9406,8.6
+resnet_concat_freq_seed_2025,resnet,concat_frequency,Avatares & Reencenação,cdf_reenactment,128671,106387,82.68,86.75,0.857,488.4

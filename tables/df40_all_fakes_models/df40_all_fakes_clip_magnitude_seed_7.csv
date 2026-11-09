@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_magnitude_seed_7,clip,magnitude,Difusão,DiT,31885,18376,57.63,22.36,0.2674,138.4
+clip_magnitude_seed_7,clip,magnitude,Difusão,SiT,31885,19603,61.48,25.66,0.2967,136.3
+clip_magnitude_seed_7,clip,magnitude,Difusão,ddim,31885,29353,92.06,73.32,0.7049,137.6
+clip_magnitude_seed_7,clip,magnitude,Difusão,sd2.1,53474,52043,97.32,90.06,0.874,223.3
+clip_magnitude_seed_7,clip,magnitude,Difusão,pixart,31885,31014,97.27,93.16,0.9048,178.4
+clip_magnitude_seed_7,clip,magnitude,Difusão,RDDM,17738,565,3.19,0.33,0.0289,76.7
+clip_magnitude_seed_7,clip,magnitude,Difusão,CollabDiff,1000,774,77.4,53.6,0.5277,7.0
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,StyleGAN2,31885,19643,61.61,34.54,0.3671,132.5
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,StyleGAN3,31885,30448,95.49,83.24,0.8004,133.1
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,StyleGANXL,31885,28456,89.25,65.55,0.648,133.8
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,VQGAN,31885,22321,70.0,33.63,0.3674,134.3
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,stargan,1984,1966,99.09,93.9,0.8937,14.6
+clip_magnitude_seed_7,clip,magnitude,Síntese GAN,starganv2,2000,1744,87.2,53.95,0.526,14.7
+clip_magnitude_seed_7,clip,magnitude,Troca Facial,deepfacelab,3122,2080,66.62,27.61,0.3169,20.5
+clip_magnitude_seed_7,clip,magnitude,Troca Facial,faceswap,24634,12970,52.65,20.52,0.2492,107.9
+clip_magnitude_seed_7,clip,magnitude,Troca Facial,mobileswap,47522,23299,49.03,18.72,0.2304,199.1
+clip_magnitude_seed_7,clip,magnitude,Troca Facial,blendface,24790,16821,67.85,32.25,0.3507,104.9
+clip_magnitude_seed_7,clip,magnitude,Troca Facial,uniface,24346,16925,69.52,34.35,0.371,103.9
+clip_magnitude_seed_7,clip,magnitude,Edição / T2I,MidJourney,635,595,93.7,73.86,0.7157,8.8
+clip_magnitude_seed_7,clip,magnitude,Edição / T2I,whichfaceisreal,1001,846,84.52,59.44,0.5814,11.3
+clip_magnitude_seed_7,clip,magnitude,Edição / T2I,styleclip,2824,2547,90.19,71.0,0.6885,23.9
+clip_magnitude_seed_7,clip,magnitude,Edição / T2I,e4e,60123,58887,97.94,88.1,0.8449,301.8
+clip_magnitude_seed_7,clip,magnitude,Avatares & Reencenação,heygen,1605,1090,67.91,28.79,0.321,9.2
+clip_magnitude_seed_7,clip,magnitude,Avatares & Reencenação,cdf_reenactment,128671,76177,59.2,24.01,0.2817,526.8

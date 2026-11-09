@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,DiT,31885,20765,65.12,48.55,0.4885,129.1
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,SiT,31885,21131,66.27,49.13,0.4938,125.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,ddim,31885,9179,28.79,19.56,0.2085,124.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,sd2.1,53474,52628,98.42,96.7,,204.4
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,pixart,31885,29960,93.96,89.44,,128.9
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,RDDM,17738,15043,84.81,69.36,0.6801,71.0
+clip_concat_freq_seed_2024,clip,concat_frequency,Difusão,CollabDiff,1000,432,43.2,32.2,0.3321,6.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,StyleGAN2,31885,19942,62.54,45.45,0.4586,124.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,StyleGAN3,31885,21204,66.5,48.58,0.4902,123.8
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,StyleGANXL,31885,25397,79.65,66.71,0.6595,123.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,VQGAN,31885,23611,74.05,57.37,0.5702,125.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,stargan,1984,1164,58.67,46.47,0.4661,10.1
+clip_concat_freq_seed_2024,clip,concat_frequency,Síntese GAN,starganv2,2000,157,7.85,5.5,0.0609,10.2
+clip_concat_freq_seed_2024,clip,concat_frequency,Troca Facial,deepfacelab,3122,2159,69.15,52.24,0.519,15.1
+clip_concat_freq_seed_2024,clip,concat_frequency,Troca Facial,faceswap,24634,18946,76.91,60.83,0.5997,97.5
+clip_concat_freq_seed_2024,clip,concat_frequency,Troca Facial,mobileswap,47522,36887,77.62,62.23,0.6117,183.7
+clip_concat_freq_seed_2024,clip,concat_frequency,Troca Facial,blendface,24790,18357,74.05,57.97,0.5693,99.6
+clip_concat_freq_seed_2024,clip,concat_frequency,Troca Facial,uniface,24346,16308,66.98,50.48,0.5057,96.9
+clip_concat_freq_seed_2024,clip,concat_frequency,Edição / T2I,MidJourney,635,556,87.56,85.35,0.8432,8.3
+clip_concat_freq_seed_2024,clip,concat_frequency,Edição / T2I,whichfaceisreal,1001,687,68.63,61.74,0.6111,10.9
+clip_concat_freq_seed_2024,clip,concat_frequency,Edição / T2I,styleclip,2824,1706,60.41,51.49,0.5098,18.0
+clip_concat_freq_seed_2024,clip,concat_frequency,Edição / T2I,e4e,60123,43511,72.37,58.72,0.5788,236.3
+clip_concat_freq_seed_2024,clip,concat_frequency,Avatares & Reencenação,heygen,1605,694,43.24,29.53,0.3082,8.2
+clip_concat_freq_seed_2024,clip,concat_frequency,Avatares & Reencenação,cdf_reenactment,128671,88771,68.99,53.35,0.5342,486.3

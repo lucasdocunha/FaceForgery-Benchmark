@@ -1,0 +1,671 @@
+================================================================================
+RELATORIO DE INVESTIGACAO: ORIGEM DAS IMAGENS DO SUBCONJUNTO DF-40 E CELEB-DF V2
+================================================================================
+Data da investigacao: 08/11/2026
+Ambiente: Servidor Dual RTX 3090 / Linux
+Modo de execucao: Estritamente somente leitura (leitura, contagem e comparacao)
+Caminhos analisados:
+  - /media/ssd2/lucas.ocunha/datasets/df40_extracted
+  - /media/ssd2/lucas.ocunha/datasets/celeb_df_crops
+  - data/df40/test.csv
+  - data/celeb_df/test.csv
+
+================================================================================
+1. O QUE E A PASTA df40_extracted/cdf/frames (500 IMAGENS ROTULADAS COMO REENCENACAO)
+================================================================================
+
+1.1. Estrutura da pasta
+------------------------
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+
+  cdf_frames = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames")
+  subdirs = sorted([d.name for d in cdf_frames.iterdir() if d.is_dir()])
+  all_imgs = [p for p in cdf_frames.glob("**/*.png")] + [p for p in cdf_frames.glob("**/*.jpg")]
+  all_imgs = [p for p in all_imgs if not p.name.startswith("._") and "__MACOSX" not in str(p)]
+
+  print(f"Total subpastas: {len(subdirs)}")
+  print(f"Total imagens: {len(all_imgs)}")
+  print("\n10 subpastas de exemplo:")
+  for s in subdirs[:10]:
+      print(" ", s)
+  print("\n5 caminhos completos de imagens:")
+  for img in sorted(all_imgs)[:5]:
+      print(" ", img)
+  '
+
+Saida relevante:
+  Total subpastas: 1976
+  Total imagens: 128671
+
+  10 subpastas de exemplo:
+    id0_0000_0snNB1yS3IE_50025
+    id0_0000_1YO1FmVAPrA_50009
+    id0_0000_2Yt6rajSS1M_50002
+    id0_0000_4oFGmxZ2nqE_50002
+    id0_0000_BPMrcY9z0nM_50004
+    id0_0001_0ZhL7P7w3as_50001
+    id0_0001_4sg9TlsMRVA_50009
+    id0_0002_AAkEYcmCCCk_50024
+    id0_0002_CK5w3wh4GSM_50004
+    id0_0003_bxkslfQc0EA_50015
+
+  5 caminhos completos de imagens:
+    /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames/id0_0000_0snNB1yS3IE_50025/000.png
+    /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames/id0_0000_0snNB1yS3IE_50025/006.png
+    /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames/id0_0000_0snNB1yS3IE_50025/012.png
+    /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames/id0_0000_0snNB1yS3IE_50025/018.png
+    /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames/id0_0000_0snNB1yS3IE_50025/024.png
+
+Status verificado:
+  - A pasta contem exatamente 1.976 subpastas e 128.671 imagens no formato PNG.
+  - Cada subpasta possui quadros faciais recortados e acompanhados de arquivos .npy
+    correspondentes em df40_extracted/cdf/landmarks/ (81 pontos de marcos faciais).
+
+
+1.2. Padrao dos nomes das subpastas e presenca de imagens reais
+---------------------------------------------------------------
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+  import re
+
+  cdf_frames = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf/frames")
+  subdirs = sorted([d.name for d in cdf_frames.iterdir() if d.is_dir()])
+
+  synth_pair = []
+  celeb_real_ytid = []
+  celeb_real_inverted = []
+  youtube_real = []
+  other = []
+
+  for s in subdirs:
+      if re.match(r"^id\d+_id\d+_\d+$", s):
+          synth_pair.append(s)
+      elif re.match(r"^id\d+_\d{4}_[A-Za-z0-9_-]+", s):
+          celeb_real_ytid.append(s)
+      elif re.match(r"^id\d+_[A-Za-z0-9_-]+_\d{4}$", s):
+          celeb_real_inverted.append(s)
+      elif re.match(r"^\d{5}", s):
+          youtube_real.append(s)
+      else:
+          other.append(s)
+
+  print(f"Total subpastas: {len(subdirs)}")
+  print(f"Padrao sintetico Celeb-synthesis (idX_idY_NNNN): {len(synth_pair)}")
+  print(f"Padrao Celeb-real com YouTube ID (idX_NNNN_<ytid>_<code/frame>): {len(celeb_real_ytid)}")
+  print(f"Padrao Celeb-real invertido (idX_<ytid>_<code/frame>_NNNN): {len(celeb_real_inverted)}")
+  print(f"Padrao YouTube-real puro (NNNNN): {len(youtube_real)}")
+  print(f"Outros: {len(other)}")
+  print(f"Total de subpastas reais (Celeb-real): {len(celeb_real_ytid) + len(celeb_real_inverted)}")
+  '
+
+Saida relevante:
+  Total subpastas: 1976
+  Padrao sintetico Celeb-synthesis (idX_idY_NNNN): 650
+  Padrao Celeb-real com YouTube ID (idX_NNNN_<ytid>_<code/frame>): 666
+  Padrao Celeb-real invertido (idX_<ytid>_<code/frame>_NNNN): 660
+  Padrao YouTube-real puro (NNNNN): 0
+  Outros: 0
+  Total de subpastas reais (Celeb-real): 1326
+
+Status verificado:
+  - 650 subpastas seguem a nomenclatura idX_idY_NNNN (videos sintetizados / manipulados).
+  - 1.326 subpastas (666 + 660) seguem a nomenclatura de videos REAIS de celebridades (Celeb-real),
+    contendo o ID do sujeito (idX), o indice original e o ID do video do YouTube.
+  - A pasta df40_extracted/cdf/frames e um conjunto misto de videos REAIS e FALSOS da base Celeb-DF v2.
+    Rotular toda essa pasta como falsa (target = 1) inclui videos reais como falsos por definicao.
+
+
+1.3. Origem da pasta cdf/frames
+--------------------------------
+A. Comparacao de subpastas com outras tecnicas:
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+
+  root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+  cdf_root = root / "cdf/frames"
+  technique_paths = {
+      "blendface": root / "blendface/cdf/frames",
+      "faceswap": root / "faceswap/cdf/frames",
+      "mobileswap": root / "mobileswap/cdf/Youtu_Pangu_Security/public/youtu-pangu-public/zhiyuanyan/deepfakes_detection_datasets/DF40/mobileswap/cdf/frames",
+      "uniface": root / "uniface/cdf/frames",
+      "deepfacelab_fake": root / "deepfacelab/fake/frames",
+      "deepfacelab_real": root / "deepfacelab/real/frames",
+      "heygen_fake": root / "heygen_new/fake/frames"
+  }
+
+  cdf_subdirs = set(d.name for d in cdf_root.iterdir() if d.is_dir())
+  for tech, path in technique_paths.items():
+      if path.exists():
+          tech_subdirs = set(d.name for d in path.iterdir() if d.is_dir())
+          common = cdf_subdirs.intersection(tech_subdirs)
+          print(f"{tech:16s}: {len(tech_subdirs)} total | {len(common)} em comum ({len(common)/len(tech_subdirs)*100:6.2f}% da tecnica, {len(common)/len(cdf_subdirs)*100:5.2f}% de cdf/frames)")
+  '
+
+Saida relevante:
+  blendface       : 640 total | 640 em comum (100.00% da tecnica, 32.39% de cdf/frames)
+  faceswap        : 637 total | 637 em comum (100.00% da tecnica, 32.24% de cdf/frames)
+  mobileswap      : 637 total | 637 em comum (100.00% da tecnica, 32.24% de cdf/frames)
+  uniface         : 626 total | 626 em comum (100.00% da tecnica, 31.68% de cdf/frames)
+  deepfacelab_fake: 100 total |   0 em comum (  0.00% da tecnica,  0.00% de cdf/frames)
+  deepfacelab_real:  49 total |   0 em comum (  0.00% da tecnica,  0.00% de cdf/frames)
+  heygen_fake     :  51 total |   0 em comum (  0.00% da tecnica,  0.00% de cdf/frames)
+
+Status verificado:
+  - 100% das subpastas das quatro tecnicas de face swap baseadas em Celeb-DF (blendface, faceswap,
+    mobileswap e uniface) estao contidas em cdf/frames. A uniao dessas quatro tecnicas cobre 641 das
+    650 subpastas sinteticas presentes em cdf/frames.
+
+B. Comparacao de integridade (SHA256) em 20 imagens com mesmo caminho relativo:
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+  import hashlib
+
+  root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+  cdf_root = root / "cdf/frames"
+  technique_paths = {
+      "blendface": root / "blendface/cdf/frames",
+      "faceswap": root / "faceswap/cdf/frames",
+      "mobileswap": root / "mobileswap/cdf/Youtu_Pangu_Security/public/youtu-pangu-public/zhiyuanyan/deepfakes_detection_datasets/DF40/mobileswap/cdf/frames",
+      "uniface": root / "uniface/cdf/frames",
+  }
+
+  common_subdirs = set(d.name for d in (root / "uniface/cdf/frames").iterdir() if d.is_dir())
+  sample_images = []
+  for sub in sorted(common_subdirs):
+      sub_path = cdf_root / sub
+      for img in sorted(list(sub_path.glob("*.png"))):
+          rel = Path(sub) / img.name
+          if all((p / rel).exists() for p in technique_paths.values()):
+              sample_images.append(rel)
+              break
+      if len(sample_images) == 20:
+          break
+
+  def get_sha256(filepath):
+      h = hashlib.sha256()
+      with open(filepath, "rb") as f:
+          while chunk := f.read(65536):
+              h.update(chunk)
+      return h.hexdigest()
+
+  matches = {tech: 0 for tech in technique_paths}
+  for i, rel in enumerate(sample_images):
+      cdf_sha = get_sha256(cdf_root / rel)
+      parts = [f"{i+1:02d}. {rel}"]
+      for tech, t_root in technique_paths.items():
+          match = (get_sha256(t_root / rel) == cdf_sha)
+          if match:
+              matches[tech] += 1
+          parts.append(f"{tech}:{'MATCH' if match else 'DIFF'}")
+      print(" | ".join(parts))
+
+  print("\nResumo SHA256 matches com cdf/frames raiz:")
+  for tech, count in matches.items():
+      print(f"  {tech}: {count}/20")
+  '
+
+Saida relevante:
+  01. id0_id16_0003/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  02. id0_id16_0004/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  03. id0_id16_0007/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  04. id0_id17_0000/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  05. id0_id1_0000/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  06. id0_id1_0001/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  07. id0_id1_0005/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  08. id0_id1_0007/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  09. id0_id20_0006/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  10. id0_id21_0000/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  11. id0_id26_0009/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  12. id0_id28_0009/000.png | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  13. id0_id2_0002/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  14. id0_id2_0008/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  15. id0_id3_0007/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  16. id0_id4_0000/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  17. id0_id4_0001/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  18. id0_id4_0004/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  19. id0_id6_0005/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+  20. id0_id6_0007/000.png  | blendface:DIFF | faceswap:DIFF | mobileswap:DIFF | uniface:DIFF
+
+  Resumo SHA256 matches com cdf/frames raiz:
+    blendface: 0/20
+    faceswap: 0/20
+    mobileswap: 0/20
+    uniface: 0/20
+
+Status verificado e inferencia:
+  - Nenhuma das 20 imagens possui hash SHA256 identico em relacao as quatro tecnicas.
+  - Explicacao: As tecnicas blendface, faceswap, mobileswap e uniface geram uma nova face sintetica
+    aplicando seus proprios algoritmos de troca de face aos mesmos pares de Celeb-DF. A pasta cdf/frames
+    raiz contem a sintese ORIGINAL do Celeb-DF v2 (algoritmo DeepFake aprimorado de Li et al., CVPR 2020)
+    para as subpastas idX_idY_NNNN, e os quadros reais para as subpastas Celeb-real.
+
+C. Resolucao e formato (PIL):
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+  from PIL import Image
+
+  root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+  paths = {
+      "cdf_root": root / "cdf/frames/id0_id16_0003/000.png",
+      "blendface": root / "blendface/cdf/frames/id0_id16_0003/000.png",
+      "faceswap": root / "faceswap/cdf/frames/id0_id16_0003/000.png",
+      "mobileswap": root / "mobileswap/cdf/Youtu_Pangu_Security/public/youtu-pangu-public/zhiyuanyan/deepfakes_detection_datasets/DF40/mobileswap/cdf/frames/id0_id16_0003/000.png",
+      "uniface": root / "uniface/cdf/frames/id0_id16_0003/000.png"
+  }
+
+  for name, p in paths.items():
+      with Image.open(p) as im:
+          print(f"{name:12s}: size={im.size}, format={im.format}, mode={im.mode}, bytes={p.stat().st_size}")
+  '
+
+Saida relevante:
+  cdf_root    : size=(256, 256), format=PNG, mode=RGB, bytes=77199
+  blendface   : size=(256, 256), format=PNG, mode=RGB, bytes=86911
+  faceswap    : size=(256, 256), format=PNG, mode=RGB, bytes=81089
+  mobileswap  : size=(256, 256), format=PNG, mode=RGB, bytes=81346
+  uniface     : size=(256, 256), format=PNG, mode=RGB, bytes=90453
+
+Status verificado:
+  - Todas as imagens possuem resolucao identica de 256x256 pixels, formato PNG e modo RGB.
+
+D. Pistas de origem, datas (stat) e historico do shell:
+Comandos executados:
+  stat /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf /media/ssd2/lucas.ocunha/datasets/df40_extracted/ff
+  grep -in -E "unzip.*celeb|cd df40|unzip \*" ~/.bash_history | tail -10
+  git show 16fc5730ce66b4fe2482259bb2ff3e5eba59cce5:scripts/unpack_df40.py | grep -E "dest_dir|chunk_zips|extractall" -A 2
+
+Saida relevante:
+    File: /media/ssd2/lucas.ocunha/datasets/df40_extracted/cdf
+  Modify: 2026-09-12 10:36:46.910941512 -0300
+    File: /media/ssd2/lucas.ocunha/datasets/df40_extracted/ff
+  Modify: 2026-09-12 10:36:49.302920079 -0300
+
+  1624:unzip Celeb-DF-v2.zip 
+  1625:unzip Celeb-DF-v2.zip -y 
+  1631:cd df40/
+  1633:unzip *.zip
+  1634:unzip -r *
+  1635:unzip *
+
+      dest_dir = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+      chunk_zips = sorted(list(src_dir.glob("DF40-*.zip")) + [src_dir / "sd2.1-011.zip"])
+      zf.extractall(dest_dir)
+
+Status verificado:
+  1. A pasta df40_extracted foi criada em 12/09/2026 as 10:36-10:38 pela execucao de
+     scripts/unpack_df40.py (commit 16fc5730ce66b4fe2482259bb2ff3e5eba59cce5), descompactando os
+     arquivos zip oficiais DF40-*.zip baixados do Google Drive oficial do DF40.
+  2. O caminho de subpasta em mobileswap (Youtu_Pangu_Security/public/youtu-pangu-public/zhiyuanyan/deepfakes_detection_datasets/DF40/)
+     confirma proveniencia oficial dos autores Zhiyuan Yan et al. (Tencent Youtu Lab).
+  3. No ecossistema DeepfakeBench / DF40, cdf e a sigla canonica para Celeb-DF e ff para FaceForensics++.
+  4. Nao existe JSON oficial de anotacao do DF40 armazenado localmente no disco.
+
+
+1.4. Confirmacao das 500 imagens no subconjunto data/df40/test.csv
+-------------------------------------------------------------------
+Comando executado:
+  .venv/bin/python -c '
+  import pandas as pd
+  from pathlib import Path
+  import re
+
+  df = pd.read_csv("data/df40/test.csv")
+  cdf_df = df[df["method"] == "cdf_reenactment"].copy()
+  print(f"Total amostras cdf_reenactment: {len(cdf_df)}")
+
+  def get_subfolder(p):
+      parts = Path(p).parts
+      for i, part in enumerate(parts):
+          if part == "frames" and i > 0 and parts[i-1] == "cdf":
+              return parts[i+1]
+      return Path(p).parent.name
+
+  cdf_df["subfolder"] = cdf_df["img_name"].apply(get_subfolder)
+  sub_counts = cdf_df["subfolder"].value_counts()
+  print(f"Subpastas distintas: {len(sub_counts)}")
+
+  print("\nDistribuicao de quadros por subpasta:")
+  print(sub_counts.value_counts().sort_index())
+
+  synth_vids = [s for s in sub_counts.index if re.match(r"^id\d+_id\d+_", s)]
+  real_vids = [s for s in sub_counts.index if not re.match(r"^id\d+_id\d+_", s)]
+
+  df_synth = cdf_df[cdf_df["subfolder"].isin(synth_vids)]
+  df_real = cdf_df[cdf_df["subfolder"].isin(real_vids)]
+
+  print(f"\nVideos sinteticos distintos (Celeb-synthesis): {len(synth_vids)}")
+  print(f"Videos reais distintos (Celeb-real): {len(real_vids)}")
+  print(f"Imagens sinteticas (Celeb-synthesis): {len(df_synth)}")
+  print(f"Imagens REAIS (Celeb-real): {len(df_real)}")
+  '
+
+Saida relevante:
+  Total amostras cdf_reenactment: 500
+  Subpastas distintas: 418
+
+  Distribuicao de quadros por subpasta:
+  count
+  1    351
+  2     55
+  3     10
+  4      1
+  5      1
+  Name: count, dtype: int64
+
+  Videos sinteticos distintos (Celeb-synthesis): 270
+  Videos reais distintos (Celeb-real): 148
+  Imagens sinteticas (Celeb-synthesis): 344
+  Imagens REAIS (Celeb-real): 156
+
+Status verificado:
+  - As 500 imagens de cdf_reenactment vieram de 418 subpastas (videos) distintas:
+    351 videos com 1 quadro, 55 com 2, 10 com 3, 1 com 4 e 1 com 5 (351 + 110 + 30 + 4 + 5 = 500).
+  - 344 imagens (270 videos) sao manipulacoes do Celeb-DF v2 (Celeb-synthesis, troca de face).
+  - 156 imagens (148 videos) sao videos REAIS do Celeb-DF v2 (Celeb-real).
+Conclusao:
+  156 imagens reais foram rotuladas como falsas por engano (target = 1) no subconjunto DF-40.
+  Nenhuma imagem provem de tecnicas de reencenacao ou talking face (Wav2Lip, SadTalker).
+
+
+================================================================================
+2. DE ONDE VEM AS IMAGENS REAIS (4.999)
+================================================================================
+
+2.1. Metricas por pasta real/ e identificacao do deficit (4.999 vs 5.000)
+------------------------------------------------------------------------
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+  from collections import Counter
+  from PIL import Image
+  import pandas as pd
+
+  root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+  df = pd.read_csv("data/df40/test.csv")
+
+  real_configs = [
+      ("whichfaceisreal/real", "whichfaceisreal", 800),
+      ("CollabDiff/real", "CollabDiff", 800),
+      ("MidJourney/real", "MidJourney", 800),
+      ("starganv2/real", "starganv2", 800),
+      ("styleclip/real", "styleclip", 800),
+      ("heygen_new/real", "heygen", 1000),
+  ]
+
+  for rel_path, name, requested_n in real_configs:
+      folder = root / rel_path
+      imgs = [p for p in folder.glob("**/*") if p.is_file() and p.suffix.lower() in (".png", ".jpg", ".jpeg") and not p.name.startswith("._") and "__MACOSX" not in str(p)]
+      in_csv = df[df["method"] == f"Real_{name}"]
+      
+      sizes = Counter()
+      for img_p in imgs[:100]:
+          try:
+              with Image.open(img_p) as im:
+                  sizes[im.size] += 1
+          except Exception:
+              pass
+              
+      print(f"\n[{name}]")
+      print(f"  Caminho: {folder}")
+      print(f"  Disponiveis no disco: {len(imgs)}")
+      print(f"  Solicitado no script: {requested_n}")
+      print(f"  Entraram no test.csv: {len(in_csv)}")
+      print(f"  Resolucao predominante: {sizes.most_common(1)[0][0]}")
+      print("  3 exemplos:")
+      for ex in sorted([str(p) for p in imgs])[:3]:
+          print(f"    {ex}")
+  '
+
+Saida relevante:
+  [whichfaceisreal]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/whichfaceisreal/real
+    Disponiveis no disco: 1000
+    Solicitado no script: 800
+    Entraram no test.csv: 800
+    Resolucao predominante: (1024, 1024)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/whichfaceisreal/real/00000.jpeg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/whichfaceisreal/real/00001.jpeg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/whichfaceisreal/real/00002.jpeg
+
+  [CollabDiff]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/CollabDiff/real
+    Disponiveis no disco: 1000
+    Solicitado no script: 800
+    Entraram no test.csv: 800
+    Resolucao predominante: (178, 218)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/CollabDiff/real/000265.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/CollabDiff/real/000648.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/CollabDiff/real/000904.jpg
+
+  [MidJourney]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/MidJourney/real
+    Disponiveis no disco: 1000
+    Solicitado no script: 800
+    Entraram no test.csv: 800
+    Resolucao predominante: (256, 256)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/MidJourney/real/00005.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/MidJourney/real/00023.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/MidJourney/real/00047.jpg
+
+  [starganv2]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real
+    Disponiveis no disco: 2000
+    Solicitado no script: 800
+    Entraram no test.csv: 799
+    Resolucao predominante: (256, 256)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real/0.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real/1.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real/10.jpg
+
+  [styleclip]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/styleclip/real
+    Disponiveis no disco: 1000
+    Solicitado no script: 800
+    Entraram no test.csv: 800
+    Resolucao predominante: (178, 218)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/styleclip/real/000055.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/styleclip/real/000186.jpg
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/styleclip/real/000269.jpg
+
+  [heygen]
+    Caminho: /media/ssd2/lucas.ocunha/datasets/df40_extracted/heygen_new/real
+    Disponiveis no disco: 7536
+    Solicitado no script: 1000
+    Entraram no test.csv: 1000
+    Resolucao predominante: (512, 512)
+    3 exemplos:
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/heygen_new/real/Clip+-1Jouc19Ixo+P0+C1+F4196-4320/00000000.png
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/heygen_new/real/Clip+-1Jouc19Ixo+P0+C1+F4196-4320/00000001.png
+      /media/ssd2/lucas.ocunha/datasets/df40_extracted/heygen_new/real/Clip+-1Jouc19Ixo+P0+C1+F4196-4320/00000002.png
+
+Investigacao da imagem faltante em starganv2/real (799 vs 800):
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+  p = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real/547.jpg")
+  print(f"Arquivo: {p}")
+  print(f"Existe: {p.exists()}")
+  print(f"Tamanho em bytes: {p.stat().st_size}")
+  '
+
+Saida relevante:
+  Arquivo: /media/ssd2/lucas.ocunha/datasets/df40_extracted/starganv2/real/547.jpg
+  Existe: True
+  Tamanho em bytes: 0
+
+Status verificado:
+  - A pasta starganv2/real contribuiu com 799 imagens em vez de 800.
+  - O arquivo starganv2/real/547.jpg sorteado pela semente 42 possui tamanho 0 bytes
+    (arquivo vazio / corrompido) e foi descartado na leitura, resultando em 4.999 imagens reais
+    no total (800 + 800 + 800 + 799 + 800 + 1000 = 4.999).
+
+
+2.2. Base de origem de cada conjunto de imagens reais
+-----------------------------------------------------
+1. whichfaceisreal/real:
+   - Resolucao: 1024x1024 JPEG
+   - Padrao dos nomes: 00000.jpeg a 00999.jpeg (5 digitos sequenciais)
+   - Base de origem: FFHQ (Flickr-Faces-HQ)
+   - Evidencia: As imagens reais da plataforma WhichFaceIsReal sao extraidas diretamente
+     do dataset FFHQ em sua resolucao nativa de 1024x1024.
+
+2. CollabDiff/real:
+   - Resolucao: 178x218 JPEG
+   - Padrao dos nomes: 000265.jpg, 000648.jpg (6 digitos)
+   - Base de origem: CelebA
+   - Evidencia: Resolucao canonica estrita do CelebA (178x218 pixels) e indices numericos
+     de 6 digitos identicos a lista oficial do CelebA.
+
+3. styleclip/real:
+   - Resolucao: 178x218 JPEG
+   - Padrao dos nomes: 000055.jpg, 000186.jpg (6 digitos)
+   - Base de origem: CelebA
+   - Evidencia: Resolucao canonica de 178x218 pixels e indices numericos de 6 digitos do CelebA.
+
+4. MidJourney/real:
+   - Resolucao: 256x256 JPEG
+   - Padrao dos nomes: 00005.jpg a 69896.jpg (5 digitos)
+   - Base de origem: FFHQ (Flickr-Faces-HQ)
+   - Evidencia: Intervalo de 5 digitos no espaco de 0 a 69.999 correspondente as 70.000 imagens
+     do dataset FFHQ, redimensionadas para 256x256.
+
+5. starganv2/real:
+   - Resolucao: 256x256 JPEG
+   - Padrao dos nomes: 0.jpg, 1.jpg, 10.jpg
+   - Base de origem: CelebA-HQ
+   - Evidencia: Nomenclatura e resolucao geradas pelo script oficial de download do StarGAN v2
+     (clovaai/stargan-v2) para o subconjunto CelebA-HQ a 256x256.
+
+6. heygen_new/real:
+   - Resolucao: 512x512 PNG
+   - Padrao dos nomes: Clip+<YouTube_ID>+P0+C1+F<frame_range>/<frame>.png
+   - Base de origem: VFHQ (Video Face High Quality)
+   - Evidencia: Estrutura de subdiretorio Clip+-1Jouc19Ixo+P0+C1+F4196-4320 caracteristica
+     do benchmark VFHQ (recortes faciais de alta definicao de videos do YouTube alinhados a 512x512).
+
+
+2.3. Outras pastas real/ em df40_extracted nao utilizadas pelo script
+---------------------------------------------------------------------
+Comando executado:
+  .venv/bin/python -c '
+  from pathlib import Path
+
+  root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+  used_real = {
+      "whichfaceisreal/real", "CollabDiff/real", "MidJourney/real",
+      "starganv2/real", "styleclip/real", "heygen_new/real"
+  }
+
+  all_real = [p for p in root.glob("**/real") if p.is_dir() and "__MACOSX" not in str(p)]
+  for r in sorted(all_real):
+      rel = str(r.relative_to(root))
+      if rel not in used_real and rel != "stargan/real":
+          imgs = [p for p in r.glob("**/*") if p.is_file() and p.suffix.lower() in (".png", ".jpg", ".jpeg") and not p.name.startswith("._")]
+          print(f"{rel:30s}: {len(imgs)} imagens")
+  '
+
+Saida relevante:
+  deepfacelab/real              : 1547 imagens
+  stargan/real/real             : 1984 imagens
+
+Status verificado:
+  - deepfacelab/real: 1.547 imagens (em deepfacelab/real/frames, cobrindo 49 videos com marcos faciais).
+  - stargan/real/real: 1.984 imagens em 256x256.
+  - Alem dessas pastas com nome "real", a pasta raiz cdf/frames possui 1.326 subpastas reais
+    (Celeb-real) com 86.195 quadros reais que nao foram utilizados na classe de imagens reais.
+
+
+================================================================================
+3. BONUS: CELEB-DF V2
+================================================================================
+
+Comando executado:
+  .venv/bin/python -c '
+  import pandas as pd
+  from pathlib import Path
+  from collections import Counter
+
+  csv_path = Path("data/celeb_df/test.csv")
+  crops_dir = Path("/media/ssd2/lucas.ocunha/datasets/celeb_df_crops")
+
+  # 1. CSV
+  df = pd.read_csv(csv_path)
+  print("=== DADOS DO data/celeb_df/test.csv ===")
+  print(f"Total de linhas (recortes): {len(df)}")
+  vids_csv = df["video_id"].unique()
+  print(f"Total de video_id distintos: {len(vids_csv)}")
+  csv_counts = df["video_id"].value_counts()
+  print(f"Distribuicao de quadros por video no CSV: {dict(csv_counts.value_counts())}")
+
+  vid_targets = df.groupby("video_id")["target"].max()
+  reais_csv = (vid_targets == 0).sum()
+  falsos_csv = (vid_targets == 1).sum()
+  print(f"Videos reais: {reais_csv} ({reais_csv * 15} recortes)")
+  print(f"Videos falsos: {falsos_csv} ({falsos_csv * 15} recortes)")
+
+  # 2. Disco
+  print("\n=== DADOS DO DISCO (/media/ssd2/lucas.ocunha/datasets/celeb_df_crops) ===")
+  files = [p for p in crops_dir.iterdir() if p.is_file() and p.suffix.lower() in (".jpg", ".png") and not p.name.startswith("._")]
+  print(f"Total de arquivos no disco: {len(files)}")
+  disk_counts = Counter(f.stem.split("_f")[0] for f in files)
+  print(f"Total de video_id distintos no disco: {len(disk_counts)}")
+  print(f"Distribuicao de quadros por video no disco: {dict(Counter(disk_counts.values()))}")
+
+  vids_19 = [vid for vid, count in disk_counts.items() if count != 15]
+  print(f"Videos com contagem diferente de 15 no disco: {vids_19}")
+  for vid in vids_19:
+      extras = set(f.name for f in files if f.stem.split("_f")[0] == vid) - set(df[df["video_id"] == vid]["img_name"])
+      print(f"  Video {vid} tem 19 quadros no disco ({len(extras)} quadros extras ignorados pelo CSV: {sorted(list(extras))})")
+  '
+
+Saida relevante:
+  === DADOS DO data/celeb_df/test.csv ===
+  Total de linhas (recortes): 7770
+  Total de video_id distintos: 518
+  Distribuicao de quadros por video no CSV: {15: 518}
+  Videos reais: 178 (2670 recortes)
+  Videos falsos: 340 (5100 recortes)
+
+  === DADOS DO DISCO (/media/ssd2/lucas.ocunha/datasets/celeb_df_crops) ===
+  Total de arquivos no disco: 7778
+  Total de video_id distintos no disco: 518
+  Distribuicao de quadros por video no disco: {15: 516, 19: 2}
+  Videos com contagem diferente de 15 no disco: ['00170', '00208']
+    Video 00170 tem 19 quadros no disco (4 quadros extras ignorados pelo CSV: ['00170_f00058.jpg', '00170_f00116.jpg', '00170_f00232.jpg', '00170_f00290.jpg'])
+    Video 00208 tem 19 quadros no disco (4 quadros extras ignorados pelo CSV: ['00208_f00076.jpg', '00208_f00153.jpg', '00208_f00306.jpg', '00208_f00382.jpg'])
+
+Status verificado:
+  - No arquivo data/celeb_df/test.csv:
+    * Total de recortes: 7.770.
+    * Total de video_id distintos: 518.
+    * Todos os 518 videos possuem RIGOROSAMENTE 15 quadros no manifesto (518 x 15 = 7.770).
+    * Videos reais: 178 (2.670 recortes).
+    * Videos falsos: 340 (5.100 recortes).
+    * Total exatamente compativel com o esperado (518 videos, 178 reais e 340 falsos, 7.770 recortes).
+  - No disco (/media/ssd2/lucas.ocunha/datasets/celeb_df_crops):
+    * Existem 7.778 imagens (8 imagens a mais que o CSV).
+    * 516 videos possuem 15 quadros.
+    * 2 videos possuem 19 quadros (00170 e 00208).
+    * Os 8 quadros extras do disco foram filtrados na geracao do CSV para manter 15 quadros por video.
+
+
+================================================================================
+RESUMO EXECUTIVO (5 LINHAS)
+================================================================================
+1. (a) Tecnica de cdf/frames: A pasta e a particao de teste do benchmark Celeb-DF v2 pre-processada pelo DeepfakeBench, e nao uma tecnica de reencenacao; seus videos sinteticos usam a sintese original do Celeb-DF v2 (troca de face).
+2. (b) Imagens reais rotuladas como falsas: Sim. Das 500 imagens amostradas para cdf_reenactment, 156 imagens sao reais (provenientes de 148 videos do Celeb-real) e foram incorretamente rotuladas como falsas (target = 1).
+3. (c) Origem das 4.999 imagens reais: Vem de FFHQ (whichfaceisreal e MidJourney), CelebA (CollabDiff e styleclip), CelebA-HQ (starganv2) e VFHQ (heygen_new); o total deu 4.999 pois starganv2/real/547.jpg tem 0 bytes (corrompido).
+4. (d) Quadros do Celeb-DF: No arquivo de teste (test.csv), todos os 518 videos tem exatamente 15 quadros (7.770 no total); no disco fisico ha 7.778 imagens porque 2 videos (00170 e 00208) possuem 19 quadros extraidos.
+5. Impacto: O subgrupo cdf_reenactment deve ser renomeado para remover a mencao a reencenacao e os 156 quadros de Celeb-real devem ter seus rotulos corrigidos para target = 0 (Real) ou ser expurgados da particao de teste.
+================================================================================

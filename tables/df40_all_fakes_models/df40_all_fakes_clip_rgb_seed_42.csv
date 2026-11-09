@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_rgb_seed_42,clip,none,Difusão,DiT,31885,25327,79.43,86.57,0.8478,138.7
+clip_rgb_seed_42,clip,none,Difusão,SiT,31885,26445,82.94,89.64,0.8793,140.8
+clip_rgb_seed_42,clip,none,Difusão,ddim,31885,11942,37.45,51.64,0.4865,142.6
+clip_rgb_seed_42,clip,none,Difusão,sd2.1,53474,53252,99.58,99.81,0.997,238.7
+clip_rgb_seed_42,clip,none,Difusão,pixart,31885,31149,97.69,99.05,0.9854,147.6
+clip_rgb_seed_42,clip,none,Difusão,RDDM,17738,16406,92.49,98.11,0.9625,79.7
+clip_rgb_seed_42,clip,none,Difusão,CollabDiff,1000,356,35.6,50.7,0.4793,6.5
+clip_rgb_seed_42,clip,none,Síntese GAN,StyleGAN2,31885,31807,99.76,99.94,0.9979,141.1
+clip_rgb_seed_42,clip,none,Síntese GAN,StyleGAN3,31885,30811,96.63,98.78,0.9797,140.9
+clip_rgb_seed_42,clip,none,Síntese GAN,StyleGANXL,31885,26166,82.06,91.23,0.8874,140.7
+clip_rgb_seed_42,clip,none,Síntese GAN,VQGAN,31885,30387,95.3,97.57,0.968,140.7
+clip_rgb_seed_42,clip,none,Síntese GAN,stargan,1984,1317,66.38,77.07,0.7453,12.3
+clip_rgb_seed_42,clip,none,Síntese GAN,starganv2,2000,378,18.9,26.15,0.2506,13.0
+clip_rgb_seed_42,clip,none,Troca Facial,deepfacelab,3122,2185,69.99,77.51,0.7601,18.7
+clip_rgb_seed_42,clip,none,Troca Facial,faceswap,24634,21613,87.74,91.54,0.9059,113.2
+clip_rgb_seed_42,clip,none,Troca Facial,mobileswap,47522,28462,59.89,69.53,0.6791,211.0
+clip_rgb_seed_42,clip,none,Troca Facial,blendface,24790,20730,83.62,89.64,0.8804,110.3
+clip_rgb_seed_42,clip,none,Troca Facial,uniface,24346,22676,93.14,95.54,0.948,109.8
+clip_rgb_seed_42,clip,none,Edição / T2I,MidJourney,635,490,77.17,87.72,0.8616,7.7
+clip_rgb_seed_42,clip,none,Edição / T2I,whichfaceisreal,1001,996,99.5,99.9,0.9964,14.7
+clip_rgb_seed_42,clip,none,Edição / T2I,styleclip,2824,2659,94.16,96.14,0.9565,22.3
+clip_rgb_seed_42,clip,none,Edição / T2I,e4e,60123,59543,99.04,99.49,0.9932,271.1
+clip_rgb_seed_42,clip,none,Avatares & Reencenação,heygen,1605,1110,69.16,79.88,0.7746,8.1
+clip_rgb_seed_42,clip,none,Avatares & Reencenação,cdf_reenactment,128671,75381,58.58,67.08,0.6529,562.9

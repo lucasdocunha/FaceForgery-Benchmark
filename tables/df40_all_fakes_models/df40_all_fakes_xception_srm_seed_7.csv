@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_srm_seed_7,xception,srm,Difusão,DiT,31885,27481,86.19,70.42,0.6312,95.8
+xception_srm_seed_7,xception,srm,Difusão,SiT,31885,28607,89.72,75.78,0.6693,94.5
+xception_srm_seed_7,xception,srm,Difusão,ddim,31885,20580,64.54,48.17,0.4938,95.2
+xception_srm_seed_7,xception,srm,Difusão,sd2.1,53474,53098,99.3,98.11,0.9381,159.5
+xception_srm_seed_7,xception,srm,Difusão,pixart,31885,31822,99.8,99.19,0.9293,102.2
+xception_srm_seed_7,xception,srm,Difusão,RDDM,17738,17031,96.01,78.2,0.6543,53.4
+xception_srm_seed_7,xception,srm,Difusão,CollabDiff,1000,715,71.5,56.0,0.5627,4.9
+xception_srm_seed_7,xception,srm,Síntese GAN,StyleGAN2,31885,31651,99.27,97.53,0.892,94.7
+xception_srm_seed_7,xception,srm,Síntese GAN,StyleGAN3,31885,31850,99.89,99.48,0.9489,94.8
+xception_srm_seed_7,xception,srm,Síntese GAN,StyleGANXL,31885,27953,87.67,76.5,0.6971,98.5
+xception_srm_seed_7,xception,srm,Síntese GAN,VQGAN,31885,18500,58.02,37.43,0.4297,98.8
+xception_srm_seed_7,xception,srm,Síntese GAN,stargan,1984,1020,51.41,28.83,0.3828,9.9
+xception_srm_seed_7,xception,srm,Síntese GAN,starganv2,2000,557,27.85,17.8,0.2628,9.1
+xception_srm_seed_7,xception,srm,Troca Facial,deepfacelab,3122,2574,82.45,66.56,0.6096,10.8
+xception_srm_seed_7,xception,srm,Troca Facial,faceswap,24634,22919,93.04,83.17,0.716,72.4
+xception_srm_seed_7,xception,srm,Troca Facial,mobileswap,47522,44129,92.86,82.29,0.7165,139.0
+xception_srm_seed_7,xception,srm,Troca Facial,blendface,24790,21562,86.98,70.56,0.6327,73.1
+xception_srm_seed_7,xception,srm,Troca Facial,uniface,24346,22900,94.06,84.19,0.7308,71.9
+xception_srm_seed_7,xception,srm,Edição / T2I,MidJourney,635,602,94.8,88.98,0.844,6.9
+xception_srm_seed_7,xception,srm,Edição / T2I,whichfaceisreal,1001,912,91.11,84.62,0.789,8.6
+xception_srm_seed_7,xception,srm,Edição / T2I,styleclip,2824,2529,89.55,81.41,0.7576,13.9
+xception_srm_seed_7,xception,srm,Edição / T2I,e4e,60123,57929,96.35,91.41,0.8256,181.9
+xception_srm_seed_7,xception,srm,Avatares & Reencenação,heygen,1605,1474,91.84,81.81,0.7306,5.9
+xception_srm_seed_7,xception,srm,Avatares & Reencenação,cdf_reenactment,128671,118322,91.96,80.51,0.7042,375.3

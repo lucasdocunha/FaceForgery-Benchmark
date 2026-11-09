@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_rgb_seed_7,dino,none,Difusão,DiT,31885,11352,35.6,29.95,0.2954,258.3
+dino_rgb_seed_7,dino,none,Difusão,SiT,31885,17497,54.88,47.54,0.4675,259.7
+dino_rgb_seed_7,dino,none,Difusão,ddim,31885,643,2.02,0.73,0.0085,259.9
+dino_rgb_seed_7,dino,none,Difusão,sd2.1,53474,52922,98.97,98.37,0.9692,435.4
+dino_rgb_seed_7,dino,none,Difusão,pixart,31885,31874,99.97,99.61,0.9539,264.4
+dino_rgb_seed_7,dino,none,Difusão,RDDM,17738,16813,94.79,27.18,0.2734,144.8
+dino_rgb_seed_7,dino,none,Difusão,CollabDiff,1000,240,24.0,17.2,0.1686,10.1
+dino_rgb_seed_7,dino,none,Síntese GAN,StyleGAN2,31885,31885,100.0,99.99,0.954,258.3
+dino_rgb_seed_7,dino,none,Síntese GAN,StyleGAN3,31885,31885,100.0,100.0,0.9879,259.3
+dino_rgb_seed_7,dino,none,Síntese GAN,StyleGANXL,31885,31875,99.97,99.66,0.9509,259.0
+dino_rgb_seed_7,dino,none,Síntese GAN,VQGAN,31885,12400,38.89,35.18,0.3474,257.6
+dino_rgb_seed_7,dino,none,Síntese GAN,stargan,1984,218,10.99,6.0,0.0604,17.1
+dino_rgb_seed_7,dino,none,Síntese GAN,starganv2,2000,33,1.65,0.85,0.0096,17.1
+dino_rgb_seed_7,dino,none,Troca Facial,deepfacelab,3122,2359,75.56,71.3,0.7013,26.7
+dino_rgb_seed_7,dino,none,Troca Facial,faceswap,24634,15895,64.52,57.79,0.5666,200.2
+dino_rgb_seed_7,dino,none,Troca Facial,mobileswap,47522,33643,70.79,66.18,0.6521,384.2
+dino_rgb_seed_7,dino,none,Troca Facial,blendface,24790,23387,94.34,93.1,0.9212,200.8
+dino_rgb_seed_7,dino,none,Troca Facial,uniface,24346,23203,95.31,94.71,0.9374,197.7
+dino_rgb_seed_7,dino,none,Edição / T2I,MidJourney,635,635,100.0,100.0,0.9483,10.3
+dino_rgb_seed_7,dino,none,Edição / T2I,whichfaceisreal,1001,1001,100.0,100.0,0.9859,14.0
+dino_rgb_seed_7,dino,none,Edição / T2I,styleclip,2824,2817,99.75,99.47,0.984,27.9
+dino_rgb_seed_7,dino,none,Edição / T2I,e4e,60123,60123,100.0,100.0,0.99,488.8
+dino_rgb_seed_7,dino,none,Avatares & Reencenação,heygen,1605,1061,66.11,57.2,0.5643,14.1
+dino_rgb_seed_7,dino,none,Avatares & Reencenação,cdf_reenactment,128671,93013,72.29,67.12,0.6618,1037.0

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,DiT,31885,29231,91.68,95.66,0.9361,127.7
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,SiT,31885,29405,92.22,96.13,0.9409,126.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,ddim,31885,19764,61.99,70.53,0.6864,125.3
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,sd2.1,53474,52862,98.86,99.96,0.9831,204.2
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,pixart,31885,31494,98.77,99.75,0.9827,130.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,RDDM,17738,17718,99.89,100.0,0.9842,71.5
+dino_concat_freq_seed_2025,dino,concat_frequency,Difusão,CollabDiff,1000,777,77.7,81.1,0.798,6.6
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,StyleGAN2,31885,30336,95.14,98.25,0.9586,123.7
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,StyleGAN3,31885,31557,98.97,99.75,0.9809,124.2
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,StyleGANXL,31885,31404,98.49,99.34,0.9788,125.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,VQGAN,31885,30125,94.48,96.94,0.9533,123.4
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,stargan,1984,1235,62.25,72.93,0.7086,10.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Síntese GAN,starganv2,2000,777,38.85,45.7,0.4454,10.1
+dino_concat_freq_seed_2025,dino,concat_frequency,Troca Facial,deepfacelab,3122,2955,94.65,97.05,0.9535,15.4
+dino_concat_freq_seed_2025,dino,concat_frequency,Troca Facial,faceswap,24634,23389,94.95,97.6,0.9582,96.2
+dino_concat_freq_seed_2025,dino,concat_frequency,Troca Facial,mobileswap,47522,46394,97.63,99.1,0.9754,182.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Troca Facial,blendface,24790,23654,95.42,97.96,0.9625,97.0
+dino_concat_freq_seed_2025,dino,concat_frequency,Troca Facial,uniface,24346,22863,93.91,96.85,0.9516,95.6
+dino_concat_freq_seed_2025,dino,concat_frequency,Edição / T2I,MidJourney,635,627,98.74,99.84,0.9853,8.3
+dino_concat_freq_seed_2025,dino,concat_frequency,Edição / T2I,whichfaceisreal,1001,673,67.23,76.12,0.7405,10.3
+dino_concat_freq_seed_2025,dino,concat_frequency,Edição / T2I,styleclip,2824,1883,66.68,75.14,0.7326,17.5
+dino_concat_freq_seed_2025,dino,concat_frequency,Edição / T2I,e4e,60123,57389,95.45,97.56,0.9592,234.6
+dino_concat_freq_seed_2025,dino,concat_frequency,Avatares & Reencenação,heygen,1605,1553,96.76,97.88,0.9664,8.6
+dino_concat_freq_seed_2025,dino,concat_frequency,Avatares & Reencenação,cdf_reenactment,128671,117662,91.44,95.61,0.9366,488.4

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,DiT,31885,24721,77.53,79.07,0.7372,133.6
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,SiT,31885,25706,80.62,81.93,0.764,128.2
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,ddim,31885,6312,19.8,20.73,0.2598,128.5
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,sd2.1,53474,52686,98.53,98.62,0.9754,216.8
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,pixart,31885,31749,99.57,99.62,0.9782,134.3
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,RDDM,17738,11850,66.81,71.25,0.6268,71.8
+mobilenet_srm_seed_2024,mobilenet,srm,Difusão,CollabDiff,1000,286,28.6,29.4,0.3366,6.4
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,StyleGAN2,31885,31511,98.83,98.97,0.9582,128.2
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,StyleGAN3,31885,31131,97.64,97.92,0.9344,128.9
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,StyleGANXL,31885,23108,72.47,73.64,0.7105,131.9
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,VQGAN,31885,11730,36.79,38.48,0.4343,131.7
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,stargan,1984,709,35.74,37.25,0.4052,11.3
+mobilenet_srm_seed_2024,mobilenet,srm,Síntese GAN,starganv2,2000,139,6.95,7.55,0.1191,11.2
+mobilenet_srm_seed_2024,mobilenet,srm,Troca Facial,deepfacelab,3122,2053,65.76,67.52,0.6352,16.0
+mobilenet_srm_seed_2024,mobilenet,srm,Troca Facial,faceswap,24634,19684,79.91,81.1,0.7584,102.1
+mobilenet_srm_seed_2024,mobilenet,srm,Troca Facial,mobileswap,47522,41218,86.73,87.77,0.8178,190.5
+mobilenet_srm_seed_2024,mobilenet,srm,Troca Facial,blendface,24790,19843,80.04,81.54,0.7551,100.2
+mobilenet_srm_seed_2024,mobilenet,srm,Troca Facial,uniface,24346,20997,86.24,87.45,0.8069,98.4
+mobilenet_srm_seed_2024,mobilenet,srm,Edição / T2I,MidJourney,635,595,93.7,94.02,0.9236,7.5
+mobilenet_srm_seed_2024,mobilenet,srm,Edição / T2I,whichfaceisreal,1001,891,89.01,89.41,0.8753,9.6
+mobilenet_srm_seed_2024,mobilenet,srm,Edição / T2I,styleclip,2824,2007,71.07,71.78,0.7008,16.8
+mobilenet_srm_seed_2024,mobilenet,srm,Edição / T2I,e4e,60123,52390,87.14,87.8,0.8439,242.4
+mobilenet_srm_seed_2024,mobilenet,srm,Avatares & Reencenação,heygen,1605,584,36.39,37.63,0.4064,7.6
+mobilenet_srm_seed_2024,mobilenet,srm,Avatares & Reencenação,cdf_reenactment,128671,113872,88.5,89.33,0.8429,513.0

@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_srm_only_seed_42,vit,srm_only,Difusão,DiT,31885,31759,99.6,0.74,0.1919,79.5
+vit_srm_only_seed_42,vit,srm_only,Difusão,SiT,31885,31820,99.8,0.95,0.1964,75.5
+vit_srm_only_seed_42,vit,srm_only,Difusão,ddim,31885,31635,99.22,10.37,0.2879,75.8
+vit_srm_only_seed_42,vit,srm_only,Difusão,sd2.1,53474,53411,99.88,31.27,0.4071,130.4
+vit_srm_only_seed_42,vit,srm_only,Difusão,pixart,31885,31760,99.61,3.62,0.2274,150.2
+vit_srm_only_seed_42,vit,srm_only,Difusão,RDDM,17738,17376,97.96,0.0,0.1116,44.8
+vit_srm_only_seed_42,vit,srm_only,Difusão,CollabDiff,1000,992,99.2,20.8,0.3535,7.4
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,StyleGAN2,31885,31672,99.33,0.09,0.1791,77.0
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,StyleGAN3,31885,31672,99.33,0.06,0.182,75.7
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,StyleGANXL,31885,31286,98.12,0.14,0.1743,76.4
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,VQGAN,31885,31765,99.62,0.48,0.1874,75.2
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,stargan,1984,1552,78.23,0.4,0.1268,7.4
+vit_srm_only_seed_42,vit,srm_only,Síntese GAN,starganv2,2000,1851,92.55,7.85,0.2299,6.3
+vit_srm_only_seed_42,vit,srm_only,Troca Facial,deepfacelab,3122,3122,100.0,2.53,0.2068,9.7
+vit_srm_only_seed_42,vit,srm_only,Troca Facial,faceswap,24634,24551,99.66,0.77,0.1932,59.8
+vit_srm_only_seed_42,vit,srm_only,Troca Facial,mobileswap,47522,47439,99.83,2.4,0.2265,113.2
+vit_srm_only_seed_42,vit,srm_only,Troca Facial,blendface,24790,24676,99.54,0.42,0.1908,62.5
+vit_srm_only_seed_42,vit,srm_only,Troca Facial,uniface,24346,24231,99.53,0.26,0.19,61.7
+vit_srm_only_seed_42,vit,srm_only,Edição / T2I,MidJourney,635,629,99.06,21.42,0.3642,7.2
+vit_srm_only_seed_42,vit,srm_only,Edição / T2I,whichfaceisreal,1001,997,99.6,15.58,0.32,9.2
+vit_srm_only_seed_42,vit,srm_only,Edição / T2I,styleclip,2824,2802,99.22,16.96,0.3318,10.5
+vit_srm_only_seed_42,vit,srm_only,Edição / T2I,e4e,60123,60098,99.96,4.79,0.2461,222.8
+vit_srm_only_seed_42,vit,srm_only,Avatares & Reencenação,heygen,1605,1597,99.5,2.43,0.2369,7.9
+vit_srm_only_seed_42,vit,srm_only,Avatares & Reencenação,cdf_reenactment,128671,128445,99.82,0.47,0.1919,296.5

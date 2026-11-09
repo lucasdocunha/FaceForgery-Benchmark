@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_rgb_robust,dino,none,Difusão,DiT,31885,21670,67.96,56.95,0.5516,37.0
+dino_rgb_robust,dino,none,Difusão,SiT,31885,25109,78.75,68.06,0.6484,35.2
+dino_rgb_robust,dino,none,Difusão,ddim,31885,4815,15.1,10.12,0.1105,35.2
+dino_rgb_robust,dino,none,Difusão,sd2.1,53474,53297,99.67,99.4,0.9645,113.2
+dino_rgb_robust,dino,none,Difusão,pixart,31885,31835,99.84,99.55,0.9555,158.9
+dino_rgb_robust,dino,none,Difusão,RDDM,17738,3413,19.24,14.32,0.155,19.6
+dino_rgb_robust,dino,none,Difusão,CollabDiff,1000,147,14.7,9.6,0.1054,2.8
+dino_rgb_robust,dino,none,Síntese GAN,StyleGAN2,31885,31878,99.98,99.77,0.8904,34.4
+dino_rgb_robust,dino,none,Síntese GAN,StyleGAN3,31885,31885,100.0,100.0,0.9057,34.9
+dino_rgb_robust,dino,none,Síntese GAN,StyleGANXL,31885,31781,99.67,98.76,0.9074,34.7
+dino_rgb_robust,dino,none,Síntese GAN,VQGAN,31885,12964,40.66,30.64,0.3042,34.7
+dino_rgb_robust,dino,none,Síntese GAN,stargan,1984,1495,75.35,60.23,0.5623,3.0
+dino_rgb_robust,dino,none,Síntese GAN,starganv2,2000,139,6.95,4.65,0.054,2.8
+dino_rgb_robust,dino,none,Troca Facial,deepfacelab,3122,2777,88.95,83.28,0.7998,4.2
+dino_rgb_robust,dino,none,Troca Facial,faceswap,24634,21965,89.17,80.7,0.7634,26.9
+dino_rgb_robust,dino,none,Troca Facial,mobileswap,47522,44195,93.0,88.46,0.8495,51.0
+dino_rgb_robust,dino,none,Troca Facial,blendface,24790,22857,92.2,87.87,0.8454,27.0
+dino_rgb_robust,dino,none,Troca Facial,uniface,24346,23423,96.21,95.01,0.9208,26.5
+dino_rgb_robust,dino,none,Edição / T2I,MidJourney,635,629,99.06,97.8,0.8939,4.2
+dino_rgb_robust,dino,none,Edição / T2I,whichfaceisreal,1001,960,95.9,93.11,0.8623,5.8
+dino_rgb_robust,dino,none,Edição / T2I,styleclip,2824,2339,82.83,75.07,0.7076,10.7
+dino_rgb_robust,dino,none,Edição / T2I,e4e,60123,52997,88.15,80.64,0.7426,202.3
+dino_rgb_robust,dino,none,Avatares & Reencenação,heygen,1605,493,30.72,22.55,0.2284,2.5
+dino_rgb_robust,dino,none,Avatares & Reencenação,cdf_reenactment,128671,118925,92.43,88.27,0.8497,138.0

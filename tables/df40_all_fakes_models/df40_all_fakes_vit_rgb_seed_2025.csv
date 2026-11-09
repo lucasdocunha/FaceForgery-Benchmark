@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_rgb_seed_2025,vit,none,Difusão,DiT,31885,23394,73.37,48.94,0.4927,261.6
+vit_rgb_seed_2025,vit,none,Difusão,SiT,31885,25884,81.18,57.62,0.5654,260.7
+vit_rgb_seed_2025,vit,none,Difusão,ddim,31885,14449,45.32,25.62,0.2803,259.6
+vit_rgb_seed_2025,vit,none,Difusão,sd2.1,53474,52841,98.82,96.98,0.9387,435.8
+vit_rgb_seed_2025,vit,none,Difusão,pixart,31885,31543,98.93,96.31,0.9258,270.6
+vit_rgb_seed_2025,vit,none,Difusão,RDDM,17738,2498,14.08,5.03,0.0809,144.8
+vit_rgb_seed_2025,vit,none,Difusão,CollabDiff,1000,686,68.6,52.5,0.5177,10.1
+vit_rgb_seed_2025,vit,none,Síntese GAN,StyleGAN2,31885,31263,98.05,84.7,0.7428,258.0
+vit_rgb_seed_2025,vit,none,Síntese GAN,StyleGAN3,31885,31786,99.69,95.03,0.8212,259.1
+vit_rgb_seed_2025,vit,none,Síntese GAN,StyleGANXL,31885,20824,65.31,39.55,0.4156,258.7
+vit_rgb_seed_2025,vit,none,Síntese GAN,VQGAN,31885,21387,67.08,46.89,0.4711,260.8
+vit_rgb_seed_2025,vit,none,Síntese GAN,stargan,1984,735,37.05,16.99,0.2111,17.0
+vit_rgb_seed_2025,vit,none,Síntese GAN,starganv2,2000,172,8.6,4.3,0.0584,17.5
+vit_rgb_seed_2025,vit,none,Troca Facial,deepfacelab,3122,2410,77.19,59.64,0.568,26.4
+vit_rgb_seed_2025,vit,none,Troca Facial,faceswap,24634,22286,90.47,76.99,0.7285,200.0
+vit_rgb_seed_2025,vit,none,Troca Facial,mobileswap,47522,41854,88.07,66.81,0.637,385.1
+vit_rgb_seed_2025,vit,none,Troca Facial,blendface,24790,21434,86.46,65.62,0.6348,202.2
+vit_rgb_seed_2025,vit,none,Troca Facial,uniface,24346,22277,91.5,74.92,0.7141,198.3
+vit_rgb_seed_2025,vit,none,Edição / T2I,MidJourney,635,561,88.35,75.91,0.7189,11.1
+vit_rgb_seed_2025,vit,none,Edição / T2I,whichfaceisreal,1001,987,98.6,96.1,0.923,15.9
+vit_rgb_seed_2025,vit,none,Edição / T2I,styleclip,2824,2522,89.31,78.97,0.7524,31.2
+vit_rgb_seed_2025,vit,none,Edição / T2I,e4e,60123,58974,98.09,93.35,0.8633,494.0
+vit_rgb_seed_2025,vit,none,Avatares & Reencenação,heygen,1605,1042,64.92,51.09,0.5094,14.0
+vit_rgb_seed_2025,vit,none,Avatares & Reencenação,cdf_reenactment,128671,108560,84.37,67.9,0.6608,1042.3

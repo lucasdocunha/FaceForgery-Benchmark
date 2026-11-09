@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_complex_seed_2024,vit,complex,Difusão,DiT,31885,31885,100.0,0.0,0.2096,126.0
+vit_complex_seed_2024,vit,complex,Difusão,SiT,31885,31885,100.0,0.0,0.2093,121.7
+vit_complex_seed_2024,vit,complex,Difusão,ddim,31885,31885,100.0,0.0,0.2118,119.8
+vit_complex_seed_2024,vit,complex,Difusão,sd2.1,53474,53474,100.0,0.0,0.2138,200.2
+vit_complex_seed_2024,vit,complex,Difusão,pixart,31885,31885,100.0,0.0,0.1961,139.3
+vit_complex_seed_2024,vit,complex,Difusão,RDDM,17738,17738,100.0,0.0,0.2341,69.0
+vit_complex_seed_2024,vit,complex,Difusão,CollabDiff,1000,1000,100.0,0.0,0.2038,7.1
+vit_complex_seed_2024,vit,complex,Síntese GAN,StyleGAN2,31885,31885,100.0,0.0,0.211,122.2
+vit_complex_seed_2024,vit,complex,Síntese GAN,StyleGAN3,31885,31885,100.0,0.0,0.211,121.1
+vit_complex_seed_2024,vit,complex,Síntese GAN,StyleGANXL,31885,31885,100.0,0.0,0.2051,122.0
+vit_complex_seed_2024,vit,complex,Síntese GAN,VQGAN,31885,31885,100.0,0.0,0.2065,126.3
+vit_complex_seed_2024,vit,complex,Síntese GAN,stargan,1984,1984,100.0,0.0,0.2068,10.9
+vit_complex_seed_2024,vit,complex,Síntese GAN,starganv2,2000,2000,100.0,0.0,0.2041,11.3
+vit_complex_seed_2024,vit,complex,Troca Facial,deepfacelab,3122,3122,100.0,0.0,0.2036,17.1
+vit_complex_seed_2024,vit,complex,Troca Facial,faceswap,24634,24634,100.0,0.0,0.205,97.1
+vit_complex_seed_2024,vit,complex,Troca Facial,mobileswap,47522,47522,100.0,0.0,0.2044,182.7
+vit_complex_seed_2024,vit,complex,Troca Facial,blendface,24790,24790,100.0,0.0,0.2029,96.3
+vit_complex_seed_2024,vit,complex,Troca Facial,uniface,24346,24346,100.0,0.0,0.2042,94.3
+vit_complex_seed_2024,vit,complex,Edição / T2I,MidJourney,635,635,100.0,0.0,0.2069,9.1
+vit_complex_seed_2024,vit,complex,Edição / T2I,whichfaceisreal,1001,1001,100.0,0.0,0.2117,11.5
+vit_complex_seed_2024,vit,complex,Edição / T2I,styleclip,2824,2824,100.0,0.0,0.2113,21.7
+vit_complex_seed_2024,vit,complex,Edição / T2I,e4e,60123,60123,100.0,0.0,0.2145,315.1
+vit_complex_seed_2024,vit,complex,Avatares & Reencenação,heygen,1605,1605,100.0,0.0,0.2131,8.9
+vit_complex_seed_2024,vit,complex,Avatares & Reencenação,cdf_reenactment,128671,128671,100.0,0.0,0.205,473.5

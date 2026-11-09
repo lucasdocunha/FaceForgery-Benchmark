@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,DiT,31885,8393,26.32,33.51,0.3791,87.4
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,SiT,31885,10128,31.76,38.66,0.4254,73.6
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,ddim,31885,27717,86.93,89.43,0.893,78.3
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,sd2.1,53474,39570,74.0,79.79,0.7974,189.4
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,pixart,31885,30886,96.87,97.96,0.9743,248.8
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,RDDM,17738,688,3.88,4.66,0.1248,51.1
+resnet_frequency_3_seed_42,resnet,frequency_3,Difusão,CollabDiff,1000,592,59.2,62.5,0.6385,6.0
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,StyleGAN2,31885,20778,65.17,71.54,0.7256,90.8
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,StyleGAN3,31885,30359,95.21,96.83,0.9631,62.0
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,StyleGANXL,31885,24710,77.5,81.24,0.8162,67.8
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,VQGAN,31885,16987,53.28,61.5,0.6332,64.3
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,stargan,1984,1955,98.54,99.14,0.9869,4.6
+resnet_frequency_3_seed_42,resnet,frequency_3,Síntese GAN,starganv2,2000,1890,94.5,95.9,0.9543,4.7
+resnet_frequency_3_seed_42,resnet,frequency_3,Troca Facial,deepfacelab,3122,1286,41.19,48.88,0.5117,6.6
+resnet_frequency_3_seed_42,resnet,frequency_3,Troca Facial,faceswap,24634,6866,27.87,33.76,0.3821,51.1
+resnet_frequency_3_seed_42,resnet,frequency_3,Troca Facial,mobileswap,47522,14219,29.92,36.12,0.4039,90.2
+resnet_frequency_3_seed_42,resnet,frequency_3,Troca Facial,blendface,24790,12729,51.35,59.26,0.6099,46.1
+resnet_frequency_3_seed_42,resnet,frequency_3,Troca Facial,uniface,24346,16107,66.16,71.95,0.7259,45.1
+resnet_frequency_3_seed_42,resnet,frequency_3,Edição / T2I,MidJourney,635,552,86.93,89.76,0.8961,7.2
+resnet_frequency_3_seed_42,resnet,frequency_3,Edição / T2I,whichfaceisreal,1001,618,61.74,67.93,0.6841,8.4
+resnet_frequency_3_seed_42,resnet,frequency_3,Edição / T2I,styleclip,2824,2340,82.86,85.69,0.8578,14.0
+resnet_frequency_3_seed_42,resnet,frequency_3,Edição / T2I,e4e,60123,58868,97.91,98.64,0.9824,307.1
+resnet_frequency_3_seed_42,resnet,frequency_3,Avatares & Reencenação,heygen,1605,860,53.58,62.24,0.6313,2.9
+resnet_frequency_3_seed_42,resnet,frequency_3,Avatares & Reencenação,cdf_reenactment,128671,45128,35.07,41.39,0.4513,283.8

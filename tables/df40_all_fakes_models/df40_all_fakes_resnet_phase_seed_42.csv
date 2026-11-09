@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_phase_seed_42,resnet,phase,Difusão,DiT,31885,16237,50.92,51.49,0.5357,88.9
+resnet_phase_seed_42,resnet,phase,Difusão,SiT,31885,17919,56.2,56.82,0.5734,69.7
+resnet_phase_seed_42,resnet,phase,Difusão,ddim,31885,14249,44.69,45.28,0.4872,83.3
+resnet_phase_seed_42,resnet,phase,Difusão,sd2.1,53474,41133,76.92,77.27,0.751,199.2
+resnet_phase_seed_42,resnet,phase,Difusão,pixart,31885,21457,67.29,67.83,0.6644,259.7
+resnet_phase_seed_42,resnet,phase,Difusão,RDDM,17738,10363,58.42,59.44,0.5682,52.1
+resnet_phase_seed_42,resnet,phase,Difusão,CollabDiff,1000,606,60.6,60.9,0.6182,6.4
+resnet_phase_seed_42,resnet,phase,Síntese GAN,StyleGAN2,31885,21250,66.65,67.18,0.6535,89.8
+resnet_phase_seed_42,resnet,phase,Síntese GAN,StyleGAN3,31885,21486,67.39,67.95,0.6601,58.1
+resnet_phase_seed_42,resnet,phase,Síntese GAN,StyleGANXL,31885,23658,74.2,74.65,0.7084,85.6
+resnet_phase_seed_42,resnet,phase,Síntese GAN,VQGAN,31885,14375,45.08,45.66,0.4978,86.9
+resnet_phase_seed_42,resnet,phase,Síntese GAN,stargan,1984,885,44.61,45.21,0.4812,6.6
+resnet_phase_seed_42,resnet,phase,Síntese GAN,starganv2,2000,560,28.0,29.0,0.3634,7.0
+resnet_phase_seed_42,resnet,phase,Troca Facial,deepfacelab,3122,2237,71.65,72.23,0.7052,9.4
+resnet_phase_seed_42,resnet,phase,Troca Facial,faceswap,24634,14584,59.2,59.83,0.5962,60.0
+resnet_phase_seed_42,resnet,phase,Troca Facial,mobileswap,47522,26419,55.59,56.24,0.5713,112.5
+resnet_phase_seed_42,resnet,phase,Troca Facial,blendface,24790,14997,60.5,61.04,0.6099,59.3
+resnet_phase_seed_42,resnet,phase,Troca Facial,uniface,24346,13578,55.77,56.27,0.5744,52.4
+resnet_phase_seed_42,resnet,phase,Edição / T2I,MidJourney,635,551,86.77,86.93,0.8356,9.2
+resnet_phase_seed_42,resnet,phase,Edição / T2I,whichfaceisreal,1001,478,47.75,48.15,0.5209,12.3
+resnet_phase_seed_42,resnet,phase,Edição / T2I,styleclip,2824,1781,63.07,63.7,0.635,18.9
+resnet_phase_seed_42,resnet,phase,Edição / T2I,e4e,60123,39777,66.16,66.73,0.6521,377.1
+resnet_phase_seed_42,resnet,phase,Avatares & Reencenação,heygen,1605,551,34.33,34.7,0.4146,3.0
+resnet_phase_seed_42,resnet,phase,Avatares & Reencenação,cdf_reenactment,128671,80865,62.85,63.43,0.6229,331.5

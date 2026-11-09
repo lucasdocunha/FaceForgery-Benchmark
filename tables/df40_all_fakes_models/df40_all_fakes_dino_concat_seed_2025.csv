@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_concat_seed_2025,dino,concat,Difusão,DiT,31885,18385,57.66,59.52,0.5878,122.9
+dino_concat_seed_2025,dino,concat,Difusão,SiT,31885,22758,71.38,73.17,0.7215,120.4
+dino_concat_seed_2025,dino,concat,Difusão,ddim,31885,4944,15.51,16.46,0.1635,120.6
+dino_concat_seed_2025,dino,concat,Difusão,sd2.1,53474,52094,97.42,98.34,0.9713,201.2
+dino_concat_seed_2025,dino,concat,Difusão,pixart,31885,31859,99.92,99.96,0.9841,125.5
+dino_concat_seed_2025,dino,concat,Difusão,RDDM,17738,17738,100.0,100.0,0.9961,68.1
+dino_concat_seed_2025,dino,concat,Difusão,CollabDiff,1000,386,38.6,41.7,0.4062,6.0
+dino_concat_seed_2025,dino,concat,Síntese GAN,StyleGAN2,31885,31802,99.74,100.0,0.968,121.0
+dino_concat_seed_2025,dino,concat,Síntese GAN,StyleGAN3,31885,31712,99.46,99.88,0.9785,120.8
+dino_concat_seed_2025,dino,concat,Síntese GAN,StyleGANXL,31885,30860,96.79,97.85,0.9533,119.8
+dino_concat_seed_2025,dino,concat,Síntese GAN,VQGAN,31885,10983,34.45,35.78,0.3544,120.0
+dino_concat_seed_2025,dino,concat,Síntese GAN,stargan,1984,940,47.38,50.45,0.4993,9.5
+dino_concat_seed_2025,dino,concat,Síntese GAN,starganv2,2000,60,3.0,3.4,0.0347,9.2
+dino_concat_seed_2025,dino,concat,Troca Facial,deepfacelab,3122,2370,75.91,77.07,0.7626,14.3
+dino_concat_seed_2025,dino,concat,Troca Facial,faceswap,24634,18600,75.51,77.01,0.7591,95.5
+dino_concat_seed_2025,dino,concat,Troca Facial,mobileswap,47522,40465,85.15,86.04,0.85,179.9
+dino_concat_seed_2025,dino,concat,Troca Facial,blendface,24790,20220,81.57,83.07,0.8217,94.2
+dino_concat_seed_2025,dino,concat,Troca Facial,uniface,24346,22447,92.2,92.76,0.9194,94.0
+dino_concat_seed_2025,dino,concat,Edição / T2I,MidJourney,635,635,100.0,100.0,0.9846,8.0
+dino_concat_seed_2025,dino,concat,Edição / T2I,whichfaceisreal,1001,1000,99.9,99.9,0.9889,9.9
+dino_concat_seed_2025,dino,concat,Edição / T2I,styleclip,2824,2776,98.3,98.83,0.9723,16.0
+dino_concat_seed_2025,dino,concat,Edição / T2I,e4e,60123,59889,99.61,99.96,0.9733,229.0
+dino_concat_seed_2025,dino,concat,Avatares & Reencenação,heygen,1605,1407,87.66,88.91,0.8744,7.4
+dino_concat_seed_2025,dino,concat,Avatares & Reencenação,cdf_reenactment,128671,99553,77.37,79.09,0.7802,477.6

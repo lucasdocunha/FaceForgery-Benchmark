@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+clip_srm_seed_123,clip,srm,Difusão,DiT,31885,19331,60.63,60.98,0.6081,130.7
+clip_srm_seed_123,clip,srm,Difusão,SiT,31885,20836,65.35,65.61,0.6505,129.2
+clip_srm_seed_123,clip,srm,Difusão,ddim,31885,12079,37.88,38.11,0.3974,129.2
+clip_srm_seed_123,clip,srm,Difusão,sd2.1,53474,53075,99.25,99.26,0.9845,218.2
+clip_srm_seed_123,clip,srm,Difusão,pixart,31885,31076,97.46,97.53,0.9538,147.3
+clip_srm_seed_123,clip,srm,Difusão,RDDM,17738,8627,48.64,49.11,0.5218,72.3
+clip_srm_seed_123,clip,srm,Difusão,CollabDiff,1000,472,47.2,47.3,0.4701,6.0
+clip_srm_seed_123,clip,srm,Síntese GAN,StyleGAN2,31885,29325,91.97,92.07,0.8903,128.5
+clip_srm_seed_123,clip,srm,Síntese GAN,StyleGAN3,31885,28925,90.72,90.81,0.8853,129.1
+clip_srm_seed_123,clip,srm,Síntese GAN,StyleGANXL,31885,20721,64.99,65.29,0.6453,128.8
+clip_srm_seed_123,clip,srm,Síntese GAN,VQGAN,31885,26599,83.42,83.64,0.8043,129.6
+clip_srm_seed_123,clip,srm,Síntese GAN,stargan,1984,1198,60.38,60.38,0.6085,9.0
+clip_srm_seed_123,clip,srm,Síntese GAN,starganv2,2000,808,40.4,40.6,0.4015,9.0
+clip_srm_seed_123,clip,srm,Troca Facial,deepfacelab,3122,1927,61.72,62.01,0.6116,13.7
+clip_srm_seed_123,clip,srm,Troca Facial,faceswap,24634,21461,87.12,87.26,0.8347,99.6
+clip_srm_seed_123,clip,srm,Troca Facial,mobileswap,47522,30691,64.58,64.91,0.6308,192.0
+clip_srm_seed_123,clip,srm,Troca Facial,blendface,24790,14842,59.87,60.13,0.5979,100.7
+clip_srm_seed_123,clip,srm,Troca Facial,uniface,24346,19924,81.84,81.98,0.8004,99.3
+clip_srm_seed_123,clip,srm,Edição / T2I,MidJourney,635,596,93.86,93.86,0.9319,12.9
+clip_srm_seed_123,clip,srm,Edição / T2I,whichfaceisreal,1001,955,95.4,95.4,0.9357,17.9
+clip_srm_seed_123,clip,srm,Edição / T2I,styleclip,2824,2451,86.79,86.93,0.8509,22.7
+clip_srm_seed_123,clip,srm,Edição / T2I,e4e,60123,57252,95.22,95.3,0.9286,254.5
+clip_srm_seed_123,clip,srm,Avatares & Reencenação,heygen,1605,614,38.26,38.5,0.383,7.5
+clip_srm_seed_123,clip,srm,Avatares & Reencenação,cdf_reenactment,128671,84981,66.05,66.25,0.6554,516.6

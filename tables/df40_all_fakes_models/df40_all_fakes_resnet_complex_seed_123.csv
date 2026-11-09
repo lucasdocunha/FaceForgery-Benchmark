@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+resnet_complex_seed_123,resnet,complex,Difusão,DiT,31885,17198,53.94,16.8,0.2236,122.9
+resnet_complex_seed_123,resnet,complex,Difusão,SiT,31885,19619,61.53,21.62,0.271,120.2
+resnet_complex_seed_123,resnet,complex,Difusão,ddim,31885,29223,91.65,40.88,0.4548,120.8
+resnet_complex_seed_123,resnet,complex,Difusão,sd2.1,53474,44772,83.73,57.84,0.5918,201.3
+resnet_complex_seed_123,resnet,complex,Difusão,pixart,31885,22657,71.06,44.36,0.463,162.7
+resnet_complex_seed_123,resnet,complex,Difusão,RDDM,17738,10727,60.47,3.24,0.117,69.1
+resnet_complex_seed_123,resnet,complex,Difusão,CollabDiff,1000,702,70.2,33.7,0.3792,6.7
+resnet_complex_seed_123,resnet,complex,Síntese GAN,StyleGAN2,31885,22639,71.0,30.73,0.3574,120.0
+resnet_complex_seed_123,resnet,complex,Síntese GAN,StyleGAN3,31885,27490,86.22,60.45,0.6189,121.2
+resnet_complex_seed_123,resnet,complex,Síntese GAN,StyleGANXL,31885,26271,82.39,37.75,0.4233,119.5
+resnet_complex_seed_123,resnet,complex,Síntese GAN,VQGAN,31885,20322,63.74,26.93,0.3155,119.9
+resnet_complex_seed_123,resnet,complex,Síntese GAN,stargan,1984,1523,76.76,24.45,0.3105,10.1
+resnet_complex_seed_123,resnet,complex,Síntese GAN,starganv2,2000,1920,96.0,44.65,0.4897,10.2
+resnet_complex_seed_123,resnet,complex,Troca Facial,deepfacelab,3122,2275,72.87,28.06,0.3345,16.7
+resnet_complex_seed_123,resnet,complex,Troca Facial,faceswap,24634,12669,51.43,14.89,0.2048,94.5
+resnet_complex_seed_123,resnet,complex,Troca Facial,mobileswap,47522,22341,47.01,12.66,0.1829,177.1
+resnet_complex_seed_123,resnet,complex,Troca Facial,blendface,24790,16383,66.09,25.58,0.3051,94.1
+resnet_complex_seed_123,resnet,complex,Troca Facial,uniface,24346,16153,66.35,26.54,0.3119,92.5
+resnet_complex_seed_123,resnet,complex,Edição / T2I,MidJourney,635,618,97.32,80.47,0.8041,8.8
+resnet_complex_seed_123,resnet,complex,Edição / T2I,whichfaceisreal,1001,734,73.33,38.36,0.4284,10.9
+resnet_complex_seed_123,resnet,complex,Edição / T2I,styleclip,2824,2504,88.67,59.6,0.6129,19.9
+resnet_complex_seed_123,resnet,complex,Edição / T2I,e4e,60123,58448,97.21,74.01,0.7338,336.0
+resnet_complex_seed_123,resnet,complex,Avatares & Reencenação,heygen,1605,1302,81.12,16.14,0.2512,8.5
+resnet_complex_seed_123,resnet,complex,Avatares & Reencenação,cdf_reenactment,128671,77608,60.32,23.27,0.2818,472.4

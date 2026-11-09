@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+xception_srm_seed_2025,xception,srm,Difusão,DiT,31885,27143,85.13,72.07,0.6381,101.9
+xception_srm_seed_2025,xception,srm,Difusão,SiT,31885,28478,89.31,78.12,0.6759,100.3
+xception_srm_seed_2025,xception,srm,Difusão,ddim,31885,19921,62.48,49.73,0.5059,100.1
+xception_srm_seed_2025,xception,srm,Difusão,sd2.1,53474,53252,99.58,98.99,0.949,167.6
+xception_srm_seed_2025,xception,srm,Difusão,pixart,31885,31810,99.76,99.12,0.9233,105.1
+xception_srm_seed_2025,xception,srm,Difusão,RDDM,17738,17322,97.65,90.34,0.7302,57.5
+xception_srm_seed_2025,xception,srm,Difusão,CollabDiff,1000,796,79.6,70.0,0.6605,5.1
+xception_srm_seed_2025,xception,srm,Síntese GAN,StyleGAN2,31885,31617,99.16,97.72,0.8875,99.6
+xception_srm_seed_2025,xception,srm,Síntese GAN,StyleGAN3,31885,31775,99.66,98.94,0.93,100.5
+xception_srm_seed_2025,xception,srm,Síntese GAN,StyleGANXL,31885,28704,90.02,80.98,0.7237,99.9
+xception_srm_seed_2025,xception,srm,Síntese GAN,VQGAN,31885,19104,59.92,43.46,0.4699,101.9
+xception_srm_seed_2025,xception,srm,Síntese GAN,stargan,1984,981,49.45,31.7,0.3977,7.6
+xception_srm_seed_2025,xception,srm,Síntese GAN,starganv2,2000,592,29.6,18.5,0.2887,8.0
+xception_srm_seed_2025,xception,srm,Troca Facial,deepfacelab,3122,2431,77.87,62.49,0.5893,11.1
+xception_srm_seed_2025,xception,srm,Troca Facial,faceswap,24634,22359,90.76,81.77,0.7014,77.5
+xception_srm_seed_2025,xception,srm,Troca Facial,mobileswap,47522,43583,91.71,83.29,0.721,149.4
+xception_srm_seed_2025,xception,srm,Troca Facial,blendface,24790,21530,86.85,74.09,0.6532,79.1
+xception_srm_seed_2025,xception,srm,Troca Facial,uniface,24346,22673,93.13,85.2,0.7298,76.8
+xception_srm_seed_2025,xception,srm,Edição / T2I,MidJourney,635,617,97.17,93.23,0.8804,7.0
+xception_srm_seed_2025,xception,srm,Edição / T2I,whichfaceisreal,1001,963,96.2,94.31,0.8774,8.8
+xception_srm_seed_2025,xception,srm,Edição / T2I,styleclip,2824,2602,92.14,87.46,0.8045,13.6
+xception_srm_seed_2025,xception,srm,Edição / T2I,e4e,60123,59327,98.68,96.79,0.881,192.4
+xception_srm_seed_2025,xception,srm,Avatares & Reencenação,heygen,1605,1493,93.02,85.23,0.7526,6.2
+xception_srm_seed_2025,xception,srm,Avatares & Reencenação,cdf_reenactment,128671,117033,90.96,81.9,0.7093,401.9

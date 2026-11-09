@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+vit_concat_seed_2025,vit,concat,Difusão,DiT,31885,25029,78.5,73.05,0.7005,122.9
+vit_concat_seed_2025,vit,concat,Difusão,SiT,31885,26779,83.99,79.25,0.7533,120.4
+vit_concat_seed_2025,vit,concat,Difusão,ddim,31885,10147,31.82,23.95,0.2502,120.6
+vit_concat_seed_2025,vit,concat,Difusão,sd2.1,53474,53425,99.91,99.85,0.9746,201.2
+vit_concat_seed_2025,vit,concat,Difusão,pixart,31885,31847,99.88,99.8,0.976,125.5
+vit_concat_seed_2025,vit,concat,Difusão,RDDM,17738,5677,32.0,22.96,0.2538,68.1
+vit_concat_seed_2025,vit,concat,Difusão,CollabDiff,1000,438,43.8,36.7,0.3694,6.0
+vit_concat_seed_2025,vit,concat,Síntese GAN,StyleGAN2,31885,31304,98.18,97.02,0.8894,121.0
+vit_concat_seed_2025,vit,concat,Síntese GAN,StyleGAN3,31885,31804,99.75,99.28,0.8939,120.8
+vit_concat_seed_2025,vit,concat,Síntese GAN,StyleGANXL,31885,29673,93.06,90.28,0.8625,119.8
+vit_concat_seed_2025,vit,concat,Síntese GAN,VQGAN,31885,27692,86.85,82.8,0.7816,120.0
+vit_concat_seed_2025,vit,concat,Síntese GAN,stargan,1984,1558,78.53,72.93,0.6989,9.5
+vit_concat_seed_2025,vit,concat,Síntese GAN,starganv2,2000,158,7.9,6.5,0.0729,9.2
+vit_concat_seed_2025,vit,concat,Troca Facial,deepfacelab,3122,2474,79.24,75.21,0.7183,14.3
+vit_concat_seed_2025,vit,concat,Troca Facial,faceswap,24634,21527,87.39,83.61,0.8043,95.5
+vit_concat_seed_2025,vit,concat,Troca Facial,mobileswap,47522,42223,88.85,85.28,0.8116,179.9
+vit_concat_seed_2025,vit,concat,Troca Facial,blendface,24790,19689,79.42,74.53,0.7196,94.2
+vit_concat_seed_2025,vit,concat,Troca Facial,uniface,24346,21474,88.2,84.93,0.818,94.0
+vit_concat_seed_2025,vit,concat,Edição / T2I,MidJourney,635,626,98.58,98.27,0.9492,8.0
+vit_concat_seed_2025,vit,concat,Edição / T2I,whichfaceisreal,1001,851,85.01,81.62,0.7848,9.9
+vit_concat_seed_2025,vit,concat,Edição / T2I,styleclip,2824,2085,73.83,67.67,0.6586,16.0
+vit_concat_seed_2025,vit,concat,Edição / T2I,e4e,60123,55660,92.58,89.73,0.844,229.0
+vit_concat_seed_2025,vit,concat,Avatares & Reencenação,heygen,1605,1173,73.08,68.79,0.6695,7.4
+vit_concat_seed_2025,vit,concat,Avatares & Reencenação,cdf_reenactment,128671,107136,83.26,79.17,0.7615,477.6

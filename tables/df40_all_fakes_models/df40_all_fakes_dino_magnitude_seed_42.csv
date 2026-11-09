@@ -1,0 +1,25 @@
+model_name,family,mode,paradigma,tecnica,n_amostras_total,acertos_threshold_val,taxa_acerto_pct,taxa_acerto_05_pct,prob_fake_media,tempo_s
+dino_magnitude_seed_42,dino,magnitude,Difusão,DiT,31885,24779,77.71,39.77,0.4055,88.8
+dino_magnitude_seed_42,dino,magnitude,Difusão,SiT,31885,24890,78.06,41.68,0.4223,87.5
+dino_magnitude_seed_42,dino,magnitude,Difusão,ddim,31885,27634,86.67,74.09,0.7062,82.8
+dino_magnitude_seed_42,dino,magnitude,Difusão,sd2.1,53474,52132,97.49,77.35,0.7448,212.5
+dino_magnitude_seed_42,dino,magnitude,Difusão,pixart,31885,31612,99.14,97.57,0.9317,233.4
+dino_magnitude_seed_42,dino,magnitude,Difusão,RDDM,17738,10054,56.68,10.29,0.1326,48.0
+dino_magnitude_seed_42,dino,magnitude,Difusão,CollabDiff,1000,582,58.2,44.1,0.4333,5.2
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,StyleGAN2,31885,29471,92.43,60.0,0.5877,86.4
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,StyleGAN3,31885,31866,99.94,97.52,0.9343,79.7
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,StyleGANXL,31885,23883,74.9,60.4,0.5915,81.5
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,VQGAN,31885,30317,95.08,71.59,0.7009,96.8
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,stargan,1984,1973,99.45,97.53,0.929,7.2
+dino_magnitude_seed_42,dino,magnitude,Síntese GAN,starganv2,2000,1857,92.85,81.0,0.7738,7.0
+dino_magnitude_seed_42,dino,magnitude,Troca Facial,deepfacelab,3122,2109,67.55,46.96,0.46,10.7
+dino_magnitude_seed_42,dino,magnitude,Troca Facial,faceswap,24634,15209,61.74,30.12,0.3111,72.0
+dino_magnitude_seed_42,dino,magnitude,Troca Facial,mobileswap,47522,28946,60.91,29.57,0.3061,108.1
+dino_magnitude_seed_42,dino,magnitude,Troca Facial,blendface,24790,18696,75.42,51.73,0.5064,69.2
+dino_magnitude_seed_42,dino,magnitude,Troca Facial,uniface,24346,21415,87.96,71.64,0.6965,64.8
+dino_magnitude_seed_42,dino,magnitude,Edição / T2I,MidJourney,635,569,89.61,78.9,0.7671,7.4
+dino_magnitude_seed_42,dino,magnitude,Edição / T2I,whichfaceisreal,1001,690,68.93,51.15,0.4989,13.9
+dino_magnitude_seed_42,dino,magnitude,Edição / T2I,styleclip,2824,2285,80.91,67.28,0.6527,20.1
+dino_magnitude_seed_42,dino,magnitude,Edição / T2I,e4e,60123,59434,98.85,96.33,0.9277,377.1
+dino_magnitude_seed_42,dino,magnitude,Avatares & Reencenação,heygen,1605,1334,83.12,55.95,0.5408,4.6
+dino_magnitude_seed_42,dino,magnitude,Avatares & Reencenação,cdf_reenactment,128671,87383,67.91,39.42,0.3946,312.5
