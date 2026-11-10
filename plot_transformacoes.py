@@ -1,6 +1,14 @@
 """
-Figura de artigo: 4 linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado) × 5 colunas de resíduo SRM.
-Colunas: Face Original (RGB), 1ª Derivada (SRM 1), 2ª Derivada (SRM 2), 3ª Derivada (SRM 3) e Combinada (SRM Multicanal).
+Gera o painel forense de transformações para artigos científicos e apresentações.
+Unifica as representações do domínio Espacial (RGB), Espectral (Fourier 2D) e
+Resíduos Forenses de Esteganálise (SRM - Spatial Rich Models) em alta resolução (300 DPI).
+
+Suporta:
+  - Mega Painel Completo (10 colunas: Espacial + 5 Fourier + 4 SRM)
+  - Painel de 4 Linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado)
+  - Painel de 2 Linhas (Classe 0 / Real vs Classe 1 / Fake)
+  - Presets: 'challenge' (Ruído em Real, Blur em Fake) ou 'default' (Clássico SIBGRAPI)
+  - Formatos: PDF vetorial + PNG de alta densidade
 """
 
 from __future__ import annotations
@@ -11,51 +19,38 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 from pathlib import Path
 from typing import Dict, List, Tuple
-
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from PIL import Image
 from torchvision import transforms
+
+from src.data.paths import phase1_split_root
+from src.forensics.srm import extract_srm_residuals
 
 plt.rcParams.update({
     "font.family": "sans-serif",
     "font.sans-serif": ["DejaVu Sans", "Arial", "Helvetica"],
 })
 
-from src.data.paths import phase1_split_root
-from src.forensics.srm import extract_srm_residuals
-
-SPATIAL_SIZE = (128, 128)
-
-normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-freq_norm = transforms.Normalize(mean=[0.5], std=[0.5])
+SPATIAL_SIZE = (256, 256)
 to_tensor = transforms.ToTensor()
 resize = transforms.Resize(SPATIAL_SIZE)
 
 
-# ── Helpers Gerais e Fourier ───────────────────────────────────────────────
+# ── Funções de Pré-processamento e Normalização ────────────────────────────
 
 def _gray(t: torch.Tensor) -> np.ndarray:
+    """Converte tensor RGB em canal de luminância padrão ITU-R BT.601."""
     return (0.299 * t[0] + 0.587 * t[1] + 0.114 * t[2]).numpy()
 
 
 def _safe_norm(a: np.ndarray) -> np.ndarray:
     d = a.max() - a.min()
     return np.zeros_like(a) if d < 1e-8 else (a - a.min()) / d
-
-
-def _denorm_freq(ch: np.ndarray) -> np.ndarray:
-    return np.clip((ch + 1) / 2, 0, 1)
-
-
-def _denorm_rgb(arr: np.ndarray) -> np.ndarray:
-    mean = np.array([0.485, 0.456, 0.406])[:, None, None]
-    std = np.array([0.229, 0.224, 0.225])[:, None, None]
-    return np.clip(arr * std + mean, 0, 1).transpose(1, 2, 0)
 
 
 def _pclip_bounds(arr: np.ndarray, lo: float = 1, hi: float = 99) -> Tuple[float, float]:
@@ -66,164 +61,156 @@ def _apply_bounds(arr: np.ndarray, vlo: float, vhi: float) -> np.ndarray:
     return np.clip((arr - vlo) / (vhi - vlo + 1e-8), 0, 1)
 
 
-def load_fft(source_path: str | Path) -> Tuple[torch.Tensor, np.ndarray]:
-    with Image.open(source_path) as pil:
-        t = to_tensor(resize(pil.convert("RGB")))
-    gray = _gray(t)
-    return t, np.fft.fftshift(np.fft.fft2(gray))
+# ── Extração de Transformações ─────────────────────────────────────────────
 
-
-def compute_fourier_panels(t: torch.Tensor, fft: np.ndarray) -> List[Dict]:
-    re_bounds = _pclip_bounds(np.real(fft).ravel())
-    im_bounds = _pclip_bounds(np.imag(fft).ravel())
-
-    rgb = _denorm_rgb(normalize(t).numpy())
-
-    mag = _denorm_freq(
-        freq_norm(
-            torch.tensor(_safe_norm(np.log(np.abs(fft) + 1)), dtype=torch.float32).unsqueeze(0)
-        ).numpy()[0]
-    )
-
-    phase = _denorm_freq(
-        freq_norm(
-            torch.tensor((np.angle(fft) + np.pi) / (2 * np.pi), dtype=torch.float32).unsqueeze(0)
-        ).numpy()[0]
-    )
-
-    re = _apply_bounds(np.real(fft), *re_bounds)
-    im = _apply_bounds(np.imag(fft), *im_bounds)
-
-    H, W = fft.shape
-    y, x = np.ogrid[:H, :W]
-    mask = ((y - H // 2) ** 2 + (x - W // 2) ** 2) >= (min(H, W) * 0.12) ** 2
-    hp = _denorm_freq(
-        freq_norm(
-            torch.tensor(_safe_norm(np.log1p(np.abs(fft) * mask)), dtype=torch.float32).unsqueeze(0)
-        ).numpy()[0]
-    )
-
-    return [
-        {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(ImageNet-normalized)"},
-        {"img": mag, "cmap": "inferno", "title": "Log-Magnitude", "desc": r"$\log(|\mathcal{F}| + 1)$"},
-        {"img": phase, "cmap": "inferno", "title": "Phase", "desc": r"$\angle\mathcal{F} \in [0,\,1]$"},
-        {"img": re, "cmap": "coolwarm", "title": "Re(F)", "desc": "Real part of FFT\n(shared scale)"},
-        {"img": im, "cmap": "coolwarm", "title": "Im(F)", "desc": "Imaginary part of FFT\n(shared scale)"},
-        {"img": hp, "cmap": "inferno", "title": "High-Pass", "desc": r"$\log(1+|\mathcal{F}|\cdot m_r)$"},
-    ]
-
-
-# ── Extração e Painéis SRM (Spatial Rich Models) ───────────────────────────
-
-def compute_srm_panels_for_batch(
+def build_panels_for_rows(
     row_specs: List[Tuple[str, Path]],
-    columns: int = 5,
-) -> List[Tuple[str, List[Dict]]]:
-    """Computa os painéis forenses SRM com escala normalizada compartilhada entre as amostras.
-    
-    Opções de columns:
-      - 5 (padrão): Face Original (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada (Juntando todas)
-      - 4: 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada
-      - 6: Face Original (RGB), 1ª Derivada, 2ª Derivada, 3ª Derivada, Combinada, Energia
-    """
-    raw_data = []
-    all_srms = []
+    domain: str = "mega",
+) -> Tuple[List[str], List[List[Dict]]]:
+    """Computa os painéis para cada amostra com escalas conjuntas normalizadas."""
+    loaded_imgs = []
+    loaded_tensors = []
+    loaded_ffts = []
+    loaded_srms = []
 
     for label, path in row_specs:
-        if not Path(path).exists():
-            raise FileNotFoundError(f"Imagem não encontrada: {path}")
-        with Image.open(path) as pil:
-            img_rgb = pil.convert("RGB").resize((256, 256))
-        t = to_tensor(img_rgb).unsqueeze(0)
-        srm = extract_srm_residuals(t)[0].numpy()  # [3, 256, 256]
-        raw_data.append((label, np.array(img_rgb) / 255.0, srm))
-        all_srms.append(srm)
+        p = Path(path)
+        if not p.exists():
+            raise FileNotFoundError(f"Imagem não encontrada: {p}")
+        with Image.open(p) as pil:
+            img = pil.convert("RGB").resize(SPATIAL_SIZE)
+        t = to_tensor(img)
+        gray = _gray(t)
+        fft = np.fft.fftshift(np.fft.fft2(gray))
+        srm = extract_srm_residuals(t.unsqueeze(0))[0].numpy()
 
-    # Escalas compartilhadas em percentil 99.5
+        loaded_imgs.append(np.array(img) / 255.0)
+        loaded_tensors.append(t)
+        loaded_ffts.append(fft)
+        loaded_srms.append(srm)
+
+    # Limites compartilhados para Fourier
+    all_re = np.concatenate([np.real(f).ravel() for f in loaded_ffts])
+    all_im = np.concatenate([np.imag(f).ravel() for f in loaded_ffts])
+    re_bounds = _pclip_bounds(all_re, 1, 99)
+    im_bounds = _pclip_bounds(all_im, 1, 99)
+
+    # Escalas compartilhadas para SRM
     v_scales = [
-        float(max(np.percentile(np.abs(srm[f]), 99.5) for srm in all_srms) + 1e-6)
+        float(max(np.percentile(np.abs(srm[f]), 99.5) for srm in loaded_srms) + 1e-6)
         for f in range(3)
     ]
-    e_scale = float(max(np.percentile(np.mean(np.abs(srm), axis=0), 99.5) for srm in all_srms) + 1e-6)
 
-    data = []
-    for label, rgb, srm in raw_data:
-        # Normalização dos resíduos individuais (0.5 = cinza neutro)
-        srm1 = np.clip((srm[0] / (2.0 * v_scales[0])) + 0.5, 0.0, 1.0)
-        srm2 = np.clip((srm[1] / (2.0 * v_scales[1])) + 0.5, 0.0, 1.0)
-        srm3 = np.clip((srm[2] / (2.0 * v_scales[2])) + 0.5, 0.0, 1.0)
+    rows_data = []
+    labels = []
 
-        # Imagem que junta todas as 3 derivadas: composto multicanal falso-colorido
-        comp = np.stack([srm1, srm2, srm3], axis=-1)
+    for i, (label, path) in enumerate(row_specs):
+        labels.append(label)
+        rgb = loaded_imgs[i]
+        fft = loaded_ffts[i]
+        srm = loaded_srms[i]
 
-        p_rgb = {"img": rgb, "cmap": None, "title": "Face (RGB)", "desc": "Spatial domain\n(Native input)"}
-        p_srm1 = {"img": srm1, "cmap": "gray", "title": "1ª Derivada\n(SRM 1)", "desc": r"Horizontal edge" "\n" r"$f_1 = [1, -2, 1]/2$"}
-        p_srm2 = {"img": srm2, "cmap": "gray", "title": "2ª Derivada\n(SRM 2)", "desc": r"3×3 Laplacian" "\n" r"$f_2 = \nabla^2 / 4$"}
-        p_srm3 = {"img": srm3, "cmap": "gray", "title": "3ª Derivada\n(SRM 3)", "desc": r"5×5 Steganalysis edge" "\n" r"$f_3 \text{ (Square filter)}$"}
-        p_comp = {"img": comp, "cmap": None, "title": "Combinada\n(Todas)", "desc": r"Multichannel composite" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"}
+        panels = []
 
-        if columns == 4:
-            panels = [p_srm1, p_srm2, p_srm3, p_comp]
-        elif columns == 5:
-            panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp]
-        else:
-            energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
-            p_energy = {"img": energy, "cmap": "inferno", "title": "Noise Energy", "desc": r"Residual response" "\n" r"$\frac{1}{3}\sum |s_i|$"}
-            panels = [p_rgb, p_srm1, p_srm2, p_srm3, p_comp, p_energy]
+        # 1. Espacial
+        if domain in ("mega", "all", "fourier", "srm"):
+            panels.append({
+                "img": rgb, "cmap": None, "group": "Espacial",
+                "title": "Face (RGB)", "desc": "Espaço Espacial\n(Nativo)"
+            })
 
-        data.append((label, panels))
+        # 2. Fourier
+        if domain in ("mega", "all", "fourier"):
+            mag = _safe_norm(np.log(np.abs(fft) + 1))
+            phase = (np.angle(fft) + np.pi) / (2 * np.pi)
+            re = _apply_bounds(np.real(fft), *re_bounds)
+            im = _apply_bounds(np.imag(fft), *im_bounds)
 
-    return data
+            H, W = fft.shape
+            y, x = np.ogrid[:H, :W]
+            mask = ((y - H // 2) ** 2 + (x - W // 2) ** 2) >= (min(H, W) * 0.12) ** 2
+            hp = _safe_norm(np.log1p(np.abs(fft) * mask))
+
+            panels.extend([
+                {"img": mag, "cmap": "inferno", "group": "Fourier", "title": "Log-Magnitude", "desc": r"$\log(|\mathcal{F}| + 1)$"},
+                {"img": phase, "cmap": "inferno", "group": "Fourier", "title": "Fase", "desc": r"$\angle\mathcal{F} \in [0,\,1]$"},
+                {"img": re, "cmap": "coolwarm", "group": "Fourier", "title": "Re(F)", "desc": "Parte Real FFT\n(Bipolar)"},
+                {"img": im, "cmap": "coolwarm", "group": "Fourier", "title": "Im(F)", "desc": "Parte Imag. FFT\n(Bipolar)"},
+                {"img": hp, "cmap": "inferno", "group": "Fourier", "title": "Passa-Alta", "desc": r"$\log(1+|\mathcal{F}|\cdot m_r)$"},
+            ])
+
+        # 3. SRM (4 canais operacionais do modelo: 3 derivadas + composto)
+        if domain in ("mega", "all", "srm"):
+            srm1 = np.clip((srm[0] / (2.0 * v_scales[0])) + 0.5, 0.0, 1.0)
+            srm2 = np.clip((srm[1] / (2.0 * v_scales[1])) + 0.5, 0.0, 1.0)
+            srm3 = np.clip((srm[2] / (2.0 * v_scales[2])) + 0.5, 0.0, 1.0)
+            srm_comp = np.stack([srm1, srm2, srm3], axis=-1)
+
+            panels.extend([
+                {"img": srm1, "cmap": "gray", "group": "SRM", "title": "SRM 1 (1ª Ord.)", "desc": r"Borda Horizontal" "\n" r"$f_1 = [1, -2, 1]/2$"},
+                {"img": srm2, "cmap": "gray", "group": "SRM", "title": "SRM 2 (2ª Ord.)", "desc": r"Laplaciano $3\times 3$" "\n" r"$f_2 = \nabla^2 / 4$"},
+                {"img": srm3, "cmap": "gray", "group": "SRM", "title": "SRM 3 (3ª Ord.)", "desc": r"Filtro Quadrado $5\times 5$" "\n" r"$f_3\text{ (Esteganografia)}$"},
+                {"img": srm_comp, "cmap": None, "group": "SRM", "title": "SRM Composto", "desc": r"Fusão Multicanal" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"},
+            ])
+
+        rows_data.append(panels)
+
+    return labels, rows_data
 
 
-# ── Renderizador do Grid ───────────────────────────────────────────────────
+# ── Renderizador do Grid Visual ───────────────────────────────────────────
 
-def render_grid(
-    data: List[Tuple[str, List[Dict]]],
+def render_figure(
+    labels: List[str],
+    rows_data: List[List[Dict]],
     out_pdf: Path,
     out_png: Path | None = None,
+    domain: str = "mega",
 ) -> None:
-    n_rows = len(data)
-    N = len(data[0][1])
+    n_rows = len(labels)
+    n_cols = len(rows_data[0])
 
-    CELL = 1.7
-    TOP_PAD = 0.55
+    CELL = 1.60
+    TOP_PAD = 0.95 if domain in ("mega", "all") else 0.55
     LEFT_PAD = 1.15
     BOTTOM = 0.55
-    WSPACE = 0.06
+    WSPACE = 0.05
     HSPACE = 0.08
 
-    fig_w = LEFT_PAD + N * CELL + 0.15
-    width_span = N * CELL + 0.07
-    _cell_w = width_span / (N + (N - 1) * WSPACE)
-    fig_h = _cell_w * (n_rows + (n_rows - 1) * HSPACE) + TOP_PAD * 0.5 + BOTTOM
+    fig_w = LEFT_PAD + n_cols * CELL + 0.15
+    width_span = n_cols * CELL + 0.07
+    _cell_w = width_span / (n_cols + (n_cols - 1) * WSPACE)
+    fig_h = _cell_w * (n_rows + (n_rows - 1) * HSPACE) + TOP_PAD + BOTTOM
 
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor="white")
+
     gs = gridspec.GridSpec(
-        n_rows,
-        N,
+        n_rows, n_cols,
         figure=fig,
         hspace=HSPACE,
         wspace=WSPACE,
         left=LEFT_PAD / fig_w,
         right=(fig_w - 0.08) / fig_w,
-        top=(fig_h - TOP_PAD * 0.50) / fig_h,
+        top=(fig_h - TOP_PAD) / fig_h,
         bottom=BOTTOM / fig_h,
     )
 
-    FS = 11.5
-    FS_DESC = 10.5
+    FS_GROUP = 11.5
+    FS_TITLE = 10.0 if n_cols > 8 else 11.0
+    FS_DESC = 8.8 if n_cols > 8 else 9.5
+    FS_LABEL = 10.5
     BORDER = "#888888"
     TITLE_COLOR = "#1a1a1a"
     LABEL_COLOR = "#333333"
     DESC_COLOR = "#555555"
+    GROUP_COLOR = "#0f2027"
 
-    axes = np.empty((n_rows, N), dtype=object)
+    axes = np.empty((n_rows, n_cols), dtype=object)
     for r in range(n_rows):
-        for c in range(N):
+        for c in range(n_cols):
             ax = fig.add_subplot(gs[r, c])
             axes[r, c] = ax
-            panel = data[r][1][c]
+            panel = rows_data[r][c]
             img, cmap = panel["img"], panel["cmap"]
             if img.ndim == 3:
                 ax.imshow(img, interpolation="lanczos")
@@ -234,97 +221,120 @@ def render_grid(
             for spine in ax.spines.values():
                 spine.set_visible(True)
                 spine.set_edgecolor(BORDER)
-                spine.set_linewidth(1.8)
+                spine.set_linewidth(1.4)
 
     fig.canvas.draw()
 
     # Títulos das colunas
-    for c in range(N):
+    for c in range(n_cols):
         pos = axes[0, c].get_position()
         fig.text(
-            (pos.x0 + pos.x1) / 2,
-            pos.y1 + 0.02,
-            data[0][1][c]["title"],
-            ha="center",
-            va="bottom",
-            color=TITLE_COLOR,
-            fontsize=FS,
-            fontweight="bold",
-            multialignment="center",
+            (pos.x0 + pos.x1) / 2, pos.y1 + 0.015,
+            rows_data[0][c]["title"],
+            ha="center", va="bottom",
+            color=TITLE_COLOR, fontsize=FS_TITLE, fontweight="bold",
         )
 
     # Descrições das colunas
-    for c in range(N):
+    for c in range(n_cols):
         pos = axes[-1, c].get_position()
         fig.text(
-            (pos.x0 + pos.x1) / 2,
-            pos.y0 - 0.02,
-            data[0][1][c]["desc"],
-            ha="center",
-            va="top",
-            color=DESC_COLOR,
-            fontsize=FS_DESC,
-            multialignment="center",
-            linespacing=1.35,
+            (pos.x0 + pos.x1) / 2, pos.y0 - 0.015,
+            rows_data[0][c]["desc"],
+            ha="center", va="top",
+            color=DESC_COLOR, fontsize=FS_DESC,
+            multialignment="center", linespacing=1.25,
         )
 
-    # Rótulos das linhas perfeitamente centralizados
+    # Rótulos das linhas (à esquerda)
     for r in range(n_rows):
         pos = axes[r, 0].get_position()
         fig.text(
-            (LEFT_PAD * 0.50) / fig_w,
-            (pos.y0 + pos.y1) / 2,
-            data[r][0],
-            ha="center",
-            va="center",
-            color=LABEL_COLOR,
-            fontsize=FS,
-            fontweight="bold",
-            multialignment="center",
-            linespacing=1.2,
+            (LEFT_PAD * 0.45) / fig_w, (pos.y0 + pos.y1) / 2,
+            labels[r],
+            ha="center", va="center",
+            color=LABEL_COLOR, fontsize=FS_LABEL, fontweight="bold",
+            multialignment="center", linespacing=1.2,
         )
 
-    # Linha horizontal delimitadora superior
-    pos_top = axes[0, 0].get_position()
-    pos_top_r = axes[0, -1].get_position()
-    y_top_line = pos_top.y1 + 0.012
-    fig.add_artist(
-        plt.Line2D(
-            [pos_top.x0, pos_top_r.x1],
-            [y_top_line, y_top_line],
-            transform=fig.transFigure,
-            color="#bbbbbb",
-            linewidth=0.8,
-        )
-    )
+    # Super-cabeçalhos de agrupamento (para o mega painel de 10 colunas)
+    if domain in ("mega", "all") and n_cols == 10:
+        pos_g1_left = axes[0, 0].get_position().x0
+        pos_g1_right = axes[0, 0].get_position().x1
 
-    # Separador entre Real e Fake (entre linha 1 e linha 2)
+        pos_g2_left = axes[0, 1].get_position().x0
+        pos_g2_right = axes[0, 5].get_position().x1
+
+        pos_g3_left = axes[0, 6].get_position().x0
+        pos_g3_right = axes[0, 9].get_position().x1
+
+        y_group = axes[0, 0].get_position().y1 + 0.065
+        y_line_group = axes[0, 0].get_position().y1 + 0.055
+
+        groups = [
+            ("Domínio Espacial", (pos_g1_left + pos_g1_right) / 2, pos_g1_left, pos_g1_right),
+            ("Decomposição em Frequência (Fourier 2D)", (pos_g2_left + pos_g2_right) / 2, pos_g2_left, pos_g2_right),
+            ("Resíduos Forenses e Esteganálise (SRM)", (pos_g3_left + pos_g3_right) / 2, pos_g3_left, pos_g3_right),
+        ]
+
+        for g_title, x_center, x0, x1 in groups:
+            fig.text(
+                x_center, y_group,
+                g_title,
+                ha="center", va="bottom",
+                color=GROUP_COLOR, fontsize=FS_GROUP, fontweight="bold",
+            )
+            fig.add_artist(plt.Line2D(
+                [x0, x1], [y_line_group, y_line_group],
+                transform=fig.transFigure, color=GROUP_COLOR, linewidth=1.5
+            ))
+
+        # Divisórias verticais entre grupos
+        y_bottom_sep = axes[-1, 0].get_position().y0 - 0.005
+        y_top_sep = y_group + 0.025
+
+        sep_x1 = (axes[0, 0].get_position().x1 + axes[0, 1].get_position().x0) / 2
+        sep_x2 = (axes[0, 5].get_position().x1 + axes[0, 6].get_position().x0) / 2
+
+        for sep_x in (sep_x1, sep_x2):
+            fig.add_artist(plt.Line2D(
+                [sep_x, sep_x], [y_bottom_sep, y_top_sep],
+                transform=fig.transFigure, color="#aaaaaa", linewidth=1.0, linestyle="--"
+            ))
+    else:
+        # Linha superior padrão
+        pos_top = axes[0, 0].get_position()
+        pos_top_r = axes[0, -1].get_position()
+        y_top_line = pos_top.y1 + 0.012
+        fig.add_artist(plt.Line2D(
+            [pos_top.x0, pos_top_r.x1], [y_top_line, y_top_line],
+            transform=fig.transFigure, color="#bbbbbb", linewidth=0.8
+        ))
+
+    # Divisória horizontal entre Real e Fake (quando há 4 linhas)
     if n_rows == 4:
         pos_r1 = axes[1, 0].get_position()
         pos_r2 = axes[2, 0].get_position()
-        y_sep = (pos_r1.y0 + pos_r2.y1) / 2
-        fig.add_artist(
-            plt.Line2D(
-                [pos_top.x0 - 0.03, pos_top_r.x1],
-                [y_sep, y_sep],
-                transform=fig.transFigure,
-                color="#bbbbbb",
-                linewidth=1.0,
-                linestyle="--",
-            )
-        )
+        y_sep_rf = (pos_r1.y0 + pos_r2.y1) / 2
+        fig.add_artist(plt.Line2D(
+            [axes[0, 0].get_position().x0 - 0.02, axes[0, -1].get_position().x1 + 0.01],
+            [y_sep_rf, y_sep_rf],
+            transform=fig.transFigure, color="#bbbbbb", linewidth=1.2, linestyle="-"
+        ))
 
     out_pdf.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_pdf, dpi=300, bbox_inches="tight", facecolor="white", pad_inches=0.08)
-    print(f"PDF salvo em: {out_pdf}")
+    print(f"PDF salvo: {out_pdf}")
 
     if out_png:
         out_png.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(out_png, dpi=300, bbox_inches="tight", facecolor="white", pad_inches=0.08)
-        print(f"PNG salvo em: {out_png}")
+        print(f"PNG salvo: {out_png}")
 
     plt.close(fig)
 
+
+# ── Execução Principal e CLI ──────────────────────────────────────────────
 
 def resolve_split_dirs() -> Tuple[Path, Path]:
     clean_dir = phase1_split_root("test")
@@ -338,20 +348,19 @@ def resolve_split_dirs() -> Tuple[Path, Path]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Gera figura em PDF com 4 linhas (Real Clean, Real Hard, Fake Clean, Fake Hard) x Colunas de resíduo SRM."
+        description="Gera figura forense com representações Espaciais, Frequência (Fourier) e SRM."
     )
     parser.add_argument(
         "--domain",
-        choices=("srm", "fourier"),
-        default="srm",
-        help="Domínio forense: 'srm' (padrão) ou 'fourier'.",
+        choices=("mega", "all", "fourier", "srm"),
+        default="mega",
+        help="Domínio a visualizar: 'mega' (todas as 10 transformações: Espacial + Fourier + SRM, padrão), 'fourier' ou 'srm'.",
     )
     parser.add_argument(
-        "--columns",
-        type=int,
-        choices=(4, 5, 6),
-        default=5,
-        help="Quantidade de colunas para SRM: 5 (Face RGB, 1ª, 2ª, 3ª e Combinada - padrão), 4 (sem RGB) ou 6 (+Energia).",
+        "--rows",
+        choices=("4", "2", "4rows", "2rows"),
+        default="4",
+        help="Número de linhas: '4' (Clean vs Hard para Real e Fake, padrão) ou '2' (Real vs Fake limpos).",
     )
     parser.add_argument(
         "--preset",
@@ -359,59 +368,59 @@ def main(argv: list[str] | None = None) -> None:
         default="challenge",
         help="Preset de imagens: 'challenge' (Noise em Real, Blur em Fake) ou 'default' (imagens clássicas SIBGRAPI).",
     )
-    parser.add_argument("--real", type=str, help="Nome do arquivo ou caminho da imagem Real (Clean).")
-    parser.add_argument("--fake", type=str, help="Nome do arquivo ou caminho da imagem Fake (Clean).")
-    parser.add_argument("--real-hard", type=str, help="Caminho explícito da imagem Real degradada (opcional).")
-    parser.add_argument("--fake-hard", type=str, help="Caminho explícito da imagem Fake degradada (opcional).")
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=None,
-        help="Caminho de saída para o PDF. Por padrão figures/srm/srm_transformacoes.pdf (ou fourier).",
-    )
+    parser.add_argument("--real", type=str, help="Caminho/nome da imagem Real (Clean).")
+    parser.add_argument("--fake", type=str, help="Caminho/nome da imagem Fake (Clean).")
+    parser.add_argument("--output", type=Path, default=None, help="Caminho de saída para o PDF.")
 
     args = parser.parse_args(argv)
 
     clean_dir, hard_dir = resolve_split_dirs()
 
     if args.preset == "challenge":
-        real_fn = args.real or "1507f38819c5a6207f637094de4856f3.jpg"  # Heavy Noise
-        fake_fn = args.fake or "747c3e721133667b2ff157f24ebfacc0.jpg"  # Gaussian Blur
+        real_fn = args.real or "1507f38819c5a6207f637094de4856f3.jpg"  # Ruído Gaussiano severo
+        fake_fn = args.fake or "747c3e721133667b2ff157f24ebfacc0.jpg"  # Blur Gaussiano severo
     else:
         real_fn = args.real or "fc04255bec1f4591236af2617ee93f50.jpg"
         fake_fn = args.fake or "70fac01d89420724e00dfc3e53370fa7.jpg"
 
     p_real_clean = Path(real_fn) if Path(real_fn).is_file() else clean_dir / real_fn
-    p_real_hard = Path(args.real_hard) if args.real_hard else hard_dir / Path(p_real_clean).name
     p_fake_clean = Path(fake_fn) if Path(fake_fn).is_file() else clean_dir / fake_fn
-    p_fake_hard = Path(args.fake_hard) if args.fake_hard else hard_dir / Path(p_fake_clean).name
 
-    rows = [
-        ("Real\n(Clean)", p_real_clean),
-        ("Real\n(Degraded)", p_real_hard),
-        ("Fake\n(Clean)", p_fake_clean),
-        ("Fake\n(Degraded)", p_fake_hard),
-    ]
+    n_rows_choice = 2 if args.rows in ("2", "2rows") else 4
+
+    if n_rows_choice == 4:
+        p_real_hard = hard_dir / Path(p_real_clean).name
+        p_fake_hard = hard_dir / Path(p_fake_clean).name
+        row_specs = [
+            ("Real\n(Clean)", p_real_clean),
+            ("Real\n(Degraded)", p_real_hard),
+            ("Fake\n(Clean)", p_fake_clean),
+            ("Fake\n(Degraded)", p_fake_hard),
+        ]
+        suffix = "4rows"
+    else:
+        row_specs = [
+            ("Class 0\n(Real)", p_real_clean),
+            ("Class 1\n(Fake)", p_fake_clean),
+        ]
+        suffix = "2rows"
 
     if args.output is None:
-        if args.domain == "srm":
-            out_pdf = Path("figures/srm/srm_transformacoes.pdf")
+        out_dir = Path("figures/transformacoes")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        if args.domain in ("mega", "all"):
+            out_pdf = out_dir / f"mega_transformacoes_{suffix}.pdf"
+        elif args.domain == "fourier":
+            out_pdf = Path("figures/fourier") / f"fourier_transformacoes_{suffix}.pdf"
         else:
-            out_pdf = Path("figures/fourier/fourier_transformacoes.pdf")
+            out_pdf = Path("figures/srm") / f"srm_transformacoes_{suffix}.pdf"
     else:
         out_pdf = args.output
 
     out_png = out_pdf.with_suffix(".png")
 
-    if args.domain == "srm":
-        data = compute_srm_panels_for_batch(rows, columns=args.columns)
-    else:
-        data = []
-        for label, path in rows:
-            t, fft = load_fft(path)
-            data.append((label, compute_fourier_panels(t, fft)))
-
-    render_grid(data, out_pdf=out_pdf, out_png=out_png)
+    labels, rows_data = build_panels_for_rows(row_specs, domain=args.domain)
+    render_figure(labels, rows_data, out_pdf=out_pdf, out_png=out_png, domain=args.domain)
 
 
 if __name__ == "__main__":
