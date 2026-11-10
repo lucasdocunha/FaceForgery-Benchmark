@@ -4,7 +4,7 @@ Unifica as representações do domínio Espacial (RGB), Espectral (Fourier 2D) e
 Resíduos Forenses de Esteganálise (SRM - Spatial Rich Models) em alta resolução (300 DPI).
 
 Suporta:
-  - Mega Painel Completo (11 colunas: Espacial + 5 Fourier + 5 SRM)
+  - Mega Painel Completo (10 colunas: Espacial + 5 Fourier + 4 SRM)
   - Painel de 4 Linhas (Real Clean, Real Degradado, Fake Clean, Fake Degradado)
   - Painel de 2 Linhas (Classe 0 / Real vs Classe 1 / Fake)
   - Presets: 'challenge' (Ruído em Real, Blur em Fake) ou 'default' (Clássico SIBGRAPI)
@@ -100,7 +100,6 @@ def build_panels_for_rows(
         float(max(np.percentile(np.abs(srm[f]), 99.5) for srm in loaded_srms) + 1e-6)
         for f in range(3)
     ]
-    e_scale = float(max(np.percentile(np.mean(np.abs(srm), axis=0), 99.5) for srm in loaded_srms) + 1e-6)
 
     rows_data = []
     labels = []
@@ -140,20 +139,18 @@ def build_panels_for_rows(
                 {"img": hp, "cmap": "inferno", "group": "Fourier", "title": "Passa-Alta", "desc": r"$\log(1+|\mathcal{F}|\cdot m_r)$"},
             ])
 
-        # 3. SRM
+        # 3. SRM (4 canais operacionais do modelo: 3 derivadas + composto)
         if domain in ("mega", "all", "srm"):
             srm1 = np.clip((srm[0] / (2.0 * v_scales[0])) + 0.5, 0.0, 1.0)
             srm2 = np.clip((srm[1] / (2.0 * v_scales[1])) + 0.5, 0.0, 1.0)
             srm3 = np.clip((srm[2] / (2.0 * v_scales[2])) + 0.5, 0.0, 1.0)
             srm_comp = np.stack([srm1, srm2, srm3], axis=-1)
-            srm_energy = np.clip(np.mean(np.abs(srm), axis=0) / e_scale, 0.0, 1.0)
 
             panels.extend([
                 {"img": srm1, "cmap": "gray", "group": "SRM", "title": "SRM 1 (1ª Ord.)", "desc": r"Borda Horizontal" "\n" r"$f_1 = [1, -2, 1]/2$"},
                 {"img": srm2, "cmap": "gray", "group": "SRM", "title": "SRM 2 (2ª Ord.)", "desc": r"Laplaciano $3\times 3$" "\n" r"$f_2 = \nabla^2 / 4$"},
                 {"img": srm3, "cmap": "gray", "group": "SRM", "title": "SRM 3 (3ª Ord.)", "desc": r"Filtro Quadrado $5\times 5$" "\n" r"$f_3\text{ (Esteganografia)}$"},
                 {"img": srm_comp, "cmap": None, "group": "SRM", "title": "SRM Composto", "desc": r"Fusão Multicanal" "\n" r"$[s_1, s_2, s_3] \to \text{RGB}$"},
-                {"img": srm_energy, "cmap": "inferno", "group": "SRM", "title": "Energia SRM", "desc": r"Magnitude Média" "\n" r"$\frac{1}{3}\sum |s_i|$"},
             ])
 
         rows_data.append(panels)
@@ -173,7 +170,7 @@ def render_figure(
     n_rows = len(labels)
     n_cols = len(rows_data[0])
 
-    CELL = 1.55
+    CELL = 1.60
     TOP_PAD = 0.95 if domain in ("mega", "all") else 0.55
     LEFT_PAD = 1.15
     BOTTOM = 0.55
@@ -199,8 +196,8 @@ def render_figure(
     )
 
     FS_GROUP = 11.5
-    FS_TITLE = 9.8 if n_cols > 8 else 11.0
-    FS_DESC = 8.5 if n_cols > 8 else 9.5
+    FS_TITLE = 10.0 if n_cols > 8 else 11.0
+    FS_DESC = 8.8 if n_cols > 8 else 9.5
     FS_LABEL = 10.5
     BORDER = "#888888"
     TITLE_COLOR = "#1a1a1a"
@@ -260,8 +257,8 @@ def render_figure(
             multialignment="center", linespacing=1.2,
         )
 
-    # Super-cabeçalhos de agrupamento (para o mega painel)
-    if domain in ("mega", "all") and n_cols == 11:
+    # Super-cabeçalhos de agrupamento (para o mega painel de 10 colunas)
+    if domain in ("mega", "all") and n_cols == 10:
         pos_g1_left = axes[0, 0].get_position().x0
         pos_g1_right = axes[0, 0].get_position().x1
 
@@ -269,7 +266,7 @@ def render_figure(
         pos_g2_right = axes[0, 5].get_position().x1
 
         pos_g3_left = axes[0, 6].get_position().x0
-        pos_g3_right = axes[0, 10].get_position().x1
+        pos_g3_right = axes[0, 9].get_position().x1
 
         y_group = axes[0, 0].get_position().y1 + 0.065
         y_line_group = axes[0, 0].get_position().y1 + 0.055
@@ -357,7 +354,7 @@ def main(argv: list[str] | None = None) -> None:
         "--domain",
         choices=("mega", "all", "fourier", "srm"),
         default="mega",
-        help="Domínio a visualizar: 'mega' (todas as transformações: Espacial + Fourier + SRM, padrão), 'fourier' ou 'srm'.",
+        help="Domínio a visualizar: 'mega' (todas as 10 transformações: Espacial + Fourier + SRM, padrão), 'fourier' ou 'srm'.",
     )
     parser.add_argument(
         "--rows",
