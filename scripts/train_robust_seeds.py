@@ -31,7 +31,7 @@ sys.path.insert(0, str(ROOT_DIR))
 
 from src.data.augmentations import RandomizedRobustAugment, clean_transform
 from src.data.data import ImageDataset
-from src.data.paths import data_root, models_root, output_root, phase1_split_root
+from src.data.paths import celeb_df_root, data_root, models_root, output_root, phase1_split_root
 from src.models.registry import get_model_spec
 from src.pipelines.checkpoints import _save_results
 from src.pipelines.config import load_config
@@ -446,7 +446,7 @@ def train_single_seed(
 
     # Avaliação no Celeb-DF v2 se dados existirem
     celeb_csv = data_root() / "celeb_df" / "test.csv"
-    celeb_crops = Path("/media/ssd2/lucas.ocunha/datasets/celeb_df_crops")
+    celeb_crops = celeb_df_root()
     celeb_video_auc = None
     if celeb_csv.exists() and celeb_crops.exists():
         try:

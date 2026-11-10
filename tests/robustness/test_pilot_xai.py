@@ -4,6 +4,10 @@ import pandas as pd
 import pytest
 import torch
 from torch import nn
+
+needs_captum = pytest.mark.skipif(
+    __import__("importlib.util").util.find_spec("captum") is None,
+    reason="requer captum: uv pip install -r requirements-explicability.txt")
 from src.robustness.explain import attribute, sample_cohort, load_cohort, overlay_bytes
 from src.robustness.artifacts import save_predictions
 from src.robustness.provenance import SCHEMA, write_json
@@ -18,6 +22,7 @@ class LinearImage(nn.Module):
         return self.conv(x).mean((-2, -1))
 
 
+@needs_captum
 @pytest.mark.parametrize("method", ["integrated_gradients", "occlusion", "gradcam"])
 def test_primary_methods_produce_finite_maps(method):
     model = LinearImage().eval().requires_grad_(False)
@@ -32,6 +37,7 @@ def test_primary_methods_produce_finite_maps(method):
         assert abs(meta["completeness_residual"]) < 1e-5
 
 
+@needs_captum
 def test_cam_requires_declared_layer():
     with pytest.raises(ValueError, match="explicit"):
         attribute(

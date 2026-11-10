@@ -19,13 +19,14 @@ import torch.nn.functional as F
 
 from src.pipelines.checkpoints import run_from_checkpoint, load_model_from_run
 from src.data.data import encode_pil_image
+from src.data.paths import celeb_df_root, df40_root, models_root, phase1_split_root
 from src.plots.heatmap import attention_rollout, grad_cam, overlay
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 # 1. Load checkpoints (SRM finetune_robust, seed 123)
-clip_ckpt = Path('/media/ssd2/lucas.ocunha/models-tcc/clip/srm/finetune_robust/seed_123/weights/best.pth')
-dino_ckpt = Path('/media/ssd2/lucas.ocunha/models-tcc/dino/srm/finetune_robust/seed_123/weights/best.pth')
+clip_ckpt = models_root() / 'clip/srm/finetune_robust/seed_123/weights/best.pth'
+dino_ckpt = models_root() / 'dino/srm/finetune_robust/seed_123/weights/best.pth'
 
 print(f"Loading CLIP SRM checkpoint: {clip_ckpt}")
 m_clip = load_model_from_run(run_from_checkpoint(clip_ckpt), device)
@@ -36,13 +37,13 @@ m_dino = load_model_from_run(run_from_checkpoint(dino_ckpt), device)
 # 2. Curated Cohort of 6 representative images
 ff = pd.read_csv('data/raw/test.csv')
 ff.columns = ff.columns.str.strip()
-real_ff = Path('/media/ssd2/lucas.ocunha/datasets/phase1/testset') / ff[ff['target'] == 0].iloc[10]['img_name']
-real_celeba = Path('/media/ssd2/lucas.ocunha/datasets/df40_extracted/styleclip/real/105352.jpg')
-fake_ff = Path('/media/ssd2/lucas.ocunha/datasets/phase1/testset') / ff[ff['target'] == 1].iloc[42]['img_name']
+real_ff = phase1_split_root('test') / ff[ff['target'] == 0].iloc[10]['img_name']
+real_celeba = df40_root() / 'styleclip/real/105352.jpg'
+fake_ff = phase1_split_root('test') / ff[ff['target'] == 1].iloc[42]['img_name']
 
 df40 = pd.read_csv('data/df40/test.csv')
 fake_uniface = Path([r['img_name'] for _, r in df40[df40['paradigm']=='face_swap'].iterrows() if '262.png' in r['img_name']][0])
-fake_cdf = Path('/media/ssd2/lucas.ocunha/datasets/celeb_df_crops/id1_id9_0007_f00020.jpg')
+fake_cdf = celeb_df_root() / 'id1_id9_0007_f00020.jpg'
 fake_t2i = Path([r['img_name'] for _, r in df40[df40['target']==1].iterrows() if '422.png' in r['img_name']][0])
 
 cohort = [

@@ -23,7 +23,7 @@
 #   --df40-breakdown       Calcula apenas a divisão de acerto por categoria e técnica no DF-40
 #   --heatmaps             Gera apenas as figuras de explicabilidade (3 e 4 linhas em 300 DPI)
 #   --extract-preds        Extrai predições (.npz) dos modelos para DF-40 e Celeb-DF
-#   --eval-benchmarks      Executa a avaliação de checkpoints em todos os datasets de teste
+#   --train-models         Treina apenas os modelos robustos (RGB, RGB+SRM e SRM-only) nas 5 sementes
 #   --help                 Exibe esta mensagem de ajuda
 # ==============================================================================
 
@@ -103,13 +103,23 @@ check_data() {
 }
 
 run_training_5seeds() {
-    log_step "ETAPA: Treinamento Robusto da Campanha SRM (5 Seeds Canônicas: 42, 123, 2024, 7, 2025)"
-    echo "Distribuição:"
-    echo "  GPU 0: CLIP, DINO, ResNet-50"
-    echo "  GPU 1: ViT-B/16, MobileNet-v2, Xception"
-    echo "Iniciando orquestrador de treinamento paralelo..."
-    $PYTHON_BIN scripts/launch_robust_5seeds.py
-    echo "✅ Treinamento da campanha SRM finalizado!"
+    log_step "ETAPA: Treino robusto (c/DA) nas 5 sementes canônicas: 42, 123, 2024, 7, 2025"
+    mkdir -p logs
+    # 1) RGB robusto: as 6 famílias divididas entre as duas GPUs, em paralelo.
+    echo "RGB robusto -> GPU 0: CLIP, DINOv3, ResNet | GPU 1: ViT, MobileNet, Xception"
+    $PYTHON_BIN scripts/launch_robust_5seeds.py --gpu-id 0 > logs/robust_rgb_gpu0.log 2>&1 &
+    local pid0=$!
+    $PYTHON_BIN scripts/launch_robust_5seeds.py --gpu-id 1 > logs/robust_rgb_gpu1.log 2>&1 &
+    local pid1=$!
+    wait "$pid0" "$pid1"
+    # 2) Campanha forense: RGB+SRM (6 canais) na GPU 0 e SRM-only (3 canais) na GPU 1.
+    echo "Campanha SRM -> GPU 0: srm | GPU 1: srm_only"
+    $PYTHON_BIN scripts/run_forensics_campaign.py --gpu 0 --mode srm > logs/campaign_srm.log 2>&1 &
+    pid0=$!
+    $PYTHON_BIN scripts/run_forensics_campaign.py --gpu 1 --mode srm_only > logs/campaign_srm_only.log 2>&1 &
+    pid1=$!
+    wait "$pid0" "$pid1"
+    echo "✅ Treino robusto (RGB, RGB+SRM e SRM-only) finalizado! Logs em logs/."
 }
 
 run_extract_predictions() {

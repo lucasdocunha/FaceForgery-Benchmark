@@ -16,7 +16,6 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 logger = logging.getLogger(__name__)
 
 from src.utils.atomic import atomic_torch_save
-from src.utils.progress import progress
 from src.pipelines.config import RUN_CONFIG_FILENAME
 from src.pipelines.evaluation import (
     best_threshold, checkpoint_score, evaluate_classifier, sanitize_inputs, sanitize_logits,
@@ -279,7 +278,8 @@ class Trainer:
                 f"[{self.config.model_family}/{self.config.fourier_mode}] Epoch {epoch + 1}/{self.config.epochs} "
                 f"- Train Loss: {train_loss:.4f} | Val Loss: {validation['loss']:.4f} "
                 f"| Val Acc: {validation['acc']:.4f} | Val AUC: {validation['auc']:.4f} "
-                f"| Best Score: {best_score:.4f} (stale={stale})",
+                f"| Best Score: {best_score:.4f} (stale={stale}) "
+                f"| {len(losses) / max(epoch_time, 1e-9):.2f} batches/s",
                 flush=True,
             )
         # Apenas best.pth é mantido como checkpoint final oficial

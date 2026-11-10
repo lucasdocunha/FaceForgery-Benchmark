@@ -22,7 +22,7 @@ from torchvision import transforms
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.data.data import ImageDataset
-from src.data.paths import models_root, phase1_split_root
+from src.data.paths import models_root, output_root, phase1_split_root, test_d_root
 from src.models.registry import get_model_spec
 from src.pipelines.checkpoints import _save_results
 from src.pipelines.config import load_config
@@ -34,7 +34,7 @@ FOURIER_MODE = "none"
 REGIME       = "finetune"
 NUM_WORKERS  = 4
 EARLY_STOP   = 8
-TEST_D_DIR   = Path("/media/ssd2/lucas.ocunha/datasets/phase1/test_d")
+TEST_D_DIR   = test_d_root()
 
 
 class RandomizedRobustAugment:
@@ -234,7 +234,7 @@ def run_gpu_group(gpu_id: int, configs: list[tuple], tag: str = "partial"):
 
     # Salvar parcial por GPU
     import pandas as _pd
-    out_partial = Path(f"/home/lucas.ocunha/tcc/tables/robust_gpu{gpu_id}_{tag}.csv")
+    out_partial = output_root() / "tables" / f"robust_gpu{gpu_id}_{tag}.csv"
     _pd.DataFrame(rows).to_csv(out_partial, index=False)
     print(f"\n📝 GPU {gpu_id} — parcial salvo em {out_partial}", flush=True)
 

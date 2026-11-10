@@ -9,16 +9,11 @@ from sklearn.linear_model import LogisticRegression
 
 import os
 
-MODELS_ROOT = Path(os.environ.get("TCC_MODELS_ROOT", os.environ.get("CISIA_MODELS_ROOT", "/media/ssd2/lucas.ocunha/models-tcc")))
-if not MODELS_ROOT.exists():
-    for candidate in [
-        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/models-tcc"),
-        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/faceforgery"),
-        Path("/media/ssd2/lucas.ocunha/models-tcc"),
-    ]:
-        if candidate.exists():
-            MODELS_ROOT = candidate
-            break
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.data.paths import models_root
+
+MODELS_ROOT = models_root()
 
 PROJECT_ROOT = Path(os.environ.get("TCC_PROJECT_ROOT", Path(__file__).resolve().parent.parent))
 OUT_DIR = PROJECT_ROOT / "results" / "mostrar_rayson"

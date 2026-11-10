@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from src.data.data import ImageDataset
-from src.data.paths import models_root
+from src.data.paths import celeb_df_root, models_root
 from src.pipelines.checkpoints import discover_trained_runs, load_model_from_run, config_from_run
 from src.pipelines.evaluation import binary_metrics, evaluate_classifier
 
@@ -17,7 +17,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     root = models_root()
     manifest_csv = Path("data/celeb_df/test.csv")
-    crops_dir = Path("/media/ssd2/lucas.ocunha/datasets/celeb_df_crops")
+    crops_dir = celeb_df_root()
 
     models = ["clip", "dino", "vit", "resnet", "mobilenet", "xception"]
 

@@ -149,7 +149,8 @@ def main():
         sys.exit(1)
 
     # Carregar cache de caminhos das 24 técnicas
-    root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+    from src.data.paths import df40_root
+    root = df40_root()
     cache_path = root / "paths_cache.json"
     paths_cache = None
     if cache_path.exists():

@@ -187,7 +187,8 @@ def main():
     model = spec.build(cfg).to(device).eval()
     model.load_state_dict(state)
 
-    root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+    from src.data.paths import df40_root
+    root = df40_root()
     cache_path = root / "paths_cache.json"
     paths_cache = None
     if cache_path.exists():

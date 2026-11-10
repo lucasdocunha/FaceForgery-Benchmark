@@ -15,16 +15,11 @@ real_mask = (manifest['target'] == 0).values
 
 import os
 
-root = Path(os.environ.get("TCC_MODELS_ROOT", os.environ.get("CISIA_MODELS_ROOT", "/media/ssd2/lucas.ocunha/models-tcc")))
-if not root.exists():
-    for candidate in [
-        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/models-tcc"),
-        Path(f"/projects/models/{os.environ.get('USER', 'lucas.ocunha')}/faceforgery"),
-        Path("/media/ssd2/lucas.ocunha/models-tcc"),
-    ]:
-        if candidate.exists():
-            root = candidate
-            break
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.data.paths import models_root
+
+root = models_root()
 
 families = ['clip', 'dino', 'vit', 'resnet', 'mobilenet', 'xception']
 seeds = [42, 123, 2024, 7, 2025]

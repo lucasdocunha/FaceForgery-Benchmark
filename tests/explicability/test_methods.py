@@ -2,6 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+from importlib.util import find_spec
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -12,6 +13,9 @@ from src.explicability.methods import METHODS, UnsupportedMethod, explain, featu
 from src.explicability.runtime import EvaluationEncoder
 from src.data.data import ImageDataset
 from src.explicability.render import panels, render_cell
+
+
+needs_captum = unittest.skipUnless(find_spec("captum"), "requer captum: uv pip install -r requirements-explicability.txt")
 
 
 class TinyCNN(nn.Module):
@@ -38,6 +42,7 @@ class MethodTests(unittest.TestCase):
         self.settings = {"samples": 64, "ig_steps": 8, "gradient_samples": 4,
             "shapley_permutations": 4, "patch_size": 4, "perturbations_per_eval": 4}
 
+    @needs_captum
     def test_method_adapters(self):
         for method in METHODS:
             with self.subTest(method=method):
@@ -51,17 +56,20 @@ class MethodTests(unittest.TestCase):
                 self.assertEqual(meta["target"], "logit_fake_minus_real")
                 self.assertEqual(mask.shape, self.x.shape)
 
+    @needs_captum
     def test_ig_has_fixed_margin_and_completeness(self):
         attr, _, meta = explain(SumClassifier(), "resnet", "none", self.x, self.b,
                                "integrated_gradients", self.settings, 42)
         self.assertTrue(torch.allclose(attr, self.x * 2, atol=1e-5))
         self.assertLess(meta["completeness_residual"], 1e-4)
 
+    @needs_captum
     def test_frozen_parameters_still_allow_input_gradients(self):
         for parameter in self.model.parameters(): parameter.requires_grad_(False)
         attr, _, _ = explain(self.model, "resnet", "none", self.x, self.b, "gradcam", self.settings, 42)
         self.assertTrue(torch.isfinite(attr).all())
 
+    @needs_captum
     def test_stochastic_seed_is_reproducible(self):
         a, _, _ = explain(self.model, "resnet", "none", self.x, self.b, "gradient_shap", self.settings, 99)
         b, _, _ = explain(self.model, "resnet", "none", self.x, self.b, "gradient_shap", self.settings, 99)
@@ -80,6 +88,7 @@ class MethodTests(unittest.TestCase):
         mask = feature_mask(x, "complex", partition="radial")
         self.assertTrue(torch.equal(mask[0, 0], mask[0, 1]))
 
+    @needs_captum
     def test_group_density_preserves_group_total(self):
         attr, _, meta = explain(self.model, "resnet", "none", self.x, self.b,
                                "kernel_shap", self.settings, 42)
@@ -104,6 +113,7 @@ class MethodTests(unittest.TestCase):
                     views = panels(encoded.numpy(), rgb.numpy(), np.ones((1, channels, 8, 8)), mode)
                     self.assertGreater(len(views), 0)
 
+    @needs_captum
     def test_curves_have_correct_endpoints(self):
         attr, mask, _ = explain(self.model, "resnet", "none", self.x, self.b,
                                "integrated_gradients", self.settings, 42)

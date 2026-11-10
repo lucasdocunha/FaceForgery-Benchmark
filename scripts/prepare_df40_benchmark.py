@@ -17,7 +17,9 @@ def collect_images(folder: Path, sample_size: int, seed: int = 42) -> list[Path]
     return imgs
 
 def main():
-    root = Path("/media/ssd2/lucas.ocunha/datasets/df40_extracted")
+    import sys; sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from src.data.paths import df40_root
+    root = df40_root()
     out_dir = Path("data/df40")
     out_dir.mkdir(parents=True, exist_ok=True)
     out_csv = out_dir / "test.csv"
